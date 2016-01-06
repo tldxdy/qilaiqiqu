@@ -88,11 +88,6 @@ public class SlideShowListAdapter extends BaseAdapter{
 			mImageCycleView = (ImageCycleViewUtil) view
 					.findViewById(R.id.icv_topView);
 			mImageCycleView.setCycleDelayed(3000);
-//			for (int i = 0; i < cmList.size(); i++) {
-//				IClist.add(new ImageCycleViewUtil.ImageInfo(
-//						"http://weride.oss-cn-hangzhou.aliyuncs.com/"
-//								+ cmList.get(i).getImageAdd(), ""));
-//			}
 
 			mImageCycleView.loadData(IClist,
 					new ImageCycleViewUtil.LoadImageCallBack() {
