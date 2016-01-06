@@ -105,11 +105,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		list = new ArrayList<ArticleModel>();
 		userLogin = (UserLoginModel) getIntent().getSerializableExtra(
 				"userLogin");
-		/*
-		 * if(userLogin != null){
-		 * SystemUtil.loadImagexutils(userLogin.getUserImage(), photoImg, this);
-		 * }else{ photoImg.setImageBitmap(null); }
-		 */
+		
 
 	}
 
