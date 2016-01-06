@@ -1,0 +1,385 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#6dbfed" >
+
+        <LinearLayout
+            android:id="@+id/layout_personalDataActivity_back"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/btn_personalDataActivity_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/return_innavigationbar" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="返回"
+                android:textColor="@color/write" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/text_personaldataactivity_title"
+            android:textColor="@color/write"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/txt_personalDataActivity_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:text="@string/text_personaldataactivity_confirm"
+            android:textColor="@color/write"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="125dp"
+                android:background="@color/write" >
+
+                <LinearLayout
+                    android:id="@+id/layout_personalDataActivity_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:orientation="vertical" >
+
+                    <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
+                        android:id="@+id/img_personalDataActivity_photo"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/homepage_picture"
+                        app:border_color="@color/light"
+                        app:border_width="0dp" />
+
+                    <TextView
+                        android:id="@+id/txt_personalDataActivity_clickchange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_personaldataactivity_clickchange"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:background="#ffffffff"
+                android:layout_height="44dp" >
+
+                <LinearLayout
+                    android:id="@+id/layout_personalDataActivity_fans"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:text="粉丝"
+                        android:textColor="@color/dark" />
+
+                    <TextView
+                        android:id="@+id/txt_personalDataActivity_fans"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="0"
+                        android:textColor="#ff0000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_personalDataActivity_care"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="我关注的"
+                        android:textColor="@color/dark" />
+
+                    <TextView
+                        android:id="@+id/txt_personalDataActivity_care"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="30dp"
+                        android:text="0"
+                        android:textColor="#ff0000" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/write" >
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:background="#f2f2f2" >
+
+                <TextView
+                    android:id="@+id/txt_personalDataActivity_nick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/text_personactivity_nick"
+                    android:textColor="@color/dark"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/edt_personalDataActivity_nick"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/txt_personalDataActivity_nick"
+                    android:layout_alignBottom="@+id/txt_personalDataActivity_nick"
+                    android:layout_marginLeft="25dp"
+                    android:layout_toRightOf="@+id/txt_personalDataActivity_nick"
+                    android:background="@null"
+                    android:inputType="none"
+                    android:textColor="@color/dark"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_personalDataActivity_bindphone"
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:background="#f2f2f2" >
+
+                <TextView
+                    android:id="@+id/txt_personalDataActivity_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/text_personactivity_username"
+                    android:textColor="@color/dark"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/txt_personalDataActivity_usernametxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/txt_personalDataActivity_username"
+                    android:layout_alignBottom="@+id/txt_personalDataActivity_username"
+                    android:layout_marginLeft="25dp"
+                    android:layout_toLeftOf="@+id/txt_personalDataActivity_bind"
+                    android:layout_toRightOf="@+id/txt_personalDataActivity_username"
+                    android:background="@null"
+                    android:inputType="none"
+                    android:textColor="@color/dark"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/img_personalDataActivity_arrows1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/little_return" />
+
+                <TextView
+                    android:id="@+id/txt_personalDataActivity_bind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/txt_personalDataActivity_usernametxt"
+                    android:layout_alignBottom="@+id/txt_personalDataActivity_usernametxt"
+                    android:layout_marginRight="15dp"
+                    android:layout_toLeftOf="@+id/img_personalDataActivity_arrows1"
+                    android:text="@string/text_personaldataactivity_bind"
+                    android:textColor="#999999" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/write" >
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:background="#f2f2f2" >
+
+                <TextView
+                    android:id="@+id/txt_personalDataActivity_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/text_personaldataactivity_address"
+                    android:textColor="@color/dark"
+                    android:textSize="14sp" />
+
+                <RelativeLayout
+                    android:id="@+id/layout_personalDataActivity_address"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_toRightOf="@+id/txt_personalDataActivity_address" >
+
+                    <TextView
+                        android:id="@+id/txt_personalDataActivity_province"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:textColor="@color/dark"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/txt_personalDataActivity_city"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_toRightOf="@+id/txt_personalDataActivity_province"
+                        android:textColor="@color/dark"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/img_personalDataActivity_arrows3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/little_return" />
+
+                    <TextView
+                        android:id="@+id/txt_personalDataActivity_district"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_toRightOf="@+id/txt_personalDataActivity_city"
+                        android:textColor="@color/dark"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/write" >
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:background="#f2f2f2" >
+
+                <TextView
+                    android:id="@+id/txt_personalDataActivity_sex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/text_personaldataactivity_sex"
+                    android:textColor="@color/dark"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/img_personalDataActivity_male"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_toRightOf="@+id/txt_personalDataActivity_sex"
+                    android:src="@drawable/male_chosen" />
+
+                <ImageView
+                    android:id="@+id/img_personalDataActivity_famale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp"
+                    android:layout_toRightOf="@+id/img_personalDataActivity_male"
+                    android:src="@drawable/famale_unchosen" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:background="@color/write"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:text="@string/text_personaldataactivity_editing"
+                android:textColor="@color/dark"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:background="#f7f7f7"
+                android:orientation="vertical" >
+
+                <EditText
+                    android:id="@+id/edt_personalDataActivity_signature"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/text_personactivity_signature"
+                    android:maxLength="50"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_personalDataActivity_signature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/text_personaldataactivity_signature" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

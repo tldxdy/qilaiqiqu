@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry exported="true" kind="lib" path="libs/AMap_Android_3DMapSDK_V3.1.0_20151124.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Users/0.0/Desktop/新建文件夹/新建文件夹/com/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="libs/AMap_Services_V2.7.0_20151125.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/AMap_Location_v2.1.0_20151202.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/easemobchat_2.2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/libammsdk.jar"/>
+	<classpathentry kind="lib" path="libs/glide-3.6.1.jar"/>
+	<classpathentry kind="lib" path="libs/picasso-2.5.2.jar"/>
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>

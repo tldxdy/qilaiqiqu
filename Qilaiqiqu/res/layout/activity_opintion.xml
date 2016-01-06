@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#6dbfed" >
+
+        <LinearLayout
+            android:id="@+id/layout_opinionActivity_back"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/btn_opinionActivity_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/return_innavigationbar" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/returnssss"
+                android:textColor="@color/write" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/text_opinionactivity_title"
+            android:textColor="@color/write"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="@string/text_opinionactivity_email"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/edt_opintionActivity_email"
+        android:layout_width="250dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/border_editext"
+        android:hint="@string/edittext_opintionactivity_promiss"
+        android:inputType="textEmailAddress"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="@string/text_opinionactivity_title"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/edt_opintionActivity_opintion"
+        android:layout_width="fill_parent"
+        android:layout_height="132dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/border_editext"
+        android:gravity="top"
+        android:singleLine="false"
+        android:hint="@string/edittext_opintionactivity_opinion"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/txt_opintionActivity_send"
+        android:layout_width="300dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="44dp"
+        android:background="@drawable/corners_bg_blue"
+        android:gravity="center"
+        android:text="@string/text_opintion_send"
+        android:textColor="@color/write" />
+
+</LinearLayout>

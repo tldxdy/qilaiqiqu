@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="dark">#FF222222</color>
+    <color name="light">#00ffffff</color>
+    <color name="write">#FFFFFFFF</color>
+    <color name="f8f8">#f8f8f8</color>
+    <color name="mainActivity_title">#6dbfed</color>
+    <color name="color_66f8f8f8">#66f8f8f8</color>
+	<color name="province_line_border">#C7C7C7</color>
+	<color name="white">#ffffff</color>
+	<color name="grays">#f2f2f2</color>
+	<color name="efef">#99efefef</color>
+	<color name="mapblue">#7EACCA</color>
+	<color name="transparent">#00000000</color>
+	<color name="white66">#66ffffff</color> 
+	<color name="red">#ff0000</color> 
+</resources>
