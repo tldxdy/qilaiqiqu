@@ -106,10 +106,11 @@ public class SlideShowListAdapter extends BaseAdapter {
 							} else if (imageInfo.type.toString().equals("APP")) {
 								if (imageInfo.bannerType.toString().equals(
 										"QYJ")) {
+								
 									context.startActivity(new Intent(context,
 											RidingDetailsActivity.class)
 											.putExtra("articleId",
-													imageInfo.value.toString()));
+													Integer.parseInt(imageInfo.value.toString())));
 								} else if (imageInfo.bannerType.toString()
 										.equals("PQS")) {
 
