@@ -41,7 +41,6 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ArrayWheelAdapter;
 import com.qizhi.qilaiqiqu.model.CertainUserModel;
-import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;

@@ -89,7 +89,6 @@ public class CollectActivity extends Activity implements OnClickListener,OnItemC
 	public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 		Intent intent = new Intent(this, RidingDetailsActivity.class);
 		intent.putExtra("isMe", false);
-		System.out.println(list.get(position).getQuoteId());
 		intent.putExtra("articleId",list.get(position).getQuoteId() );
 		startActivity(intent);
 	}

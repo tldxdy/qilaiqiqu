@@ -62,10 +62,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 	
 	private TextView title;
 	private TextView likeTxt;
+	private TextView revamTxt;
 	
 	private int cllectionFlag = 1;// 是否收藏标识:1为未点击,2为已点击
 	private int cllectionLike = 1;// 是否点赞标识:1为未点击,2为已点击
-	private boolean isMe = false;
 	private int articleId;
 	
 	private ListView ridingList;
@@ -102,6 +102,8 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 	private TextView numTxt;
 	private Animation animation;
 	
+	private boolean isMe = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -133,14 +135,17 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 		layout_isShow = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_isShow);
 		likeTxt = (TextView) findViewById(R.id.txt_ridingDetailsActivity_like);
 		numTxt = (TextView) findViewById(R.id.animation);
+		revamTxt = (TextView) findViewById(R.id.img_ridingDetailsActivity_revamp);
 		
 		animation = AnimationUtils.loadAnimation(this,R.anim.applaud_animation);
 		
-		isMe = getIntent().getBooleanExtra("isMe", false);
 		articleId = getIntent().getIntExtra("articleId", -1);
+		isMe = getIntent().getBooleanExtra("isMe", false);
 		if(isMe){
 			cllectionImg.setVisibility(View.GONE);
 			layout_isShow.setVisibility(View.GONE);
+			revamTxt.setVisibility(View.VISIBLE);
+			shareImg.setVisibility(View.GONE);
 		}
 		
 		
@@ -155,6 +160,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 		commentImg.setOnClickListener(this);
 		shareImg.setOnClickListener(this);
 		cllectionImg.setOnClickListener(this);
+		revamTxt.setOnClickListener(this);
 	}
 
 	@Override
@@ -204,7 +210,9 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 				startActivityForResult(intent, 1);
 			}
 			break;
-
+		case R.id.img_ridingDetailsActivity_revamp:
+			new SystemUtil().makeToast(this, "点击修改");
+			break;
 		default:
 			break;
 		}
@@ -591,6 +599,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 
 	@Override
 	protected void onStart() {
+		
 		super.onStart();
 	}
 
@@ -631,6 +640,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 						likeImg.setImageResource(R.drawable.like_chosen);
 						cllectionLike = 2;
 					}
+					
 					
 					
 					SystemUtil.loadImagexutils(articleModel.getUserImage(), photoImg, RidingDetailsActivity.this);

@@ -59,7 +59,6 @@
 	<GridView
         android:id="@+id/grid_photo"
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:columnWidth="106dp"
@@ -67,5 +66,6 @@
         android:horizontalSpacing="1dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="4dp" />
+        android:verticalSpacing="4dp"
+        android:layout_marginTop="4dp" />
 </LinearLayout>

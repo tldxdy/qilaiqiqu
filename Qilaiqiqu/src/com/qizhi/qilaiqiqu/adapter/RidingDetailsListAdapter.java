@@ -1,11 +1,9 @@
 package com.qizhi.qilaiqiqu.adapter;
 
 import java.util.List;
-
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -114,22 +112,15 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 			}
 			holder.locationTxt.setText(sss[position]);
 		}
-		// if(){
 
-		// }
-
-		/* list.get(position).getMemo().split("\\|")[position].split("@")[0] */
-		// System.out.println(list.get(position).getArticleImage().split("\\|")[position].split("@")[0]);
 		SystemUtil.loadImagexutils(
 				list.get(position).getArticleImage().split("\\|")[position]
 						.split("@")[0], holder.pictureImg, context);
-		// holder.pictureImg.setImageResource(R.drawable.demo2);
 
-		// holder.locationTxt.setText(list.get(position).getAddress());
 
 		return view;
 	}
-
+	
 	public class ViewHolder {
 		private ImageView pictureImg;
 		private ImageView cornerImg;

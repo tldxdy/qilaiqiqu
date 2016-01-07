@@ -23,13 +23,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ReleaseListAdapter;
 import com.qizhi.qilaiqiqu.model.PublishTravelsModel;
@@ -172,6 +168,12 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 					TravelsinformationModel rt = new TravelsinformationModel();
 					rt.setArticleImage(string);
 					list.add(rt);
+				}
+				adapter.notifyDataSetChanged();
+			}else if(requestCode == 2){
+				int n = data.getIntExtra("position", -1);
+				if(n != -1){
+					list.get(n).setAddress(data.getStringExtra("address"));
 				}
 				adapter.notifyDataSetChanged();
 			}

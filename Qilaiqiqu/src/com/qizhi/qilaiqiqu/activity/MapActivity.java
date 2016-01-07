@@ -97,6 +97,8 @@ public class MapActivity extends Activity implements OnClickListener,
 	private PoiSearch.Query query;// Poi查询条件类
 	private PoiSearch poiSearch;// POI搜索
 
+	private int position;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -186,6 +188,8 @@ public class MapActivity extends Activity implements OnClickListener,
 		geocoderSearch = new GeocodeSearch(this);
 		geocoderSearch.setOnGeocodeSearchListener(this);
 		progDialog = new ProgressDialog(this);
+		
+		position = getIntent().getIntExtra("position", -1);
 	}
 
 	/**

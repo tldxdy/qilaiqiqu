@@ -1,12 +1,20 @@
 package com.qizhi.qilaiqiqu.adapter;
 import java.util.List;
+
+import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.MapActivity;
+import com.qizhi.qilaiqiqu.activity.NativeImagesActivity;
 import com.qizhi.qilaiqiqu.activity.StartActivity;
+import com.qizhi.qilaiqiqu.activity.SystemMessageActivity;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.model.PublishTravelsModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+
 import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -47,12 +55,15 @@ public class ReleaseListAdapter extends BaseAdapter{
 	
 	private PublishTravelsModel ptm;
 	
+	private BitmapUtils bitmapUtils;
+	
 	public ReleaseListAdapter(Context context, List<TravelsinformationModel> list, PublishTravelsModel ptm) {
 
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		this.list = list;
 		this.ptm = ptm;
+		bitmapUtils = new BitmapUtils(context);
 
 	}
 
@@ -92,10 +103,11 @@ public class ReleaseListAdapter extends BaseAdapter{
 			holder = (ViewHolder) convertView.getTag();
 		}
 		//Bitmap bm1 = BitmapFactory.decodeFile(list.get(position).getArticleImage());
-		Bitmap bm = SystemUtil.compressImageFromFile(list.get(position).getArticleImage());
+		//Bitmap bm = SystemUtil.compressImageFromFile(list.get(position).getArticleImage());
 		//Bitmap bm = SystemUtil.compressImage(bm1, 200);
 		//Bitmap bm = SystemUtil.ratio(bm1);
-		holder.photoImg.setImageBitmap(bm);
+		//holder.photoImg.setImageBitmap(bm);
+		bitmapUtils.display(holder.photoImg, list.get(position).getArticleImage());
 		holder.locationImg.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -104,9 +116,11 @@ public class ReleaseListAdapter extends BaseAdapter{
 				/*TravelsinformationModel tfm = list.get(position);
 				tfm.setAddress("杭州");
 				list.set(position, tfm);*/
-				list.get(position).setAddress("杭州");
-				notifyDataSetChanged();
-				context.startActivity(new Intent(context,MapActivity.class));
+				//list.get(position).setAddress("杭州");
+				//notifyDataSetChanged();
+				Intent intent = new Intent(context, MapActivity.class);
+				((Activity) context).startActivityForResult(intent, 2);
+				//context.startActivity(new Intent(context,MapActivity.class));
 			}
 
 		});
