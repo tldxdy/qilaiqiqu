@@ -18,7 +18,7 @@
         <LinearLayout
             android:id="@+id/ll_indication_group"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
+            android:layout_height="7dp"
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingRight="15dp">

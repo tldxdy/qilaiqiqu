@@ -3,6 +3,9 @@ package com.qizhi.qilaiqiqu.activity;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +16,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -20,6 +24,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -71,9 +77,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private List<CarouselModel> cmList;
 
 	public static boolean isForeground = false;
-	
+
 	private SharedPreferences preferences;
-	
+
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
 	@Override
@@ -91,7 +97,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@SuppressWarnings("deprecation")
 	private void initView() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
-		
+
 		photoImg = (ImageView) findViewById(R.id.img_mainActivity_photo);
 		searchImg = (ImageView) findViewById(R.id.img_mainActivity_search_photo);
 		addImg = (ImageView) findViewById(R.id.img_mainActivity_add_photo);
@@ -105,7 +111,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		list = new ArrayList<ArticleModel>();
 		userLogin = (UserLoginModel) getIntent().getSerializableExtra(
 				"userLogin");
-		
 
 	}
 
@@ -222,7 +227,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize", "10");
-		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
 		xUtilsUtil.httpPost("common/articleMemoList.html", params,
 				new CallBackPost() {
 
@@ -240,13 +246,15 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 									.optJSONArray("dataList");
 							// 数据获取
 							Gson gson = new Gson();
-							Type type = new TypeToken<List<ArticleModel>>(){}.getType();
+							Type type = new TypeToken<List<ArticleModel>>() {
+							}.getType();
 							list = gson.fromJson(jsonArray.toString(), type);
-							
+
 							adapter = new SlideShowListAdapter(
 									MainActivity.this, list, IClist);
 							slideShowList.setAdapter(adapter);
-							slideShowList.setOnItemClickListener(MainActivity.this);
+							slideShowList
+									.setOnItemClickListener(MainActivity.this);
 						}
 					}
 
@@ -285,7 +293,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 								IClist.add(new ImageCycleViewUtil.ImageInfo(
 										"http://weride.oss-cn-hangzhou.aliyuncs.com/"
 												+ cmList.get(i).getImageAdd(),
-										""));
+										cmList.get(i).getValue(), cmList.get(i)
+												.getOpenType(), cmList.get(i)
+												.getBannerType()));
 							}
 						} catch (JSONException e) {
 							e.printStackTrace();
@@ -304,12 +314,49 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		if(position != 0){
-		Intent intent = new Intent(this, RidingDetailsActivity.class);
-		intent.putExtra("isMe", false);
-		intent.putExtra("articleId",list.get(position-1).getArticleId() );
-		startActivity(intent);
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+			long arg3) {
+		if (position != 0) {
+			Intent intent = new Intent(this, RidingDetailsActivity.class);
+			intent.putExtra("isMe", false);
+			intent.putExtra("articleId", list.get(position - 1).getArticleId());
+			startActivity(intent);
+		}
+	}
+
+	/**
+	 * 菜单、返回键响应
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			exitBy2Click(); // 调用双击退出函数
+		}
+		return false;
+	}
+	
+	/**
+	 * 双击退出函数
+	 */
+	private static Boolean isExit = false;
+
+	private void exitBy2Click() {
+		Timer tExit = null;
+		if (isExit == false) {
+			isExit = true; // 准备退出
+			Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+			tExit = new Timer();
+			tExit.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					isExit = false; // 取消退出
+				}
+			}, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+
+		} else {
+			finish();
+			System.exit(0);
 		}
 	}
 

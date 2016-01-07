@@ -20,7 +20,6 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -65,6 +64,7 @@ public class StartActivity extends Activity implements CallBackPost {
 		cIdPost();
 		JPushInterface.setDebugMode(true);
 		JPushInterface.init(this);
+		JPushInterface.setLatestNotificationNumber(this, 2);
 	}
 
 	/**
