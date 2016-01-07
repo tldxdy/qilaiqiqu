@@ -122,10 +122,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
 		params.addBodyParameter("commentMemo", contentEdit.getText().toString());
-		System.out.println("-----------------------------------");
-		System.out.println("userId:"+ preferences.getInt("userId", -1) + ",articleId:"+articleId+",superId:"+superId+",uniqueKey:"+
-				preferences.getString("uniqueKey", null)+",commentMemo:"+ contentEdit.getText().toString());
-		System.out.println("-----------------------------------");
 		flag = false;
 		xUtilsUtil.httpPost("mobile/comment/insertComment.html", params,
 				new CallBackPost() {
