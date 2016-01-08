@@ -26,6 +26,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.easemob.EMConnectionListener;
+import com.easemob.EMError;
+import com.easemob.chat.EMChatManager;
+import com.easemob.util.NetUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -92,6 +96,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		initLeft();
 		initEvent();
 		imageUrl();
+		
+		//注册一个监听连接状态的listener
+		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -335,7 +342,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 双击退出函数
 	 */
@@ -357,6 +364,39 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		} else {
 			finish();
 			System.exit(0);
+		}
+	}
+
+	// 实现ConnectionListener接口
+	private class MyConnectionListener implements EMConnectionListener {
+		@Override
+		public void onConnected() {
+			// 已连接到服务器
+		}
+
+		@Override
+		public void onDisconnected(final int error) {
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					if (error == EMError.USER_REMOVED) {
+						// 显示帐号已经被移除
+						new SystemUtil().makeToast(MainActivity.this, "帐号已经被移除");
+					} else if (error == EMError.CONNECTION_CONFLICT) {
+						// 显示帐号在其他设备登陆
+						new SystemUtil().makeToast(MainActivity.this, "帐号在其他设备登陆");
+					} else {
+						if (NetUtils.hasNetwork(MainActivity.this)) {
+							// 连接不到聊天服务器
+							new SystemUtil().makeToast(MainActivity.this, "已退出登录");
+						} else {
+							// 当前网络不可用，请检查网络设置
+							new SystemUtil().makeToast(MainActivity.this, "当前网络不可用，请检查网络设置");
+						}
+					}
+				}
+			});
 		}
 	}
 

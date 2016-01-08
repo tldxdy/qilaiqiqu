@@ -46,7 +46,7 @@ public class StartActivity extends Activity implements CallBackPost {
 			if (msg.arg1 == 1) {
 				stopTime();
 				startActivity(new Intent(StartActivity.this,
-						LoginActivity.class));
+						MainActivity.class));
 				finish();
 			}
 
@@ -64,7 +64,7 @@ public class StartActivity extends Activity implements CallBackPost {
 		cIdPost();
 		JPushInterface.setDebugMode(true);
 		JPushInterface.init(this);
-		JPushInterface.setLatestNotificationNumber(this, 2);
+		JPushInterface.setLatestNotificationNumber(this, 3);
 	}
 
 	/**

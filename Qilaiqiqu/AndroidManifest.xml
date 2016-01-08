@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qizhi.qilaiqiqu"
-    android:versionCode="10"
+    android:versionCode="11"
     android:versionName="1.0.0" >
 
     <uses-sdk
@@ -235,7 +235,7 @@
         <!-- Required. AppKey copied from Portal -->
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="346c7ba6af899683bbf84876" />
+            android:value="f96afde68d942052fefc7055" />
 
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MainActivity"

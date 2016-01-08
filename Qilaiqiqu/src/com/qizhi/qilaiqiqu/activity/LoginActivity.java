@@ -203,10 +203,12 @@ public class LoginActivity extends Activity implements OnClickListener,
 										data.toString(), type);
 
 								String imUserName = userLogin.getImUserName();
-								
-								//设置极光推送 用户别名
-								JPushInterface.setAliasAndTags(getApplicationContext(), imUserName, null, mAliasCallback);
-								
+
+								// 设置极光推送 用户别名
+								JPushInterface.setAliasAndTags(
+										getApplicationContext(), imUserName,
+										null, mAliasCallback);
+
 								/**
 								 * SharedPreferences存储用户Id和uniqueKey
 								 */
@@ -243,7 +245,7 @@ public class LoginActivity extends Activity implements OnClickListener,
 												userInfo_Editor.putBoolean(
 														"isLogin", true);
 												userInfo_Editor.commit();
-												
+
 												// 更新环信用户昵称
 												EMChatManager
 														.getInstance()
@@ -251,7 +253,7 @@ public class LoginActivity extends Activity implements OnClickListener,
 																usernameEdt
 																		.getText()
 																		.toString());
-												
+
 												EMGroupManager.getInstance()
 														.loadAllGroups();
 												Intent intent = new Intent(
@@ -298,7 +300,6 @@ public class LoginActivity extends Activity implements OnClickListener,
 				});
 	}
 
-	
 	// 实现ConnectionListener接口
 	private class MyConnectionListener implements EMConnectionListener {
 		@Override
@@ -324,7 +325,7 @@ public class LoginActivity extends Activity implements OnClickListener,
 									"连接不到聊天服务器");
 						} else {
 							new SystemUtil().makeToast(LoginActivity.this,
-									"当前网络不可用，请检查网络设置"); 
+									"当前网络不可用，请检查网络设置");
 						}
 					}
 				}
@@ -373,33 +374,30 @@ public class LoginActivity extends Activity implements OnClickListener,
 		System.out.println("登录界面向服务器提交CID出错:" + msg + "!");
 		Log.i("qilaiqiqu", "登录界面向服务器提交CID出错:" + msg + "!");
 	}
-	
+
 	private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
 
-        @Override
-        public void gotResult(int code, String alias, Set<String> tags) {
-            String logs ;
-            switch (code) {
-            case 0:
-                logs = "Set tag and alias success";
-                Log.i("JPush", logs);
-                break;
-                
-            case 6002:
-                logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
-                Log.i("JPush", logs);
-                break;
-            
-            default:
-                logs = "Failed with errorCode = " + code;
-                Log.e("JPush", logs);
-            }
-            
-        }
-	    
+		@Override
+		public void gotResult(int code, String alias, Set<String> tags) {
+			String logs;
+			switch (code) {
+			case 0:
+				logs = "Set tag and alias success";
+				Log.i("JPush", logs);
+				break;
+
+			case 6002:
+				logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
+				Log.i("JPush", logs);
+				break;
+
+			default:
+				logs = "Failed with errorCode = " + code;
+				Log.e("JPush", logs);
+			}
+
+		}
+
 	};
-	
-	
-	
-	
+
 }

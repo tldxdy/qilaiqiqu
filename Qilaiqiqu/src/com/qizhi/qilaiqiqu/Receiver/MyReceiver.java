@@ -43,6 +43,7 @@ public class MyReceiver extends BroadcastReceiver {
             String EXTRA = bundle.getString(JPushInterface.EXTRA_EXTRA);
             System.out.println("EXTRA:"+EXTRA+"|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
         	
+            
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
             

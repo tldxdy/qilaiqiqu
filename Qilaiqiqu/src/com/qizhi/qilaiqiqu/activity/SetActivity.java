@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.DataCleanManager;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -29,10 +30,14 @@ public class SetActivity extends Activity implements OnClickListener {
 	private LinearLayout backLayout;
 	private LinearLayout opintionLayout;
 	private LinearLayout introduceLayout;
-
+	private LinearLayout clearCacheLayout;
+	
 	private int logoutFlag = 1;// 为1未登录,为2已登录
 
 	private TextView logoutTxt;
+	private TextView cacheTxt; 
+	
+	DataCleanManager cleanManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +58,12 @@ public class SetActivity extends Activity implements OnClickListener {
 	}
 
 	private void initView() {
+		cacheTxt = (TextView) findViewById(R.id.txt_setActivity_cache);
 		logoutTxt = (TextView) findViewById(R.id.txt_setActivity_logout);
 		backLayout = (LinearLayout) findViewById(R.id.layout_setActivity_back);
 		opintionLayout = (LinearLayout) findViewById(R.id.layout_setActivity_opintion);
 		introduceLayout = (LinearLayout) findViewById(R.id.layout_setActivity_introduce);
+		clearCacheLayout = (LinearLayout) findViewById(R.id.layout_setActivity_clearCache);
 		
 	}
 
@@ -68,11 +75,18 @@ public class SetActivity extends Activity implements OnClickListener {
 			logoutTxt.setVisibility(View.GONE);
 			opintionLayout.setVisibility(View.GONE);
 		}
+		try {
+			cacheTxt.setText(cleanManager.getTotalCacheSize(SetActivity.this));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		logoutTxt.setOnClickListener(this);
 		backLayout.setOnClickListener(this);
 		opintionLayout.setOnClickListener(this);
 		introduceLayout.setOnClickListener(this);
+		clearCacheLayout.setOnClickListener(this);
 	}
 
 	@Override
@@ -94,11 +108,27 @@ public class SetActivity extends Activity implements OnClickListener {
 			logOut();
 			break;
 
+		case R.id.layout_setActivity_clearCache:
+			clearCache();
+			break;
+			
 		default:
 			break;
 		}
 	}
 
+	
+	private void clearCache() {
+		cleanManager.clearAllCache(SetActivity.this);
+		try {
+			cacheTxt.setText(cleanManager.getTotalCacheSize(SetActivity.this));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	private void logOut() {
 		EMChatManager.getInstance().logout(new EMCallBack() {
 
@@ -139,7 +169,7 @@ public class SetActivity extends Activity implements OnClickListener {
 			}
 		});
 	}
-
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
