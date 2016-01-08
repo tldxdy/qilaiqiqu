@@ -183,7 +183,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		// 为侧滑菜单设置布局
 		menu.setMenu(R.layout.left_menu_personal_center);
 
-		Fragment leftFragment = new MenuLeftFragment(this, menu, userLogin);
+		Fragment leftFragment = new MenuLeftFragment(this, menu, preferences);
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.left_menu, leftFragment, "Left").commit();
 	}
@@ -200,9 +200,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	protected void onStart() {
-		if (userLogin != null) {
+		if(preferences.getInt("userId", -1) != -1){
 			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", userLogin.getUserId() + "");
+			params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 			xUtilsUtil.httpPost("common/queryCertainUser.html", params,
 					new CallBackPost() {
 
