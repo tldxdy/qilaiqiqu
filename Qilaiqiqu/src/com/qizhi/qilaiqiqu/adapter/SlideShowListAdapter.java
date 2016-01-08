@@ -20,6 +20,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -178,8 +179,11 @@ public class SlideShowListAdapter extends BaseAdapter {
 		holder.likeImg.setImageResource(R.drawable.like_unpress);
 		// holder.likeImg.setTag(position);
 		// holder.photoImg.setImageResource(R.drawable.lena);
-		SystemUtil.loadImagexutils(list.get(position - 1).getDefaultShowImage()
-				.split("\\@")[0], holder.backgroundImg, context);
+		/*SystemUtil.loadImagexutils(list.get(position - 1).getDefaultShowImage()
+				.split("\\@")[0], holder.backgroundImg, context);*/
+		String internetUrl ="http://weride.oss-cn-hangzhou.aliyuncs.com/" + list.get(position - 1).getDefaultShowImage().split("\\@")[0];
+		Picasso.with(context).load(internetUrl).into(holder.backgroundImg);
+		
 		// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
 		holder.photoImg.setOnClickListener(new OnClickListener() {
 

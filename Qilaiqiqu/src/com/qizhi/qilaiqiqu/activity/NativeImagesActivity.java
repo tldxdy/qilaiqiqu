@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import com.lidroid.xutils.BitmapUtils;
 import com.qizhi.qilaiqiqu.R;
+import com.squareup.picasso.Picasso;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -223,7 +225,8 @@ public class NativeImagesActivity extends Activity implements OnClickListener{
 
 			
 			bitmapUtils.display(holder.photoImg, "file://" + imageUrls.get(position));
-			
+			/*Picasso.with(mContext).load("file://" + imageUrls.get(position)).resize(800, 480)
+			.centerCrop().into(holder.photoImg);*/
 
 			holder.photoChk.setTag(position);
 			holder.photoChk.setChecked(mSparseBooleanArray.get(position));
