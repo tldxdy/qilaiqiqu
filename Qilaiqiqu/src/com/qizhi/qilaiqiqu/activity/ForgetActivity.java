@@ -249,7 +249,7 @@ public class ForgetActivity extends Activity implements OnClickListener,
 
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("mobilePhone", mobilePhone);
-		params.addBodyParameter("type", "XGSJHM");
+		params.addBodyParameter("type", "ZHMM");
 
 		new XUtilsUtil().httpPost(url, params, ForgetActivity.this);
 	}

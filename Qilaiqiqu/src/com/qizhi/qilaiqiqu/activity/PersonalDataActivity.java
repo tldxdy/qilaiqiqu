@@ -636,7 +636,11 @@ public class PersonalDataActivity extends BaseActivity implements
 
 			} else {
 				signatureEdt.setText(certainUserModel.getUserMemo());
-				signatureTxt.setText(Html.fromHtml(certainUserModel.getUserMemo().length()
+				int n = 0;
+				if(certainUserModel.getUserMemo() != null){
+					n = certainUserModel.getUserMemo().length();
+				}
+				signatureTxt.setText(Html.fromHtml(n
 						+ "<font color='#9d9d9e'>/50</font>"));
 			}
 			if ("M".equals(certainUserModel.getSex())) {
