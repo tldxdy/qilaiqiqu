@@ -14,7 +14,6 @@ import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
 import com.qizhi.qilaiqiqu.activity.RidingActivity;
 import com.qizhi.qilaiqiqu.activity.SetActivity;
 import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
-import com.qizhi.qilaiqiqu.model.UserLoginModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -22,6 +21,7 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -63,18 +63,20 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 	private View view;
 
 	private SlidingMenu menu;
-
-	private UserLoginModel userLoginClass;
 	
 	private PersonageUserInformationModel puim;
+	
+	private SharedPreferences preferences;
 	
 	private XUtilsUtil xUtilsUtil;
 
 	public MenuLeftFragment(Context context, SlidingMenu menu,
-			UserLoginModel userLoginClass) {
+			SharedPreferences preferences) {
 		this.context = context;
 		this.menu = menu;
-		this.userLoginClass = userLoginClass;
+		this.preferences = preferences;
+		
+
 	}
 
 	@Override
@@ -129,7 +131,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.layout_personalfragment_personal_message:
-			if(userLoginClass != null){
+			if(preferences.getInt("userId", -1) != -1){
 			Intent intent = new Intent(context, PersonalDataActivity.class);
 			intent.putExtra("PersonageUserInformationModel", puim);
 			startActivity(intent);
@@ -141,7 +143,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			}
 			break;
 		case R.id.layout_personalfragment_my_message:
-			if(userLoginClass != null){
+			if(preferences.getInt("userId", -1) != -1){
 			Intent intent2 = new Intent(context, MyMessageActivity.class);
 			startActivity(intent2);
 			}else{
@@ -153,7 +155,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			}
 			break;
 		case R.id.layout_personalfragment_my_travel_notes:
-			if(userLoginClass != null){
+			if(preferences.getInt("userId", -1) != -1){
 			Intent intent3 = new Intent(context, RidingActivity.class);
 			startActivity(intent3);
 			}else{
@@ -164,7 +166,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			}
 			break;
 		case R.id.layout_personalfragment_my_collect_press:
-			if(userLoginClass != null){
+			if(preferences.getInt("userId", -1) != -1){
 			Intent intent4 = new Intent(context, CollectActivity.class);
 			startActivity(intent4);
 			}else{
@@ -197,13 +199,13 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 	}
 
 	private void Data() {
-		if (userLoginClass != null) {
+		if(preferences.getInt("userId", -1) != -1){
 			xUtilsUtil = new XUtilsUtil();
 			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", userLoginClass.getUserId()
+			params.addBodyParameter("userId", preferences.getInt("userId", -1)
 					+ "");
 			params.addBodyParameter("uniqueKey",
-					userLoginClass.getUniqueKey());
+					preferences.getString("uniqueKey", null));
 			xUtilsUtil.httpPost("mobile/user/querySingleUser.html", params, new CallBackPost() {
 				
 				@Override
@@ -263,7 +265,6 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 
 					} catch (JSONException e) {
 						e.printStackTrace();
-						System.out.println(e);
 					}
 				}
 				
@@ -276,8 +277,6 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		} else {
 			userMemoTxt.setText("");
 			userNameTxt.setText("游客");
-			//layout_personal_message.setVisibility(View.INVISIBLE);
-			
 			//系统统计数
 			informationNumTxt.setVisibility(View.GONE);
 		}

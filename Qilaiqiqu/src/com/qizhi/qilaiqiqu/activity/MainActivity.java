@@ -46,7 +46,6 @@ import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
 import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
-import com.qizhi.qilaiqiqu.model.UserLoginModel;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -72,7 +71,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	private List<ArticleModel> list;
 
-	private UserLoginModel userLogin = null;
+	//private UserLoginModel userLogin = null;
 
 	private XUtilsUtil xUtilsUtil;
 
@@ -83,6 +82,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public static boolean isForeground = false;
 
 	private SharedPreferences preferences;
+	private Fragment leftFragment;
 
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
@@ -101,7 +101,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 	}
 
-	@SuppressWarnings("deprecation")
 	private void initView() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
@@ -116,8 +115,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 		xUtilsUtil = new XUtilsUtil();
 		list = new ArrayList<ArticleModel>();
-		userLogin = (UserLoginModel) getIntent().getSerializableExtra(
-				"userLogin");
+		
 
 	}
 
@@ -141,7 +139,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			new SystemUtil().makeToast(MainActivity.this, "点击搜索");
 			break;
 		case R.id.img_mainActivity_add_photo:
-			if (userLogin != null) {
+			if (preferences.getInt("userId", -1) != -1) {
 				Intent intent = new Intent(this, NativeImagesActivity.class);
 				intent.putExtra("falg", false);
 				startActivity(intent);
@@ -183,7 +181,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		// 为侧滑菜单设置布局
 		menu.setMenu(R.layout.left_menu_personal_center);
 
-		Fragment leftFragment = new MenuLeftFragment(this, menu, userLogin);
+		leftFragment = new MenuLeftFragment(this, menu, preferences);
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.left_menu, leftFragment, "Left").commit();
 	}
@@ -200,9 +198,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	protected void onStart() {
-		if (userLogin != null) {
+		/*if(preferences.getString("userImage", null) != null){
+			SystemUtil.loadImagexutils(
+					preferences.getString("userImage", null), photoImg,this);*/
+		if(preferences.getInt("userId", -1) != -1){
 			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", userLogin.getUserId() + "");
+			params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 			xUtilsUtil.httpPost("common/queryCertainUser.html", params,
 					new CallBackPost() {
 
@@ -267,8 +268,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil().makeToast(MainActivity.this, "请求失败"
-								+ error + ":" + msg);
+						
 					}
 				});
 
@@ -336,7 +336,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			exitBy2Click(); // 调用双击退出函数
 		}
