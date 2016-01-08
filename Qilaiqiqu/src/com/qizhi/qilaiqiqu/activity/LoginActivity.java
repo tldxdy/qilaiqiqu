@@ -218,8 +218,6 @@ public class LoginActivity extends Activity implements OnClickListener,
 								editor.putInt("userId", userLogin.getUserId());
 								editor.putString("uniqueKey",
 										userLogin.getUniqueKey());
-								editor.putString("userImage",
-										userLogin.getUserImage());
 								editor.commit();
 
 								final Editor userInfo_Editor = sp.edit();
