@@ -514,7 +514,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 			@Override
 			public void onClick(View arg0) {
 				new SystemUtil()
-						.makeToast(RidingDetailsActivity.this, "您为打赏积分");
+						.makeToast(RidingDetailsActivity.this, "您未打赏积分");
 				popupWindow.dismiss();
 			}
 		});

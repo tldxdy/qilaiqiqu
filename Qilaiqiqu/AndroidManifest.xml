@@ -332,7 +332,7 @@
         <!-- adjustResize : 设置虚拟键盘顶起整个布局 -->
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MapActivity"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.FriendActivity" >
         </activity>

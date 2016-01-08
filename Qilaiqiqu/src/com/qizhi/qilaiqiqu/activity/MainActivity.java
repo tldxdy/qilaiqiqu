@@ -13,9 +13,11 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
@@ -385,11 +388,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						new SystemUtil().makeToast(MainActivity.this, "帐号已经被移除");
 					} else if (error == EMError.CONNECTION_CONFLICT) {
 						// 显示帐号在其他设备登陆
-						new SystemUtil().makeToast(MainActivity.this, "帐号在其他设备登陆");
+						new SystemUtil().makeToast(MainActivity.this, "帐号在其他设备登陆,请重新登录");
+						logOut();
 					} else {
 						if (NetUtils.hasNetwork(MainActivity.this)) {
 							// 连接不到聊天服务器
-							new SystemUtil().makeToast(MainActivity.this, "已退出登录");
+							new SystemUtil().makeToast(MainActivity.this, "连接不到聊天服务器");
 						} else {
 							// 当前网络不可用，请检查网络设置
 							new SystemUtil().makeToast(MainActivity.this, "当前网络不可用，请检查网络设置");
@@ -400,4 +404,45 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		}
 	}
 
+	private void logOut() {
+		EMChatManager.getInstance().logout(new EMCallBack() {
+
+			@Override
+			public void onSuccess() {
+				Log.d("LOGOUT", "环信登出成功!");
+				System.err.println("环信登出成功!");
+
+				/**
+				 * SharedPreferences清空用户Id和uniqueKey
+				 */
+				SharedPreferences sharedPreferences = getSharedPreferences(
+						"userLogin", Context.MODE_PRIVATE);
+				Editor editor = sharedPreferences.edit();// 获取编辑器
+				editor.putInt("userId", -1);
+				editor.putString("uniqueKey", null);
+				editor.commit();
+
+				SharedPreferences sp = getSharedPreferences("userInfo",
+						Context.MODE_PRIVATE);
+				Editor userInfo_Editor = sp.edit();
+				userInfo_Editor.putBoolean("isLogin", false);
+				userInfo_Editor.commit();
+
+				MainActivity.this.finish();
+				startActivity(new Intent(MainActivity.this, LoginActivity.class));
+			}
+
+			@Override
+			public void onProgress(int progress, String status) {
+
+			}
+
+			@Override
+			public void onError(int code, String message) {
+				Log.d("LOGOUT", "环信登出失败!" + message);
+				System.err.println("环信登出失败!" + message);
+			}
+		});
+	}
+	
 }
