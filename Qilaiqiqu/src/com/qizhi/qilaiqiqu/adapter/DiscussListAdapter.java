@@ -76,7 +76,7 @@ public class DiscussListAdapter extends BaseAdapter {
 			for (RidingCommentModel ridingCommentModel : lists) {
 				TextView discussReturnTxt = (TextView) View.inflate(context, R.layout.text_discussactivity_discuss_return, null);
 				
-				String str1 = "<font color='#6dbfed'>"+ridingCommentModel.getUserName()+"</font>评论<font color='#6dbfed'>"+list.get(position).getUserName()+"</font>"+ridingCommentModel.getCommentMemo();
+				String str1 = "<font color='#6dbfed'>"+ridingCommentModel.getUserName()+"</font>回复<font color='#6dbfed'>"+list.get(position).getUserName()+"</font>"+ridingCommentModel.getCommentMemo();
 				discussReturnTxt.setText(Html.fromHtml(str1));
 				
 				holder.discussReturnLayout.addView(discussReturnTxt);
