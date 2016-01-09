@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -35,6 +38,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.RidingDetailsListAdapter;
 import com.qizhi.qilaiqiqu.model.ArticleMemoDetailModel;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
+import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -95,6 +99,8 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 	private SharedPreferences preferences;
 	private List<ArticleModel> list;
 	
+	private List<TravelsinformationModel> listTravels;
+	
 	private ArticleMemoDetailModel aDetailModel;
 	private ArticleModel articleModel;
 	
@@ -120,6 +126,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 		aDetailModel = new ArticleMemoDetailModel();
 		list =new ArrayList<ArticleModel>();
 		articleModel = new ArticleModel();
+		listTravels = new ArrayList<TravelsinformationModel>();
 		preferences = getSharedPreferences("userLogin",Context.MODE_PRIVATE);
 		
 		backLayout = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_back);
@@ -211,8 +218,30 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 			}
 			break;
 		case R.id.img_ridingDetailsActivity_revamp:
-			new SystemUtil().makeToast(this, "点击修改");
-			break;
+
+			for (int i = 0; i < list.size(); i++) {
+				TravelsinformationModel tm = new TravelsinformationModel();
+				tm.setTitle(list.get(i).getTitle());
+				String[] addresss = list.get(i).getAddress().split("\\|");
+				String[] imageMemos = list.get(i).getImageMemo().split("\\|");
+				String[] memos = list.get(i).getMemo().split("\\|");
+				if(i < addresss.length){
+					tm.setAddress(addresss[i]);
+				}
+				if(i < imageMemos.length){
+					tm.setImageMemo(imageMemos[i]);
+				}
+				if(i < memos.length){
+					tm.setMemo(memos[i]);
+				}
+				tm.setArticleImage(list.get(i).getArticleImage().split("\\|")[i]);
+				listTravels.add(tm);
+			}
+			Intent intent = new Intent(this, ReleaseActivity.class);
+			intent.putExtra("falg", true);
+			intent. putExtra("list",(Serializable) listTravels);
+			intent.putExtra("articleId", articleId);
+			startActivity(intent);
 		default:
 			break;
 		}

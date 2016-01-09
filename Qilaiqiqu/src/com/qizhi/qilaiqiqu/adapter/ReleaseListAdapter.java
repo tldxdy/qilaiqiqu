@@ -12,6 +12,7 @@ import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.model.PublishTravelsModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.squareup.picasso.Picasso;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
@@ -57,13 +58,16 @@ public class ReleaseListAdapter extends BaseAdapter{
 	
 	private BitmapUtils bitmapUtils;
 	
-	public ReleaseListAdapter(Context context, List<TravelsinformationModel> list, PublishTravelsModel ptm) {
+	private boolean falg;
+	
+	public ReleaseListAdapter(Context context, List<TravelsinformationModel> list, PublishTravelsModel ptm, boolean falg) {
 
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		this.list = list;
 		this.ptm = ptm;
 		bitmapUtils = new BitmapUtils(context);
+		this.falg = falg;
 
 	}
 
@@ -107,7 +111,15 @@ public class ReleaseListAdapter extends BaseAdapter{
 		//Bitmap bm = SystemUtil.compressImage(bm1, 200);
 		//Bitmap bm = SystemUtil.ratio(bm1);
 		//holder.photoImg.setImageBitmap(bm);
-		bitmapUtils.display(holder.photoImg, list.get(position).getArticleImage());
+		if(!falg){
+			bitmapUtils.display(holder.photoImg, list.get(position).getArticleImage());
+		}else{
+			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+list.get(position).getArticleImage().split("@")[0]).into(holder.photoImg);
+		}
+		holder.contentEdit.setText(list.get(position).getMemo());
+		holder.legendEdit.setText(list.get(position).getImageMemo());
+		holder.locationTxt.setText(list.get(position).getAddress());
+		
 		holder.locationImg.setOnClickListener(new OnClickListener() {
 			
 			@Override

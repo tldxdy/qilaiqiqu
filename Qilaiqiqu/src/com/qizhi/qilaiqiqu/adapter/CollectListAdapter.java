@@ -74,9 +74,11 @@ public class CollectListAdapter extends BaseAdapter {
 		holder.timeTxt.setText(list.get(position).getCreateDate().subSequence(0, 10));
 		holder.titleTxt.setText(list.get(position).getTitle());
 		holder.numberTxt.setText(list.get(position).getScanNum()+"次浏览");
-		SystemUtil.loadImagexutils(list.get(position).getUserImage(), holder.photoImg, context);
+		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.photoImg, context);
+		//SystemUtil.loadImagexutils(list.get(position).getUserImage(), holder.photoImg, context);
 		//holder.photoImg.setImageResource(R.drawable.lena);
-		SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
+		SystemUtil.Imagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
+		//SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
 		//holder.pictureImg.setBackgroundResource(R.drawable.demo2);
 		return view;
 	}

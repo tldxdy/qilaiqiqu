@@ -246,6 +246,24 @@ public class ArticleModel {
 		this.rewardIntegral = rewardIntegral;
 	}
 
+	@Override
+	public String toString() {
+		return "ArticleModel [articleId=" + articleId + ", title=" + title
+				+ ", createDate=" + createDate + ", scanNum=" + scanNum
+				+ ", defaultShowImage=" + defaultShowImage + ", userImage="
+				+ userImage + ", userId=" + userId + ", praiseNum=" + praiseNum
+				+ ", updateDate=" + updateDate + ", updateTimes=" + updateTimes
+				+ ", memo=" + memo + ", articleImage=" + articleImage
+				+ ", virtualPraise=" + virtualPraise + ", virtualScan="
+				+ virtualScan + ", imageMemo=" + imageMemo + ", commentList="
+				+ commentList + ", articleShareList=" + articleShareList
+				+ ", bannerList=" + bannerList + ", commentNum=" + commentNum
+				+ ", integralNum=" + integralNum + ", address=" + address
+				+ ", location=" + location + ", state=" + state + ", userName="
+				+ userName + ", isPraised=" + isPraised + ", rewardIntegral="
+				+ rewardIntegral + "]";
+	}
+
 	
 	
 	

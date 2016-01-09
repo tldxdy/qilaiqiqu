@@ -113,9 +113,13 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 			holder.locationTxt.setText(sss[position]);
 		}
 
-		SystemUtil.loadImagexutils(
+		SystemUtil.Imagexutils(
 				list.get(position).getArticleImage().split("\\|")[position]
 						.split("@")[0], holder.pictureImg, context);
+		
+		/*SystemUtil.loadImagexutils(
+				list.get(position).getArticleImage().split("\\|")[position]
+						.split("@")[0], holder.pictureImg, context);*/
 
 
 		return view;

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.lidroid.xutils.BitmapUtils;
+import com.squareup.picasso.Picasso;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -59,6 +61,17 @@ public class SystemUtil {
 		BitmapUtils bitmapUtils = new BitmapUtils(context);
 		bitmapUtils.display(sellersmallimg, "http://weride.oss-cn-hangzhou.aliyuncs.com/"+url);
 	}
+	
+	/**
+	 * 
+	 * @param url	图片路径
+	 * @param sellersmallimg	imageView控件
+	 * @param context		上下文
+	 */
+	public static void Imagexutils(String url, ImageView sellersmallimg,Context context) {
+		Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).into(sellersmallimg);
+	}
+	
 	
 	
 	/**

@@ -49,6 +49,8 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private TextView publishTxt;
 	private TextView titleNumTxt; // 主题字数
 
+	private TextView titleTxt;
+	
 	private ListView releaseList;
 
 	private ImageView releaseAddImg;
@@ -66,7 +68,11 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private XUtilsUtil xUtilsUtil;
 
 	private SharedPreferences sharedPreferences;
-
+	
+	private ArrayList<String> photoList;
+	private boolean falg = false; //判断图片哪里传过来的
+	private int articleId;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,6 +83,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		initEvent();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initView() {
 		list = new ArrayList<TravelsinformationModel>();
 		ptm = new PublishTravelsModel();
@@ -88,21 +95,34 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 
 		browseTxt = (TextView) findViewById(R.id.txt_releaseactivity_browse);
 		publishTxt = (TextView) findViewById(R.id.txt_releaseactivity_publish);
-
+		titleTxt = (TextView) findViewById(R.id.txt_releaseactivity_title);
+		
 		releaseList = (ListView) findViewById(R.id.list_releaseactivity_release);
 		initHeaderView();
 		initFooterView();
-
-		ArrayList<String> photoList = getIntent().getStringArrayListExtra(
-				"photoList");
+		
+		falg = getIntent().getBooleanExtra("falg", false);
+		if(!falg){
+		photoList = getIntent().getStringArrayListExtra("photoList");
+		
 		for (String string : photoList) {
 			TravelsinformationModel rt = new TravelsinformationModel();
 			rt.setArticleImage(string);
 			list.add(rt);
 		}
-		adapter = new ReleaseListAdapter(this, list, ptm);
+		}else{
+			list =(ArrayList<TravelsinformationModel>) getIntent().getSerializableExtra("list");
+			titleEdt.setText(list.get(0).getTitle());
+			titleNumTxt.setText(list.get(0).getTitle().length()  + "/15");
+			browseTxt.setVisibility(View.GONE);
+			articleId = getIntent().getIntExtra("articleId", -1);
+			publishTxt.setText("修改");
+			titleTxt.setText("修改骑游记");
+		}
+		
+		adapter = new ReleaseListAdapter(this, list, ptm, falg);
 		releaseList.setAdapter(adapter);
-
+		
 	}
 
 	private void initHeaderView() {
@@ -136,7 +156,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.layout_releaseactivity_back:
-			ReleaseActivity.this.finish();
+			finish();
 			break;
 		case R.id.txt_releaseactivity_browse:
 			new SystemUtil().makeToast(this, "预览");
@@ -144,7 +164,12 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		case R.id.txt_releaseactivity_publish:
 			new SystemUtil().makeToast(this, "发表");
 			// 图片上传
-			photoUploading();
+			if(!falg){
+				photoUploading();
+			}else{
+				publishTravels();
+			}
+			
 			// 发布
 			// publishTravels();
 
@@ -207,10 +232,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			if (list.get(i).getMemo() != null) {
 				sbMemo.append(list.get(i).getMemo());
 			}
-			sbArticleImage.append(imgListUrl.get(i));
+			if(!falg){
+				sbArticleImage.append(imgListUrl.get(i));
+			}else{
+				sbArticleImage.append(list.get(i).getArticleImage());
+			}
 			if (list.get(i).getImageMemo() != null) {
 				sbImageMemo.append(list.get(i).getImageMemo());
 			}
+			
 			if (list.get(i).getAddress() != null) {
 				sbAddress.append(list.get(i).getAddress());
 			}
@@ -227,6 +257,13 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		ptm.setImageMemo(sbImageMemo.toString());
 		ptm.setAddress(sbAddress.toString());
 		RequestParams params = new RequestParams("UTF-8");
+		String url;
+		if(falg){
+			params.addBodyParameter("articleId", articleId + "");
+			url = "mobile/articleMemo/updateArticle.html";
+		}else{
+			url = "mobile/articleMemo/insertArticle.html";
+		}
 		params.addBodyParameter("userId", sharedPreferences.getInt("userId", 0)
 				+ "");
 		params.addBodyParameter("title", ptm.getTitle());
@@ -236,7 +273,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		params.addBodyParameter("imageMemo", ptm.getImageMemo());
 		params.addBodyParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/articleMemo/insertArticle.html", params,
+		xUtilsUtil.httpPost(url , params,
 				new CallBackPost() {
 
 					@Override

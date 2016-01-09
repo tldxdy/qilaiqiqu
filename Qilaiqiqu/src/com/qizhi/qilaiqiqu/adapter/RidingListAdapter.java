@@ -66,7 +66,8 @@ public class RidingListAdapter extends BaseAdapter{
 		holder.titleTxt.setText(list.get(position).getTitle());
 		holder.numberTxt.setText(list.get(position).getScanNum()+"次浏览");
 		//holder.photoImg.setImageResource(R.drawable.lena);
-		SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
+		SystemUtil.Imagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
+		//SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
 		
 		return view;
 	}

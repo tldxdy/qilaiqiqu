@@ -1,11 +1,14 @@
 package com.qizhi.qilaiqiqu.model;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author 游记信息
  *
  */
-public class TravelsinformationModel {
+public class TravelsinformationModel implements Serializable{
+	private String title;
 	private String memo;		//内容
 	private String articleImage;	//图片
 	private String imageMemo;		//图片描述
@@ -34,10 +37,17 @@ public class TravelsinformationModel {
 	public void setImageMemo(String imageMemo) {
 		this.imageMemo = imageMemo;
 	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
 	@Override
 	public String toString() {
-		return "ReleaseTravels [memo=" + memo + ", articleImage="
-				+ articleImage + ", imageMemo=" + imageMemo + ", address="
-				+ address + "]";
+		return "TravelsinformationModel [title=" + title + ", memo=" + memo
+				+ ", articleImage=" + articleImage + ", imageMemo=" + imageMemo
+				+ ", address=" + address + "]";
 	}
+	
 }
