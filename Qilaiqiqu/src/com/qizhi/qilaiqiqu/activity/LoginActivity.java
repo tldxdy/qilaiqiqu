@@ -2,6 +2,8 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.lang.reflect.Type;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,8 +15,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -22,15 +24,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import cn.jpush.android.api.JPushInterface;
+import android.widget.Toast;
 import cn.jpush.android.api.TagAliasCallback;
 
-import com.easemob.EMCallBack;
-import com.easemob.EMConnectionListener;
-import com.easemob.EMError;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMGroupManager;
-import com.easemob.util.NetUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -53,8 +49,7 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class LoginActivity extends Activity implements OnClickListener,
-		CallBackPost {
+public class LoginActivity extends Activity implements OnClickListener {
 
 	private Button loginBtn;// 登录按钮
 	private Button visitorBtn;// 游客模式
@@ -72,8 +67,6 @@ public class LoginActivity extends Activity implements OnClickListener,
 	private XUtilsUtil httpUtils;
 
 	private IWXAPI api;
-
-	private SharedPreferences sp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,16 +92,6 @@ public class LoginActivity extends Activity implements OnClickListener,
 		qqImg = (ImageView) findViewById(R.id.img_loginactivity_qq);
 		wechatImg = (ImageView) findViewById(R.id.img_loginactivity_wechat);
 		weiboImg = (ImageView) findViewById(R.id.img_loginactivity_weibo);
-
-		sp = getSharedPreferences("userInfo", 0);
-		String name = sp.getString("USER_NAME", "");
-		String pass = sp.getString("USER_PASSWORD", "");
-
-		if (sp.getBoolean("isLogin", false)) {// true为已登录过,false为未曾登录
-			usernameEdt.setText(name);
-			passwordEdt.setText(pass);
-			login();
-		}
 
 	}
 
@@ -202,13 +185,6 @@ public class LoginActivity extends Activity implements OnClickListener,
 								final UserLoginModel userLogin = gson.fromJson(
 										data.toString(), type);
 
-								String imUserName = userLogin.getImUserName();
-
-								// 设置极光推送 用户别名
-								JPushInterface.setAliasAndTags(
-										getApplicationContext(), imUserName,
-										null, mAliasCallback);
-
 								/**
 								 * SharedPreferences存储用户Id和uniqueKey
 								 */
@@ -218,71 +194,20 @@ public class LoginActivity extends Activity implements OnClickListener,
 								editor.putInt("userId", userLogin.getUserId());
 								editor.putString("uniqueKey",
 										userLogin.getUniqueKey());
+								editor.putString("imUserName",
+										userLogin.getImUserName());
+								editor.putString("imPassword",
+										userLogin.getImPassword());
+
 								editor.commit();
 
-								final Editor userInfo_Editor = sp.edit();
-								// 登录环信
-								EMChatManager.getInstance().login(
-										userLogin.getImUserName(),
-										userLogin.getImPassword(),
-										new EMCallBack() {
+								Intent intent = new Intent(LoginActivity.this,
+										MainActivity.class);
+								intent.putExtra("userLogin", userLogin);
+								intent.putExtra("loginFlag", 1);
+								startActivity(intent);
+								LoginActivity.this.finish();
 
-											@Override
-											public void onSuccess() {
-
-												// 发送CID
-												cIdPost(userLogin.getUserId());
-
-												// 保存用户名密码
-												userInfo_Editor.putString(
-														"USER_NAME",
-														usernameEdt.getText()
-																.toString());
-												userInfo_Editor.putString(
-														"USER_PASSWORD",
-														passwordEdt.getText()
-																.toString());
-												userInfo_Editor.putBoolean(
-														"isLogin", true);
-												userInfo_Editor.commit();
-
-												// 更新环信用户昵称
-												EMChatManager
-														.getInstance()
-														.updateCurrentUserNick(
-																usernameEdt
-																		.getText()
-																		.toString());
-
-												EMGroupManager.getInstance()
-														.loadAllGroups();
-												Intent intent = new Intent(
-														LoginActivity.this,
-														MainActivity.class);
-												intent.putExtra("userLogin",
-														userLogin);
-												startActivity(intent);
-												LoginActivity.this.finish();
-
-												Log.d("main", "环信登录成功！");
-												System.out.println("环信登录成功！");
-											}
-
-											@Override
-											public void onProgress(int code,
-													String status) {
-
-											}
-
-											@Override
-											public void onError(int code,
-													String message) {
-												Log.d("main", "环信登录失败！"
-														+ message);
-												System.out.println("环信登录失败！"
-														+ message);
-											}
-										});
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
@@ -300,39 +225,6 @@ public class LoginActivity extends Activity implements OnClickListener,
 				});
 	}
 
-	// 实现ConnectionListener接口
-	private class MyConnectionListener implements EMConnectionListener {
-		@Override
-		public void onConnected() {
-			new SystemUtil().makeToast(LoginActivity.this, "已连接到服务器");
-		}
-
-		@Override
-		public void onDisconnected(final int error) {
-			runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					if (error == EMError.USER_REMOVED) {
-						new SystemUtil().makeToast(LoginActivity.this,
-								"显示帐号已经被移除");
-					} else if (error == EMError.CONNECTION_CONFLICT) {
-						new SystemUtil().makeToast(LoginActivity.this,
-								"显示帐号在其他设备登陆");
-					} else {
-						if (NetUtils.hasNetwork(LoginActivity.this)) {
-							new SystemUtil().makeToast(LoginActivity.this,
-									"连接不到聊天服务器");
-						} else {
-							new SystemUtil().makeToast(LoginActivity.this,
-									"当前网络不可用，请检查网络设置");
-						}
-					}
-				}
-			});
-		}
-	}
-
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -343,36 +235,6 @@ public class LoginActivity extends Activity implements OnClickListener,
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-	}
-
-	/**
-	 * 向服务器提交设备ID
-	 */
-	public void cIdPost(int USER_ID) {
-		// 注册设备码
-		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		String DEVICE_ID = tm.getDeviceId();
-
-		String url = "common/saveToken.html";
-
-		RequestParams params = new RequestParams("UTF-8");
-		params.addBodyParameter("userId", USER_ID + "");
-		params.addBodyParameter("pushToken", DEVICE_ID);
-		params.addBodyParameter("adviceType", "ANDROID");
-
-		new XUtilsUtil().httpPost(url, params, LoginActivity.this);
-	}
-
-	@Override
-	public void onMySuccess(ResponseInfo<String> responseInfo) {
-		System.out.println("登录界面向服务器提交CID成功!" + responseInfo.result);
-		Log.i("qilaiqiqu", "登录界面向服务器提交CID成功!" + responseInfo.result);
-	}
-
-	@Override
-	public void onMyFailure(HttpException error, String msg) {
-		System.out.println("登录界面向服务器提交CID出错:" + msg + "!");
-		Log.i("qilaiqiqu", "登录界面向服务器提交CID出错:" + msg + "!");
 	}
 
 	private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
@@ -399,5 +261,41 @@ public class LoginActivity extends Activity implements OnClickListener,
 		}
 
 	};
+
+	/**
+	 * 菜单、返回键响应
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			exitBy2Click(); // 调用双击退出函数
+		}
+		return false;
+	}
+
+	/**
+	 * 双击退出函数
+	 */
+	private static Boolean isExit = false;
+
+	private void exitBy2Click() {
+		Timer tExit = null;
+		if (isExit == false) {
+			isExit = true; // 准备退出
+			Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+			tExit = new Timer();
+			tExit.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					isExit = false; // 取消退出
+				}
+			}, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+
+		} else {
+			finish();
+			System.exit(0);
+		}
+	}
 
 }

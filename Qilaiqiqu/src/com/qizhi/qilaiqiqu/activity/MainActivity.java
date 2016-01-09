@@ -3,6 +3,7 @@ package com.qizhi.qilaiqiqu.activity;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,21 +18,27 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
 
 import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.util.NetUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -49,11 +56,12 @@ import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
 import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
-import com.qizhi.qilaiqiqu.model.UserLoginModel;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
+import com.qizhi.qilaiqiqu.utils.SplashView;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 
@@ -61,7 +69,10 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
  * 
  */
 public class MainActivity extends FragmentActivity implements OnClickListener,
-		OnOpenListener, OnCloseListener, OnItemClickListener {
+		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost {
+
+	private SplashView splashView;
+	private FrameLayout frameLayout;
 
 	private ImageView photoImg;
 	private ImageView searchImg;
@@ -74,8 +85,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private SlidingMenu menu;
 
 	private List<ArticleModel> list;
-
-	private UserLoginModel userLogin = null;
 
 	private XUtilsUtil xUtilsUtil;
 
@@ -93,15 +102,22 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_main);
+		View view = LayoutInflater.from(this).inflate(R.layout.activity_main,
+				null);
+		loginFlag = getIntent().getIntExtra("loginFlag", -1);
+		if (loginFlag == 1) {
+			frameLayout = new FrameLayout(this);
+			frameLayout.addView(view);
+			splashView = new SplashView(this);
+			frameLayout.addView(splashView);
+			setContentView(frameLayout);
+		}
 
 		initView();
 		initLeft();
 		initEvent();
 		imageUrl();
-		
-		//注册一个监听连接状态的listener
-		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
+
 	}
 
 	@SuppressWarnings("deprecation")
@@ -119,8 +135,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 		xUtilsUtil = new XUtilsUtil();
 		list = new ArrayList<ArticleModel>();
-		userLogin = (UserLoginModel) getIntent().getSerializableExtra(
-				"userLogin");
 
 	}
 
@@ -144,7 +158,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			new SystemUtil().makeToast(MainActivity.this, "点击搜索");
 			break;
 		case R.id.img_mainActivity_add_photo:
-			if (userLogin != null) {
+			if (preferences.getInt("userId", -1) != -1) {
 				Intent intent = new Intent(this, NativeImagesActivity.class);
 				intent.putExtra("falg", false);
 				startActivity(intent);
@@ -203,9 +217,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	protected void onStart() {
-		if(preferences.getInt("userId", -1) != -1){
+		if (preferences.getInt("userId", -1) != -1) {
+
+			loginHuanXin();
+
 			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
+			params.addBodyParameter("userId", preferences.getInt("userId", -1)
+					+ "");
 			xUtilsUtil.httpPost("common/queryCertainUser.html", params,
 					new CallBackPost() {
 
@@ -265,6 +283,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							slideShowList.setAdapter(adapter);
 							slideShowList
 									.setOnItemClickListener(MainActivity.this);
+							if(loginFlag == 1){
+								splashView.splashAndDisappear();
+								loginFlag = 0;
+							}
+							
 						}
 					}
 
@@ -385,18 +408,22 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				public void run() {
 					if (error == EMError.USER_REMOVED) {
 						// 显示帐号已经被移除
-						new SystemUtil().makeToast(MainActivity.this, "帐号已经被移除");
+						new SystemUtil()
+								.makeToast(MainActivity.this, "帐号已经被移除");
 					} else if (error == EMError.CONNECTION_CONFLICT) {
 						// 显示帐号在其他设备登陆
-						new SystemUtil().makeToast(MainActivity.this, "帐号在其他设备登陆,请重新登录");
+						new SystemUtil().makeToast(MainActivity.this,
+								"帐号在其他设备登陆,请重新登录");
 						logOut();
 					} else {
 						if (NetUtils.hasNetwork(MainActivity.this)) {
 							// 连接不到聊天服务器
-							new SystemUtil().makeToast(MainActivity.this, "连接不到聊天服务器");
+							new SystemUtil().makeToast(MainActivity.this,
+									"连接不到聊天服务器");
 						} else {
 							// 当前网络不可用，请检查网络设置
-							new SystemUtil().makeToast(MainActivity.this, "当前网络不可用，请检查网络设置");
+							new SystemUtil().makeToast(MainActivity.this,
+									"当前网络不可用，请检查网络设置");
 						}
 					}
 				}
@@ -412,6 +439,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				Log.d("LOGOUT", "环信登出成功!");
 				System.err.println("环信登出成功!");
 
+				// 设置极光推送 用户别名
+				JPushInterface.setAliasAndTags(getApplicationContext(), "",
+						null, mAliasCallback);
+
 				/**
 				 * SharedPreferences清空用户Id和uniqueKey
 				 */
@@ -420,6 +451,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				Editor editor = sharedPreferences.edit();// 获取编辑器
 				editor.putInt("userId", -1);
 				editor.putString("uniqueKey", null);
+				editor.putString("imUserName", null);
+				editor.putString("imPassword", null);
 				editor.commit();
 
 				SharedPreferences sp = getSharedPreferences("userInfo",
@@ -444,5 +477,140 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			}
 		});
 	}
+
+	private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
+
+		@Override
+		public void gotResult(int code, String alias, Set<String> tags) {
+			String logs;
+			switch (code) {
+			case 0:
+				logs = "Set tag and alias success";
+				Log.i("JPush", logs);
+				break;
+
+			case 6002:
+				logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
+				Log.i("JPush", logs);
+				break;
+
+			default:
+				logs = "Failed with errorCode = " + code;
+				Log.e("JPush", logs);
+			}
+
+		}
+
+	};
+	private int loginFlag;
+
+	/**
+	 * 向服务器提交设备ID
+	 */
+	public void cIdPost(int USER_ID) {
+		// 注册设备码
+		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		String DEVICE_ID = tm.getDeviceId();
+
+		String url = "common/saveToken.html";
+
+		RequestParams params = new RequestParams("UTF-8");
+		params.addBodyParameter("userId", USER_ID + "");
+		params.addBodyParameter("pushToken", DEVICE_ID);
+		params.addBodyParameter("adviceType", "ANDROID");
+
+		new XUtilsUtil().httpPost(url, params, MainActivity.this);
+	}
+
+	private void loginHuanXin() {
+
+		// 设置极光推送 用户别名
+		JPushInterface
+				.setAliasAndTags(getApplicationContext(),
+						preferences.getString("imUserName", null), null,
+						mAliasCallback);
+
+		// final Editor userInfo_Editor = sp.edit();
+		// 登录环信
+		EMChatManager.getInstance().login(
+				preferences.getString("imUserName", null),
+				preferences.getString("imPassword", null), new EMCallBack() {
+
+					@Override
+					public void onSuccess() {
+
+						// 发送CID
+						cIdPost(preferences.getInt("userId", -1));
+
+						// // 保存用户名密码
+						// userInfo_Editor.putString(
+						// "USER_NAME",
+						// usernameEdt.getText()
+						// .toString());
+						// userInfo_Editor.putString(
+						// "USER_PASSWORD",
+						// passwordEdt.getText()
+						// .toString());
+						// userInfo_Editor.putBoolean(
+						// "isLogin", true);
+						// userInfo_Editor.commit();
+
+						// 更新环信用户昵称
+						// EMChatManager
+						// .getInstance()
+						// .updateCurrentUserNick(
+						// usernameEdt
+						// .getText()
+						// .toString());
+
+						EMGroupManager.getInstance().loadAllGroups();
+
+						Log.d("main", "环信登录成功！");
+						System.out.println("环信登录成功！");
+
+						// 注册一个监听连接状态的listener
+						EMChatManager.getInstance().addConnectionListener(
+								new MyConnectionListener());
+
+					}
+
+					@Override
+					public void onProgress(int code, String status) {
+
+					}
+
+					@Override
+					public void onError(int code, String message) {
+						Log.d("main", "环信登录失败！" + message);
+						System.out.println("环信登录失败！" + message);
+					}
+				});
+	}
+
+	@Override
+	public void onMySuccess(ResponseInfo<String> responseInfo) {
+		System.out.println("主页向服务器提交CID成功!" + responseInfo.result);
+		Log.i("qilaiqiqu", "主页向服务器提交CID成功!" + responseInfo.result);
+	}
+
+	@Override
+	public void onMyFailure(HttpException error, String msg) {
+		System.out.println("主页向服务器提交CID出错:" + msg + "!");
+		Log.i("qilaiqiqu", "主页向服务器提交CID出错:" + msg + "!");
+	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		
+	}
+
 }

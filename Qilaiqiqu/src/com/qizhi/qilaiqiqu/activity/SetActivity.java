@@ -1,5 +1,7 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.util.Set;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,11 +14,16 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.DataCleanManager;
+import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView;
+import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView.OnSwitchChangedListener;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -31,12 +38,16 @@ public class SetActivity extends Activity implements OnClickListener {
 	private LinearLayout opintionLayout;
 	private LinearLayout introduceLayout;
 	private LinearLayout clearCacheLayout;
-	
+
+	private PushSlideSwitchView view1;
+	private PushSlideSwitchView view2;
+	private PushSlideSwitchView view3;
+
 	private int logoutFlag = 1;// 为1未登录,为2已登录
 
 	private TextView logoutTxt;
-	private TextView cacheTxt; 
-	
+	private TextView cacheTxt;
+
 	DataCleanManager cleanManager;
 
 	@Override
@@ -51,42 +62,73 @@ public class SetActivity extends Activity implements OnClickListener {
 		} else {
 			logoutFlag = 2;
 		}
-		
+
 		initView();
 		initEvent();
 
 	}
 
 	private void initView() {
+		view1 = (PushSlideSwitchView) findViewById(R.id.push_set_warm_switchview1);
+		view2 = (PushSlideSwitchView) findViewById(R.id.push_set_warm_switchview2);
+		view3 = (PushSlideSwitchView) findViewById(R.id.push_set_warm_switchview3);
+
 		cacheTxt = (TextView) findViewById(R.id.txt_setActivity_cache);
 		logoutTxt = (TextView) findViewById(R.id.txt_setActivity_logout);
 		backLayout = (LinearLayout) findViewById(R.id.layout_setActivity_back);
 		opintionLayout = (LinearLayout) findViewById(R.id.layout_setActivity_opintion);
 		introduceLayout = (LinearLayout) findViewById(R.id.layout_setActivity_introduce);
 		clearCacheLayout = (LinearLayout) findViewById(R.id.layout_setActivity_clearCache);
-		
+
 	}
 
 	private void initEvent() {
-		if(logoutFlag == 2){
+		if (logoutFlag == 2) {
 			logoutTxt.setVisibility(View.VISIBLE);
 			opintionLayout.setVisibility(View.VISIBLE);
-		}else{
+		} else {
 			logoutTxt.setVisibility(View.GONE);
 			opintionLayout.setVisibility(View.GONE);
 		}
 		try {
 			cacheTxt.setText(cleanManager.getTotalCacheSize(SetActivity.this));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		logoutTxt.setOnClickListener(this);
 		backLayout.setOnClickListener(this);
 		opintionLayout.setOnClickListener(this);
 		introduceLayout.setOnClickListener(this);
 		clearCacheLayout.setOnClickListener(this);
+
+		view1.setOnChangeListener(new OnSwitchChangedListener() {
+
+			@Override
+			public void onSwitchChange(PushSlideSwitchView switchView,
+					boolean isChecked) {
+				new SystemUtil().makeToast(SetActivity.this, "滑动开关1:"
+						+ isChecked);
+			}
+		});
+		view2.setOnChangeListener(new OnSwitchChangedListener() {
+
+			@Override
+			public void onSwitchChange(PushSlideSwitchView switchView,
+					boolean isChecked) {
+				new SystemUtil().makeToast(SetActivity.this, "滑动开关2:"
+						+ isChecked);
+			}
+		});
+		view3.setOnChangeListener(new OnSwitchChangedListener() {
+
+			@Override
+			public void onSwitchChange(PushSlideSwitchView switchView,
+					boolean isChecked) {
+				new SystemUtil().makeToast(SetActivity.this, "滑动开关3:"
+						+ isChecked);
+			}
+		});
 	}
 
 	@Override
@@ -111,24 +153,22 @@ public class SetActivity extends Activity implements OnClickListener {
 		case R.id.layout_setActivity_clearCache:
 			clearCache();
 			break;
-			
+
 		default:
 			break;
 		}
 	}
 
-	
 	private void clearCache() {
 		cleanManager.clearAllCache(SetActivity.this);
 		try {
 			cacheTxt.setText(cleanManager.getTotalCacheSize(SetActivity.this));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	private void logOut() {
 		EMChatManager.getInstance().logout(new EMCallBack() {
 
@@ -136,6 +176,10 @@ public class SetActivity extends Activity implements OnClickListener {
 			public void onSuccess() {
 				Log.d("LOGOUT", "环信登出成功!");
 				System.err.println("环信登出成功!");
+
+				// 设置极光推送 用户别名
+				JPushInterface.setAliasAndTags(getApplicationContext(), "",
+						null, mAliasCallback);
 
 				/**
 				 * SharedPreferences清空用户Id和uniqueKey
@@ -145,6 +189,8 @@ public class SetActivity extends Activity implements OnClickListener {
 				Editor editor = sharedPreferences.edit();// 获取编辑器
 				editor.putInt("userId", -1);
 				editor.putString("uniqueKey", null);
+				editor.putString("imUserName", null);
+				editor.putString("imPassword", null);
 				editor.commit();
 
 				SharedPreferences sp = getSharedPreferences("userInfo",
@@ -154,7 +200,6 @@ public class SetActivity extends Activity implements OnClickListener {
 				userInfo_Editor.commit();
 
 				SetActivity.this.finish();
-				startActivity(new Intent(SetActivity.this, MainActivity.class));
 			}
 
 			@Override
@@ -169,7 +214,32 @@ public class SetActivity extends Activity implements OnClickListener {
 			}
 		});
 	}
-	
+
+	private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
+
+		@Override
+		public void gotResult(int code, String alias, Set<String> tags) {
+			String logs;
+			switch (code) {
+			case 0:
+				logs = "Set tag and alias success";
+				Log.i("JPush", logs);
+				break;
+
+			case 6002:
+				logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
+				Log.i("JPush", logs);
+				break;
+
+			default:
+				logs = "Failed with errorCode = " + code;
+				Log.e("JPush", logs);
+			}
+
+		}
+
+	};
+
 	@Override
 	protected void onResume() {
 		super.onResume();

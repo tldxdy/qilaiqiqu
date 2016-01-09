@@ -72,11 +72,13 @@
             android:layout_weight="1"
             android:text="获取记录位置信息" />
 
-        <com.qizhi.qilaiqiqu.utils.SlideSwitchUtil
-            android:id="@+id/wiperSwitch1"
+        <com.qizhi.qilaiqiqu.utils.PushSlideSwitchView
+            android:id="@+id/push_set_warm_switchview1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp" />
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:enabled="true" />
     </LinearLayout>
 
     <LinearLayout
@@ -101,11 +103,13 @@
             android:layout_weight="1"
             android:text="退出仍接受系统消息" />
 
-        <com.qizhi.qilaiqiqu.utils.SlideSwitchUtil
-            android:layout_width="62dp"
-            android:layout_height="28dp"
-            android:layout_gravity=""
-            android:layout_marginRight="5dp" />
+        <com.qizhi.qilaiqiqu.utils.PushSlideSwitchView
+            android:id="@+id/push_set_warm_switchview2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:enabled="true" />
     </LinearLayout>
 
     <LinearLayout
@@ -130,10 +134,13 @@
             android:layout_weight="1"
             android:text="WIFI状态下自动更新" />
 
-        <com.qizhi.qilaiqiqu.utils.SlideSwitchUtil
+        <com.qizhi.qilaiqiqu.utils.PushSlideSwitchView
+            android:id="@+id/push_set_warm_switchview3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp" />
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:enabled="true" />
     </LinearLayout>
 
     <LinearLayout
@@ -143,9 +150,9 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_setActivity_clearCache"
         android:layout_width="fill_parent"
         android:layout_height="42dp"
-        android:id="@+id/layout_setActivity_clearCache"
         android:background="@drawable/in_out_layout_menuleftfragment"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
@@ -172,7 +179,6 @@
         android:layout_height="1dp"
         android:background="#f7f7f8" >
     </LinearLayout>
-
 
     <TextView
         android:layout_width="fill_parent"
@@ -274,7 +280,7 @@
     </LinearLayout>
 
     <TextView
-		android:id="@+id/txt_setActivity_logout"
+        android:id="@+id/txt_setActivity_logout"
         android:layout_width="300dp"
         android:layout_height="44dp"
         android:layout_gravity="center_horizontal"
