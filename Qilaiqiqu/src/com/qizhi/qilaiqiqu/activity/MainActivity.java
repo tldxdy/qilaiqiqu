@@ -293,8 +293,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil().makeToast(MainActivity.this, "请求失败"
-								+ error + ":" + msg);
+						new SystemUtil().makeToast(MainActivity.this, "网络请求失败，请检查网络");
 					}
 				});
 
