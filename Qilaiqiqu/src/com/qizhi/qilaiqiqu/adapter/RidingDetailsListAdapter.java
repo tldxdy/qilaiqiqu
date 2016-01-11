@@ -2,6 +2,7 @@ package com.qizhi.qilaiqiqu.adapter;
 
 import java.util.List;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import android.content.Context;
@@ -29,7 +30,7 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return list.size();
+		return list.size() + 1;
 	}
 
 	@Override
@@ -44,7 +45,24 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View view, ViewGroup arg2) {
+		System.out.println("--------------------------------");
+		System.out.println(list.size());
+		System.out.println("--------------------------------");
 		holder = new ViewHolder();
+		if(position == 0){
+			view = inflater.inflate(R.layout.item_list_riding_details_header,
+					null);
+			ImageView photoImg = (ImageView) view.findViewById(R.id.img_ridingDetailsList_photo);
+			TextView title = (TextView) view.findViewById(R.id.txt_ridingDetailsList_ridingName);
+			
+			SystemUtil.Imagexutils(list.get(position).getUserImage(), photoImg, context);
+			title.setText(list.get(position).getTitle());
+			
+			return view;
+		}
+		
+		
+		
 
 		if (view == null || view.getTag() == null) {
 
@@ -83,38 +101,38 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 		holder.locationLayout.setVisibility(View.GONE);
 		holder.cornerImg.setVisibility(View.GONE);
 
-		String[] s = list.get(position).getImageMemo().split("\\|");
-		String[] ss = list.get(position).getMemo().split("\\|");
-		String[] sss = list.get(position).getAddress().split("\\|");
-		if (position < ss.length) {
-			if (!"".equals(ss[position].trim())) {
-				if(!"null".equals(ss[position].trim())){
+		String[] s = list.get(position-1).getImageMemo().split("\\|");
+		String[] ss = list.get(position-1).getMemo().split("\\|");
+		String[] sss = list.get(position-1).getAddress().split("\\|");
+		if (position-1 < ss.length) {
+			if (!"".equals(ss[position-1].trim())) {
+				if(!"null".equals(ss[position-1].trim())){
 					holder.ridingTitleLayout.setVisibility(View.VISIBLE);
 				}
 			}
-			holder.ridingTitleTxt.setText(" \u3000" + ss[position]);
+			holder.ridingTitleTxt.setText(" \u3000" + ss[position-1]);
 		}
-		if (position < s.length) {
-			if (!"".equals(s[position].trim())) {
-				if(!"null".equals(s[position].trim())){
+		if (position-1 < s.length) {
+			if (!"".equals(s[position-1].trim())) {
+				if(!"null".equals(s[position-1].trim())){
 					holder.ridingContentLayout.setVisibility(View.VISIBLE);
 				}
 			}
-			holder.ridingContentTxt.setText(" \u3000" + s[position]);
+			holder.ridingContentTxt.setText(" \u3000" + s[position-1]);
 
 		}
-		if (position < sss.length) {
-			if (!"".equals(sss[position].trim())) {
-				if(!"null".equals(sss[position].trim())){
+		if (position-1 < sss.length) {
+			if (!"".equals(sss[position-1].trim())) {
+				if(!"null".equals(sss[position-1].trim())){
 					holder.locationLayout.setVisibility(View.VISIBLE);
 					holder.cornerImg.setVisibility(View.VISIBLE);
 				}
 			}
-			holder.locationTxt.setText(sss[position]);
+			holder.locationTxt.setText(sss[position-1]);
 		}
 
 		SystemUtil.Imagexutils(
-				list.get(position).getArticleImage().split("\\|")[position]
+				list.get(position-1).getArticleImage().split("\\|")[position-1]
 						.split("@")[0], holder.pictureImg, context);
 		
 		/*SystemUtil.loadImagexutils(

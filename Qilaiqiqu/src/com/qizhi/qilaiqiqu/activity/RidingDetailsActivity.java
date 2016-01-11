@@ -12,8 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -62,9 +60,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 	private ImageView shareImg;
 	private ImageView cllectionImg;
 
-	private ImageView photoImg;
 	
-	private TextView title;
 	private TextView likeTxt;
 	private TextView revamTxt;
 	
@@ -110,6 +106,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 	
 	private boolean isMe = false;
 	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -117,8 +114,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 		setContentView(R.layout.activity_riding_details);
 		initView();
 		initEvent();
-		addHeader();
-		uoloadData();
 	}
 
 	private void initView() {
@@ -279,7 +274,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 					if(preferences.getInt("userId", -1) == -1){
 						new SystemUtil().makeToast(RidingDetailsActivity.this, "请登录");
 						startActivity(new Intent(RidingDetailsActivity.this, LoginActivity.class));
-						finish();
 					}
 				}
 			}
@@ -592,7 +586,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 		}else{
 			new SystemUtil().makeToast(this, "请登录");
 			startActivity(new Intent(this, LoginActivity.class));
-			finish();
 		}
 		
 	}
@@ -628,10 +621,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 
 	@Override
 	protected void onStart() {
-		
+		uoloadData();
 		super.onStart();
 	}
-
+	
 	private void uoloadData() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("articleId", articleId + "");
@@ -657,6 +650,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 					articleModel = aDetailModel.getArticleMemo();
 					
 					String[] articleImagess = articleModel.getArticleImage().split("\\|");
+					list.removeAll(list);
 					for (int i = 0; i < articleImagess.length; i++) {
 						list.add(articleModel);
 					}
@@ -669,16 +663,12 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 						likeImg.setImageResource(R.drawable.like_chosen);
 						cllectionLike = 2;
 					}
-					
-					
-					
-					SystemUtil.loadImagexutils(articleModel.getUserImage(), photoImg, RidingDetailsActivity.this);
-					title.setText(articleModel.getTitle());
 					likeTxt.setText(articleModel.getPraiseNum() + articleModel.getVirtualPraise()+ "");
 					
 					adapter = new RidingDetailsListAdapter(RidingDetailsActivity.this, list);
 					ridingList.setAdapter(adapter);
 					ridingList.setDividerHeight(0);
+					
 					
 				}
 			}
@@ -688,18 +678,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 			}
 		});
 	}
-	
-	public void addHeader(){
-		LinearLayout  hearderViewLayout = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_list_riding_details_header, null);
-		
-		photoImg = (ImageView) hearderViewLayout.findViewById(R.id.img_ridingDetailsList_photo);
-		title = (TextView) hearderViewLayout.findViewById(R.id.txt_ridingDetailsList_ridingName);
-		
-		ridingList.addHeaderView(hearderViewLayout);
-	}
-
-	
-	
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
 		String s = responseInfo.result;
@@ -720,7 +698,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener, 
 		}else{
 			new SystemUtil().makeToast(this, "请登录");
 			startActivity(new Intent(this, LoginActivity.class));
-			finish();
 		}
 	}
 

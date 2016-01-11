@@ -104,10 +104,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		View view = LayoutInflater.from(this).inflate(R.layout.activity_main,
 				null);
+		frameLayout = new FrameLayout(this);
+		splashView = new SplashView(this);
 		loginFlag = getIntent().getIntExtra("loginFlag", -1);
 		if (loginFlag == 1) {
-			frameLayout = new FrameLayout(this);
-			splashView = new SplashView(this);
 			frameLayout.addView(view);
 			frameLayout.addView(splashView);
 			setContentView(frameLayout);
@@ -217,6 +217,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	protected void onStart() {
+		photoImg.setImageResource(R.drawable.homepage_picture);
 		if (preferences.getInt("userId", -1) != -1) {
 
 			loginHuanXin();

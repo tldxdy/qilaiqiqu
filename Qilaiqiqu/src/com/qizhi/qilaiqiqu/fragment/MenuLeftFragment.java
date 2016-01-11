@@ -277,6 +277,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		} else {
 			userMemoTxt.setText("");
 			userNameTxt.setText("游客");
+			userImageImg.setImageResource(R.drawable.homepage_picture);
 			//系统统计数
 			informationNumTxt.setVisibility(View.GONE);
 		}

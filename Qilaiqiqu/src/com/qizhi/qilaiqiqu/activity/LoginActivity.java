@@ -118,7 +118,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 		case R.id.btn_loginActivity_visitor:
 			//new SystemUtil().makeToast(this, "游客模式");
-			startActivity(new Intent(LoginActivity.this, MainActivity.class).putExtra("loginFlag", 1));
+			//startActivity(new Intent(LoginActivity.this, MainActivity.class).putExtra("loginFlag", 2));
 			finish();
 			break;
 
@@ -199,15 +199,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 										userLogin.getImUserName());
 								editor.putString("imPassword",
 										userLogin.getImPassword());
-
+								editor.putInt("loginFlag", 1 );
 								editor.commit();
-
-								Intent intent = new Intent(LoginActivity.this,
-										MainActivity.class);
-								intent.putExtra("userLogin", userLogin);
-								intent.putExtra("loginFlag", 1);
-								startActivity(intent);
-								LoginActivity.this.finish();
+								finish();
 
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -263,9 +257,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	};
 
-	/**
+/*	*//**
 	 * 菜单、返回键响应
-	 */
+	 *//*
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
@@ -275,9 +269,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 		return false;
 	}
 
-	/**
+	*//**
 	 * 双击退出函数
-	 */
+	 *//*
 	private static Boolean isExit = false;
 
 	private void exitBy2Click() {
@@ -298,5 +292,5 @@ public class LoginActivity extends Activity implements OnClickListener {
 			System.exit(0);
 		}
 	}
-
+*/
 }
