@@ -6,17 +6,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
@@ -30,11 +29,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
-
 import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
@@ -58,6 +55,8 @@ import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
+import com.qizhi.qilaiqiqu.utils.ListViewUtil;
+import com.qizhi.qilaiqiqu.utils.ListViewUtil.OnRefreshListener;
 import com.qizhi.qilaiqiqu.utils.SplashView;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -70,7 +69,7 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 public class MainActivity extends FragmentActivity implements OnClickListener,
-		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost {
+		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost, OnRefreshListener {
 
 	private SplashView splashView;
 	private FrameLayout frameLayout;
@@ -79,7 +78,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private ImageView searchImg;
 	private ImageView addImg;
 
-	private ListView slideShowList;
+	private ListViewUtil slideShowList;
 
 	private SlideShowListAdapter adapter;
 
@@ -98,17 +97,17 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private SharedPreferences preferences;
 
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		View view = LayoutInflater.from(this).inflate(R.layout.activity_main,
 				null);
-		frameLayout = new FrameLayout(this);
-		splashView = new SplashView(this);
 		loginFlag = getIntent().getIntExtra("loginFlag", -1);
 		if (loginFlag == 1) {
+			frameLayout = new FrameLayout(this);
+			splashView = new SplashView(this);
 			frameLayout.addView(view);
 			frameLayout.addView(splashView);
 			setContentView(frameLayout);
@@ -129,7 +128,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		searchImg = (ImageView) findViewById(R.id.img_mainActivity_search_photo);
 		addImg = (ImageView) findViewById(R.id.img_mainActivity_add_photo);
 
-		slideShowList = (ListView) findViewById(R.id.list_mainActivity_slideShow);
+		slideShowList = (ListViewUtil) findViewById(R.id.list_mainActivity_slideShow);
 
 		addImg.setAlpha(204); // 透明度
 		searchImg.setAlpha(204); // 透明度
@@ -168,7 +167,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 				Intent intent = new Intent(this, LoginActivity.class);
 				startActivity(intent);
-				finish();
+				//finish();
 			}
 			// Toast.makeText(this, "点击添加", 0).show();
 			break;
@@ -253,7 +252,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						}
 					});
 		}
+		data();
+
+		super.onStart();
+	}
+
+	private void data() {
 		RequestParams params = new RequestParams("UTF-8");
+		pageIndex = 1;
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize", "10");
 		params.addBodyParameter("uniqueKey",
@@ -271,6 +277,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
+							pageIndex = jsonObject.optInt("pageIndex");
+							
 							JSONArray jsonArray = jsonObject
 									.optJSONArray("dataList");
 							// 数据获取
@@ -284,38 +292,24 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							slideShowList.setAdapter(adapter);
 							slideShowList
 									.setOnItemClickListener(MainActivity.this);
+							slideShowList.setOnRefreshListener(MainActivity.this);
 							if(loginFlag == 1){
 								splashView.splashAndDisappear();
 								loginFlag = 0;
 							}
+							//更新UI
+							adapter.notifyDataSetChanged();
 							
+							slideShowList.completeRefresh();
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
 						new SystemUtil().makeToast(MainActivity.this, "网络请求失败，请检查网络");
-						startLoad();
 					}
 				});
-
-		super.onStart();
 	}
-	
-	private Handler handler = new Handler();
-	private void startLoad() {
-		handler.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				if(loginFlag == 1){
-					splashView.splashAndDisappear();
-					loginFlag = 0;
-				}
-			}
-		}, 2000);// ��ʱʱ�䣬��λ����
-	}
-	
 
 	public void imageUrl() {
 		HttpUtils http = new HttpUtils();
@@ -365,10 +359,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
-		if (position != 0) {
+		if (position != 0 && pageIndex < list.size() + 2) {
 			Intent intent = new Intent(this, RidingDetailsActivity.class);
 			intent.putExtra("isMe", false);
-			intent.putExtra("articleId", list.get(position - 1).getArticleId());
+			intent.putExtra("articleId", list.get(position - 2).getArticleId());
 			startActivity(intent);
 		}
 	}
@@ -629,4 +623,62 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		
 	}
 
+	@Override
+	public void onPullRefresh() {
+		data();
+	}
+
+	@Override
+	public void onLoadingMore() {
+		dataJ();
+	}
+	private void dataJ() {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addBodyParameter("pageIndex", (++pageIndex) + "");
+		params.addBodyParameter("pageSize", "10");
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+		xUtilsUtil.httpPost("common/articleMemoList.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(s);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (jsonObject.optBoolean("result")) {
+							
+							
+							JSONArray jsonArray = jsonObject
+									.optJSONArray("dataList");
+							// 数据获取
+							Gson gson = new Gson();
+							Type type = new TypeToken<List<ArticleModel>>() {
+							}.getType();
+							List<ArticleModel> lists = gson.fromJson(jsonArray.toString(), type);
+							list.addAll(lists);
+							if(lists.size() != 0){
+								pageIndex = jsonObject.optInt("pageIndex");
+								new SystemUtil().makeToast(MainActivity.this, "加载成功");
+							}else{
+								new SystemUtil().makeToast(MainActivity.this, "已显示全部内容");
+							}
+							
+							//更新UI
+							adapter.notifyDataSetChanged();
+							
+							slideShowList.completeRefresh();
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+						new SystemUtil().makeToast(MainActivity.this, "网络请求失败，请检查网络");
+					}
+				});
+	}
 }
