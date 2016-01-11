@@ -16,8 +16,7 @@
             android:id="@+id/img_careFragmentList_photo"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:layout_marginLeft="10dp"
-            android:src="@drawable/lena" />
+            android:layout_marginLeft="10dp" />
 
         <LinearLayout
             android:layout_width="0dp"

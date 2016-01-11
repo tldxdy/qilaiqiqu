@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import com.qizhi.qilaiqiqu.activity.DiscussActivity;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.SystemMessageActivity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -69,7 +70,6 @@ public class MyReceiver extends BroadcastReceiver {
 				value = jsonObject.getString("pushValue");
 				System.out.println("key" + key);
 				if (key.equals("QYJPL")) {
-
 					Intent i = new Intent(context, DiscussActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -77,16 +77,24 @@ public class MyReceiver extends BroadcastReceiver {
 					context.startActivity(i);
 				} else if (key.equals("QYJDZ")) {
 
-					Toast.makeText(context, "DZ", Toast.LENGTH_SHORT).show();
-				
+					Intent i = new Intent(context, SystemMessageActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("value", value);
+					context.startActivity(i);
 				} else if (key.equals("QYJDS")) {
 
-					Toast.makeText(context, "DS", Toast.LENGTH_SHORT).show();
-				
+					Intent i = new Intent(context, SystemMessageActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("value", value);
+					context.startActivity(i);
 				} else if (key.equals("QYJHF")) {
-					
-					Toast.makeText(context, "HF", Toast.LENGTH_SHORT).show();
-				
+					Intent i = new Intent(context, DiscussActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("articleId", Integer.parseInt(value));
+					context.startActivity(i);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

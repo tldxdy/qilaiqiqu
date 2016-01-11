@@ -16,8 +16,7 @@
             android:id="@+id/img_fansFragmentList_photo"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:layout_marginLeft="10dp"
-            android:src="@drawable/lena" />
+            android:layout_marginLeft="10dp" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -45,7 +44,6 @@
                 android:text="我不是一个人在路上"
                 android:textSize="13sp" />
         </LinearLayout>
-
     </LinearLayout>
 
 </LinearLayout>

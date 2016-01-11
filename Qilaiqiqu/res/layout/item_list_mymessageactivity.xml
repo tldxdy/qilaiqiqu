@@ -16,7 +16,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/demo" 
             app:border_width="0dp" 
             app:border_color="@color/light"/>
 

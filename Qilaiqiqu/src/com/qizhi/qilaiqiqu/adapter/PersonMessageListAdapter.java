@@ -79,12 +79,10 @@ public class PersonMessageListAdapter extends BaseAdapter {
 			holder = (viewHolder) view.getTag();
 		}
 		if (flag == 1) {
-			holder.photoImg.setImageResource(R.drawable.demo);
 			holder.messageTypeTxt.setText("消息种类-个人");
 			holder.messageTxt
 					.setText("测试消息.................测试消息测试消息测试消息测试消息测试消息测试消息");
 		} else if (flag == 2) {
-			holder.photoImg.setImageResource(R.drawable.lena);
 			holder.messageTxt.setText("消息种类-系统");
 			holder.messageTxt
 					.setText("测试消息.................测试消息测试消息测试消息测试消息测试消息测试消息");
