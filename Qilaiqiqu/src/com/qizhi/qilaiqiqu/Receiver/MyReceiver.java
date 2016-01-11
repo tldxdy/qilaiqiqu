@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.qizhi.qilaiqiqu.activity.DiscussActivity;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 
 import android.content.BroadcastReceiver;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 import cn.jpush.android.api.JPushInterface;
 
 /**
@@ -23,10 +25,6 @@ public class MyReceiver extends BroadcastReceiver {
 	private static final String TAG = "JPush";
 	private String key;
 	private String value;
-	private String valueTypeQYJ = null;
-	private String valueTypeDZ = null;
-	private String valueTypeDS = null;
-	private String valueTypeHF = null;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -55,40 +53,43 @@ public class MyReceiver extends BroadcastReceiver {
 			int notifactionId = bundle
 					.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
 			Log.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
-			String EXTRA = bundle.getString(JPushInterface.EXTRA_EXTRA);
-			System.out.println("EXTRA"+EXTRA+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			try {
-				JSONObject jsonObject = new JSONObject(EXTRA);
-				key = jsonObject.getString("key");
-				if (key.equals("QYJ")) {
-					valueTypeQYJ = key;
-				} else if (key.equals("DZ")) {
-					valueTypeDZ = key;
-				} else if (key.equals("DS")) {
-					valueTypeDS = key;
-				} else if (key.equals("HF")) {
-					valueTypeHF = key;
-				}
-				value = jsonObject.getString("value");
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
 
 		} else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent
 				.getAction())) {
 			Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
 			System.out.println("[MyReceiver] 用户点击打开了通知");
+			String EXTRA = bundle.getString(JPushInterface.EXTRA_EXTRA);
+			System.out
+					.println("EXTRA"
+							+ EXTRA
+							+ "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+			try {
+				JSONObject jsonObject = new JSONObject(EXTRA);
+				key = jsonObject.getString("pushType");
+				value = jsonObject.getString("pushValue");
+				System.out.println("key" + key);
+				if (key.equals("QYJPL")) {
 
-			if (valueTypeQYJ != null && valueTypeQYJ.equals("QYJ")) {
-				context.startActivity(new Intent(context,
-						RidingDetailsActivity.class).putExtra("articleId",
-						Integer.parseInt(value)));
-			} else if (valueTypeDZ != null && valueTypeDZ.equals("DZ")) {
-				
-			} else if (valueTypeHF != null && valueTypeHF.equals("HF")) {
-				
-			} else if (valueTypeDS != null && valueTypeDS.equals("DS")) {
+					Intent i = new Intent(context, DiscussActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("articleId", Integer.parseInt(value));
+					context.startActivity(i);
+				} else if (key.equals("QYJDZ")) {
 
+					Toast.makeText(context, "DZ", Toast.LENGTH_SHORT).show();
+				
+				} else if (key.equals("QYJDS")) {
+
+					Toast.makeText(context, "DS", Toast.LENGTH_SHORT).show();
+				
+				} else if (key.equals("QYJHF")) {
+					
+					Toast.makeText(context, "HF", Toast.LENGTH_SHORT).show();
+				
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 			// 打开自定义的Activity
 			// Intent i = new Intent(context, TestActivity.class);

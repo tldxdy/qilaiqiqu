@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
@@ -104,11 +105,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		View view = LayoutInflater.from(this).inflate(R.layout.activity_main,
 				null);
+		frameLayout = new FrameLayout(this);
+		splashView = new SplashView(this);
 		loginFlag = getIntent().getIntExtra("loginFlag", -1);
 		if (loginFlag == 1) {
-			frameLayout = new FrameLayout(this);
 			frameLayout.addView(view);
-			splashView = new SplashView(this);
 			frameLayout.addView(splashView);
 			setContentView(frameLayout);
 		}
@@ -294,11 +295,27 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
 						new SystemUtil().makeToast(MainActivity.this, "网络请求失败，请检查网络");
+						startLoad();
 					}
 				});
 
 		super.onStart();
 	}
+	
+	private Handler handler = new Handler();
+	private void startLoad() {
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if(loginFlag == 1){
+					splashView.splashAndDisappear();
+					loginFlag = 0;
+				}
+			}
+		}, 2000);// ��ʱʱ�䣬��λ����
+	}
+	
 
 	public void imageUrl() {
 		HttpUtils http = new HttpUtils();
