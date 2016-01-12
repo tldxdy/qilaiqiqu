@@ -14,8 +14,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
@@ -54,9 +52,9 @@ import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
 import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
+import com.qizhi.qilaiqiqu.ui.PullFreshListView;
+import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
-import com.qizhi.qilaiqiqu.utils.ListViewUtil;
-import com.qizhi.qilaiqiqu.utils.ListViewUtil.OnRefreshListener;
 import com.qizhi.qilaiqiqu.utils.SplashView;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -69,7 +67,8 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 public class MainActivity extends FragmentActivity implements OnClickListener,
-		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost, OnRefreshListener {
+		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost,
+		OnRefreshListener {
 
 	private SplashView splashView;
 	private FrameLayout frameLayout;
@@ -78,7 +77,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private ImageView searchImg;
 	private ImageView addImg;
 
-	private ListViewUtil slideShowList;
+	private PullFreshListView slideShowList;
 
 	private SlideShowListAdapter adapter;
 
@@ -97,7 +96,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private SharedPreferences preferences;
 
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -128,7 +127,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		searchImg = (ImageView) findViewById(R.id.img_mainActivity_search_photo);
 		addImg = (ImageView) findViewById(R.id.img_mainActivity_add_photo);
 
-		slideShowList = (ListViewUtil) findViewById(R.id.list_mainActivity_slideShow);
+		slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
 
 		addImg.setAlpha(204); // 透明度
 		searchImg.setAlpha(204); // 透明度
@@ -167,7 +166,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 				Intent intent = new Intent(this, LoginActivity.class);
 				startActivity(intent);
-				//finish();
+				// finish();
 			}
 			// Toast.makeText(this, "点击添加", 0).show();
 			break;
@@ -279,7 +278,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						}
 						if (jsonObject.optBoolean("result")) {
 							pageIndex = jsonObject.optInt("pageIndex");
-							
+
 							JSONArray jsonArray = jsonObject
 									.optJSONArray("dataList");
 							// 数据获取
@@ -293,21 +292,23 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							slideShowList.setAdapter(adapter);
 							slideShowList
 									.setOnItemClickListener(MainActivity.this);
-							slideShowList.setOnRefreshListener(MainActivity.this);
-							if(loginFlag == 1){
+							slideShowList
+									.setOnRefreshListener(MainActivity.this);
+							if (loginFlag == 1) {
 								splashView.splashAndDisappear();
 								loginFlag = 0;
 							}
-							//更新UI
+							// 更新UI
 							adapter.notifyDataSetChanged();
-							
-							slideShowList.completeRefresh();
+							slideShowList.finishRefreshing();
+
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil().makeToast(MainActivity.this, "网络请求失败，请检查网络");
+						new SystemUtil().makeToast(MainActivity.this,
+								"网络请求失败，请检查网络");
 					}
 				});
 	}
@@ -373,7 +374,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			exitBy2Click(); // 调用双击退出函数
 		}
@@ -609,23 +609,23 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		System.out.println("主页向服务器提交CID出错:" + msg + "!");
 		Log.i("qilaiqiqu", "主页向服务器提交CID出错:" + msg + "!");
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		
+
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		
+
 	}
 
 	@Override
-	public void onPullRefresh() {
+	public void onRefresh() {
 		data();
 	}
 
@@ -633,6 +633,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public void onLoadingMore() {
 		dataJ();
 	}
+
 	private void dataJ() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("pageIndex", (++pageIndex) + "");
@@ -652,34 +653,38 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
-							
-							
+
 							JSONArray jsonArray = jsonObject
 									.optJSONArray("dataList");
 							// 数据获取
 							Gson gson = new Gson();
 							Type type = new TypeToken<List<ArticleModel>>() {
 							}.getType();
-							List<ArticleModel> lists = gson.fromJson(jsonArray.toString(), type);
+							List<ArticleModel> lists = gson.fromJson(
+									jsonArray.toString(), type);
 							list.addAll(lists);
-							if(lists.size() != 0){
-								pageIndex = jsonObject.optInt("pageIndex");
-								new SystemUtil().makeToast(MainActivity.this, "加载成功");
-							}else{
-								new SystemUtil().makeToast(MainActivity.this, "已显示全部内容");
+							pageIndex = jsonObject.optInt("pageIndex");
+							if (lists.size() == 0) {
+								new SystemUtil().makeToast(MainActivity.this,
+										"已显示全部内容");
+							} else {
+								/*new SystemUtil().makeToast(MainActivity.this,
+										"加载成功");*/
 							}
-							
-							//更新UI
+
+							// 更新UI
 							adapter.notifyDataSetChanged();
-							
-							slideShowList.completeRefresh();
+
+							slideShowList.finishRefreshing();
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil().makeToast(MainActivity.this, "网络请求失败，请检查网络");
+						new SystemUtil().makeToast(MainActivity.this,
+								"网络请求失败，请检查网络");
 					}
 				});
 	}
+
 }

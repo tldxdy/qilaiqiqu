@@ -4,10 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <ListView 
+    <com.qizhi.qilaiqiqu.ui.PullFreshListView 
 	    android:id="@+id/list_fansFragment"
 	    android:layout_height="fill_parent"
 	    android:layout_width="fill_parent"
-	    ></ListView>
+	    ></com.qizhi.qilaiqiqu.ui.PullFreshListView>
 
 </LinearLayout>

@@ -72,8 +72,8 @@ public class FriendActivity extends FragmentActivity implements OnClickListener,
 		backLayout = (LinearLayout) findViewById(R.id.layout_FriendActivity_back);
 
 		fragments = new ArrayList<Fragment>();
-		Fragment fansFragment = FansFragment.newInstance(fansDataList);
-		Fragment careFragment = CareFragment.newInstance(careDataList);
+		Fragment fansFragment = FansFragment.newInstance(fansDataList, this);
+		Fragment careFragment = CareFragment.newInstance(careDataList, this);
 		fragments.add(fansFragment);
 		fragments.add(careFragment);
 
@@ -178,7 +178,7 @@ public class FriendActivity extends FragmentActivity implements OnClickListener,
 		String uniqueKey = sp.getString("uniqueKey", null);
 
 		params.addBodyParameter("userId", quoteUserId + "");
-		params.addBodyParameter("pageStart", 0 + "");
+		params.addBodyParameter("pageIndex", 1 + "");
 		params.addBodyParameter("pageSize", pageSize);
 		params.addBodyParameter("uniqueKey", uniqueKey);
 		new XUtilsUtil().httpPost(url, params, this);
@@ -219,7 +219,7 @@ public class FriendActivity extends FragmentActivity implements OnClickListener,
 		String uniqueKey = sp.getString("uniqueKey", null);
 
 		params.addBodyParameter("quoteUserId", quoteUserId + "");
-		params.addBodyParameter("pageStart", 0 + "");
+		params.addBodyParameter("pageIndex", 1 + "");
 		params.addBodyParameter("pageSize", pageSize);
 		params.addBodyParameter("uniqueKey", uniqueKey);
 		

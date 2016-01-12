@@ -30,6 +30,9 @@ import com.qizhi.qilaiqiqu.adapter.RidingListAdapter;
 import com.qizhi.qilaiqiqu.model.CollectModel;
 import com.qizhi.qilaiqiqu.model.RidingModel;
 import com.qizhi.qilaiqiqu.model.RidingModelList;
+import com.qizhi.qilaiqiqu.ui.PullFreshListView;
+import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
@@ -41,7 +44,7 @@ import com.umeng.analytics.MobclickAgent;
  */
 
 public class RidingActivity extends Activity implements OnClickListener,
-		OnItemClickListener, CallBackPost {
+		OnItemClickListener, CallBackPost,OnRefreshListener {
 
 	public static RidingActivity ridingActivity;
 
@@ -49,12 +52,15 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 	private LinearLayout layoutBtn;
 
-	private ListView ridingList;
+	private PullFreshListView ridingList;
 
 	private List<RidingModelList> list;
 	private XUtilsUtil xUtilsUtil;
 	private RidingModel ridingModel;
 	private SharedPreferences preferences;
+	
+	private int pageIndex = 1;
+	private boolean isFirst = true;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 		preferences = getSharedPreferences("userLogin",Context.MODE_PRIVATE);
 		
 		layoutBtn = (LinearLayout) findViewById(R.id.layout_ridingActivity_back);
-		ridingList = (ListView) findViewById(R.id.list_ridingActivity_riding);
+		ridingList = (PullFreshListView) findViewById(R.id.list_ridingActivity_riding);
 		
 	}
 
@@ -89,7 +95,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 		Intent intent = new Intent(RidingActivity.this,
 				RidingDetailsActivity.class);
 		intent.putExtra("isMe", true);
-		intent.putExtra("articleId",list.get(position).getArticleId() );
+		intent.putExtra("articleId",list.get(position-1).getArticleId() );
 		startActivity(intent);
 	}
 
@@ -120,10 +126,13 @@ public class RidingActivity extends Activity implements OnClickListener,
 		String url = "mobile/articleMemo/queryArticleMemoByUserIdPaginationList.html";
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
-		params.addBodyParameter("pageStart", "0");
+		if(isFirst){
+			pageIndex = 1;
+		}
+		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize", "10");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost(url, params, RidingActivity.this);
+		xUtilsUtil.httpPost(url, params, this);
 	}
 
 	@Override
@@ -138,9 +147,23 @@ public class RidingActivity extends Activity implements OnClickListener,
 			Gson gson = new Gson();
 			Type type = new TypeToken<RidingModel>(){}.getType();
 			ridingModel = gson.fromJson(jsonObject.toString(), type);
-			list = ridingModel.getDataList();
-			adapter = new RidingListAdapter(this, list);
-			ridingList.setAdapter(adapter);
+			if(isFirst){
+				list = ridingModel.getDataList();
+				adapter = new RidingListAdapter(this, list);
+				ridingList.setAdapter(adapter);
+				ridingList.setOnItemClickListener(this);
+				ridingList.setOnRefreshListener(this);
+			}else{
+				list.addAll(ridingModel.getDataList());
+			}
+			adapter.notifyDataSetChanged();
+			ridingList.finishRefreshing();
+			if(ridingModel.getDataList().size() == 0){
+				new SystemUtil().makeToast(this,
+						"已显示全部内容");
+			}
+			
+			
 		}
 	}
 
@@ -159,6 +182,20 @@ public class RidingActivity extends Activity implements OnClickListener,
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+	}
+
+	@Override
+	public void onRefresh() {
+		pageIndex = 1;
+		isFirst = true;
+		httpRiding();
+	}
+
+	@Override
+	public void onLoadingMore() {
+		pageIndex = pageIndex + 1;
+		isFirst = false;
+		httpRiding();
 	}
 
 }
