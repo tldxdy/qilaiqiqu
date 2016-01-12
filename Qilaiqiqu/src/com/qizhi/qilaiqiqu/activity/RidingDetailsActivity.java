@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -117,18 +118,17 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		jpushFlag = getIntent().getStringExtra("jpushFlag");
 		initView();
 		initEvent();
-		
+
 	}
-	
-	public void onWindowFocusChanged(boolean hasFocus) { 
-        super.onWindowFocusChanged(hasFocus); 
-        if(hasFocus){ 
-        	if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
+
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
 				showJPush(jpushFlag);
 			}
-        }
+		}
 	}
-	
 
 	private void initView() {
 		xUtilsUtil = new XUtilsUtil();
@@ -765,12 +765,12 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	 * @param view
 	 *            popup所依附的布局
 	 */
-	private void showJPush(String jpushFlag) {
+	private void showJPush(String Flag) {
 		String userName = null;
 		String title = null;
 		String praiseNum = null;
-
-		
+		String integral = null;
+		String sumIntegral = null;
 
 		// 一个自定义的布局，作为显示的内容
 		View v = LayoutInflater.from(this).inflate(R.layout.item_popup_jpush,
@@ -782,20 +782,30 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 
 		popupWindow.setTouchable(true);
-		
-		if (jpushFlag.equals("JPushDZ")) {
+
+		if (Flag.equals("JPushDZ")) {
 			praiseNum = getIntent().getStringExtra("praiseNum");
 			title = getIntent().getStringExtra("title");
 			userName = getIntent().getStringExtra("userName");
 			markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
-					+ userName + "</font>" + " 给您的游记《" + "<font color='#6dbfed'>"
-					+ title + "</font>" + "》点了赞哟!当前被点赞量为"
-					+ "<font color='#ff0000'>" + praiseNum + "</font>"));
-		} else if (jpushFlag.equals("JPushDS")) {
-			
+					+ userName + "</font>" + " 给您的游记《"
+					+ "<font color='#6dbfed'>" + title + "</font>"
+					+ "》点了赞哟!当前被点赞量为: " + "<font color='#ff0000'>" + praiseNum
+					+ "</font>"));
+			jpushFlag = "";
+		} else if (Flag.equals("JPushDS")) {
+			title = getIntent().getStringExtra("title");
+			userName = getIntent().getStringExtra("userName");
+			integral = getIntent().getStringExtra("integral");
+			sumIntegral = getIntent().getStringExtra("sumIntegral");
+			markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
+					+ userName + "</font>" + " 给您的游记《"
+					+ "<font color='#6dbfed'>" + title + "</font>" + "》打赏了"
+					+ "<font color='#ff0000'>" + integral + "</font>"
+					+ "个积分哟!当前总分为: " + "<font color='#ff0000'>" + sumIntegral
+					+ "</font>"));
+			jpushFlag = "";
 		}
-		
-		
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
@@ -807,12 +817,32 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
 			}
 		});
+		
+		popup_ok.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+
+		popup_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
 		// 我觉得这里是API的一个bug
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.corners_layout));
 		// 设置好参数之后再show
-		popupWindow.showAtLocation(RidingDetailsActivity.this.findViewById(R.id.layout_ridingDetailsActivity), Gravity.CENTER, 0, 50);
+		popupWindow.showAtLocation(RidingDetailsActivity.this
+				.findViewById(R.id.layout_ridingDetailsActivity),
+				Gravity.CENTER, 0, 50);
+		
 	}
 
 }

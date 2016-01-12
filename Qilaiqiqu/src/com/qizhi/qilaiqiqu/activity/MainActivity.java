@@ -536,10 +536,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private void loginHuanXin() {
 
 		// 设置极光推送 用户别名
-		JPushInterface
-				.setAliasAndTags(getApplicationContext(),
-						preferences.getString("imUserName", null), null,
-						mAliasCallback);
+		JPushInterface.setAliasAndTags(getApplicationContext(), "", null,
+				mAliasCallback);
 
 		// final Editor userInfo_Editor = sp.edit();
 		// 登录环信
@@ -668,8 +666,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 								new SystemUtil().makeToast(MainActivity.this,
 										"已显示全部内容");
 							} else {
-								/*new SystemUtil().makeToast(MainActivity.this,
-										"加载成功");*/
+								/*
+								 * new SystemUtil().makeToast(MainActivity.this,
+								 * "加载成功");
+								 */
 							}
 
 							// 更新UI
