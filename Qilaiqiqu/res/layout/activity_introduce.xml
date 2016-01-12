@@ -66,7 +66,7 @@
         android:layout_marginTop="40dp"
         android:text="\u3000\u3000骑来骑去是有杭州骑智科技有限公司开发的骑行类应用,旨在为广大骑友打造骑行资源的共享平台."
         android:textSize="16sp" />
-
+    
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

@@ -5,17 +5,27 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qizhi.qilaiqiqu.activity.DiscussActivity;
-import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
-import com.qizhi.qilaiqiqu.activity.SystemMessageActivity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.PopupWindow;
+import android.widget.PopupWindow.OnDismissListener;
 import cn.jpush.android.api.JPushInterface;
+
+import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.DiscussActivity;
+import com.qizhi.qilaiqiqu.activity.MainActivity;
+import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.SystemMessageActivity;
 
 /**
  * 自定义接收器
@@ -60,36 +70,45 @@ public class MyReceiver extends BroadcastReceiver {
 			Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
 			System.out.println("[MyReceiver] 用户点击打开了通知");
 			String EXTRA = bundle.getString(JPushInterface.EXTRA_EXTRA);
-			System.out
-					.println("EXTRA"
-							+ EXTRA
-							+ "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+
+			System.out.println("EXTRA" + EXTRA
+					+ "|||||||||||||||||||||||||||||||||||||||||||");
+
 			try {
 				JSONObject jsonObject = new JSONObject(EXTRA);
 				key = jsonObject.getString("pushType");
-				value = jsonObject.getString("pushValue");
-				System.out.println("key" + key);
+				JSONObject pushValue = new JSONObject(
+						jsonObject.getString("pushValue"));
 				if (key.equals("QYJPL")) {
+					value = pushValue.getString("articleId");
 					Intent i = new Intent(context, DiscussActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
 				} else if (key.equals("QYJDZ")) {
-
-					Intent i = new Intent(context, SystemMessageActivity.class);
+					String praiseNum = pushValue.getString("praiseNum");
+					String title = pushValue.getString("title");
+					String userName = pushValue.getString("userName");
+					value = pushValue.getString("articleId");
+					Intent i = new Intent(context, RidingDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					i.putExtra("value", value);
+					i.putExtra("jpushFlag", "JPushDZ");
+					i.putExtra("praiseNum", praiseNum);
+					i.putExtra("title", title);
+					i.putExtra("userName", userName);
+					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
 				} else if (key.equals("QYJDS")) {
 
-					Intent i = new Intent(context, SystemMessageActivity.class);
+					Intent i = new Intent(context, RidingDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("value", value);
 					context.startActivity(i);
 				} else if (key.equals("QYJHF")) {
+					value = pushValue.getString("articleId");
 					Intent i = new Intent(context, DiscussActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -187,4 +206,5 @@ public class MyReceiver extends BroadcastReceiver {
 	// context.sendBroadcast(msgIntent);
 	// }
 	// }
+
 }

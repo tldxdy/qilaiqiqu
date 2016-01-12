@@ -80,7 +80,7 @@
         <!-- 高德地图 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="5fb355eb5dc46db7de183ef436bdd383" />
+            android:value="8b9bd793e1c99d9c7b0a2adc4ddde60b" />
         <!-- 友盟 -->
         <meta-data
             android:name="UMENG_APPKEY"

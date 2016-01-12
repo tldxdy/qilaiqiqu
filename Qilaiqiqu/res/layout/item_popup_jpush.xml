@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="312dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/corners_grade_top"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/txt_JpushPopup_message"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:paddingLeft="10dp"
+                android:layout_marginBottom="12.5dp"
+                android:layout_marginTop="12.5dp"
+                android:text="写得不错，打赏一下吧！"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/txt_JpushPopup_cancel"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/corners_grade_bottom_left"
+                android:gravity="center"
+                android:text="取消"
+                android:textColor="@color/mainActivity_title" />
+
+            <TextView
+                android:id="@+id/txt_JpushPopup_ok"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/corners_grade_bottom_right"
+                android:gravity="center"
+                android:text="确认"
+                android:textColor="@color/mainActivity_title" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
