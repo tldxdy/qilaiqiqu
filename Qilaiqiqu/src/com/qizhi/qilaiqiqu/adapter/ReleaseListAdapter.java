@@ -131,6 +131,7 @@ public class ReleaseListAdapter extends BaseAdapter{
 				//list.get(position).setAddress("杭州");
 				//notifyDataSetChanged();
 				Intent intent = new Intent(context, MapActivity.class);
+				intent.putExtra("position", position);
 				((Activity) context).startActivityForResult(intent, 2);
 				//context.startActivity(new Intent(context,MapActivity.class));
 			}

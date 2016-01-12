@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -88,6 +89,7 @@ public class MapActivity extends Activity implements OnClickListener,
 	// private LocationManagerProxy mAMapLocationManager;
 
 	private TextView mLocationErrText;
+	private TextView confirmtTxt;
 
 	private EditText searchText;// 输入搜索关键字
 	private String keyWord = "";// 要输入的poi搜索关键字
@@ -133,12 +135,15 @@ public class MapActivity extends Activity implements OnClickListener,
 		backLayout = (LinearLayout) findViewById(R.id.layout_mapActivity_back);
 		searButton = (TextView) findViewById(R.id.searchButton);
 		searchText = (EditText) findViewById(R.id.keyWord);
+		confirmtTxt = (TextView) findViewById(R.id.txt_mapactivity_confirm);
 		searchText.addTextChangedListener(this);// 添加文本输入框监听事件
+		position = getIntent().getIntExtra("position", -1);
 	}
 
 	private void initEvent() {
 		backLayout.setOnClickListener(this);
 		searButton.setOnClickListener(this);
+		confirmtTxt.setOnClickListener(this);
 		// layoutLayout.setOnLongClickListener(new OnLongClickListener() {
 		//
 		// @Override
@@ -158,6 +163,15 @@ public class MapActivity extends Activity implements OnClickListener,
 
 		case R.id.searchButton:
 			searchButton();
+			break;
+		case R.id.txt_mapactivity_confirm:
+			if(!positionTxt.getText().toString().trim().equals("")){
+				Intent intent = new Intent();
+				intent.putExtra("address", positionTxt.getText().toString().trim());
+				intent.putExtra("position", position);
+				setResult(2, intent);
+				finish();
+			}
 			break;
 
 		default:
@@ -655,7 +669,6 @@ public class MapActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onGeocodeSearched(GeocodeResult arg0, int arg1) {
-		// TODO Auto-generated method stub
 		
 	}
 

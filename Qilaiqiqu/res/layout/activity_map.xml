@@ -140,6 +140,7 @@
                 android:paddingLeft="10dp" />
 
             <TextView
+                android:id="@+id/txt_mapactivity_confirm"
                 android:layout_width="60dp"
                 android:layout_height="fill_parent"
                 android:layout_marginLeft="4dp"
