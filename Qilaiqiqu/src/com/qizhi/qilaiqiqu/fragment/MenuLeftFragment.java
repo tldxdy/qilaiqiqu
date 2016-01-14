@@ -2,21 +2,6 @@ package com.qizhi.qilaiqiqu.fragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.activity.CollectActivity;
-import com.qizhi.qilaiqiqu.activity.LoginActivity;
-import com.qizhi.qilaiqiqu.activity.MyMessageActivity;
-import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
-import com.qizhi.qilaiqiqu.activity.RidingActivity;
-import com.qizhi.qilaiqiqu.activity.SetActivity;
-import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -32,6 +17,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.CollectActivity;
+import com.qizhi.qilaiqiqu.activity.LoginActivity;
+import com.qizhi.qilaiqiqu.activity.MyMessageActivity;
+import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
+import com.qizhi.qilaiqiqu.activity.RidingActivity;
+import com.qizhi.qilaiqiqu.activity.SetActivity;
+import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
 /**
  * 
@@ -139,7 +140,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-				//getActivity().finish();
+				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_message:
@@ -150,7 +151,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-				//getActivity().finish();
+				getActivity().finish();
 				
 			}
 			break;
@@ -162,7 +163,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-				//getActivity().finish();
+				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_collect_press:
@@ -173,7 +174,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-				//getActivity().finish();
+				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_set:

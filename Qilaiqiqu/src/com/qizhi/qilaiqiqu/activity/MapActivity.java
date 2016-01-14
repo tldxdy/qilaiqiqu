@@ -165,6 +165,7 @@ public class MapActivity extends Activity implements OnClickListener,
 			searchButton();
 			break;
 		case R.id.txt_mapactivity_confirm:
+			System.out.println(positionTxt.getText().toString().trim());
 			if(!positionTxt.getText().toString().trim().equals("")){
 				Intent intent = new Intent();
 				intent.putExtra("address", positionTxt.getText().toString().trim());

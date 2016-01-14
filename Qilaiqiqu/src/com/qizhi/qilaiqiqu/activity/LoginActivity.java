@@ -1,9 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import java.lang.reflect.Type;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,8 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -24,8 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import cn.jpush.android.api.TagAliasCallback;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -201,7 +194,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 										userLogin.getImPassword());
 								editor.putInt("loginFlag", 1 );
 								editor.commit();
-								finish();
+								LoginActivity.this.finish();
 
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -232,30 +225,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 		MobclickAgent.onPause(this);
 	}
 
-	private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
-
-		@Override
-		public void gotResult(int code, String alias, Set<String> tags) {
-			String logs;
-			switch (code) {
-			case 0:
-				logs = "Set tag and alias success";
-				Log.i("JPush", logs);
-				break;
-
-			case 6002:
-				logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
-				Log.i("JPush", logs);
-				break;
-
-			default:
-				logs = "Failed with errorCode = " + code;
-				Log.e("JPush", logs);
-			}
-
-		}
-
-	};
 
 /*	*//**
 	 * 菜单、返回键响应

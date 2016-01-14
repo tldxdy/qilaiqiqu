@@ -8,24 +8,12 @@ import org.json.JSONObject;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.PopupWindow;
-import android.widget.PopupWindow.OnDismissListener;
 import cn.jpush.android.api.JPushInterface;
 
-import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.DiscussActivity;
-import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
-import com.qizhi.qilaiqiqu.activity.SystemMessageActivity;
 
 /**
  * 自定义接收器

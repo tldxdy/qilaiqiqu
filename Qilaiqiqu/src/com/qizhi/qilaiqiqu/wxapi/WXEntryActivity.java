@@ -1,26 +1,12 @@
 package com.qizhi.qilaiqiqu.wxapi;
 
-import java.lang.reflect.Type;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.model.UserLoginModel;
-import com.qizhi.qilaiqiqu.model.WXUserInfoModel;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackGet;
@@ -65,7 +51,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 			// 或者
 			String code = ((SendAuth.Resp) resp).code;
 			// 上面的code就是接入指南里要拿到的code
-			System.out.println("000000000000000000000000:" + code);
+			Toast.makeText(WXEntryActivity.this, "dianduila", 0).show();
+			System.out.println("000000000000000000000000|||||||||||||||||||||||||||:" + code);
 			wxRequest(code);
 			break;
 

@@ -239,7 +239,8 @@
 
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
         </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.StartActivity"

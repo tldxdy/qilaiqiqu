@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,19 +20,32 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
+
 import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
@@ -48,10 +64,12 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.adapter.SearchResultAdapter;
 import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
 import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
+import com.qizhi.qilaiqiqu.model.SearchResultModel;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
@@ -68,10 +86,21 @@ import com.umeng.analytics.MobclickAgent;
  */
 public class MainActivity extends FragmentActivity implements OnClickListener,
 		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost,
-		OnRefreshListener {
+		OnRefreshListener, TextWatcher {
 
 	private SplashView splashView;
 	private FrameLayout frameLayout;
+
+	private RelativeLayout titleLayout;
+	private LinearLayout searchLayout;
+	private ListView searchList;
+
+	private EditText inputEdt;
+
+	private float titleY;
+	private float searchY;
+
+	private TextView searchCancel;
 
 	private ImageView photoImg;
 	private ImageView searchImg;
@@ -80,6 +109,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private PullFreshListView slideShowList;
 
 	private SlideShowListAdapter adapter;
+	private SearchResultAdapter adapterSearch;
 
 	private SlidingMenu menu;
 
@@ -123,6 +153,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private void initView() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
+		searchCancel = (TextView) findViewById(R.id.txt_mainActivity_cancel);
+		inputEdt = (EditText) findViewById(R.id.edt_mainActivity_searchInput);
+		titleLayout = (RelativeLayout) findViewById(R.id.layout_mainActivity_title);
+		searchLayout = (LinearLayout) findViewById(R.id.layout_mainActivity_searchLayout);
+		searchList = (ListView) findViewById(R.id.list_mainActivity_searchResult);
+
 		photoImg = (ImageView) findViewById(R.id.img_mainActivity_photo);
 		searchImg = (ImageView) findViewById(R.id.img_mainActivity_search_photo);
 		addImg = (ImageView) findViewById(R.id.img_mainActivity_add_photo);
@@ -139,10 +175,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	private void initEvent() {
 		photoImg.setOnClickListener(this);
-		searchImg.setOnClickListener(this);
+		searchCancel.setOnClickListener(this);
+		searchImg.setOnClickListener(new donghua());
 		addImg.setOnClickListener(this);
 		menu.setOnOpenListener(this);
 		menu.setOnCloseListener(this);
+		inputEdt.addTextChangedListener(this);
 	}
 
 	@Override
@@ -153,8 +191,41 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				menu.showMenu();
 			}
 			break;
-		case R.id.img_mainActivity_search_photo:
-			new SystemUtil().makeToast(MainActivity.this, "点击搜索");
+		case R.id.txt_mainActivity_cancel:
+
+			Animation animationAlpha = new AlphaAnimation(1f, 0f);
+			animationAlpha.setFillAfter(false);// 动画终止时停留在最后一帧，不然会回到没有执行前的状态
+			animationAlpha.setDuration(500);// 动画持续时间1秒
+			searchList.startAnimation(animationAlpha);// 是用ImageView来显示动画的
+			animationAlpha.setAnimationListener(new AnimationListener() {
+
+				@Override
+				public void onAnimationStart(Animation arg0) {
+					ObjectAnimator yBouncer = ObjectAnimator.ofFloat(
+							searchLayout, "y", titleY, searchY);
+					yBouncer.setDuration(500);
+					// 设置插值器(用于调节动画执行过程的速度)
+					// 设置重复次数(缺省为0,表示不重复执行)
+					yBouncer.setRepeatCount(0);
+					// 设置动画开始的延时时间(200ms)
+					// yBouncer.setStartDelay(200);
+					// 开始动画
+					yBouncer.start();
+
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation arg0) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationEnd(Animation arg0) {
+					// TODO Auto-generated method stub
+					searchList.setVisibility(View.GONE);
+				}
+			});
+
 			break;
 		case R.id.img_mainActivity_add_photo:
 			if (preferences.getInt("userId", -1) != -1) {
@@ -163,9 +234,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				startActivity(intent);
 			} else {
 				new SystemUtil().makeToast(MainActivity.this, "请登录");
-
 				Intent intent = new Intent(this, LoginActivity.class);
 				startActivity(intent);
+				MainActivity.this.finish();
 				// finish();
 			}
 			// Toast.makeText(this, "点击添加", 0).show();
@@ -536,8 +607,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private void loginHuanXin() {
 
 		// 设置极光推送 用户别名
-		JPushInterface.setAliasAndTags(getApplicationContext(), "", null,
-				mAliasCallback);
+		JPushInterface
+				.setAliasAndTags(getApplicationContext(),
+						preferences.getString("imUserName", null), null,
+						mAliasCallback);
 
 		// final Editor userInfo_Editor = sp.edit();
 		// 登录环信
@@ -685,6 +758,110 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 								"网络请求失败，请检查网络");
 					}
 				});
+	}
+
+	/**
+	 * dp转px
+	 * 
+	 * @param context
+	 * @param val
+	 * @return
+	 */
+	public static int dp2px(Context context, float dpVal) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+				dpVal, context.getResources().getDisplayMetrics());
+	}
+
+	class donghua implements OnClickListener {
+		@Override
+		public void onClick(View arg0) {
+			titleY = titleLayout.getY();
+			searchY = searchLayout.getY();
+
+			ObjectAnimator yBouncer = ObjectAnimator.ofFloat(searchLayout, "y",
+					searchY, titleY);
+			yBouncer.setDuration(500);
+			// 设置插值器(用于调节动画执行过程的速度)
+			// 设置重复次数(缺省为0,表示不重复执行)
+			yBouncer.setRepeatCount(0);
+			// 设置动画开始的延时时间(200ms)
+			// yBouncer.setStartDelay(200);
+			// 开始动画
+			yBouncer.start();
+
+			searchList.setVisibility(View.VISIBLE);
+			searchList.getBackground().setAlpha(110);
+			Animation animationAlpha = new AlphaAnimation(0f, 1f);
+			animationAlpha.setFillAfter(true);// 动画终止时停留在最后一帧，不然会回到没有执行前的状态
+			animationAlpha.setDuration(500);// 动画持续时间0.2秒
+			searchList.startAnimation(animationAlpha);// 是用ImageView来显示动画的
+
+		}
+	}
+
+	@Override
+	public void afterTextChanged(Editable e) {
+		RequestParams params = new RequestParams("UTF-8");
+		pageIndex = 1;
+		Toast.makeText(MainActivity.this, e.toString(), 0).show();
+		params.addBodyParameter("searchValue", e.toString());
+		params.addBodyParameter("pageIndex", pageIndex + "");
+		params.addBodyParameter("pageSize", "10");
+		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
+
+		xUtilsUtil.httpPost("common/fuzzyQueryResultPaginationList.html",
+				params, new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(s);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (jsonObject.optBoolean("result")) {
+
+							// 数据获取
+							Gson gson = new Gson();
+							Type type = new TypeToken<SearchResultModel>() {
+							}.getType();
+							SearchResultModel model = gson.fromJson(
+									jsonObject.toString(), type);
+
+							adapterSearch = new SearchResultAdapter(
+									MainActivity.this, model.getDataList());
+							searchList.setAdapter(adapterSearch);
+							searchList
+									.setOnItemClickListener(MainActivity.this);
+
+							// 更新UI
+							adapter.notifyDataSetChanged();
+
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+						new SystemUtil().makeToast(MainActivity.this,
+								"网络请求失败，请检查网络" + msg);
+					}
+				});
+
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+			int arg3) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
