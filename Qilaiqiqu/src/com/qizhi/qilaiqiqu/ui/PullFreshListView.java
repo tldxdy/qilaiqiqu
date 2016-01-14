@@ -1,13 +1,18 @@
 package com.qizhi.qilaiqiqu.ui;
 
 
+import com.qizhi.qilaiqiqu.R;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.MeasureSpec;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
@@ -15,9 +20,8 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.qizhi.qilaiqiqu.R;
 public class PullFreshListView extends ListView  implements OnScrollListener{
 	private final static int RELEASE_To_REFRESH = 0; //拖动中，松手立即刷新
 	private final static int PULL_To_REFRESH = 1;//拖动中，松手不刷新
@@ -82,18 +86,19 @@ public class PullFreshListView extends ListView  implements OnScrollListener{
     public boolean onTouchEvent(MotionEvent event) {
 		if(event.getAction() == MotionEvent.ACTION_DOWN){		
 		    downY = (int)event.getY(); 
-		    System.out.println("onTouchEvent2 ACTION_DOWN="+state);
+		    //System.out.println("onTouchEvent2 ACTION_DOWN="+state);
         }else if(event.getAction() == MotionEvent.ACTION_UP){
         	if (firstVisibleItem == 0 && state != REFRESHING && state != LOADING) {
         		if(state != DONE)
         		    new RefreshingHeaderTask().execute();
         	}
         }else if(event.getAction() == MotionEvent.ACTION_MOVE){     
-        	System.out.println("onTouchEvent2 ACTION_MOVE="+state);
+        	//System.out.println("onTouchEvent2 ACTION_MOVE="+state);
         	int moveY = (int)event.getY();
-        	System.out.println("moveY"+moveY);
+        	//System.out.println("moveY"+moveY);
         	int deltaY = (int) (event.getY()-downY);
-        	if (firstVisibleItem == 0 && state != REFRESHING && state != LOADING && deltaY > 0) {System.out.println("onTouchEvent2 进入");
+        	if (firstVisibleItem == 0 && state != REFRESHING && state != LOADING && deltaY > 0) {
+        		//System.out.println("onTouchEvent2 进入");
         		// done状态下
 				if (state == DONE) {//System.out.println("onTouchEvent DONE");
 					downY = moveY;
@@ -139,14 +144,16 @@ public class PullFreshListView extends ListView  implements OnScrollListener{
 	 * 当状态改变时候，调用该方法，以更新界面
 	 */
 	private void changeHeaderViewByState(){
-		if(state == DONE){System.out.println("onTouchEvent changeHeaderViewByState DONE");
+		if(state == DONE){
+			//System.out.println("onTouchEvent changeHeaderViewByState DONE");
 			headermsg.setText("");
 			arrowIv.setVisibility(View.VISIBLE);
 			arrowIv.clearAnimation();
 			progressBar.setVisibility(View.GONE);
 			return ;
 		}
-		if(state == PULL_To_REFRESH){System.out.println("onTouchEvent changeHeaderViewByState PULL_To_REFRESH");
+		if(state == PULL_To_REFRESH){
+			//System.out.println("onTouchEvent changeHeaderViewByState PULL_To_REFRESH");
 			headermsg.setText("下拉刷新");
 			arrowIv.setVisibility(View.VISIBLE);
 			progressBar.setVisibility(View.GONE);
@@ -154,7 +161,8 @@ public class PullFreshListView extends ListView  implements OnScrollListener{
 			arrowIv.startAnimation(reverseAnimation);
 			return ;
 		}
-		if(state == RELEASE_To_REFRESH){System.out.println("onTouchEvent changeHeaderViewByState RELEASE_To_REFRESH");
+		if(state == RELEASE_To_REFRESH){
+			//System.out.println("onTouchEvent changeHeaderViewByState RELEASE_To_REFRESH");
 			headermsg.setText("释放刷新");
 			arrowIv.setVisibility(View.VISIBLE);
 			progressBar.setVisibility(View.GONE);
@@ -162,7 +170,8 @@ public class PullFreshListView extends ListView  implements OnScrollListener{
 			arrowIv.startAnimation(animation);
 			return ;
 		}
-		if(state == LOADING){System.out.println("onTouchEvent changeHeaderViewByState LOADING");
+		if(state == LOADING){
+			//System.out.println("onTouchEvent changeHeaderViewByState LOADING");
 			headermsg.setText("加载中...");
 			arrowIv.setVisibility(View.GONE);
 			arrowIv.clearAnimation();

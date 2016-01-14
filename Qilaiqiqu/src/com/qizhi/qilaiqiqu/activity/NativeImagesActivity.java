@@ -61,7 +61,6 @@ public class NativeImagesActivity extends Activity implements OnClickListener{
 			if(msg.what == 1){
 				Object ob = msg.obj;
 				if(!ob.toString().equals("0")){
-					System.out.println(msg.obj);
 					optionTxt.setText("已选择"+ob.toString()+"张");
 				}else{
 					optionTxt.setText("发布骑游记");
@@ -127,7 +126,10 @@ public class NativeImagesActivity extends Activity implements OnClickListener{
 			imagecursor.moveToPosition(i);
 			int dataColumnIndex = imagecursor
 					.getColumnIndex(MediaStore.Images.Media.DATA);
-			imageUrls.add(imagecursor.getString(dataColumnIndex));
+			if(imagecursor.getString(dataColumnIndex).contains(".jpg") || imagecursor.getString(dataColumnIndex).contains(".JPG")
+					|| imagecursor.getString(dataColumnIndex).contains(".png") || imagecursor.getString(dataColumnIndex).contains(".PNG")){
+				imageUrls.add(imagecursor.getString(dataColumnIndex));
+			}
 		}
 	}
 	
@@ -242,13 +244,10 @@ public class NativeImagesActivity extends Activity implements OnClickListener{
 					boolean isChecked) {
 				mSparseBooleanArray.put((Integer) buttonView.getTag(),
 						isChecked);
-				System.out.println("---------------------------------------");
 				Message msg = new Message();
 				msg.what = 1;
 				msg.obj = getCheckedItems().size();
 				handler.sendMessage(msg);
-				System.out.println(getCheckedItems().size());
-				System.out.println("---------------------------------------");
 			}
 		};
 	}

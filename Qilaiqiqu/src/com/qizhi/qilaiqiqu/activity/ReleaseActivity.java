@@ -1,18 +1,19 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -67,11 +68,45 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 
 	private XUtilsUtil xUtilsUtil;
 
-	private SharedPreferences sharedPreferences;
+	private SharedPreferences preferences;
 	
 	private ArrayList<String> photoList;
 	private boolean falg = false; //判断图片哪里传过来的
 	private int articleId;
+	
+	private int num;
+	
+	
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 1:
+				String s = (String) msg.obj;
+				imgListUrl.add(s);
+				if(list.size()-1 != num){
+					num = num + 1;
+					new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
+				}else{
+					publishTravels();
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+		
+	};
+	
+	
+	
+	
+	
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +122,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private void initView() {
 		list = new ArrayList<TravelsinformationModel>();
 		ptm = new PublishTravelsModel();
-		sharedPreferences = getSharedPreferences("userLogin",
+		preferences = getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 
@@ -160,12 +195,18 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			break;
 		case R.id.txt_releaseactivity_browse:
 			new SystemUtil().makeToast(this, "预览");
+			
 			break;
 		case R.id.txt_releaseactivity_publish:
-			new SystemUtil().makeToast(this, "发表");
+			//new SystemUtil().makeToast(this, "发表");
 			// 图片上传
 			if(!falg){
-				photoUploading();
+				//photoUploading();
+				imgListUrl = new ArrayList<String>();
+				if(list.size() != 0){
+					num = 0;
+					new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
+				}
 			}else{
 				publishTravels();
 			}
@@ -184,7 +225,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		System.out.println(requestCode);
 		if (resultCode != RESULT_CANCELED) {
 			if (requestCode == 1) {
 				ArrayList<String> photoList = data
@@ -244,18 +284,16 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			if (list.get(i).getAddress() != null) {
 				sbAddress.append(list.get(i).getAddress());
 			}
-			if (i != list.size() - 1) {
 				sbMemo.append("|");
 				sbArticleImage.append("|");
 				sbImageMemo.append("|");
 				sbAddress.append("|");
-			}
 		}
 		ptm.setTitle(titleEdt.getText().toString().trim());
-		ptm.setMemo(sbMemo.toString());
-		ptm.setArticleImage(sbArticleImage.toString());
-		ptm.setImageMemo(sbImageMemo.toString());
-		ptm.setAddress(sbAddress.toString());
+		ptm.setMemo(sbMemo.toString().substring(0, sbMemo.toString().length()-1));
+		ptm.setArticleImage(sbArticleImage.toString().substring(0, sbArticleImage.toString().length()-1));
+		ptm.setImageMemo(sbImageMemo.toString().substring(0, sbImageMemo.toString().length()-1));
+		ptm.setAddress(sbAddress.toString().substring(0, sbAddress.toString().length()-1));
 		RequestParams params = new RequestParams("UTF-8");
 		String url;
 		if(falg){
@@ -264,7 +302,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		}else{
 			url = "mobile/articleMemo/insertArticle.html";
 		}
-		params.addBodyParameter("userId", sharedPreferences.getInt("userId", 0)
+		params.addBodyParameter("userId", preferences.getInt("userId", 0)
 				+ "");
 		params.addBodyParameter("title", ptm.getTitle());
 		params.addBodyParameter("memo", ptm.getMemo());
@@ -272,7 +310,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		params.addBodyParameter("articleImage", ptm.getArticleImage());
 		params.addBodyParameter("imageMemo", ptm.getImageMemo());
 		params.addBodyParameter("uniqueKey",
-				sharedPreferences.getString("uniqueKey", null));
+				preferences.getString("uniqueKey", null));
 		xUtilsUtil.httpPost(url , params,
 				new CallBackPost() {
 
@@ -285,8 +323,17 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
+							if(!falg){
+								new SystemUtil().makeToast(ReleaseActivity.this,
+										"发表成功");
+							}else{
+								new SystemUtil().makeToast(ReleaseActivity.this,
+										"修改成功");
+								ReleaseActivity.this.finish();
+							}
+						}else{
 							new SystemUtil().makeToast(ReleaseActivity.this,
-									"发表成功");
+									jsonObject.optString("message"));
 						}
 					}
 
@@ -297,7 +344,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				});
 	}
 
-	private void photoUploading() {
+	/*private void photoUploading() {
 		File file;
 		imgListUrl = new ArrayList<String>();
 		for (int i = 0; i < list.size(); i++) {
@@ -310,7 +357,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			params.addBodyParameter("files", file);
 			params.addBodyParameter("type", "QYJ");
 			params.addBodyParameter("uniqueKey",
-					sharedPreferences.getString("uniqueKey", "admin"));
+					preferences.getString("uniqueKey", "admin"));
 			xUtilsUtil.httpPost("common/uploadImage.html", params,
 					new CallBackPost() {
 						@Override
@@ -352,7 +399,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 
 		}
 
-	}
+	}*/
 
 	@Override
 	protected void onResume() {

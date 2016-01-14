@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -67,6 +66,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 	private TextView likeTxt;
 	private TextView revamTxt;
+	private TextView deleteTxt;
 
 	private int cllectionFlag = 1;// 是否收藏标识:1为未点击,2为已点击
 	private int cllectionLike = 1;// 是否点赞标识:1为未点击,2为已点击
@@ -118,17 +118,18 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		jpushFlag = getIntent().getStringExtra("jpushFlag");
 		initView();
 		initEvent();
-
+		
 	}
-
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus) {
-			if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
+	
+	public void onWindowFocusChanged(boolean hasFocus) { 
+        super.onWindowFocusChanged(hasFocus); 
+        if(hasFocus){ 
+        	if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
 				showJPush(jpushFlag);
 			}
-		}
+        }
 	}
+	
 
 	private void initView() {
 		xUtilsUtil = new XUtilsUtil();
@@ -152,6 +153,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		likeTxt = (TextView) findViewById(R.id.txt_ridingDetailsActivity_like);
 		numTxt = (TextView) findViewById(R.id.animation);
 		revamTxt = (TextView) findViewById(R.id.img_ridingDetailsActivity_revamp);
+		deleteTxt = (TextView) findViewById(R.id.txt_ridingDetailsActivity_delete);
 
 		animation = AnimationUtils
 				.loadAnimation(this, R.anim.applaud_animation);
@@ -163,6 +165,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			layout_isShow.setVisibility(View.GONE);
 			revamTxt.setVisibility(View.VISIBLE);
 			shareImg.setVisibility(View.GONE);
+			deleteTxt.setVisibility(View.VISIBLE);
 		}
 
 	}
@@ -229,7 +232,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			if (preferences.getInt("userId", -1) != -1) {
 				Intent intent = new Intent(this, DiscussActivity.class);
 				intent.putExtra("articleId", articleId);
-				startActivityForResult(intent, 1);
+				startActivity(intent);
 			}
 			break;
 		case R.id.img_ridingDetailsActivity_revamp:
@@ -257,9 +260,41 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			intent.putExtra("list", (Serializable) listTravels);
 			intent.putExtra("articleId", articleId);
 			startActivity(intent);
+		case R.id.txt_ridingDetailsActivity_delete:
+			deleteRiding();
+			break;
 		default:
 			break;
 		}
+	}
+
+	private void deleteRiding() {
+		RequestParams params = new RequestParams();
+		params.addBodyParameter("articleId", articleId + "");
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+		xUtilsUtil.httpPost("mobile/articleMemo/deleteAarticle.html", params, new CallBackPost() {
+			
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				String s = responseInfo.result;
+				JSONObject jsonObject = null;
+				try {
+					jsonObject = new JSONObject(s);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (jsonObject.optBoolean("result")) {
+					new SystemUtil().makeToast(RidingDetailsActivity.this, "删除成功");
+					RidingDetailsActivity.this.finish();
+				}
+			}
+			
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				
+			}
+		});
 	}
 
 	private void likeChosen() {
@@ -702,8 +737,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 							for (int i = 0; i < articleImagess.length; i++) {
 								list.add(articleModel);
 							}
-							System.out.println(aDetailModel.isUserCollected()
-									+ ":" + aDetailModel.isUserPraised());
 							if (aDetailModel.isUserCollected()) {
 								cllectionImg
 										.setImageResource(R.drawable.clection_chosen);
@@ -765,12 +798,12 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	 * @param view
 	 *            popup所依附的布局
 	 */
-	private void showJPush(String Flag) {
+	private void showJPush(String jpushFlag) {
 		String userName = null;
 		String title = null;
 		String praiseNum = null;
-		String integral = null;
-		String sumIntegral = null;
+
+		
 
 		// 一个自定义的布局，作为显示的内容
 		View v = LayoutInflater.from(this).inflate(R.layout.item_popup_jpush,
@@ -782,30 +815,20 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 
 		popupWindow.setTouchable(true);
-
-		if (Flag.equals("JPushDZ")) {
+		
+		if (jpushFlag.equals("JPushDZ")) {
 			praiseNum = getIntent().getStringExtra("praiseNum");
 			title = getIntent().getStringExtra("title");
 			userName = getIntent().getStringExtra("userName");
 			markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
-					+ userName + "</font>" + " 给您的游记《"
-					+ "<font color='#6dbfed'>" + title + "</font>"
-					+ "》点了赞哟!当前被点赞量为: " + "<font color='#ff0000'>" + praiseNum
-					+ "</font>"));
-			jpushFlag = "";
-		} else if (Flag.equals("JPushDS")) {
-			title = getIntent().getStringExtra("title");
-			userName = getIntent().getStringExtra("userName");
-			integral = getIntent().getStringExtra("integral");
-			sumIntegral = getIntent().getStringExtra("sumIntegral");
-			markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
-					+ userName + "</font>" + " 给您的游记《"
-					+ "<font color='#6dbfed'>" + title + "</font>" + "》打赏了"
-					+ "<font color='#ff0000'>" + integral + "</font>"
-					+ "个积分哟!当前总分为: " + "<font color='#ff0000'>" + sumIntegral
-					+ "</font>"));
-			jpushFlag = "";
+					+ userName + "</font>" + " 给您的游记《" + "<font color='#6dbfed'>"
+					+ title + "</font>" + "》点了赞哟!当前被点赞量为"
+					+ "<font color='#ff0000'>" + praiseNum + "</font>"));
+		} else if (jpushFlag.equals("JPushDS")) {
+			
 		}
+		
+		
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
@@ -817,32 +840,12 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
 			}
 		});
-		
-		popup_ok.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				popupWindow.dismiss();
-			}
-		});
-
-		popup_cancel.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				popupWindow.dismiss();
-			}
-		});
-		
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
 		// 我觉得这里是API的一个bug
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.corners_layout));
 		// 设置好参数之后再show
-		popupWindow.showAtLocation(RidingDetailsActivity.this
-				.findViewById(R.id.layout_ridingDetailsActivity),
-				Gravity.CENTER, 0, 50);
-		
+		popupWindow.showAtLocation(RidingDetailsActivity.this.findViewById(R.id.layout_ridingDetailsActivity), Gravity.CENTER, 0, 50);
 	}
 
 }

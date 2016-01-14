@@ -1,10 +1,9 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import java.io.File;
 import java.io.IOException;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +11,8 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
@@ -106,6 +107,27 @@ public class PersonalDataActivity extends BaseActivity implements
 	private SharedPreferences preferences;
 	
 	private CertainUserModel certainUserModel;
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler(){
+		
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 1:
+				String s = (String) msg.obj;
+				String[] ss = s.split("@");
+				certainUserModel.setUserImage(ss[0]);
+				img_path = null;
+				informationUpdate();
+				break;
+
+			default:
+				break;
+			}
+		}
+	};
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -225,7 +247,8 @@ public class PersonalDataActivity extends BaseActivity implements
 
 	private void setViewData() {
 		if (img_path != null) {
-			photoUploading();
+			new SystemUtil().httpClient(img_path, preferences, handler, "USER");
+			//photoUploading();
 		} else {
 			informationUpdate();
 		}
@@ -511,7 +534,7 @@ public class PersonalDataActivity extends BaseActivity implements
 	/**
 	 * 图片上传
 	 */
-	private void photoUploading() {
+	/*private void photoUploading() {
 		System.out.println(img_path);
 		final File file = new File(img_path);
 		RequestParams params = new RequestParams();
@@ -551,7 +574,7 @@ public class PersonalDataActivity extends BaseActivity implements
 					}
 				});
 	}
-
+*/
 	private void informationUpdate() {
 		if (!"".equals(nickEdt.getText().toString().trim())
 				&& !"".equals(usernameTxt.getText().toString().trim())
@@ -600,14 +623,12 @@ public class PersonalDataActivity extends BaseActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		System.out.println("onResume.....................");
 		MobclickAgent.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		System.out.println("onPause.....................");
 		MobclickAgent.onPause(this);
 	}
 	private void data() {
