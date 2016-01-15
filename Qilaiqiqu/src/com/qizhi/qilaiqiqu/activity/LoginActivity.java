@@ -111,7 +111,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 		case R.id.btn_loginActivity_visitor:
 			//new SystemUtil().makeToast(this, "游客模式");
-			//startActivity(new Intent(LoginActivity.this, MainActivity.class).putExtra("loginFlag", 2));
+			startActivity(new Intent(LoginActivity.this, MainActivity.class).putExtra("loginFlag", 2));
 			finish();
 			break;
 

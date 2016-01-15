@@ -53,8 +53,9 @@
                 android:layout_weight="1"
                 android:background="@drawable/border_editext"
                 android:paddingLeft="10dp"
-                android:text="搜索"
-                android:textColor="#909090"
+                android:hint="搜索骑游记"
+                android:textColor="@color/mainActivity_title"
+                android:textColorHint="#909090"
                 android:textSize="14sp" />
 
             <TextView

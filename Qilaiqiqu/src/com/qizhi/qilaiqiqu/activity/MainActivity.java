@@ -32,7 +32,7 @@ import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -70,6 +70,7 @@ import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel;
+import com.qizhi.qilaiqiqu.model.SearchResultModel.SearchDataList;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
@@ -113,7 +114,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	private SlidingMenu menu;
 
-	private List<ArticleModel> list;
+	private List<ArticleModel> Articlelist;
 
 	private XUtilsUtil xUtilsUtil;
 
@@ -169,8 +170,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		searchImg.setAlpha(204); // 透明度
 
 		xUtilsUtil = new XUtilsUtil();
-		list = new ArrayList<ArticleModel>();
-
+		Articlelist = new ArrayList<ArticleModel>();
 	}
 
 	private void initEvent() {
@@ -181,6 +181,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		menu.setOnOpenListener(this);
 		menu.setOnCloseListener(this);
 		inputEdt.addTextChangedListener(this);
+		inputEdt.setOnClickListener(this);
 	}
 
 	@Override
@@ -191,7 +192,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				menu.showMenu();
 			}
 			break;
+
+		case R.id.edt_mainActivity_searchInput:
+
+			break;
+
 		case R.id.txt_mainActivity_cancel:
+			shouqijianpan();
 
 			Animation animationAlpha = new AlphaAnimation(1f, 0f);
 			animationAlpha.setFillAfter(false);// 动画终止时停留在最后一帧，不然会回到没有执行前的状态
@@ -213,15 +220,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					yBouncer.start();
 
 				}
+				
 
 				@Override
 				public void onAnimationRepeat(Animation arg0) {
-					// TODO Auto-generated method stub
 				}
 
 				@Override
 				public void onAnimationEnd(Animation arg0) {
-					// TODO Auto-generated method stub
 					searchList.setVisibility(View.GONE);
 				}
 			});
@@ -236,7 +242,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				new SystemUtil().makeToast(MainActivity.this, "请登录");
 				Intent intent = new Intent(this, LoginActivity.class);
 				startActivity(intent);
-				MainActivity.this.finish();
 				// finish();
 			}
 			// Toast.makeText(this, "点击添加", 0).show();
@@ -289,7 +294,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	protected void onStart() {
 		photoImg.setImageResource(R.drawable.homepage_picture);
 		if (preferences.getInt("userId", -1) != -1) {
-
 			loginHuanXin();
 
 			RequestParams params = new RequestParams("UTF-8");
@@ -356,10 +360,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							Gson gson = new Gson();
 							Type type = new TypeToken<List<ArticleModel>>() {
 							}.getType();
-							list = gson.fromJson(jsonArray.toString(), type);
+							Articlelist = gson.fromJson(jsonArray.toString(),
+									type);
 
 							adapter = new SlideShowListAdapter(
-									MainActivity.this, list, IClist);
+									MainActivity.this, Articlelist, IClist);
 							slideShowList.setAdapter(adapter);
 							slideShowList
 									.setOnItemClickListener(MainActivity.this);
@@ -405,12 +410,25 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							}.getType();
 							cmList = new ArrayList<CarouselModel>();
 							cmList = gson.fromJson(dataList.toString(), type);
+
+							List<CarouselModel> c = new ArrayList<CarouselModel>();
 							for (int i = 0; i < cmList.size(); i++) {
+								if (!cmList.get(i).getOpenType().equals("APP")) {
+									c.add(cmList.get(i));
+								} else {
+									if (cmList.get(i).getBannerType()
+											.equals("QYJ")) {
+										c.add(cmList.get(i));
+									}
+								}
+							}
+
+							for (int i = 0; i < c.size(); i++) {
 								IClist.add(new ImageCycleViewUtil.ImageInfo(
 										"http://weride.oss-cn-hangzhou.aliyuncs.com/"
-												+ cmList.get(i).getImageAdd(),
-										cmList.get(i).getValue(), cmList.get(i)
-												.getOpenType(), cmList.get(i)
+												+ c.get(i).getImageAdd(), c
+												.get(i).getValue(), c.get(i)
+												.getOpenType(), c.get(i)
 												.getBannerType()));
 							}
 						} catch (JSONException e) {
@@ -432,10 +450,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
-		if (position != 0 && pageIndex < list.size() + 2) {
+		if (position != 0 && pageIndex < Articlelist.size() + 2) {
 			Intent intent = new Intent(this, RidingDetailsActivity.class);
 			intent.putExtra("isMe", false);
-			intent.putExtra("articleId", list.get(position - 2).getArticleId());
+			intent.putExtra("articleId", Articlelist.get(position - 2)
+					.getArticleId());
 			startActivity(intent);
 		}
 	}
@@ -733,7 +752,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							}.getType();
 							List<ArticleModel> lists = gson.fromJson(
 									jsonArray.toString(), type);
-							list.addAll(lists);
+							Articlelist.addAll(lists);
 							pageIndex = jsonObject.optInt("pageIndex");
 							if (lists.size() == 0) {
 								new SystemUtil().makeToast(MainActivity.this,
@@ -790,11 +809,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			yBouncer.start();
 
 			searchList.setVisibility(View.VISIBLE);
-			searchList.getBackground().setAlpha(110);
+			searchList.getBackground().setAlpha(170);
 			Animation animationAlpha = new AlphaAnimation(0f, 1f);
 			animationAlpha.setFillAfter(true);// 动画终止时停留在最后一帧，不然会回到没有执行前的状态
 			animationAlpha.setDuration(500);// 动画持续时间0.2秒
 			searchList.startAnimation(animationAlpha);// 是用ImageView来显示动画的
+
+			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+					.showSoftInput(inputEdt, 0);
 
 		}
 	}
@@ -802,66 +824,101 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	public void afterTextChanged(Editable e) {
 		RequestParams params = new RequestParams("UTF-8");
-		pageIndex = 1;
-		Toast.makeText(MainActivity.this, e.toString(), 0).show();
-		params.addBodyParameter("searchValue", e.toString());
-		params.addBodyParameter("pageIndex", pageIndex + "");
-		params.addBodyParameter("pageSize", "10");
-		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
+		if (!e.toString().equals("")) {
+			pageIndex = 1;
+			params.addBodyParameter("searchValue", e.toString());
+			params.addBodyParameter("pageIndex", pageIndex + "");
+			params.addBodyParameter("pageSize", "10");
+			params.addBodyParameter("userId", preferences.getInt("userId", -1)
+					+ "");
 
-		xUtilsUtil.httpPost("common/fuzzyQueryResultPaginationList.html",
-				params, new CallBackPost() {
+			xUtilsUtil.httpPost("common/fuzzyQueryResultPaginationList.html",
+					params, new CallBackPost() {
 
-					@Override
-					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						String s = responseInfo.result;
-						JSONObject jsonObject = null;
-						try {
-							jsonObject = new JSONObject(s);
-						} catch (JSONException e) {
-							e.printStackTrace();
+						@Override
+						public void onMySuccess(
+								ResponseInfo<String> responseInfo) {
+							String s = responseInfo.result;
+							JSONObject jsonObject = null;
+							try {
+								jsonObject = new JSONObject(s);
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							if (jsonObject.optBoolean("result")) {
+
+								// 数据获取
+								Gson gson = new Gson();
+								Type type = new TypeToken<SearchResultModel>() {
+								}.getType();
+								final SearchResultModel model = gson.fromJson(
+										jsonObject.toString(), type);
+								List<SearchDataList> dataList = model
+										.getDataList();
+								List<SearchDataList> d = new ArrayList<SearchDataList>();
+								for (int i = 0; i < dataList.size(); i++) {
+									if (dataList.get(i).getType().toString()
+											.equals("QYJ")) {
+										d.add(dataList.get(i));
+									}
+								}
+								if (d.size() == 0) {
+									new SystemUtil().makeToast(
+											MainActivity.this, "没有搜索到任何结果哦!");
+								}
+								adapterSearch = new SearchResultAdapter(
+										MainActivity.this, d);
+								searchList.setAdapter(adapterSearch);
+								searchList
+										.setOnItemClickListener(new OnItemClickListener() {
+											@Override
+											public void onItemClick(
+													AdapterView<?> arg0,
+													View arg1, int position,
+													long arg3) {
+
+												Intent intent = new Intent(
+														MainActivity.this,
+														RidingDetailsActivity.class);
+												intent.putExtra("isMe", false);
+												intent.putExtra("articleId",
+														model.getDataList()
+																.get(position)
+																.getId());
+												startActivity(intent);
+											}
+										});
+
+								// 更新UI
+								adapter.notifyDataSetChanged();
+
+							}
 						}
-						if (jsonObject.optBoolean("result")) {
 
-							// 数据获取
-							Gson gson = new Gson();
-							Type type = new TypeToken<SearchResultModel>() {
-							}.getType();
-							SearchResultModel model = gson.fromJson(
-									jsonObject.toString(), type);
-
-							adapterSearch = new SearchResultAdapter(
-									MainActivity.this, model.getDataList());
-							searchList.setAdapter(adapterSearch);
-							searchList
-									.setOnItemClickListener(MainActivity.this);
-
-							// 更新UI
-							adapter.notifyDataSetChanged();
-
+						@Override
+						public void onMyFailure(HttpException error, String msg) {
+							new SystemUtil().makeToast(MainActivity.this,
+									"网络请求失败，请检查网络" + msg);
 						}
-					}
-
-					@Override
-					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil().makeToast(MainActivity.this,
-								"网络请求失败，请检查网络" + msg);
-					}
-				});
+					});
+		}
 
 	}
 
 	@Override
 	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
 			int arg3) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-		// TODO Auto-generated method stub
 
+	}
+
+	public void shouqijianpan() {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(inputEdt.getWindowToken(), 0);
 	}
 
 }

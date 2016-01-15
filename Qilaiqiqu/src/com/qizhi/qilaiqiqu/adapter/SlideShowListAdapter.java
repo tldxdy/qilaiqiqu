@@ -107,11 +107,12 @@ public class SlideShowListAdapter extends BaseAdapter {
 							} else if (imageInfo.type.toString().equals("APP")) {
 								if (imageInfo.bannerType.toString().equals(
 										"QYJ")) {
-								
+
 									context.startActivity(new Intent(context,
 											RidingDetailsActivity.class)
-											.putExtra("articleId",
-													Integer.parseInt(imageInfo.value.toString())));
+											.putExtra("articleId", Integer
+													.parseInt(imageInfo.value
+															.toString())));
 								} else if (imageInfo.bannerType.toString()
 										.equals("PQS")) {
 
@@ -179,11 +180,15 @@ public class SlideShowListAdapter extends BaseAdapter {
 		holder.likeImg.setImageResource(R.drawable.like_unpress);
 		// holder.likeImg.setTag(position);
 		// holder.photoImg.setImageResource(R.drawable.lena);
-		/*SystemUtil.loadImagexutils(list.get(position - 1).getDefaultShowImage()
-				.split("\\@")[0], holder.backgroundImg, context);*/
-		String internetUrl ="http://weride.oss-cn-hangzhou.aliyuncs.com/" + list.get(position - 1).getDefaultShowImage().split("\\@")[0];
+		/*
+		 * SystemUtil.loadImagexutils(list.get(position -
+		 * 1).getDefaultShowImage() .split("\\@")[0], holder.backgroundImg,
+		 * context);
+		 */
+		String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
+				+ list.get(position - 1).getDefaultShowImage().split("\\@")[0];
 		Picasso.with(context).load(internetUrl).into(holder.backgroundImg);
-		
+
 		// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
 		holder.photoImg.setOnClickListener(new OnClickListener() {
 

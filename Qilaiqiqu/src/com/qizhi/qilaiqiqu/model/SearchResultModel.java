@@ -20,11 +20,20 @@ public class SearchResultModel {
 		private String userImage;
 		private String defaultImage;
 		private boolean involved;
+		private boolean praised;
 		private int id;
 		private String state;
 		private String type;
 		private String title;
 		private String userName;
+
+		public boolean isPraised() {
+			return praised;
+		}
+
+		public void setPraised(boolean praised) {
+			this.praised = praised;
+		}
 
 		public String getDuration() {
 			return duration;

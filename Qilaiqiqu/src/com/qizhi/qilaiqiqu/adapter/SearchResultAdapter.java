@@ -33,13 +33,14 @@ public class SearchResultAdapter extends BaseAdapter {
 	private Context context;
 	private ViewHolder holder;
 	private LayoutInflater inflater;
-	
+
 	private XUtilsUtil xUtilsUtil;
 	private SharedPreferences preferences;
 
 	public SearchResultAdapter(Context context, List<SearchDataList> list) {
 		this.list = list;
 		this.context = context;
+		inflater = LayoutInflater.from(context);
 		preferences = context.getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
@@ -62,7 +63,8 @@ public class SearchResultAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View v, ViewGroup arg2) {
-		if (v.getTag() == null || v == null) {
+		if (v == null || v.getTag() == null) {
+			holder = new ViewHolder();
 			v = inflater.inflate(R.layout.item_list_mainactivity_body, null);
 			holder.timeTxt = (TextView) v.findViewById(R.id.txt_mainList_time);
 			holder.likeTxt = (TextView) v.findViewById(R.id.txt_mainList_like);
@@ -80,101 +82,64 @@ public class SearchResultAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) v.getTag();
 		}
-		holder.timeTxt.setText(list.get(position).getCreateDate()
-				.substring(0, 10));
-		holder.titleTxt.setText(list.get(position).getTitle());
-		holder.byBrowseTxt.setText(list.get(position).getScanNum()
-				+ list.get(position).getScanNum() + "次浏览");
-		holder.likeTxt.setText((list.get(position).getPraiseNum() + list.get(
-				position).getPraiseNum())
-				+ "");
-		SystemUtil.loadImagexutils(list.get(position).getUserImage(),
-				holder.photoImg, context);
-		holder.likeImg.setImageResource(R.drawable.like_unpress);
-		// holder.likeImg.setTag(position);
-		// holder.photoImg.setImageResource(R.drawable.lena);
-		/*
-		 * SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage()
-		 * .split("\\@")[0], holder.backgroundImg, context);
-		 */
-		String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
-				+ list.get(position).getDefaultImage().split("\\@")[0];
-		Picasso.with(context).load(internetUrl).into(holder.backgroundImg);
+		if (list.get(position).getType().toString().equals("QYJ")) {
+			System.out.println(list.get(position).getType());
+			holder.timeTxt.setText(list.get(position).getCreateDate()
+					.substring(0, 10));
+			holder.titleTxt.setText(list.get(position).getTitle());
+			holder.byBrowseTxt.setText(list.get(position).getScanNum()
+					+ list.get(position).getScanNum() + "次浏览");
+			holder.likeTxt.setText((list.get(position).getPraiseNum() + list
+					.get(position).getPraiseNum()) + "");
+			SystemUtil.loadImagexutils(list.get(position).getUserImage(),
+					holder.photoImg, context);
+			holder.likeImg.setImageResource(R.drawable.like_unpress);
+			// holder.likeImg.setTag(position);
+			// holder.photoImg.setImageResource(R.drawable.lena);
+			/*
+			 * SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage(
+			 * ) .split("\\@")[0], holder.backgroundImg, context);
+			 */
+			String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
+					+ list.get(position).getDefaultImage().split("\\@")[0];
+			Picasso.with(context).load(internetUrl).into(holder.backgroundImg);
 
-		// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
-		holder.photoImg.setOnClickListener(new OnClickListener() {
+			// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
+			holder.photoImg.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				System.out.println(position);
-				Intent intent = new Intent(context, PersonActivity.class);
-				intent.putExtra("userId", list.get(position).getUserId());
-				context.startActivity(intent);
+				@Override
+				public void onClick(View v) {
+					System.out.println(position);
+					Intent intent = new Intent(context, PersonActivity.class);
+					intent.putExtra("userId", list.get(position).getUserId());
+					context.startActivity(intent);
+
+				}
+			});
+			if (list.get(position).isPraised()) {
+				holder.likeImg.setImageResource(R.drawable.like_press);
+				holder.likeTxt.setTextColor(0xffffffff);
+
+			} else {
+				holder.likeImg.setImageResource(R.drawable.like_unpress);
+				holder.likeTxt.setTextColor(0xffff0000);
 
 			}
-		});
-		if (list.get(position).isInvolved()) {
-			holder.likeImg.setImageResource(R.drawable.like_press);
-			holder.likeTxt.setTextColor(0xffffffff);
 
-		} else {
-			holder.likeImg.setImageResource(R.drawable.like_unpress);
-			holder.likeTxt.setTextColor(0xffff0000);
+			holder.likeImg.setOnClickListener(new OnClickListener() {
 
-		}
-
-		holder.likeImg.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (list.get(position).isInvolved()) {
-					RequestParams params = new RequestParams();
-					params.addBodyParameter("userId",
-							preferences.getInt("userId", -1) + "");
-					params.addBodyParameter("articleId", list.get(position)
-							.getId() + "");
-					params.addBodyParameter("uniqueKey",
-							preferences.getString("uniqueKey", null));
-					xUtilsUtil.httpPost(
-							"mobile/articleMemo/unPraiseArticle.html", params,
-							new CallBackPost() {
-
-								@Override
-								public void onMySuccess(
-										ResponseInfo<String> responseInfo) {
-									String s = responseInfo.result;
-									JSONObject jsonObject = null;
-									try {
-										jsonObject = new JSONObject(s);
-									} catch (JSONException e) {
-										e.printStackTrace();
-									}
-									if (jsonObject.optBoolean("result")) {
-										list.get(position).setInvolved(false);
-										list.get(position).setPraiseNum(
-												list.get(position)
-														.getPraiseNum() - 1);
-										notifyDataSetChanged();
-									}
-								}
-
-								@Override
-								public void onMyFailure(HttpException error,
-										String msg) {
-
-								}
-							});
-				} else {
-					RequestParams params = new RequestParams();
-					params.addBodyParameter("userId",
-							preferences.getInt("userId", -1) + "");
-					params.addBodyParameter("articleId", list.get(position)
-							.getId() + "");
-					params.addBodyParameter("uniqueKey",
-							preferences.getString("uniqueKey", null));
-					if (preferences.getInt("userId", -1) != -1) {
+				@Override
+				public void onClick(View v) {
+					if (list.get(position).isPraised()) {
+						RequestParams params = new RequestParams();
+						params.addBodyParameter("userId",
+								preferences.getInt("userId", -1) + "");
+						params.addBodyParameter("articleId", list.get(position)
+								.getId() + "");
+						params.addBodyParameter("uniqueKey",
+								preferences.getString("uniqueKey", null));
 						xUtilsUtil.httpPost(
-								"mobile/articleMemo/praiseArticle.html",
+								"mobile/articleMemo/unPraiseArticle.html",
 								params, new CallBackPost() {
 
 									@Override
@@ -189,11 +154,11 @@ public class SearchResultAdapter extends BaseAdapter {
 										}
 										if (jsonObject.optBoolean("result")) {
 											list.get(position)
-													.setInvolved(true);
+													.setPraised(false);
 											list.get(position)
 													.setPraiseNum(
 															list.get(position)
-																	.getPraiseNum() + 1);
+																	.getPraiseNum() - 2);
 											notifyDataSetChanged();
 										}
 									}
@@ -204,11 +169,52 @@ public class SearchResultAdapter extends BaseAdapter {
 
 									}
 								});
+					} else {
+						RequestParams params = new RequestParams();
+						params.addBodyParameter("userId",
+								preferences.getInt("userId", -1) + "");
+						params.addBodyParameter("articleId", list.get(position)
+								.getId() + "");
+						params.addBodyParameter("uniqueKey",
+								preferences.getString("uniqueKey", null));
+						if (preferences.getInt("userId", -1) != -1) {
+							xUtilsUtil.httpPost(
+									"mobile/articleMemo/praiseArticle.html",
+									params, new CallBackPost() {
+
+										@Override
+										public void onMySuccess(
+												ResponseInfo<String> responseInfo) {
+											String s = responseInfo.result;
+											JSONObject jsonObject = null;
+											try {
+												jsonObject = new JSONObject(s);
+											} catch (JSONException e) {
+												e.printStackTrace();
+											}
+											if (jsonObject.optBoolean("result")) {
+												list.get(position).setPraised(
+														true);
+												list.get(position)
+														.setPraiseNum(
+																list.get(
+																		position)
+																		.getPraiseNum() + 2);
+												notifyDataSetChanged();
+											}
+										}
+
+										@Override
+										public void onMyFailure(
+												HttpException error, String msg) {
+
+										}
+									});
+						}
 					}
 				}
-			}
-		});
-
+			});
+		}
 		return v;
 	}
 
