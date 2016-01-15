@@ -112,6 +112,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	}
 
 	private void commentRiding() {
+		System.out.println(contentEdit.getText().toString());
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("articleId", articleId + "");

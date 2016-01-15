@@ -1,8 +1,13 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,7 +79,9 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private boolean falg = false; //判断图片哪里传过来的
 	private int articleId;
 	
-	private int num;
+	private int num = 0;
+	private LinearLayout waitLayout;
+	private TextView waitTxt;
 	
 	
 	@SuppressLint("HandlerLeak")
@@ -90,6 +97,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				if(list.size()-1 != num){
 					num = num + 1;
 					new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
+					//photoUploading();
 				}else{
 					publishTravels();
 				}
@@ -127,12 +135,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		xUtilsUtil = new XUtilsUtil();
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_releaseactivity_back);
-
+		waitLayout = (LinearLayout) findViewById(R.id.layout_releaseactivity_wait);
+		
 		browseTxt = (TextView) findViewById(R.id.txt_releaseactivity_browse);
 		publishTxt = (TextView) findViewById(R.id.txt_releaseactivity_publish);
 		titleTxt = (TextView) findViewById(R.id.txt_releaseactivity_title);
+		waitTxt = (TextView) findViewById(R.id.txt_releaseactivity_wait);
 		
 		releaseList = (ListView) findViewById(R.id.list_releaseactivity_release);
+		
 		initHeaderView();
 		initFooterView();
 		
@@ -201,10 +212,11 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			//new SystemUtil().makeToast(this, "发表");
 			// 图片上传
 			if(!falg){
-				//photoUploading();
 				imgListUrl = new ArrayList<String>();
+				num = 0;
+				//photoUploading();
+				
 				if(list.size() != 0){
-					num = 0;
 					new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
 				}
 			}else{
@@ -326,6 +338,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 							if(!falg){
 								new SystemUtil().makeToast(ReleaseActivity.this,
 										"发表成功");
+								ReleaseActivity.this.finish();
 							}else{
 								new SystemUtil().makeToast(ReleaseActivity.this,
 										"修改成功");
@@ -344,17 +357,16 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				});
 	}
 
-	/*private void photoUploading() {
+/*	private void photoUploading() {
 		File file;
 		imgListUrl = new ArrayList<String>();
 		for (int i = 0; i < list.size(); i++) {
 			imgListUrl.add(null);
 		}
-		for (int i = 0; i < list.size(); i++) {
-			final int num = i;
+		if (list.size() != 0) {
 			RequestParams params = new RequestParams("UTF-8");
-			file = new File(list.get(i).getArticleImage());
-			params.addBodyParameter("files", file);
+			file = new File(list.get(num).getArticleImage());
+			params.addBodyParameter("files",file);
 			params.addBodyParameter("type", "QYJ");
 			params.addBodyParameter("uniqueKey",
 					preferences.getString("uniqueKey", "admin"));
@@ -374,18 +386,12 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 								JSONArray jsonArray = jsonObject
 										.optJSONArray("dataList");
 								String s = jsonArray.optString(0);
-								// String[] ss = s.split("@");
-								imgListUrl.set(num, s);
-								boolean falg = true;
-								for (int j = 0; j < imgListUrl.size() && falg; j++) {
-									if (imgListUrl.get(j) == null) {
-										falg = false;
-									}
-								}
-								if (falg) {
+									Message msg = new Message();
+									msg.what = 1;
+									msg.obj = s;
+									handler.handleMessage(msg);
 									System.out.println("图片：" + imgListUrl);
-									publishTravels();
-								}
+									//publishTravels();
 
 							}
 
@@ -412,5 +418,5 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		super.onPause();
 		MobclickAgent.onPause(this);
 	}
-
+	
 }

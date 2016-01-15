@@ -33,7 +33,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory.Options;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -98,23 +97,20 @@ public class SystemUtil {
 	 * @param srcPath图片路径
 	 * @return 压缩后的bitmap
 	 */
-	public static Bitmap compressImageFromFile(String srcPath, float ww, float hh) {  
+	public static Bitmap compressImageFromFile(String srcPath, float ww) {  
         BitmapFactory.Options newOpts = new BitmapFactory.Options();  
         newOpts.inJustDecodeBounds = true;//只读边,不读内容  
         Bitmap bitmap = BitmapFactory.decodeFile(srcPath, newOpts);  
   
         newOpts.inJustDecodeBounds = false;  
         int w = newOpts.outWidth;  
-        int h = newOpts.outHeight;  
         //现在主流手机比较多是800*480分辨率
 /*        float hh = 800f;//  
         float ww = 480f;//  
 */        int be = 1;  
-        if (w > h && w > ww) {  
+        if (w > ww) {  
             be = (int) (newOpts.outWidth / ww);  
-        } else if (w < h && h > hh) {  
-            be = (int) (newOpts.outHeight / hh);  
-        }  
+        }
         if (be <= 0)  
             be = 1;  
         newOpts.inSampleSize = be;//设置采样率  
@@ -125,7 +121,7 @@ public class SystemUtil {
           
         bitmap = BitmapFactory.decodeFile(srcPath, newOpts);  
 		
-        return bitmap;  
+        return compressImage(bitmap, 1024);  
     }
 	/**
 	 * 
@@ -229,6 +225,7 @@ public class SystemUtil {
 
 		return inSampleSize;
 	}
+	
 
 	public void httpClient(final String img_path, final SharedPreferences preferences, final Handler handler,final String type){
 		new Thread(new Runnable() {
@@ -242,7 +239,6 @@ public class SystemUtil {
 				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);//设置浏览器兼容模式
 				FileBody fileBody = new FileBody(new File(img_path));//把文件转换成流对象FileBody
 				builder.addPart("files", fileBody);
-				builder.addPart("files"+1, fileBody);
 				builder.addTextBody("type", type);//设置请求参数
 				builder.addTextBody("uniqueKey", preferences.getString("uniqueKey", null));//设置请求参数
 				HttpEntity entity = builder.build();// 生成 HTTP POST 实体  	

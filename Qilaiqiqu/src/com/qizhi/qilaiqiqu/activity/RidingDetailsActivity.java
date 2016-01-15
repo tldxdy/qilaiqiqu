@@ -178,6 +178,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		shareImg.setOnClickListener(this);
 		cllectionImg.setOnClickListener(this);
 		revamTxt.setOnClickListener(this);
+		deleteTxt.setOnClickListener(this);
 	}
 
 	@Override
@@ -260,6 +261,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			intent.putExtra("list", (Serializable) listTravels);
 			intent.putExtra("articleId", articleId);
 			startActivity(intent);
+			break;
 		case R.id.txt_ridingDetailsActivity_delete:
 			deleteRiding();
 			break;
@@ -273,7 +275,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		params.addBodyParameter("articleId", articleId + "");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/articleMemo/deleteAarticle.html", params, new CallBackPost() {
+		xUtilsUtil.httpPost("mobile/articleMemo/deleteArticle.html", params, new CallBackPost() {
 			
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {

@@ -3,6 +3,7 @@ package com.qizhi.qilaiqiqu.adapter;
 import java.util.List;
 
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.model.SystemMessageModel;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -18,16 +19,17 @@ public class MyMessageAdapter extends BaseAdapter {
 	private ViewHolder holder;
 	private LayoutInflater inflater;
 	
-	private List<?> list;
+	private List<SystemMessageModel> list;
 	private Context context;
 	
-	public MyMessageAdapter(Context context){
+	public MyMessageAdapter(Context context, List<SystemMessageModel> list){
 		this.context = context;
 		inflater = LayoutInflater.from(context);
+		this.list = list;
 	}
 	@Override
 	public int getCount() {
-		return 5;
+		return list.size();
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class MyMessageAdapter extends BaseAdapter {
 		}else{
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
+		holder.contentTxt.setText(list.get(position).getContent());
 		
 		return convertView;
 	}
