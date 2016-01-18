@@ -129,7 +129,7 @@
                 android:layout_alignTop="@+id/edt_registerActivity_code"
                 android:layout_marginLeft="15dp"
                 android:layout_toRightOf="@+id/edt_registerActivity_code"
-                android:background="@drawable/corners_bg_blue"
+                android:background="@drawable/corners_bg_ao"
                 android:gravity="center"
                 android:text="@string/edit_forgrtactivity_send"
                 android:textColor="@color/write"

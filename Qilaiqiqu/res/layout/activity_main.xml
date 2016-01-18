@@ -40,8 +40,8 @@
             android:id="@+id/layout_mainActivity_searchLayout"
             android:layout_width="fill_parent"
             android:layout_height="48dp"
-            android:background="@color/white"
             android:layout_marginTop="-48dp"
+            android:background="@color/white"
             android:gravity="center_vertical"
             android:orientation="horizontal" >
 
@@ -52,8 +52,8 @@
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/border_editext"
+                android:hint="@string/search_qyj"
                 android:paddingLeft="10dp"
-                android:hint="搜索骑游记"
                 android:textColor="@color/mainActivity_title"
                 android:textColorHint="#909090"
                 android:textSize="14sp" />
@@ -66,13 +66,12 @@
                 android:layout_marginRight="10dp"
                 android:background="@drawable/corners_bg_blue"
                 android:gravity="center"
-                android:text="取消"
+                android:text="@string/cancel"
                 android:textColor="@color/f8f8" />
         </LinearLayout>
     </FrameLayout>
 
     <FrameLayout
-        
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 
@@ -136,8 +135,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:background="#000000"
-            android:visibility="gone"
-            >
+            android:visibility="gone" >
         </ListView>
     </FrameLayout>
 

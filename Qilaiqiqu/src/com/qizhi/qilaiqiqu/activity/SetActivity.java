@@ -14,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 
 import com.easemob.EMCallBack;
@@ -70,8 +69,10 @@ public class SetActivity extends Activity implements OnClickListener {
 
 	private void initView() {
 		view1 = (PushSlideSwitchView) findViewById(R.id.push_set_warm_switchview1);
-//		view2 = (PushSlideSwitchView) findViewById(R.id.push_set_warm_switchview2);
-//		view3 = (PushSlideSwitchView) findViewById(R.id.push_set_warm_switchview3);
+		// view2 = (PushSlideSwitchView)
+		// findViewById(R.id.push_set_warm_switchview2);
+		// view3 = (PushSlideSwitchView)
+		// findViewById(R.id.push_set_warm_switchview3);
 
 		cacheTxt = (TextView) findViewById(R.id.txt_setActivity_cache);
 		logoutTxt = (TextView) findViewById(R.id.txt_setActivity_logout);
@@ -111,24 +112,24 @@ public class SetActivity extends Activity implements OnClickListener {
 						+ isChecked);
 			}
 		});
-//		view2.setOnChangeListener(new OnSwitchChangedListener() {
-//
-//			@Override
-//			public void onSwitchChange(PushSlideSwitchView switchView,
-//					boolean isChecked) {
-//				new SystemUtil().makeToast(SetActivity.this, "滑动开关2:"
-//						+ isChecked);
-//			}
-//		});
-//		view3.setOnChangeListener(new OnSwitchChangedListener() {
-//
-//			@Override
-//			public void onSwitchChange(PushSlideSwitchView switchView,
-//					boolean isChecked) {
-//				new SystemUtil().makeToast(SetActivity.this, "滑动开关3:"
-//						+ isChecked);
-//			}
-//		});
+		// view2.setOnChangeListener(new OnSwitchChangedListener() {
+		//
+		// @Override
+		// public void onSwitchChange(PushSlideSwitchView switchView,
+		// boolean isChecked) {
+		// new SystemUtil().makeToast(SetActivity.this, "滑动开关2:"
+		// + isChecked);
+		// }
+		// });
+		// view3.setOnChangeListener(new OnSwitchChangedListener() {
+		//
+		// @Override
+		// public void onSwitchChange(PushSlideSwitchView switchView,
+		// boolean isChecked) {
+		// new SystemUtil().makeToast(SetActivity.this, "滑动开关3:"
+		// + isChecked);
+		// }
+		// });
 	}
 
 	@Override
@@ -176,10 +177,6 @@ public class SetActivity extends Activity implements OnClickListener {
 			public void onSuccess() {
 				Log.d("LOGOUT", "环信登出成功!");
 				System.err.println("环信登出成功!");
-
-				// 设置极光推送 用户别名
-				JPushInterface.setAliasAndTags(getApplicationContext(), "",
-						null, mAliasCallback);
 
 				/**
 				 * SharedPreferences清空用户Id和uniqueKey

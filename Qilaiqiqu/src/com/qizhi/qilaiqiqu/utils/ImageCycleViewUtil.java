@@ -268,14 +268,19 @@ public class ImageCycleViewUtil extends FrameLayout {
 		data = list;
 		mCount = list.size();
 		initIndication();
+		System.out.println(1);
 		if (callBack == null) {
 			new IllegalArgumentException("LoadImageCallBack 回调函数不能为空！");
 		}
+		System.out.println(2);
 		mLoadImageCallBack = callBack;
+		System.out.println(3);
 		mViewPager.setAdapter(new ImageCycleAdapter());
+		System.out.println(4);
 		// 最大值中间 的第一个
-		mViewPager.setCurrentItem(Integer.MAX_VALUE / 2
-				- ((Integer.MAX_VALUE / 2) % mCount));
+//		mViewPager.setCurrentItem(Integer.MAX_VALUE / 2
+//				- ((Integer.MAX_VALUE / 2) % mCount));
+		System.out.println(5);
 	}
 
 	/**
@@ -342,12 +347,13 @@ public class ImageCycleViewUtil extends FrameLayout {
 			this.type = type;
 			this.bannerType = bannerType;
 		}
-
+		
 		public Object image;
 		public String text = "";
 		public Object value;
 		public Object type;
 		public Object bannerType;
+		
 	}
 
 	/**

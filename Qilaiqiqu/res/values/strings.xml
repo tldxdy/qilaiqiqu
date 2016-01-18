@@ -147,4 +147,13 @@
 
 
     <string name="text_personactivity_introduction">个人介绍</string> 
-    </resources>
+
+
+    <string name="search_qyj">搜索骑游记</string> 
+
+
+    <string name="cancel">取消</string>
+ 
+
+
+    <string name="text_activitydetailsactivity_title">活动详情</string>    </resources>

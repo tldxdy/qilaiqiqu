@@ -43,7 +43,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 
 import com.easemob.EMCallBack;
@@ -540,10 +539,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				Log.d("LOGOUT", "环信登出成功!");
 				System.err.println("环信登出成功!");
 
-				// 设置极光推送 用户别名
-				JPushInterface.setAliasAndTags(getApplicationContext(), "",
-						null, mAliasCallback);
-
 				/**
 				 * SharedPreferences清空用户Id和uniqueKey
 				 */
@@ -625,11 +620,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	private void loginHuanXin() {
 
-		// 设置极光推送 用户别名
-		JPushInterface
-				.setAliasAndTags(getApplicationContext(),
-						preferences.getString("imUserName", null), null,
-						mAliasCallback);
 
 		// final Editor userInfo_Editor = sp.edit();
 		// 登录环信

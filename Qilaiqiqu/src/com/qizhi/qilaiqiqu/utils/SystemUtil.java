@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.bumptech.glide.load.Transformation;
+import com.bumptech.glide.load.engine.Resource;
 import com.lidroid.xutils.BitmapUtils;
 import com.squareup.picasso.Picasso;
 
@@ -268,4 +270,5 @@ public class SystemUtil {
 			}
 		}).start();
 	}
+	
 }

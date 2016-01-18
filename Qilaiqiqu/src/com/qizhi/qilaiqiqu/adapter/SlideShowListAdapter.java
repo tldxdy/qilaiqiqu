@@ -136,7 +136,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 									.load(imageInfo.image.toString())
 									.into(imageView);
 							// imageView.setImageResource(R.drawable.demo);
-
+							System.out.println(imageInfo.image.toString()+"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 							return imageView;
 
 						}

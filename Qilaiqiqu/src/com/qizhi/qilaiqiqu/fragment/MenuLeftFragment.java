@@ -152,7 +152,6 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
 //				getActivity().finish();
-				
 			}
 			break;
 		case R.id.layout_personalfragment_my_travel_notes:

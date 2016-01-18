@@ -66,7 +66,9 @@ public class StartActivity extends Activity implements CallBackPost {
 		JPushInterface.init(this);
 		JPushInterface.setLatestNotificationNumber(this, 3);
 	}
+		
 
+	
 	/**
 	 * @param 5秒启动handle
 	 */

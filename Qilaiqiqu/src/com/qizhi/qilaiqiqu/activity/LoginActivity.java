@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import cn.jpush.android.api.JPushInterface;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -111,7 +112,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 		case R.id.btn_loginActivity_visitor:
 			//new SystemUtil().makeToast(this, "游客模式");
-			startActivity(new Intent(LoginActivity.this, MainActivity.class).putExtra("loginFlag", 2));
+//			startActivity(new Intent(LoginActivity.this, MainActivity.class).putExtra("loginFlag", 2));
 			finish();
 			break;
 
@@ -147,6 +148,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 				.toString());
 		params.addQueryStringParameter("loginPwd", passwordEdt.getText()
 				.toString());
+		params.addQueryStringParameter("pushToken", JPushInterface.getRegistrationID(LoginActivity.this));
+		params.addQueryStringParameter("adviceType", "ANDROID");
 		httpUtils.httpPost("common/queryUserLogin.html", params,
 				new CallBackPost() {
 
