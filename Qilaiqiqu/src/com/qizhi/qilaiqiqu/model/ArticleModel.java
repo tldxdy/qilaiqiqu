@@ -2,42 +2,41 @@ package com.qizhi.qilaiqiqu.model;
 
 import java.util.List;
 
-
 /**
  * 
  * @author 系统热门游记展示
- *
+ * 
  */
 public class ArticleModel {
-	private Integer articleId; // 游记ID
-	private String title; // 游记标题
+	private Integer userId; // 用户Id
 	private String createDate; // 发表时间
 	private Integer scanNum; // 浏览量
-	private String defaultShowImage; // 展示图片
-	private String userImage; // 用户头像
-	private Integer userId; // 用户Id
 	private Integer praiseNum;
+	private Integer articleId; // 游记ID
 	private String updateDate;
-    private Integer updateTimes;
-    private String memo;
-    private String articleImage;
-    private Integer virtualPraise;
+	private Integer updateTimes;
+	private String userImage; // 用户头像
+	private Integer virtualPraise;
 	private Integer virtualScan;
-	private String imageMemo;
+	private String defaultShowImage; // 展示图片
 	private List<?> commentList;
 	private List<?> articleShareList;
 	private List<?> bannerList;
-    private Integer commentNum;
+	private Integer commentNum;
 	private String integralNum;
-	private String address;
-	private String location;
-	private String state;
-	private String userName;
 	private boolean isPraised;
 	private String rewardIntegral;
-	
-	
-	
+	private String location;
+	private String state;
+	private String title; // 游记标题
+	private String userName;
+	private List<ArticleDetailListModel> articleDetailList;
+
+	/*
+	 * private String address; private String memo; private String articleImage;
+	 * private String imageMemo;
+	 */
+
 	public Integer getUserId() {
 		return userId;
 	}
@@ -118,22 +117,6 @@ public class ArticleModel {
 		this.updateTimes = updateTimes;
 	}
 
-	public String getMemo() {
-		return memo;
-	}
-
-	public void setMemo(String memo) {
-		this.memo = memo;
-	}
-
-	public String getArticleImage() {
-		return articleImage;
-	}
-
-	public void setArticleImage(String articleImage) {
-		this.articleImage = articleImage;
-	}
-
 	public Integer getVirtualPraise() {
 		return virtualPraise;
 	}
@@ -148,14 +131,6 @@ public class ArticleModel {
 
 	public void setVirtualScan(Integer virtualScan) {
 		this.virtualScan = virtualScan;
-	}
-
-	public String getImageMemo() {
-		return imageMemo;
-	}
-
-	public void setImageMemo(String imageMemo) {
-		this.imageMemo = imageMemo;
 	}
 
 	public List<?> getCommentList() {
@@ -198,14 +173,6 @@ public class ArticleModel {
 		this.integralNum = integralNum;
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
 	public String getLocation() {
 		return location;
 	}
@@ -246,25 +213,13 @@ public class ArticleModel {
 		this.rewardIntegral = rewardIntegral;
 	}
 
-	@Override
-	public String toString() {
-		return "ArticleModel [articleId=" + articleId + ", title=" + title
-				+ ", createDate=" + createDate + ", scanNum=" + scanNum
-				+ ", defaultShowImage=" + defaultShowImage + ", userImage="
-				+ userImage + ", userId=" + userId + ", praiseNum=" + praiseNum
-				+ ", updateDate=" + updateDate + ", updateTimes=" + updateTimes
-				+ ", memo=" + memo + ", articleImage=" + articleImage
-				+ ", virtualPraise=" + virtualPraise + ", virtualScan="
-				+ virtualScan + ", imageMemo=" + imageMemo + ", commentList="
-				+ commentList + ", articleShareList=" + articleShareList
-				+ ", bannerList=" + bannerList + ", commentNum=" + commentNum
-				+ ", integralNum=" + integralNum + ", address=" + address
-				+ ", location=" + location + ", state=" + state + ", userName="
-				+ userName + ", isPraised=" + isPraised + ", rewardIntegral="
-				+ rewardIntegral + "]";
+	public List<ArticleDetailListModel> getArticleDetailList() {
+		return articleDetailList;
 	}
 
-	
-	
-	
+	public void setArticleDetailList(
+			List<ArticleDetailListModel> articleDetailList) {
+		this.articleDetailList = articleDetailList;
+	}
+
 }

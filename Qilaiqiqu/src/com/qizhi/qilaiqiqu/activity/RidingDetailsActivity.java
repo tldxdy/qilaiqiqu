@@ -1,19 +1,24 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +30,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,10 +43,12 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.adapter.Previewadapter;
 import com.qizhi.qilaiqiqu.adapter.RidingDetailsListAdapter;
 import com.qizhi.qilaiqiqu.model.ArticleMemoDetailModel;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
+import com.qizhi.qilaiqiqu.progress.FileUploadAsyncTask;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -99,6 +107,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private List<ArticleModel> list;
 
 	private List<TravelsinformationModel> listTravels;
+	
+	private List<TravelsinformationModel> previewList;
+	
+	private Previewadapter previewadapter;
 
 	private ArticleMemoDetailModel aDetailModel;
 	private ArticleModel articleModel;
@@ -108,7 +120,43 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 	private boolean isMe = false;
 
+	private boolean ReleaseActivityfalg = false;
+
 	private String jpushFlag;
+	
+	
+	private int num = 0;
+	
+	private List<String> imgListUrl;
+	
+	
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 1:
+				String s = (String) msg.obj;
+				imgListUrl.add(s);
+				if(previewList.size()-1 != num){
+					num = num + 1;
+					File file = new File(previewList.get(num).getArticleImage());
+					new FileUploadAsyncTask(RidingDetailsActivity.this, (num + 1), previewList.size(), preferences, "QYJ", handler).execute(file);
+					//new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
+					//photoUploading();
+				}else{
+					publishTravels();
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+		
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,19 +166,19 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		jpushFlag = getIntent().getStringExtra("jpushFlag");
 		initView();
 		initEvent();
-		
+
 	}
-	
-	public void onWindowFocusChanged(boolean hasFocus) { 
-        super.onWindowFocusChanged(hasFocus); 
-        if(hasFocus){ 
-        	if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
+
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
 				showJPush(jpushFlag);
 			}
-        }
+		}
 	}
-	
 
+	@SuppressWarnings("unchecked")
 	private void initView() {
 		xUtilsUtil = new XUtilsUtil();
 		aDetailModel = new ArticleMemoDetailModel();
@@ -160,12 +208,26 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 		articleId = getIntent().getIntExtra("articleId", -1);
 		isMe = getIntent().getBooleanExtra("isMe", false);
+		ReleaseActivityfalg = getIntent().getBooleanExtra(
+				"ReleaseActivityfalg", false);
 		if (isMe) {
 			cllectionImg.setVisibility(View.GONE);
 			layout_isShow.setVisibility(View.GONE);
 			revamTxt.setVisibility(View.VISIBLE);
 			shareImg.setVisibility(View.GONE);
 			deleteTxt.setVisibility(View.VISIBLE);
+		} else if (ReleaseActivityfalg) {
+			previewList = (List<TravelsinformationModel>) getIntent().getSerializableExtra("previewList");
+			
+			cllectionImg.setVisibility(View.GONE);
+			layout_isShow.setVisibility(View.GONE);
+			revamTxt.setVisibility(View.VISIBLE);
+			shareImg.setVisibility(View.GONE);
+			deleteTxt.setVisibility(View.GONE);
+			revamTxt.setText("发布");
+			previewadapter = new Previewadapter(this, previewList,preferences);
+			ridingList.setAdapter(previewadapter);
+			ridingList.setDividerHeight(0);
 		}
 
 	}
@@ -237,33 +299,32 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			}
 			break;
 		case R.id.img_ridingDetailsActivity_revamp:
-
-			for (int i = 0; i < list.size(); i++) {
-				TravelsinformationModel tm = new TravelsinformationModel();
-				tm.setTitle(list.get(i).getTitle());
-				String[] addresss = list.get(i).getAddress().split("\\|");
-				String[] imageMemos = list.get(i).getImageMemo().split("\\|");
-				String[] memos = list.get(i).getMemo().split("\\|");
-				if (i < addresss.length) {
-					tm.setAddress(addresss[i]);
+			if (!ReleaseActivityfalg) {
+				for (int i = 0; i < list.size(); i++) {
+					TravelsinformationModel tm = new TravelsinformationModel();
+					tm.setTitle(list.get(i).getTitle());
+						tm.setAddress(list.get(i).getArticleDetailList().get(i).getAddress());
+						tm.setImageMemo(list.get(i).getArticleDetailList().get(i).getImageMemo());
+						tm.setMemo(list.get(i).getArticleDetailList().get(i).getMemo());
+					tm.setArticleImage(list.get(i).getArticleDetailList().get(i).getArticleImage());
+					listTravels.add(tm);
 				}
-				if (i < imageMemos.length) {
-					tm.setImageMemo(imageMemos[i]);
+				Intent intent = new Intent(this, ReleaseActivity.class);
+				intent.putExtra("falg", true);
+				intent.putExtra("list", (Serializable) listTravels);
+				intent.putExtra("articleId", articleId);
+				startActivity(intent);
+			}else{
+				imgListUrl = new ArrayList<String>();
+				num = 0;
+				if(previewList.size() != 0){
+					File file = new File(previewList.get(num).getArticleImage());
+					new FileUploadAsyncTask(this, num + 1, previewList.size(), preferences, "QYJ", handler).execute(file);
 				}
-				if (i < memos.length) {
-					tm.setMemo(memos[i]);
-				}
-				tm.setArticleImage(list.get(i).getArticleImage().split("\\|")[i]);
-				listTravels.add(tm);
 			}
-			Intent intent = new Intent(this, ReleaseActivity.class);
-			intent.putExtra("falg", true);
-			intent.putExtra("list", (Serializable) listTravels);
-			intent.putExtra("articleId", articleId);
-			startActivity(intent);
 			break;
 		case R.id.txt_ridingDetailsActivity_delete:
-			deleteRiding();
+			showPopupWindow2(v);
 			break;
 		default:
 			break;
@@ -275,28 +336,30 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		params.addBodyParameter("articleId", articleId + "");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/articleMemo/deleteArticle.html", params, new CallBackPost() {
-			
-			@Override
-			public void onMySuccess(ResponseInfo<String> responseInfo) {
-				String s = responseInfo.result;
-				JSONObject jsonObject = null;
-				try {
-					jsonObject = new JSONObject(s);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				if (jsonObject.optBoolean("result")) {
-					new SystemUtil().makeToast(RidingDetailsActivity.this, "删除成功");
-					RidingDetailsActivity.this.finish();
-				}
-			}
-			
-			@Override
-			public void onMyFailure(HttpException error, String msg) {
-				
-			}
-		});
+		xUtilsUtil.httpPost("mobile/articleMemo/deleteArticle.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(s);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (jsonObject.optBoolean("result")) {
+							new SystemUtil().makeToast(
+									RidingDetailsActivity.this, "删除成功");
+							RidingDetailsActivity.this.finish();
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+
+					}
+				});
 	}
 
 	private void likeChosen() {
@@ -383,7 +446,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 								startActivity(new Intent(
 										RidingDetailsActivity.this,
 										LoginActivity.class));
-								finish();
 							}
 						}
 					}
@@ -701,9 +763,12 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 	@Override
 	protected void onStart() {
-		uoloadData();
+		if(!ReleaseActivityfalg){
+			uoloadData();
+		}
 		super.onStart();
 	}
+
 
 	private void uoloadData() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -733,10 +798,9 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 							articleModel = aDetailModel.getArticleMemo();
 
-							String[] articleImagess = articleModel
-									.getArticleImage().split("\\|");
+							
 							list.removeAll(list);
-							for (int i = 0; i < articleImagess.length; i++) {
+							for (int i = 0; i < articleModel.getArticleDetailList().size(); i++) {
 								list.add(articleModel);
 							}
 							if (aDetailModel.isUserCollected()) {
@@ -805,8 +869,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		String title = null;
 		String praiseNum = null;
 
-		
-
 		// 一个自定义的布局，作为显示的内容
 		View v = LayoutInflater.from(this).inflate(R.layout.item_popup_jpush,
 				null);
@@ -817,20 +879,19 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 
 		popupWindow.setTouchable(true);
-		
+
 		if (jpushFlag.equals("JPushDZ")) {
 			praiseNum = getIntent().getStringExtra("praiseNum");
 			title = getIntent().getStringExtra("title");
 			userName = getIntent().getStringExtra("userName");
 			markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
-					+ userName + "</font>" + " 给您的游记《" + "<font color='#6dbfed'>"
-					+ title + "</font>" + "》点了赞哟!当前被点赞量为"
-					+ "<font color='#ff0000'>" + praiseNum + "</font>"));
+					+ userName + "</font>" + " 给您的游记《"
+					+ "<font color='#6dbfed'>" + title + "</font>"
+					+ "》点了赞哟!当前被点赞量为" + "<font color='#ff0000'>" + praiseNum
+					+ "</font>"));
 		} else if (jpushFlag.equals("JPushDS")) {
-			
+
 		}
-		
-		
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
@@ -847,7 +908,144 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.corners_layout));
 		// 设置好参数之后再show
-		popupWindow.showAtLocation(RidingDetailsActivity.this.findViewById(R.id.layout_ridingDetailsActivity), Gravity.CENTER, 0, 50);
+		popupWindow.showAtLocation(RidingDetailsActivity.this
+				.findViewById(R.id.layout_ridingDetailsActivity),
+				Gravity.CENTER, 0, 50);
 	}
 
+	private void showPopupWindow2(View view) {
+
+		// 一个自定义的布局，作为显示的内容
+		View mview = LayoutInflater.from(this).inflate(
+				R.layout.popup_delete_releaseactivity, null);
+
+		Button confirmBtn = (Button) mview
+				.findViewById(R.id.btn_dialog_box_confirm);
+		Button cancelBtn = (Button) mview
+				.findViewById(R.id.btn_dialog_box_cancel);
+
+		final PopupWindow popupWindow = new PopupWindow(mview,
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+
+		popupWindow.setTouchable(true);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		confirmBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				deleteRiding();
+				popupWindow.dismiss();
+			}
+		});
+
+		cancelBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		// popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
+
+	}
+
+	private void publishTravels() {
+
+				//使用NameValuePair来保存要传递的Post参数        
+				List<NameValuePair> params=new ArrayList<NameValuePair>();
+				params.add(new BasicNameValuePair("uniqueKey",preferences.getString("uniqueKey", null)));
+				params.add(new BasicNameValuePair("userId",preferences.getInt("userId", -1) + ""));
+				params.add(new BasicNameValuePair("title",previewList.get(0).getTitle()));
+				
+				
+				
+				for(int i = 0; i < previewList.size(); i++){
+					
+					//需要注意的是  如果某个图片的说明 为空 时  请传递空 不能 少一个属性    每一个数组必须保证相同的长度
+						params.add(new BasicNameValuePair("articleImage",imgListUrl.get(i)));
+
+						if(previewList.get(i).getImageMemo() ==null){
+						params.add(new BasicNameValuePair("imageMemo",""));
+					}else{
+						params.add(new BasicNameValuePair("imageMemo",previewList.get(i).getImageMemo()));
+					}
+
+					if(previewList.get(i).getAddress() ==null){
+						params.add(new BasicNameValuePair("address",""));
+					}else{
+						params.add(new BasicNameValuePair("address",previewList.get(i).getAddress()));
+					}
+				
+					if(previewList.get(i).getMemo() ==null){
+						params.add(new BasicNameValuePair("memo",""));
+					}else{
+						params.add(new BasicNameValuePair("memo",previewList.get(i).getMemo()));
+					}
+				}
+				RequestParams params2 = new RequestParams();
+				try {
+					params2.setBodyEntity(new UrlEncodedFormEntity(params,"UTF-8"));
+					xUtilsUtil.httpPost("mobile/articleMemo/insertArticle.html" , params2,
+							new CallBackPost() {
+
+								@Override
+								public void onMySuccess(ResponseInfo<String> responseInfo) {
+									JSONObject jsonObject = null;
+									try {
+										jsonObject = new JSONObject(responseInfo.result);
+									} catch (JSONException e) {
+										e.printStackTrace();
+									}
+									if (jsonObject.optBoolean("result")) {
+										new SystemUtil().makeToast(RidingDetailsActivity.this,
+												"发表成功");
+										Intent intentConfirm=new Intent();
+							            setResult(3, intentConfirm);  
+										RidingDetailsActivity.this.finish();
+								}else{
+									new SystemUtil().makeToast(RidingDetailsActivity.this,
+											jsonObject.optString("message"));
+									RidingDetailsActivity.this.finish();
+									}
+								}
+
+								@Override
+								public void onMyFailure(HttpException error, String msg) {
+
+								}
+							});
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		
+
+	}
+/*	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode != RESULT_CANCELED) {
+			switch (requestCode) {
+			case 3:
+				break;
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	*/
 }

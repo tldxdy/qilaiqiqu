@@ -5,6 +5,7 @@ public class SystemMessageModel {
 	 private String createDate; 
      private Integer systemMessageId;
      private String contentJson;
+     private String messageType;
      private String state;
      private String content;
 	public Integer getUserId() {
@@ -42,6 +43,12 @@ public class SystemMessageModel {
 	}
 	public void setContent(String content) {
 		this.content = content;
+	}
+	public String getMessageType() {
+		return messageType;
+	}
+	public void setMessageType(String messageType) {
+		this.messageType = messageType;
 	}
      
      

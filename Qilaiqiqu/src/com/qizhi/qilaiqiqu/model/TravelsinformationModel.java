@@ -8,6 +8,10 @@ import java.io.Serializable;
  *
  */
 public class TravelsinformationModel implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String title;
 	private String memo;		//内容
 	private String articleImage;	//图片

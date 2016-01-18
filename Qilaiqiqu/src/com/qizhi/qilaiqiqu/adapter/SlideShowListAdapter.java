@@ -136,7 +136,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 									.load(imageInfo.image.toString())
 									.into(imageView);
 							// imageView.setImageResource(R.drawable.demo);
-							System.out.println(imageInfo.image.toString()+"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+
 							return imageView;
 
 						}
@@ -168,6 +168,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 			holder = (ViewHolder) view.getTag();
 		}
 
+		
 		holder.timeTxt.setText(list.get(position - 1).getCreateDate()
 				.substring(0, 10));
 		holder.titleTxt.setText(list.get(position - 1).getTitle());
@@ -185,9 +186,15 @@ public class SlideShowListAdapter extends BaseAdapter {
 		 * 1).getDefaultShowImage() .split("\\@")[0], holder.backgroundImg,
 		 * context);
 		 */
-		String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
-				+ list.get(position - 1).getDefaultShowImage().split("\\@")[0];
-		Picasso.with(context).load(internetUrl).into(holder.backgroundImg);
+		
+		
+		holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
+		if(list.get(position - 1).getDefaultShowImage() != null){
+			String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
+					+ list.get(position - 1).getDefaultShowImage().split("\\@")[0];
+			Picasso.with(context).load(internetUrl).resize(800, 480)
+			.centerInside().into(holder.backgroundImg);
+		}
 
 		// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
 		holder.photoImg.setOnClickListener(new OnClickListener() {

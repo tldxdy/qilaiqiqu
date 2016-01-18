@@ -152,6 +152,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
 //				getActivity().finish();
+				
 			}
 			break;
 		case R.id.layout_personalfragment_my_travel_notes:
@@ -199,85 +200,20 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 	}
 
 	private void Data() {
+		//系统统计数
+		informationNumTxt.setVisibility(View.GONE);
 		if(preferences.getInt("userId", -1) != -1){
 			xUtilsUtil = new XUtilsUtil();
-			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", preferences.getInt("userId", -1)
-					+ "");
-			params.addBodyParameter("uniqueKey",
-					preferences.getString("uniqueKey", null));
-			xUtilsUtil.httpPost("mobile/user/querySingleUser.html", params, new CallBackPost() {
-				
-				@Override
-				public void onMySuccess(ResponseInfo<String> responseInfo) {
-					try {
-						JSONObject jsonObject = new JSONObject(
-								responseInfo.result);
-						JSONObject data = jsonObject
-								.getJSONObject("data");
-						JSONObject user = data
-								.getJSONObject("user");
-						
-						userConcernTxt.setText(data
-								.getInt("concernNum") + "");
-						if ("null".equals(user.getString("userName")) || "".equals(user.getString("userName"))) {
-							userNameTxt.setText("骑来骑去");
-						} else {
-							userNameTxt.setText(user
-									.getString("userName"));
-						}
-						userFansTxt.setText(data
-								.getInt("fansNum") + "");
-						userIntegralTxt.setText(user
-								.getInt("integral") + "");
-						if ("null".equals(user.getString("userMemo")) || "".equals(user.getString("userMemo"))) {
-							userMemoTxt.setHint("这个人很懒，什么也没留下!");
-						} else {
-							userMemoTxt.setText(user
-									.getString("userMemo"));
-						}
-						if ("F".equals(user.getString("sex"))) {
-							userSexImg
-									.setImageResource(R.drawable.female);
-						} else if("M".equals(user.getString("sex"))){
-							userSexImg
-									.setImageResource(R.drawable.male);
-						}else{
-							userSexImg.setImageBitmap(null);
-						}
-						SystemUtil.loadImagexutils(user.getString("userImage"), userImageImg,context);
-						
-						puim = new PersonageUserInformationModel();
-						puim.setAddress(user.getString("address"));
-						puim.setMobilePhone(user.getString("mobilePhone"));
-						puim.setSex(user.getString("sex"));
-						puim.setUniqueKey(user.getString("uniqueKey"));
-						puim.setUserId(user.getInt("userId"));
-						puim.setUserImage(user.getString("userImage"));
-						puim.setUserMemo(user.getString("userMemo"));
-						puim.setUserName(user.getString("userName"));
-						puim.setFansNum(data.optInt("fansNum"));
-						puim.setConcernNum(data.optInt("concernNum"));
-						
-						
-						//系统统计数
-						informationNumTxt.setVisibility(View.GONE);
-
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-				}
-				
-				@Override
-				public void onMyFailure(HttpException error, String msg) {
-					
-				}
-			});
+			personalData();
+			systemData();
 
 		} else {
 			userMemoTxt.setText("");
 			userNameTxt.setText("游客");
 			userImageImg.setImageResource(R.drawable.homepage_picture);
+			userFansTxt.setText("0");
+			userIntegralTxt.setText("0");
+			userConcernTxt.setText("0");
 			//系统统计数
 			informationNumTxt.setVisibility(View.GONE);
 		}
@@ -288,6 +224,112 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		layout_my_collect_press.setOnClickListener(this);
 		layout_my_set.setOnClickListener(this);
 		layout_back.setOnClickListener(this);
+	}
+
+	private void systemData() {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addBodyParameter("userId", preferences.getInt("userId", -1)
+				+ "");
+		params.addBodyParameter("pageIndex", "1");
+		params.addBodyParameter("pageSize", "10");
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+		xUtilsUtil.httpPost("mobile/systemMessage/querySystemMessageList.html", params, new CallBackPost() {
+			
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				JSONObject jsonObject = null;
+				try {
+					jsonObject = new JSONObject(responseInfo.result);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (jsonObject.optBoolean("result")) {
+					int num = jsonObject.optInt("dataCount");
+					if(num != 0){
+						//系统统计数
+						informationNumTxt.setVisibility(View.VISIBLE);
+						informationNumTxt.setText(num + "");
+					}
+				}
+			}
+			
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				
+			}
+		});
+	}
+
+	private void personalData() {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addBodyParameter("userId", preferences.getInt("userId", -1)
+				+ "");
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+		xUtilsUtil.httpPost("mobile/user/querySingleUser.html", params, new CallBackPost() {
+			
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				try {
+					JSONObject jsonObject = new JSONObject(
+							responseInfo.result);
+					JSONObject data = jsonObject
+							.getJSONObject("data");
+					JSONObject user = data
+							.getJSONObject("user");
+					
+					userConcernTxt.setText(data
+							.getInt("concernNum") + "");
+					if ("null".equals(user.getString("userName")) || "".equals(user.getString("userName"))) {
+						userNameTxt.setText("骑来骑去");
+					} else {
+						userNameTxt.setText(user
+								.getString("userName"));
+					}
+					userFansTxt.setText(data
+							.getInt("fansNum") + "");
+					userIntegralTxt.setText(user
+							.getInt("integral") + "");
+					if ("null".equals(user.getString("userMemo")) || "".equals(user.getString("userMemo"))) {
+						userMemoTxt.setHint("这个人很懒，什么也没留下!");
+					} else {
+						userMemoTxt.setText(user
+								.getString("userMemo"));
+					}
+					if ("F".equals(user.getString("sex"))) {
+						userSexImg
+								.setImageResource(R.drawable.female);
+					} else if("M".equals(user.getString("sex"))){
+						userSexImg
+								.setImageResource(R.drawable.male);
+					}else{
+						userSexImg.setImageBitmap(null);
+					}
+					SystemUtil.loadImagexutils(user.getString("userImage"), userImageImg,context);
+					
+					puim = new PersonageUserInformationModel();
+					puim.setAddress(user.getString("address"));
+					puim.setMobilePhone(user.getString("mobilePhone"));
+					puim.setSex(user.getString("sex"));
+					puim.setUniqueKey(user.getString("uniqueKey"));
+					puim.setUserId(user.getInt("userId"));
+					puim.setUserImage(user.getString("userImage"));
+					puim.setUserMemo(user.getString("userMemo"));
+					puim.setUserName(user.getString("userName"));
+					puim.setFansNum(data.optInt("fansNum"));
+					puim.setConcernNum(data.optInt("concernNum"));
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				
+			}
+		});
 	}
 
 	
