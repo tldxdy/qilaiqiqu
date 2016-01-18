@@ -245,11 +245,6 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.StartActivity"
             android:label="@string/title_activity_start" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.LoginActivity"
@@ -338,6 +333,15 @@
         <activity android:name="com.qizhi.qilaiqiqu.activity.FriendActivity" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.BindPhoneActivity" >
+        </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.ReleaseActiveActivity" >
         </activity>
     </application>
 
