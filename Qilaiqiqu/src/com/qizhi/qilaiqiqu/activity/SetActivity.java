@@ -1,8 +1,5 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import java.util.Set;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -11,14 +8,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import cn.jpush.android.api.TagAliasCallback;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
@@ -26,12 +23,11 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.fragment.FansFragment;
 import com.qizhi.qilaiqiqu.utils.DataCleanManager;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView.OnSwitchChangedListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
 
@@ -41,8 +37,7 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class SetActivity extends Activity implements OnClickListener,
-		CallBackPost {
+public class SetActivity extends Activity implements OnClickListener {
 
 	private LinearLayout backLayout;
 	private LinearLayout opintionLayout;
@@ -59,6 +54,23 @@ public class SetActivity extends Activity implements OnClickListener,
 	private TextView cacheTxt;
 
 	DataCleanManager cleanManager;
+
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 1:
+				httpQuery();
+				break;
+
+			default:
+				break;
+			}
+		}
+
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -194,8 +206,9 @@ public class SetActivity extends Activity implements OnClickListener,
 				Editor userInfo_Editor = sp.edit();
 				userInfo_Editor.putBoolean("isLogin", false);
 				userInfo_Editor.commit();
-
-				httpQuery();
+				Message msg = new Message();
+				msg.what = 1;
+				handler.sendMessage(msg);
 			}
 
 			@Override
@@ -214,7 +227,7 @@ public class SetActivity extends Activity implements OnClickListener,
 	private void httpQuery() {
 		SharedPreferences sharedPreferences = getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
-		Editor editor = sharedPreferences.edit();// 获取编辑器
+		final Editor editor = sharedPreferences.edit();// 获取编辑器
 
 		String url = "mobile/push/releaseToken.html";
 		RequestParams params = new RequestParams();
@@ -223,18 +236,39 @@ public class SetActivity extends Activity implements OnClickListener,
 				sharedPreferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
-		new XUtilsUtil().httpPost(url, params, this);
-
-		/**
-		 * SharedPreferences清空用户Id和uniqueKey
-		 */
-		editor.putInt("userId", -1);
-		editor.putString("uniqueKey", null);
-		editor.putString("imUserName", null);
-		editor.putString("imPassword", null);
-		editor.putString("mobilePhone", null);
-		editor.putString("riderId", null);
-		editor.commit();
+		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
+			
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				String result = responseInfo.result;
+				try {
+					JSONObject jsonObject = new JSONObject(result);
+					if (jsonObject.getBoolean("result")) {
+						/**
+						 * SharedPreferences清空用户Id和uniqueKey
+						 */
+						editor.putInt("userId", -1);
+						editor.putString("uniqueKey", null);
+						editor.putString("imUserName", null);
+						editor.putString("imPassword", null);
+						editor.putString("mobilePhone", null);
+						editor.putString("riderId", null);
+						editor.commit();
+						SetActivity.this.finish();
+						startActivity(new Intent(SetActivity.this,
+								LoginActivity.class));
+					}	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				
+			}
+		});
 
 	}
 
@@ -248,27 +282,6 @@ public class SetActivity extends Activity implements OnClickListener,
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-	}
-
-	@Override
-	public void onMySuccess(ResponseInfo<String> responseInfo) {
-		Toast.makeText(SetActivity.this, responseInfo.result + "", 0).show();
-		String result = responseInfo.result;
-		try {
-			JSONObject jsonObject = new JSONObject(result);
-			if (jsonObject.getBoolean("result")) {
-				SetActivity.this.finish();
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void onMyFailure(HttpException error, String msg) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

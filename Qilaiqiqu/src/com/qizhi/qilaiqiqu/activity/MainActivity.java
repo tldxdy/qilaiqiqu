@@ -3,7 +3,6 @@ package com.qizhi.qilaiqiqu.activity;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,6 +16,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
@@ -43,7 +44,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import cn.jpush.android.api.TagAliasCallback;
 
 import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
@@ -126,6 +126,23 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private SharedPreferences preferences;
 
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
+
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 1:
+				logoutService();
+				break;
+
+			default:
+				break;
+			}
+		}
+
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -538,60 +555,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				Log.d("LOGOUT", "环信登出成功!");
 				System.err.println("环信登出成功!");
 
-				/**
-				 * SharedPreferences清空用户Id和uniqueKey
-				 */
-				SharedPreferences sharedPreferences = getSharedPreferences(
-						"userLogin", Context.MODE_PRIVATE);
-				Editor editor = sharedPreferences.edit();// 获取编辑器
-				editor.putInt("userId", -1);
-				editor.putString("uniqueKey", null);
-				editor.putString("imUserName", null);
-				editor.putString("imPassword", null);
-				editor.putString("mobilePhone", null);
-				editor.putString("riderId", null);
-				editor.commit();
-
 				SharedPreferences sp = getSharedPreferences("userInfo",
 						Context.MODE_PRIVATE);
 				Editor userInfo_Editor = sp.edit();
 				userInfo_Editor.putBoolean("isLogin", false);
 				userInfo_Editor.commit();
-
-				String url = "mobile/push/releaseToken.html";
-				RequestParams params = new RequestParams();
-
-				params.addBodyParameter("userId",
-						sharedPreferences.getInt("userId", -1) + "");
-				params.addBodyParameter("uniqueKey",
-						sharedPreferences.getString("uniqueKey", null));
-
-				new XUtilsUtil().httpPost(url, params, new CallBackPost() {
-
-					@Override
-					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						String result = responseInfo.result;
-						Toast.makeText(MainActivity.this,
-								responseInfo.result + "", 0).show();
-						try {
-							JSONObject jsonObject = new JSONObject(result);
-							if (jsonObject.getBoolean("result")) {
-								startActivity(new Intent(MainActivity.this,
-										LoginActivity.class));
-							}
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-
-					@Override
-					public void onMyFailure(HttpException error, String msg) {
-						// TODO Auto-generated method stub
-
-					}
-				});
-
+				Message msg = new Message();
+				msg.what = 1;
+				handler.sendMessage(msg);
 			}
 
 			@Override
@@ -607,30 +578,56 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		});
 	}
 
-	private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
+	private void logoutService() {
+		/**
+		 * SharedPreferences清空用户Id和uniqueKey
+		 */
+		SharedPreferences sharedPreferences = getSharedPreferences("userLogin",
+				Context.MODE_PRIVATE);
+		final Editor editor = sharedPreferences.edit();// 获取编辑器
 
-		@Override
-		public void gotResult(int code, String alias, Set<String> tags) {
-			String logs;
-			switch (code) {
-			case 0:
-				logs = "Set tag and alias success";
-				Log.i("JPush", logs);
-				break;
+		String url = "mobile/push/releaseToken.html";
+		RequestParams params = new RequestParams();
 
-			case 6002:
-				logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
-				Log.i("JPush", logs);
-				break;
+		params.addBodyParameter("userId",
+				sharedPreferences.getInt("userId", -1) + "");
+		params.addBodyParameter("uniqueKey",
+				sharedPreferences.getString("uniqueKey", null));
 
-			default:
-				logs = "Failed with errorCode = " + code;
-				Log.e("JPush", logs);
+		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
+
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				String result = responseInfo.result;
+				try {
+
+					JSONObject jsonObject = new JSONObject(result);
+
+					if (jsonObject.getBoolean("result")) {
+						editor.putInt("userId", -1);
+						editor.putString("uniqueKey", null);
+						editor.putString("imUserName", null);
+						editor.putString("imPassword", null);
+						editor.putString("mobilePhone", null);
+						editor.putString("riderId", null);
+						editor.commit();
+						
+						startActivity(new Intent(MainActivity.this,
+								LoginActivity.class));
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
 
-		}
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
 
-	};
+			}
+		});
+	}
+
 	private int loginFlag;
 
 	/**
