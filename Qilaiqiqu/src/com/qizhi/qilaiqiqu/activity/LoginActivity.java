@@ -108,7 +108,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		case R.id.btn_loginActivity_login:
 
 			login();
-			
+
 			break;
 
 		case R.id.btn_loginActivity_visitor:
@@ -146,14 +146,18 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private void login() {
 		RequestParams params = new RequestParams("UTF-8");
+		String registrationID = JPushInterface
+				.getRegistrationID(LoginActivity.this);
+		
 		params.addQueryStringParameter("mobilePhone", usernameEdt.getText()
 				.toString());
 		params.addQueryStringParameter("loginPwd", passwordEdt.getText()
 				.toString());
+		params.addQueryStringParameter("pushToken", registrationID);
 		
-		params.addQueryStringParameter("pushToken",
-				JPushInterface.getRegistrationID(LoginActivity.this));
-		
+		System.out
+		.println(registrationID
+				+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		params.addQueryStringParameter("adviceType", "ANDROID");
 		httpUtils.httpPost("common/queryUserLogin.html", params,
 				new CallBackPost() {
@@ -206,7 +210,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 										userLogin.getRiderId());
 								editor.putInt("loginFlag", 1);
 								editor.commit();
-								
+
 								LoginActivity.this.finish();
 
 							} catch (JSONException e) {

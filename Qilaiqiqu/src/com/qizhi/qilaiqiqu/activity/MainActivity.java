@@ -630,23 +630,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	private int loginFlag;
 
-	/**
-	 * 向服务器提交设备ID
-	 */
-	public void cIdPost(int USER_ID) {
-		// 注册设备码
-		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		String DEVICE_ID = tm.getDeviceId();
-
-		String url = "common/saveToken.html";
-
-		RequestParams params = new RequestParams("UTF-8");
-		params.addBodyParameter("userId", USER_ID + "");
-		params.addBodyParameter("pushToken", DEVICE_ID);
-		params.addBodyParameter("adviceType", "ANDROID");
-
-		new XUtilsUtil().httpPost(url, params, MainActivity.this);
-	}
 
 	private void loginHuanXin() {
 
@@ -658,9 +641,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 					@Override
 					public void onSuccess() {
-
-						// 发送CID
-						cIdPost(preferences.getInt("userId", -1));
 
 						// // 保存用户名密码
 						// userInfo_Editor.putString(

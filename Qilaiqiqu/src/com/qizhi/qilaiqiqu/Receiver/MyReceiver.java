@@ -58,15 +58,14 @@ public class MyReceiver extends BroadcastReceiver {
 			Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
 			System.out.println("[MyReceiver] 用户点击打开了通知");
 			String EXTRA = bundle.getString(JPushInterface.EXTRA_EXTRA);
-			System.out.println("EXTRA:"+EXTRA+"|||||||||||||||||||||||");
-			
-			
+			System.out.println("EXTRA:" + EXTRA + "|||||||||||||||||||||||");
+
 			try {
 				JSONObject jsonObject = new JSONObject(EXTRA);
 				key = jsonObject.getString("pushType");
 				JSONObject pushValue = new JSONObject(
 						jsonObject.getString("pushValue"));
-				
+
 				if (key.equals("QYJPL")) {
 					value = pushValue.getString("articleId");
 					Intent i = new Intent(context, DiscussActivity.class);
@@ -74,7 +73,7 @@ public class MyReceiver extends BroadcastReceiver {
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
-				
+
 				} else if (key.equals("QYJDZ")) {
 					String praiseNum = pushValue.getString("praiseNum");
 					String title = pushValue.getString("title");
@@ -89,7 +88,7 @@ public class MyReceiver extends BroadcastReceiver {
 					i.putExtra("userName", userName);
 					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
-				
+
 				} else if (key.equals("QYJDS")) {
 					String integral = pushValue.getString("integral");
 					String sumIntegral = pushValue.getString("praiseNum");
@@ -106,7 +105,7 @@ public class MyReceiver extends BroadcastReceiver {
 					i.putExtra("userName", userName);
 					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
-				
+
 				} else if (key.equals("QYJHF")) {
 					value = pushValue.getString("articleId");
 					Intent i = new Intent(context, DiscussActivity.class);
@@ -114,8 +113,8 @@ public class MyReceiver extends BroadcastReceiver {
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
-				
-				} else if(key.equals("QYJ")){
+
+				} else if (key.equals("QYJ")) {
 					value = pushValue.getString("articleId");
 					Intent i = new Intent(context, RidingDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK

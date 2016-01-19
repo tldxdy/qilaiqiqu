@@ -5,22 +5,18 @@ import java.util.TimerTask;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Window;
 import cn.jpush.android.api.JPushInterface;
 
 import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
@@ -62,7 +58,6 @@ public class StartActivity extends Activity implements CallBackPost {
 
 		startTime();
 		regToWx();
-		cIdPost();
 		JPushInterface.setDebugMode(true);
 		JPushInterface.init(this);
 		JPushInterface.setLatestNotificationNumber(this, 3);
@@ -115,23 +110,6 @@ public class StartActivity extends Activity implements CallBackPost {
 				ConstantsUtil.APP_ID, true);
 		// 将应用的APP_Id注册到微信
 		api.registerApp(ConstantsUtil.APP_ID);
-	}
-
-	/**
-	 * 向服务器提交设备ID
-	 */
-	public void cIdPost() {
-		// 注册设备码
-		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		String DEVICE_ID = tm.getDeviceId();
-
-		String url = "common/saveToken.html";
-
-		RequestParams params = new RequestParams("UTF-8");
-		params.addBodyParameter("pushToken", DEVICE_ID);
-		params.addBodyParameter("adviceType", "ANDROID");
-
-		new XUtilsUtil().httpPost(url, params, StartActivity.this);
 	}
 
 	@Override
