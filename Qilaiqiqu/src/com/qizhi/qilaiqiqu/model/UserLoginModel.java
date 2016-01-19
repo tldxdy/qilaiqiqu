@@ -2,7 +2,7 @@ package com.qizhi.qilaiqiqu.model;
 
 import java.io.Serializable;
 
-public class UserLoginModel implements Serializable{
+public class UserLoginModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String imId;
 	private String mobilePhone;
@@ -12,6 +12,7 @@ public class UserLoginModel implements Serializable{
 	private String userName;
 	private String imUserName;
 	private String uniqueKey;
+	private String riderId;
 
 	public String getImId() {
 		return imId;
@@ -27,6 +28,14 @@ public class UserLoginModel implements Serializable{
 
 	public void setMobilePhone(String mobilePhone) {
 		this.mobilePhone = mobilePhone;
+	}
+
+	public String getRiderId() {
+		return riderId;
+	}
+
+	public void setRiderId(String riderId) {
+		this.riderId = riderId;
 	}
 
 	public String getImPassword() {

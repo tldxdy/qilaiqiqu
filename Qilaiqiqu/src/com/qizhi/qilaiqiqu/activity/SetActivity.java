@@ -2,6 +2,9 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.util.Set;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,15 +17,22 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import cn.jpush.android.api.TagAliasCallback;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.fragment.FansFragment;
 import com.qizhi.qilaiqiqu.utils.DataCleanManager;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView.OnSwitchChangedListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -31,7 +41,8 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class SetActivity extends Activity implements OnClickListener {
+public class SetActivity extends Activity implements OnClickListener,
+		CallBackPost {
 
 	private LinearLayout backLayout;
 	private LinearLayout opintionLayout;
@@ -178,25 +189,13 @@ public class SetActivity extends Activity implements OnClickListener {
 				Log.d("LOGOUT", "环信登出成功!");
 				System.err.println("环信登出成功!");
 
-				/**
-				 * SharedPreferences清空用户Id和uniqueKey
-				 */
-				SharedPreferences sharedPreferences = getSharedPreferences(
-						"userLogin", Context.MODE_PRIVATE);
-				Editor editor = sharedPreferences.edit();// 获取编辑器
-				editor.putInt("userId", -1);
-				editor.putString("uniqueKey", null);
-				editor.putString("imUserName", null);
-				editor.putString("imPassword", null);
-				editor.commit();
-
 				SharedPreferences sp = getSharedPreferences("userInfo",
 						Context.MODE_PRIVATE);
 				Editor userInfo_Editor = sp.edit();
 				userInfo_Editor.putBoolean("isLogin", false);
 				userInfo_Editor.commit();
 
-				SetActivity.this.finish();
+				httpQuery();
 			}
 
 			@Override
@@ -212,30 +211,32 @@ public class SetActivity extends Activity implements OnClickListener {
 		});
 	}
 
-	private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
+	private void httpQuery() {
+		SharedPreferences sharedPreferences = getSharedPreferences("userLogin",
+				Context.MODE_PRIVATE);
+		Editor editor = sharedPreferences.edit();// 获取编辑器
 
-		@Override
-		public void gotResult(int code, String alias, Set<String> tags) {
-			String logs;
-			switch (code) {
-			case 0:
-				logs = "Set tag and alias success";
-				Log.i("JPush", logs);
-				break;
+		String url = "mobile/push/releaseToken.html";
+		RequestParams params = new RequestParams();
 
-			case 6002:
-				logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
-				Log.i("JPush", logs);
-				break;
+		params.addBodyParameter("userId",
+				sharedPreferences.getInt("userId", -1) + "");
+		params.addBodyParameter("uniqueKey",
+				sharedPreferences.getString("uniqueKey", null));
+		new XUtilsUtil().httpPost(url, params, this);
 
-			default:
-				logs = "Failed with errorCode = " + code;
-				Log.e("JPush", logs);
-			}
+		/**
+		 * SharedPreferences清空用户Id和uniqueKey
+		 */
+		editor.putInt("userId", -1);
+		editor.putString("uniqueKey", null);
+		editor.putString("imUserName", null);
+		editor.putString("imPassword", null);
+		editor.putString("mobilePhone", null);
+		editor.putString("riderId", null);
+		editor.commit();
 
-		}
-
-	};
+	}
 
 	@Override
 	protected void onResume() {
@@ -247,6 +248,27 @@ public class SetActivity extends Activity implements OnClickListener {
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+	}
+
+	@Override
+	public void onMySuccess(ResponseInfo<String> responseInfo) {
+		Toast.makeText(SetActivity.this, responseInfo.result + "", 0).show();
+		String result = responseInfo.result;
+		try {
+			JSONObject jsonObject = new JSONObject(result);
+			if (jsonObject.getBoolean("result")) {
+				SetActivity.this.finish();
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onMyFailure(HttpException error, String msg) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

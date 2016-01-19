@@ -96,8 +96,8 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:background="#ffffffff"
-                android:layout_height="44dp" >
+                android:layout_height="44dp"
+                android:background="#ffffffff" >
 
                 <LinearLayout
                     android:id="@+id/layout_personalDataActivity_fans"
@@ -143,7 +143,6 @@
                         android:layout_marginRight="30dp"
                         android:text="0"
                         android:textColor="#ff0000" />
-
                 </LinearLayout>
             </LinearLayout>
 

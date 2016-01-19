@@ -1,4 +1,5 @@
 package com.qizhi.qilaiqiqu.adapter;
+
 import java.util.List;
 
 import com.lidroid.xutils.BitmapUtils;
@@ -35,12 +36,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 /**
  * 
  * @author hujianbo
- *
+ * 
  */
-public class ReleaseListAdapter extends BaseAdapter{
+public class ReleaseListAdapter extends BaseAdapter {
 
 	private Context context;
 
@@ -49,18 +51,19 @@ public class ReleaseListAdapter extends BaseAdapter{
 	private List<TravelsinformationModel> list;
 
 	private ViewHolder holder;
-	
-	
+
 	private Button confirmBtn;
 	private Button cancelBtn;
-	
+
 	private PublishTravelsModel ptm;
-	
+
 	private BitmapUtils bitmapUtils;
-	
+
 	private boolean falg;
-	
-	public ReleaseListAdapter(Context context, List<TravelsinformationModel> list, PublishTravelsModel ptm, boolean falg) {
+
+	public ReleaseListAdapter(Context context,
+			List<TravelsinformationModel> list, PublishTravelsModel ptm,
+			boolean falg) {
 
 		this.context = context;
 		inflater = LayoutInflater.from(context);
@@ -90,132 +93,155 @@ public class ReleaseListAdapter extends BaseAdapter{
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			holder = new ViewHolder();
-			convertView = inflater.inflate(R.layout.item_list_releaseactivity,null);
-			holder.photoImg = (ImageView) convertView.findViewById(R.id.img_releaseactivity_photo);
-			holder.locationImg = (ImageView) convertView.findViewById(R.id.img_releaseactivity_location);
-			holder.deleteImg = (ImageView) convertView.findViewById(R.id.img_releaseactivity_delete);
-			
-			holder.locationTxt = (TextView) convertView.findViewById(R.id.txt_releaseactivity_location);
-			
-			holder.deleteLayout = (LinearLayout) convertView.findViewById(R.id.layout_releaseactivity_delete);
-			
-			holder.contentEdit = (EditText) convertView.findViewById(R.id.edt_releaseactivity_content);
-			holder.legendEdit = (EditText) convertView.findViewById(R.id.edt_releaseactivity_legend);
-			
+			convertView = inflater.inflate(R.layout.item_list_releaseactivity,
+					null);
+			holder.photoImg = (ImageView) convertView
+					.findViewById(R.id.img_releaseactivity_photo);
+			holder.locationImg = (ImageView) convertView
+					.findViewById(R.id.img_releaseactivity_location);
+			holder.deleteImg = (ImageView) convertView
+					.findViewById(R.id.img_releaseactivity_delete);
+
+			holder.locationTxt = (TextView) convertView
+					.findViewById(R.id.txt_releaseactivity_location);
+
+			holder.deleteLayout = (LinearLayout) convertView
+					.findViewById(R.id.layout_releaseactivity_delete);
+
+			holder.contentEdit = (EditText) convertView
+					.findViewById(R.id.edt_releaseactivity_content);
+			holder.legendEdit = (EditText) convertView
+					.findViewById(R.id.edt_releaseactivity_legend);
+
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		//Bitmap bm1 = BitmapFactory.decodeFile(list.get(position).getArticleImage());
-		//Bitmap bm = SystemUtil.compressImageFromFile(list.get(position).getArticleImage());
-		//Bitmap bm = SystemUtil.compressImage(bm1, 200);
-		//Bitmap bm = SystemUtil.ratio(bm1);
-		//holder.photoImg.setImageBitmap(bm);
-		if(!falg){
-			bitmapUtils.display(holder.photoImg, list.get(position).getArticleImage());
-		}else{
-			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+list.get(position).getArticleImage().split("@")[0]).into(holder.photoImg);
+		// Bitmap bm1 =
+		// BitmapFactory.decodeFile(list.get(position).getArticleImage());
+		// Bitmap bm =
+		// SystemUtil.compressImageFromFile(list.get(position).getArticleImage());
+		// Bitmap bm = SystemUtil.compressImage(bm1, 200);
+		// Bitmap bm = SystemUtil.ratio(bm1);
+		// holder.photoImg.setImageBitmap(bm);
+		if (!falg) {
+			bitmapUtils.display(holder.photoImg, list.get(position)
+					.getArticleImage());
+		} else {
+			Picasso.with(context)
+					.load("http://weride.oss-cn-hangzhou.aliyuncs.com/"
+							+ list.get(position).getArticleImage().split("@")[0])
+					.into(holder.photoImg);
 		}
 		holder.contentEdit.setText(list.get(position).getMemo());
 		holder.legendEdit.setText(list.get(position).getImageMemo());
 		holder.locationTxt.setText(list.get(position).getAddress());
-		
+
 		holder.locationImg.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				
-				/*TravelsinformationModel tfm = list.get(position);
-				tfm.setAddress("杭州");
-				list.set(position, tfm);*/
-				//list.get(position).setAddress("杭州");
-				//notifyDataSetChanged();
+
+				/*
+				 * TravelsinformationModel tfm = list.get(position);
+				 * tfm.setAddress("杭州"); list.set(position, tfm);
+				 */
+				// list.get(position).setAddress("杭州");
+				// notifyDataSetChanged();
 				Intent intent = new Intent(context, MapActivity.class);
 				intent.putExtra("position", position);
 				((Activity) context).startActivityForResult(intent, 2);
-				//context.startActivity(new Intent(context,MapActivity.class));
+				// context.startActivity(new Intent(context,MapActivity.class));
 			}
 
 		});
-		
+
 		holder.deleteImg.setImageResource(R.drawable.delete_picture);
-		
-		//删除
+
+		// 删除
 		holder.deleteLayout.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				/*Matrix matrix=new Matrix();
-				holder.deleteImg.setScaleType(ScaleType.MATRIX); //required
-				matrix.postRotate((float) 90, holder.deleteImg.getWidth()/2, holder.deleteImg.getHeight()/2);
-				holder.deleteImg.setImageMatrix(matrix);*/
-				
-				showPopupWindow(v,position,holder.deleteImg);
-				
+				/*
+				 * Matrix matrix=new Matrix();
+				 * holder.deleteImg.setScaleType(ScaleType.MATRIX); //required
+				 * matrix.postRotate((float) 90, holder.deleteImg.getWidth()/2,
+				 * holder.deleteImg.getHeight()/2);
+				 * holder.deleteImg.setImageMatrix(matrix);
+				 */
+
+				showPopupWindow(v, position, holder.deleteImg);
+
 			}
 		});
-		//内容监听
-		holder.contentEdit.addTextChangedListener(new TextWatcher(){
+		// 内容监听
+		holder.contentEdit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 			}
+
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 			}
+
 			@Override
 			public void afterTextChanged(Editable s) {
 				list.get(position).setMemo(s.toString().trim());
 				StringBuffer sb = new StringBuffer();
-				for(int i = 0; i < list.size(); i++){
+				for (int i = 0; i < list.size(); i++) {
 					sb.append(list.get(i).getMemo());
-					if(i != list.size()-1){
+					if (i != list.size() - 1) {
 						sb.append("|");
 					}
 				}
 				ptm.setMemo(sb.toString());
 			}
 		});
-		//图片说明监听
+		// 图片说明监听
 		holder.legendEdit.addTextChangedListener(new TextWatcher() {
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+
 			}
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
 				list.get(position).setImageMemo(s.toString().trim());
 				StringBuffer sb = new StringBuffer();
-				for(int i = 0; i < list.size(); i++){
+				for (int i = 0; i < list.size(); i++) {
 					sb.append(list.get(i).getImageMemo());
-					if(i != list.size()-1){
+					if (i != list.size() - 1) {
 						sb.append("|");
 					}
 				}
 				ptm.setImageMemo(sb.toString());
 			}
 		});
-		
-		//位置的监听
+
+		// 位置的监听
 		holder.locationTxt.addTextChangedListener(new TextWatcher() {
-			
+
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				
+
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
 				list.get(position).setAddress(s.toString().trim());
@@ -223,24 +249,22 @@ public class ReleaseListAdapter extends BaseAdapter{
 		});
 		return convertView;
 	}
-	
-	private void showPopupWindow(View view,final int position,final ImageView img) {
 
-		
-		
+	private void showPopupWindow(View view, final int position,
+			final ImageView img) {
+
 		// 一个自定义的布局，作为显示的内容
 		View mview = LayoutInflater.from(context).inflate(
 				R.layout.popup_delete_releaseactivity, null);
 
-		
 		confirmBtn = (Button) mview.findViewById(R.id.btn_dialog_box_confirm);
 		cancelBtn = (Button) mview.findViewById(R.id.btn_dialog_box_cancel);
 
 		final PopupWindow popupWindow = new PopupWindow(mview,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
-		
+
 		popupWindow.setTouchable(true);
-		
+
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
 			@Override
@@ -251,9 +275,9 @@ public class ReleaseListAdapter extends BaseAdapter{
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
 			}
 		});
-		
+
 		confirmBtn.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
 				list.remove(position);
@@ -263,32 +287,30 @@ public class ReleaseListAdapter extends BaseAdapter{
 		});
 
 		cancelBtn.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
 				popupWindow.dismiss();
 			}
 		});
-		
+
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		//popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		// popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
 
 	}
 
-	
-	
 	private class ViewHolder {
 		private EditText contentEdit;
 		private EditText legendEdit;
-		
+
 		private ImageView photoImg;
 		private ImageView locationImg;
 		private ImageView deleteImg;
-		
+
 		private TextView locationTxt;
-		
+
 		private LinearLayout deleteLayout;
 
 	}

@@ -103,13 +103,13 @@ public class PersonalDataActivity extends BaseActivity implements
 	private String sexString = null;
 
 	private String img_path = null;
-	
+
 	private SharedPreferences preferences;
-	
+
 	private CertainUserModel certainUserModel;
 	@SuppressLint("HandlerLeak")
-	private Handler handler = new Handler(){
-		
+	private Handler handler = new Handler() {
+
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -126,8 +126,6 @@ public class PersonalDataActivity extends BaseActivity implements
 			}
 		}
 	};
-	
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +150,7 @@ public class PersonalDataActivity extends BaseActivity implements
 		xUtilsUtil = new XUtilsUtil();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		certainUserModel = new CertainUserModel();
-		
+
 		confirmTxt = (TextView) findViewById(R.id.txt_personalDataActivity_confirm);
 		provinceTxt = (TextView) findViewById(R.id.txt_personalDataActivity_province);
 		cityTxt = (TextView) findViewById(R.id.txt_personalDataActivity_city);
@@ -176,7 +174,6 @@ public class PersonalDataActivity extends BaseActivity implements
 		addressLayout = (RelativeLayout) findViewById(R.id.layout_personalDataActivity_address);
 		bindPhoneLayout = (RelativeLayout) findViewById(R.id.layout_personalDataActivity_bindphone);
 
-		
 	}
 
 	private void initEvnet() {
@@ -208,7 +205,6 @@ public class PersonalDataActivity extends BaseActivity implements
 			break;
 
 		case R.id.txt_personalDataActivity_confirm:
-
 			setViewData();
 			break;
 
@@ -237,9 +233,11 @@ public class PersonalDataActivity extends BaseActivity implements
 			Intent intent = new Intent(PersonalDataActivity.this,
 					BindPhoneActivity.class);
 			intent.putExtra("userId", preferences.getInt("userId", -1));
-			intent.putExtra("uniqueKey", preferences.getString("uniqueKey", null));
+			intent.putExtra("uniqueKey",
+					preferences.getString("uniqueKey", null));
 			startActivityForResult(intent, BING_PHONE);
 			break;
+			
 		default:
 			break;
 		}
@@ -248,7 +246,7 @@ public class PersonalDataActivity extends BaseActivity implements
 	private void setViewData() {
 		if (img_path != null) {
 			new SystemUtil().httpClient(img_path, preferences, handler, "USER");
-			//photoUploading();
+			// photoUploading();
 		} else {
 			informationUpdate();
 		}
@@ -267,9 +265,7 @@ public class PersonalDataActivity extends BaseActivity implements
 				.findViewById(R.id.btn_addressPopup_confirm);
 
 		mViewProvince.addChangingListener(this);
-		// ���change�¼�
 		mViewCity.addChangingListener(this);
-		// ���change�¼�
 		mViewDistrict.addChangingListener(this);
 
 		setUpData();
@@ -361,11 +357,6 @@ public class PersonalDataActivity extends BaseActivity implements
 		cityTxt.setText(mCurrentCityName);
 		DistrictTxt.setText(mCurrentDistrictName);
 
-		// Toast.makeText(
-		// PersonalDataActivity.this,
-		// "��ǰѡ��:" + mCurrentProviceName + "," + mCurrentCityName + ","
-		// + mCurrentDistrictName + "," + mCurrentZipCode,
-		// Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -534,54 +525,40 @@ public class PersonalDataActivity extends BaseActivity implements
 	/**
 	 * 图片上传
 	 */
-	/*private void photoUploading() {
-		System.out.println(img_path);
-		final File file = new File(img_path);
-		RequestParams params = new RequestParams();
-		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
-		params.addBodyParameter("type", "USER");
-		params.addBodyParameter("files", file);
-
-		xUtilsUtil.httpPost("common/uploadImage.html", params,
-				new CallBackPost() {
-
-					@Override
-					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						try {
-							JSONObject jsonObject = new JSONObject(
-									responseInfo.result);
-							if (jsonObject.getBoolean("result")) {
-								JSONArray jsonArray = jsonObject
-										.getJSONArray("dataList");
-								String s = jsonArray.getString(0);
-								String[] ss = s.split("@");
-								certainUserModel.setUserImage(ss[0]);
-								img_path = null;
-								file.delete();
-								informationUpdate();
-							}
-
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-
-					}
-
-					@Override
-					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil().makeToast(PersonalDataActivity.this,
-								"请求失败" + error + ":" + msg);
-					}
-				});
-	}
-*/
+	/*
+	 * private void photoUploading() { System.out.println(img_path); final File
+	 * file = new File(img_path); RequestParams params = new RequestParams();
+	 * params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey",
+	 * null)); params.addBodyParameter("type", "USER");
+	 * params.addBodyParameter("files", file);
+	 * 
+	 * xUtilsUtil.httpPost("common/uploadImage.html", params, new CallBackPost()
+	 * {
+	 * 
+	 * @Override public void onMySuccess(ResponseInfo<String> responseInfo) {
+	 * try { JSONObject jsonObject = new JSONObject( responseInfo.result); if
+	 * (jsonObject.getBoolean("result")) { JSONArray jsonArray = jsonObject
+	 * .getJSONArray("dataList"); String s = jsonArray.getString(0); String[] ss
+	 * = s.split("@"); certainUserModel.setUserImage(ss[0]); img_path = null;
+	 * file.delete(); informationUpdate(); }
+	 * 
+	 * } catch (JSONException e) { e.printStackTrace(); }
+	 * 
+	 * }
+	 * 
+	 * @Override public void onMyFailure(HttpException error, String msg) { new
+	 * SystemUtil().makeToast(PersonalDataActivity.this, "请求失败" + error + ":" +
+	 * msg); } }); }
+	 */
 	private void informationUpdate() {
 		if (!"".equals(nickEdt.getText().toString().trim())
 				&& !"".equals(usernameTxt.getText().toString().trim())
 				&& !"".equals(certainUserModel.getUserImage())) {
 			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
-			params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+			params.addBodyParameter("userId", preferences.getInt("userId", -1)
+					+ "");
+			params.addBodyParameter("uniqueKey",
+					preferences.getString("uniqueKey", null));
 			params.addBodyParameter("userName", nickEdt.getText().toString()
 					.trim());
 			params.addBodyParameter("address", provinceTxt.getText().toString()
@@ -595,7 +572,8 @@ public class PersonalDataActivity extends BaseActivity implements
 			params.addBodyParameter("sex", sexString);
 			params.addBodyParameter("mobilePhone", usernameTxt.getText()
 					.toString().trim());
-			params.addBodyParameter("userImage", certainUserModel.getUserImage());
+			params.addBodyParameter("userImage",
+					certainUserModel.getUserImage());
 			xUtilsUtil.httpPost("mobile/user/updateUserInfo.html", params,
 					new CallBackPost() {
 
@@ -631,9 +609,10 @@ public class PersonalDataActivity extends BaseActivity implements
 		super.onPause();
 		MobclickAgent.onPause(this);
 	}
+
 	private void data() {
 		RequestParams params = new RequestParams();
-		params.addBodyParameter("userId", preferences.getInt("userId", -1) +"");
+		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		xUtilsUtil.httpPost("common/queryCertainUser.html", params, this);
 	}
 
@@ -646,19 +625,22 @@ public class PersonalDataActivity extends BaseActivity implements
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		if(jsonObject.optBoolean("result")){
-			certainUserModel = new Gson().fromJson(jsonObject.optJSONObject("data").toString(), CertainUserModel.class);
+		if (jsonObject.optBoolean("result")) {
+			certainUserModel = new Gson().fromJson(
+					jsonObject.optJSONObject("data").toString(),
+					CertainUserModel.class);
 			nickEdt.setText(certainUserModel.getUserName());
 			usernameTxt.setText(certainUserModel.getMobilePhone());
 
 			fansTxt.setText(certainUserModel.getFansNum() + "");
 			careTxt.setText(certainUserModel.getConcernNum() + "");
-			if ("null".equals(certainUserModel.getUserMemo()) || "".equals(certainUserModel.getUserMemo())) {
+			if ("null".equals(certainUserModel.getUserMemo())
+					|| "".equals(certainUserModel.getUserMemo())) {
 
 			} else {
 				signatureEdt.setText(certainUserModel.getUserMemo());
 				int n = 0;
-				if(certainUserModel.getUserMemo() != null){
+				if (certainUserModel.getUserMemo() != null) {
 					n = certainUserModel.getUserMemo().length();
 				}
 				signatureTxt.setText(Html.fromHtml(n
@@ -677,7 +659,9 @@ public class PersonalDataActivity extends BaseActivity implements
 				famaleImg.setImageResource(R.drawable.famale_unchosen);
 				sexString = "Q";
 			}
-			if ("null".equals(certainUserModel.getAddress()) || "".equals(certainUserModel.getAddress()) || certainUserModel.getAddress() == null) {
+			if ("null".equals(certainUserModel.getAddress())
+					|| "".equals(certainUserModel.getAddress())
+					|| certainUserModel.getAddress() == null) {
 				provinceTxt.setText("");
 				cityTxt.setText("");
 				DistrictTxt.setText("");
@@ -689,12 +673,13 @@ public class PersonalDataActivity extends BaseActivity implements
 					DistrictTxt.setText(ss[2]);
 				}
 			}
-			SystemUtil.loadImagexutils(certainUserModel.getUserImage(), photoImg, this);
+			SystemUtil.loadImagexutils(certainUserModel.getUserImage(),
+					photoImg, this);
 		}
 	}
 
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-		
+
 	}
 }

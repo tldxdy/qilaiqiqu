@@ -219,7 +219,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					yBouncer.start();
 
 				}
-				
 
 				@Override
 				public void onAnimationRepeat(Animation arg0) {
@@ -549,6 +548,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				editor.putString("uniqueKey", null);
 				editor.putString("imUserName", null);
 				editor.putString("imPassword", null);
+				editor.putString("mobilePhone", null);
+				editor.putString("riderId", null);
 				editor.commit();
 
 				SharedPreferences sp = getSharedPreferences("userInfo",
@@ -557,8 +558,40 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				userInfo_Editor.putBoolean("isLogin", false);
 				userInfo_Editor.commit();
 
-				MainActivity.this.finish();
-				startActivity(new Intent(MainActivity.this, LoginActivity.class));
+				String url = "mobile/push/releaseToken.html";
+				RequestParams params = new RequestParams();
+
+				params.addBodyParameter("userId",
+						sharedPreferences.getInt("userId", -1) + "");
+				params.addBodyParameter("uniqueKey",
+						sharedPreferences.getString("uniqueKey", null));
+
+				new XUtilsUtil().httpPost(url, params, new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String result = responseInfo.result;
+						Toast.makeText(MainActivity.this,
+								responseInfo.result + "", 0).show();
+						try {
+							JSONObject jsonObject = new JSONObject(result);
+							if (jsonObject.getBoolean("result")) {
+								startActivity(new Intent(MainActivity.this,
+										LoginActivity.class));
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
 			}
 
 			@Override
@@ -619,7 +652,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	}
 
 	private void loginHuanXin() {
-
 
 		// final Editor userInfo_Editor = sp.edit();
 		// 登录环信

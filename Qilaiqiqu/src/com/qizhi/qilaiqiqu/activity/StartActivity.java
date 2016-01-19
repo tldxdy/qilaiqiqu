@@ -47,6 +47,7 @@ public class StartActivity extends Activity implements CallBackPost {
 				stopTime();
 				startActivity(new Intent(StartActivity.this,
 						MainActivity.class).putExtra("loginFlag", 1));
+				
 				finish();
 			}
 

@@ -80,7 +80,7 @@ public class FansFragment extends Fragment implements OnItemClickListener,OnRefr
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-		int attentionId = dataList.get(position).getUserId();
+		int attentionId = dataList.get(position-1).getUserId();
 		startActivity(new Intent(getActivity(), PersonActivity.class).putExtra("userId", attentionId));
 	}
 

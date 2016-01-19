@@ -30,7 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class NativeImagesActivity extends Activity implements OnClickListener {
+public class SelectImagesActivity extends Activity implements OnClickListener {
 
 	// protected ImageLoader imageLoader = ImageLoader.getInstance();
 
@@ -94,9 +94,8 @@ public class NativeImagesActivity extends Activity implements OnClickListener {
 		confirmTxt = (TextView) findViewById(R.id.txt_confirm);
 		optionTxt = (TextView) findViewById(R.id.txt_nativeimageactivity_option);
 
-		falg = getIntent().getBooleanExtra("falg", false);
 
-		bitmapUtils = new BitmapUtils(NativeImagesActivity.this);
+		bitmapUtils = new BitmapUtils(SelectImagesActivity.this);
 
 		backLayout.setOnClickListener(this);
 		confirmTxt.setOnClickListener(this);
@@ -139,24 +138,14 @@ public class NativeImagesActivity extends Activity implements OnClickListener {
 			finish();
 			break;
 		case R.id.txt_confirm:
-			if (!falg) {
 				ArrayList<String> selectedItems = imageAdapter
 						.getCheckedItems();
-				Intent intentConfirm = new Intent(this, ReleaseActivity.class);
+				Intent intentConfirm = new Intent(this, ReleaseActiveActivity.class);
 				intentConfirm.putStringArrayListExtra("photoList",
 						selectedItems);
+				intentConfirm.putExtra("isFirst", true);
 				startActivity(intentConfirm);
 				finish();
-			} else {
-				ArrayList<String> selectedItems = imageAdapter
-						.getCheckedItems();
-				Intent intentConfirm = new Intent();
-				intentConfirm.putStringArrayListExtra("photoList",
-						selectedItems);
-				setResult(1, intentConfirm);
-				finish();
-
-			}
 			break;
 		}
 	}
@@ -248,8 +237,11 @@ public class NativeImagesActivity extends Activity implements OnClickListener {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				mSparseBooleanArray.put((Integer) buttonView.getTag(),
-						isChecked);
+				
+				if(getCheckedItems().size() <= 3){
+					mSparseBooleanArray.put((Integer) buttonView.getTag(),
+							isChecked);
+				}
 				Message msg = new Message();
 				msg.what = 1;
 				msg.obj = getCheckedItems().size();

@@ -59,7 +59,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private TextView titleNumTxt; // 主题字数
 
 	private TextView titleTxt;
-	
+
 	private ListView releaseList;
 
 	private ImageView releaseAddImg;
@@ -77,16 +77,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private XUtilsUtil xUtilsUtil;
 
 	private SharedPreferences preferences;
-	
+
 	private ArrayList<String> photoList;
-	private boolean falg = false; //判断图片哪里传过来的
+	private boolean falg = false; // 判断图片哪里传过来的
 	private int articleId;
-	
+
 	private int num = 0;
-	
-	
+
 	@SuppressLint("HandlerLeak")
-	private Handler handler = new Handler(){
+	private Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
@@ -95,42 +94,37 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			case 1:
 				String s = (String) msg.obj;
 				imgListUrl.add(s);
-				if(list.size()-1 != num){
+				if (list.size() - 1 != num) {
 					num = num + 1;
 					File file = new File(list.get(num).getArticleImage());
-					new FileUploadAsyncTask(ReleaseActivity.this, (num + 1), list.size(), preferences, "QYJ", handler).execute(file);
-					//new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
-					//photoUploading();
-				}else{
+					new FileUploadAsyncTask(ReleaseActivity.this, (num + 1),
+							list.size(), preferences, "QYJ", handler)
+							.execute(file);
+					// new
+					// SystemUtil().httpClient(list.get(num).getArticleImage(),
+					// preferences, handler, "QYJ");
+					// photoUploading();
+				} else {
 					publishTravels();
 				}
 				break;
-			/*case 2:
-				if(!falg){
-					new SystemUtil().makeToast(ReleaseActivity.this,
-							"发表成功");
-					ReleaseActivity.this.finish();
-				}else{
-					new SystemUtil().makeToast(ReleaseActivity.this,
-							"修改成功");
-					ReleaseActivity.this.finish();
-				}
-				
-				break;*/
+			/*
+			 * case 2: if(!falg){ new
+			 * SystemUtil().makeToast(ReleaseActivity.this, "发表成功");
+			 * ReleaseActivity.this.finish(); }else{ new
+			 * SystemUtil().makeToast(ReleaseActivity.this, "修改成功");
+			 * ReleaseActivity.this.finish(); }
+			 * 
+			 * break;
+			 */
 
 			default:
 				break;
 			}
 		}
-		
+
 	};
-	
-	
-	
-	
-	
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -145,43 +139,42 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private void initView() {
 		list = new ArrayList<TravelsinformationModel>();
 		ptm = new PublishTravelsModel();
-		preferences = getSharedPreferences("userLogin",
-				Context.MODE_PRIVATE);
+		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_releaseactivity_back);
-		
+
 		browseTxt = (TextView) findViewById(R.id.txt_releaseactivity_browse);
 		publishTxt = (TextView) findViewById(R.id.txt_releaseactivity_publish);
 		titleTxt = (TextView) findViewById(R.id.txt_releaseactivity_title);
-		
+
 		releaseList = (ListView) findViewById(R.id.list_releaseactivity_release);
-		
+
 		initHeaderView();
 		initFooterView();
-		
+
 		falg = getIntent().getBooleanExtra("falg", false);
-		if(!falg){
-		photoList = getIntent().getStringArrayListExtra("photoList");
-		
-		for (String string : photoList) {
-			TravelsinformationModel rt = new TravelsinformationModel();
-			rt.setArticleImage(string);
-			list.add(rt);
-		}
-		}else{
-			list =(ArrayList<TravelsinformationModel>) getIntent().getSerializableExtra("list");
+		if (!falg) {
+			photoList = getIntent().getStringArrayListExtra("photoList");
+			for (String string : photoList) {
+				TravelsinformationModel rt = new TravelsinformationModel();
+				rt.setArticleImage(string);
+				list.add(rt);
+			}
+		} else {
+			list = (ArrayList<TravelsinformationModel>) getIntent()
+					.getSerializableExtra("list");
 			titleEdt.setText(list.get(0).getTitle());
-			titleNumTxt.setText(list.get(0).getTitle().length()  + "/15");
+			titleNumTxt.setText(list.get(0).getTitle().length() + "/15");
 			browseTxt.setVisibility(View.GONE);
 			articleId = getIntent().getIntExtra("articleId", -1);
 			publishTxt.setText("修改");
 			titleTxt.setText("修改骑游记");
 		}
-		
+
 		adapter = new ReleaseListAdapter(this, list, ptm, falg);
 		releaseList.setAdapter(adapter);
-		
+
 	}
 
 	private void initHeaderView() {
@@ -218,32 +211,35 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			finish();
 			break;
 		case R.id.txt_releaseactivity_browse:
-			if(list.size() != 0){
-				Intent intents = new Intent(this,RidingDetailsActivity.class);
+			if (list.size() != 0) {
+				Intent intents = new Intent(this, RidingDetailsActivity.class);
 				list.get(0).setTitle(titleEdt.getText().toString().trim());
-				intents.putExtra("previewList",(Serializable) list);
+				intents.putExtra("previewList", (Serializable) list);
 				intents.putExtra("ReleaseActivityfalg", true);
 				startActivityForResult(intents, 3);
-				
+
 			}
 			break;
 		case R.id.txt_releaseactivity_publish:
-			//new SystemUtil().makeToast(this, "发表");
+			// new SystemUtil().makeToast(this, "发表");
 			// 图片上传
-			if(!falg){
+			if (!falg) {
 				imgListUrl = new ArrayList<String>();
 				num = 0;
-				//photoUploading();
-				
-				if(list.size() != 0){
+				// photoUploading();
+
+				if (list.size() != 0) {
 					File file = new File(list.get(num).getArticleImage());
-					new FileUploadAsyncTask(this, num + 1, list.size(), preferences, "QYJ", handler).execute(file);
-					//new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
+					new FileUploadAsyncTask(this, num + 1, list.size(),
+							preferences, "QYJ", handler).execute(file);
+					// new
+					// SystemUtil().httpClient(list.get(num).getArticleImage(),
+					// preferences, handler, "QYJ");
 				}
-			}else{
+			} else {
 				publishTravels();
 			}
-			
+
 			// 发布
 			// publishTravels();
 
@@ -268,13 +264,13 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 					list.add(rt);
 				}
 				adapter.notifyDataSetChanged();
-			}else if(requestCode == 2){
+			} else if (requestCode == 2) {
 				int n = data.getIntExtra("position", -1);
-				if(n != -1){
+				if (n != -1) {
 					list.get(n).setAddress(data.getStringExtra("address"));
 				}
 				adapter.notifyDataSetChanged();
-			}else if(requestCode == 3){
+			} else if (requestCode == 3) {
 				finish();
 			}
 		}
@@ -299,145 +295,138 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	}
 
 	private void publishTravels() {
-/*		new Thread(){
+		/*
+		 * new Thread(){
+		 * 
+		 * @Override public void run() { super.run();
+		 */
+		/*
+		 * String httpUrl; if(!falg){ httpUrl =
+		 * "http://120.55.195.170:80/mobile/articleMemo/insertArticle.html";
+		 * }else{ httpUrl =
+		 * "http://120.55.195.170:80/mobile/articleMemo/updateArticle.html"; }
+		 * HttpPost httpRequest=new HttpPost(httpUrl);
+		 */
+		// 使用NameValuePair来保存要传递的Post参数
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("uniqueKey", preferences.getString(
+				"uniqueKey", null)));
+		params.add(new BasicNameValuePair("userId", preferences.getInt(
+				"userId", -1) + ""));
+		params.add(new BasicNameValuePair("title", titleEdt.getText()
+				.toString().trim()));
 
-			@Override
-			public void run() {
-				super.run();*/
-/*				String httpUrl;
-				if(!falg){
-					httpUrl = "http://120.55.195.170:80/mobile/articleMemo/insertArticle.html";  
-				}else{
-					httpUrl = "http://120.55.195.170:80/mobile/articleMemo/updateArticle.html";
-				}
-				HttpPost httpRequest=new HttpPost(httpUrl);*/
-				//使用NameValuePair来保存要传递的Post参数        
-				List<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair("uniqueKey",preferences.getString("uniqueKey", null)));
-				params.add(new BasicNameValuePair("userId",preferences.getInt("userId", -1) + ""));
-				params.add(new BasicNameValuePair("title",titleEdt.getText().toString().trim()));
-				
-				if(falg){
-					params.add(new BasicNameValuePair("articleId",articleId + ""));
-				}
-				for(int i = 0; i < list.size(); i++){
-					
-					//需要注意的是  如果某个图片的说明 为空 时  请传递空 不能 少一个属性    每一个数组必须保证相同的长度
-					if(!falg){
-						params.add(new BasicNameValuePair("articleImage",imgListUrl.get(i)));
-					}else{
-						params.add(new BasicNameValuePair("articleImage",list.get(i).getArticleImage()));
-					}
-					
-					if(list.get(i).getImageMemo() ==null){
-						params.add(new BasicNameValuePair("imageMemo",""));
-					}else{
-						params.add(new BasicNameValuePair("imageMemo",list.get(i).getImageMemo()));
-					}
-					
-					if(list.get(i).getAddress() ==null){
-						params.add(new BasicNameValuePair("address",""));
-					}else{
-						params.add(new BasicNameValuePair("address",list.get(i).getAddress()));
-					}
+		if (falg) {
+			params.add(new BasicNameValuePair("articleId", articleId + ""));
+		}
+		for (int i = 0; i < list.size(); i++) {
 
-					if(list.get(i).getMemo() ==null){
-						params.add(new BasicNameValuePair("memo",""));
-					}else{
-						params.add(new BasicNameValuePair("memo",list.get(i).getMemo()));
-					}
-
-				}
-				System.out.println("------------------------------------");
-				System.out.println(params.toString());
-				RequestParams params2 = new RequestParams();
-				try {
-					params2.setBodyEntity(new UrlEncodedFormEntity(params,"UTF-8"));
-					String url;
-					if (!falg) {
-						url = "mobile/articleMemo/insertArticle.html";
-					}else{
-						url = "mobile/articleMemo/updateArticle.html";
-					}
-					xUtilsUtil.httpPost(url , params2,
-							new CallBackPost() {
-
-								@Override
-								public void onMySuccess(ResponseInfo<String> responseInfo) {
-									JSONObject jsonObject = null;
-									System.out.println("------------------------------------");
-									System.out.println(responseInfo.result);
-									System.out.println("------------------------------------");
-									try {
-										jsonObject = new JSONObject(responseInfo.result);
-									} catch (JSONException e) {
-										e.printStackTrace();
-									}
-									if (jsonObject.optBoolean("result")) {
-										if(!falg){
-											new SystemUtil().makeToast(ReleaseActivity.this,
-													"发表成功");
-											ReleaseActivity.this.finish();
-										}else{
-											new SystemUtil().makeToast(ReleaseActivity.this,
-													"修改成功");
-											ReleaseActivity.this.finish();
-										}
-									}else{
-										System.out.println(jsonObject.optString("message"));
-										new SystemUtil().makeToast(ReleaseActivity.this,
-												jsonObject.optString("message"));
-									}
-								}
-
-								@Override
-								public void onMyFailure(HttpException error, String msg) {
-
-								}
-							});
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-				
-/*				
-				
-				//设置字符集
-				HttpEntity httpentity;
-				try {
-					httpentity = new UrlEncodedFormEntity(params,"UTF-8");
-					httpRequest.setEntity(httpentity);
-					HttpParams httpParams=new BasicHttpParams();
-					
-					httpRequest.setParams(httpParams);
-					//取得HttpClient对象              
-					HttpClient httpclient=new DefaultHttpClient();              
-					HttpResponse response=httpclient.execute(httpRequest);
-					if(response.getStatusLine().getStatusCode() == 200){
-						//获取服务器返回页面的值
-						HttpEntity entity=response.getEntity();
-						String xmlContent=EntityUtils.toString(entity);
-						System.out.println("------------------------------------");
-						System.out.println(xmlContent);
-						System.out.println("------------------------------------");
-						Message msg = new Message();
-						msg.what = 2;
-						msg.obj = xmlContent;
-						handler.sendMessage(msg);
-						
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			// 需要注意的是 如果某个图片的说明 为空 时 请传递空 不能 少一个属性 每一个数组必须保证相同的长度
+			if (!falg) {
+				params.add(new BasicNameValuePair("articleImage", imgListUrl
+						.get(i)));
+			} else {
+				params.add(new BasicNameValuePair("articleImage", list.get(i)
+						.getArticleImage()));
 			}
-			
-		}.start();
-		*/
+
+			if (list.get(i).getImageMemo() == null) {
+				params.add(new BasicNameValuePair("imageMemo", ""));
+			} else {
+				params.add(new BasicNameValuePair("imageMemo", list.get(i)
+						.getImageMemo()));
+			}
+
+			if (list.get(i).getAddress() == null) {
+				params.add(new BasicNameValuePair("address", ""));
+			} else {
+				params.add(new BasicNameValuePair("address", list.get(i)
+						.getAddress()));
+			}
+
+			if (list.get(i).getMemo() == null) {
+				params.add(new BasicNameValuePair("memo", ""));
+			} else {
+				params.add(new BasicNameValuePair("memo", list.get(i).getMemo()));
+			}
+
+		}
+		System.out.println("------------------------------------");
+		System.out.println(params.toString());
+		RequestParams params2 = new RequestParams();
+		try {
+			params2.setBodyEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+			String url;
+			if (!falg) {
+				url = "mobile/articleMemo/insertArticle.html";
+			} else {
+				url = "mobile/articleMemo/updateArticle.html";
+			}
+			xUtilsUtil.httpPost(url, params2, new CallBackPost() {
+
+				@Override
+				public void onMySuccess(ResponseInfo<String> responseInfo) {
+					JSONObject jsonObject = null;
+					System.out.println("------------------------------------");
+					System.out.println(responseInfo.result);
+					System.out.println("------------------------------------");
+					try {
+						jsonObject = new JSONObject(responseInfo.result);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					if (jsonObject.optBoolean("result")) {
+						if (!falg) {
+							new SystemUtil().makeToast(ReleaseActivity.this,
+									"发表成功");
+							ReleaseActivity.this.finish();
+						} else {
+							new SystemUtil().makeToast(ReleaseActivity.this,
+									"修改成功");
+							ReleaseActivity.this.finish();
+						}
+					} else {
+						System.out.println(jsonObject.optString("message"));
+						new SystemUtil().makeToast(ReleaseActivity.this,
+								jsonObject.optString("message"));
+					}
+				}
+
+				@Override
+				public void onMyFailure(HttpException error, String msg) {
+
+				}
+			});
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		/*
+		 * 
+		 * //设置字符集 HttpEntity httpentity; try { httpentity = new
+		 * UrlEncodedFormEntity(params,"UTF-8");
+		 * httpRequest.setEntity(httpentity); HttpParams httpParams=new
+		 * BasicHttpParams();
+		 * 
+		 * httpRequest.setParams(httpParams); //取得HttpClient对象 HttpClient
+		 * httpclient=new DefaultHttpClient(); HttpResponse
+		 * response=httpclient.execute(httpRequest);
+		 * if(response.getStatusLine().getStatusCode() == 200){ //获取服务器返回页面的值
+		 * HttpEntity entity=response.getEntity(); String
+		 * xmlContent=EntityUtils.toString(entity);
+		 * System.out.println("------------------------------------");
+		 * System.out.println(xmlContent);
+		 * System.out.println("------------------------------------"); Message
+		 * msg = new Message(); msg.what = 2; msg.obj = xmlContent;
+		 * handler.sendMessage(msg);
+		 * 
+		 * } } catch (IOException e) { e.printStackTrace(); } }
+		 * 
+		 * }.start();
+		 */
 
 	}
-
-
 
 	@Override
 	protected void onResume() {
@@ -450,5 +439,5 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		super.onPause();
 		MobclickAgent.onPause(this);
 	}
-	
+
 }
