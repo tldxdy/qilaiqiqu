@@ -23,6 +23,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.ActionCenterActivity;
 import com.qizhi.qilaiqiqu.activity.CollectActivity;
 import com.qizhi.qilaiqiqu.activity.LoginActivity;
 import com.qizhi.qilaiqiqu.activity.MyMessageActivity;
@@ -47,6 +48,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 	private RelativeLayout layout_my_travel_notes; // 我的骑游记
 	private RelativeLayout layout_my_collect_press; // 我的收藏
 	private RelativeLayout layout_my_set; // 设置
+	private RelativeLayout layout_my_action_center; // 活动中心
 	private LinearLayout layout_back; // f返回
 
 	private TextView userNameTxt;
@@ -104,6 +106,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				.findViewById(R.id.layout_personalfragment_my_message);
 		layout_my_collect_press = (RelativeLayout) view
 				.findViewById(R.id.layout_personalfragment_my_collect_press);
+		layout_my_action_center = (RelativeLayout) view
+				.findViewById(R.id.layout_personalfragment_my_activity_center);
 		layout_my_set = (RelativeLayout) view
 				.findViewById(R.id.layout_personalfragment_my_set);
 		layout_back = (LinearLayout) view
@@ -166,6 +170,17 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 //				getActivity().finish();
 			}
 			break;
+		case R.id.layout_personalfragment_my_activity_center:
+			if(preferences.getInt("userId", -1) != -1){
+			Intent intent3 = new Intent(context, ActionCenterActivity.class);
+			startActivity(intent3);
+			}else{
+				new SystemUtil().makeToast(getActivity(), "请登录");
+				Intent intent = new Intent(context,LoginActivity.class);
+				startActivity(intent);
+			}
+			break;
+			
 		case R.id.layout_personalfragment_my_collect_press:
 			if(preferences.getInt("userId", -1) != -1){
 			Intent intent4 = new Intent(context, CollectActivity.class);
@@ -224,17 +239,16 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		layout_my_collect_press.setOnClickListener(this);
 		layout_my_set.setOnClickListener(this);
 		layout_back.setOnClickListener(this);
+		layout_my_action_center.setOnClickListener(this);
 	}
 
 	private void systemData() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1)
 				+ "");
-		params.addBodyParameter("pageIndex", "1");
-		params.addBodyParameter("pageSize", "10");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/systemMessage/querySystemMessageList.html", params, new CallBackPost() {
+		xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html", params, new CallBackPost() {
 			
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {
@@ -245,7 +259,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 					e.printStackTrace();
 				}
 				if (jsonObject.optBoolean("result")) {
-					int num = jsonObject.optInt("dataCount");
+					int num = jsonObject.optInt("data");
 					if(num != 0){
 						//系统统计数
 						informationNumTxt.setVisibility(View.VISIBLE);

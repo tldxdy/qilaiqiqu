@@ -17,10 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,9 +26,8 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.MyMessageAdapter;
-import com.qizhi.qilaiqiqu.adapter.SearchResultAdapter;
-import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
 import com.qizhi.qilaiqiqu.model.SystemMessageModel;
+import com.qizhi.qilaiqiqu.utils.SideslipDeleteListView;
 import com.qizhi.qilaiqiqu.utils.SlideCutListView;
 import com.qizhi.qilaiqiqu.utils.SlideCutListView.RemoveDirection;
 import com.qizhi.qilaiqiqu.utils.SlideCutListView.RemoveListener;
@@ -45,9 +41,9 @@ import com.umeng.analytics.MobclickAgent;
  * @author hujianbo
  *
  */
-public class MyMessageActivity extends Activity implements OnClickListener,OnItemClickListener, CallBackPost, RemoveListener{
+public class MyMessageActivity extends Activity implements OnClickListener,OnItemClickListener, CallBackPost{
 
-	private SlideCutListView myMessageList;		//系统消息的集合
+	private SideslipDeleteListView myMessageList;		//系统消息的集合
 	private LinearLayout backLayout;		//返回图片
 	private MyMessageAdapter adapter;
 	private XUtilsUtil xUtilsUtil;
@@ -73,7 +69,7 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 		
 		backLayout = (LinearLayout) findViewById(R.id.layout_mymessageactivity_back);
 		backLayout.setOnClickListener(this);
-		myMessageList = (SlideCutListView) findViewById(R.id.list_mymessageactivity_my_message);
+		myMessageList = (SideslipDeleteListView) findViewById(R.id.list_mymessageactivity_my_message);
 		/*adapter = new MyMessageAdapter(this);
 		MyMessageList.setAdapter(adapter);
 		MyMessageList.setOnItemClickListener(this);*/
@@ -92,27 +88,61 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		try {
-			JSONObject jo = new JSONObject(list.get(position).getContentJson());
-			if("QYJPL".equals(list.get(position).getMessageType())){
-				//骑游记评论
+			int systemMessageId = list.get(position).getSystemMessageId();
+			RequestParams params = new RequestParams();
+			params.addBodyParameter("systemMessageId", systemMessageId + "");
+			params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+			xUtilsUtil.httpPost("mobile/systemMessage/querySystemMessageDetails.html", params, new CallBackPost() {
 				
-			}else if("HDBM".equals(list.get(position).getMessageType())){
-				//活动报名
+				@Override
+				public void onMySuccess(ResponseInfo<String> responseInfo) {
+					String s = responseInfo.result;
+					JSONObject jsonObject = null;
+					try {
+						jsonObject = new JSONObject(s);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					if (jsonObject.optBoolean("result")) {
+						try {
+							SystemMessageModel smm = new Gson().fromJson(jsonObject.getJSONObject("data").toString(), SystemMessageModel.class);
+							JSONObject jo = new JSONObject(smm.getContentJson());
+							
+							if("QYJPL".equals(smm.getMessageType())){
+								//骑游记评论
+								Intent intent = new Intent(MyMessageActivity.this, DiscussActivity.class);
+								intent.putExtra("articleId", jo.optInt("articleId"));//"articleId\":97,\"commentId\":2
+								intent.putExtra("commentId", jo.optInt("commentId"));
+								startActivity(intent);
+							}else if("QYJHF".equals(smm.getMessageType())){
+								//骑游记回复
+								Intent intent = new Intent(MyMessageActivity.this, DiscussActivity.class);
+								intent.putExtra("articleId", jo.optInt("articleId"));//"articleId\":97,\"commentId\":2
+								intent.putExtra("commentId", jo.optInt("commentId"));
+								startActivity(intent);
+							}else if("HDBM".equals(smm.getMessageType())){
+								//活动报名
+								
+							}else if("HDYQDS".equals(smm.getMessageType())){
+								//活动详情打赏
+							}else if("HDBM".equals(smm.getMessageType())){
+								
+							}else if("HDBM".equals(smm.getMessageType())){
+								
+							}
+							
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						
+					}
+				}
 				
-			}else if("HDYQDS".equals(list.get(position).getMessageType())){
-				//活动详情打赏
-			}else if("HDBM".equals(list.get(position).getMessageType())){
-				
-			}else if("HDBM".equals(list.get(position).getMessageType())){
-				
-			}
-			
-			
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+				@Override
+				public void onMyFailure(HttpException error, String msg) {
+					
+				}
+			});
 	}
 	
 	@Override
@@ -150,10 +180,9 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 			Gson gson = new Gson();
 			Type type = new TypeToken<List<SystemMessageModel>>(){}.getType();
 			list = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), type);
-			adapter = new MyMessageAdapter(this, list);
+			adapter = new MyMessageAdapter(this, list, myMessageList);
 			myMessageList.setAdapter(adapter);
 			myMessageList.setOnItemClickListener(this);
-			myMessageList.setRemoveListener(this);
 		}
 	}
 
@@ -162,35 +191,4 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 		
 	}
 
-	@Override
-	public void removeItem(RemoveDirection direction, final int position) {
-		RequestParams params = new RequestParams();
-		params.addBodyParameter("systemMessageId",list.get(position).getSystemMessageId() + "");
-		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/systemMessage/deleteSystemMessage.html", params, new CallBackPost() {
-			
-			@Override
-			public void onMySuccess(ResponseInfo<String> responseInfo) {
-				String s = responseInfo.result;
-				JSONObject jsonObject = null;
-				try {
-					jsonObject = new JSONObject(s);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				if (jsonObject.optBoolean("result")) {
-					list.remove(position);
-					adapter.notifyDataSetChanged();
-					new SystemUtil().makeToast(MyMessageActivity.this, "删除成功");
-				}
-			}
-			
-			@Override
-			public void onMyFailure(HttpException error, String msg) {
-				
-			}
-		});
-		
-	}
-	
 }

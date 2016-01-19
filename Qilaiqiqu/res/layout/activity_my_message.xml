@@ -43,10 +43,10 @@
 
     </RelativeLayout>
 
-    <com.qizhi.qilaiqiqu.utils.SlideCutListView
+    <com.qizhi.qilaiqiqu.utils.SideslipDeleteListView
         android:id="@+id/list_mymessageactivity_my_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-    </com.qizhi.qilaiqiqu.utils.SlideCutListView>
+    </com.qizhi.qilaiqiqu.utils.SideslipDeleteListView>
 
 </LinearLayout>

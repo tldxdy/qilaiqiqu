@@ -347,6 +347,10 @@
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.SelectImagesActivity" >
         </activity>
+        <activity
+            android:name="com.qizhi.qilaiqiqu.activity.ActionCenterActivity"
+            android:label="@string/title_activity_action_center" >
+        </activity>
     </application>
 
 </manifest>

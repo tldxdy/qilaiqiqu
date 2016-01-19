@@ -90,6 +90,13 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		contentEdit = (EditText) findViewById(R.id.edt__discussactivity_content);
 
 		discussList = (ListView) findViewById(R.id.list_discussactivity_discuss);
+		superId =getIntent().getIntExtra("commentId", -1);
+		if(superId != -1){
+			//contentEdit.setHint("回复" + list.get(position).getUserName() + ":");
+			contentEdit.setFocusable(true);
+			imm.showSoftInputFromInputMethod(contentEdit.getWindowToken(), 0);
+			imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+		}
 	}
 
 	private void initEvent() {

@@ -43,6 +43,7 @@
     <string name="text_personactivity_message">消息中心</string>
     <string name="text_personactivity_riding">骑游记</string>
     <string name="text_personactivity_collect">收藏</string>
+        <string name="text_personactivity_activity_center">活动中心</string>
     <string name="text_personactivity_set">设置</string>
     <string name="text_collectactivity_title">我的收藏</string>
     <string name="text_collectList_title">骑游记标题</string>
@@ -156,4 +157,12 @@
  
 
 
-    <string name="text_activitydetailsactivity_title">活动详情</string>    </resources>
+    <string name="text_activitydetailsactivity_title">活动详情</string>    
+    
+    <string name="title_activity_action_center">ActionCenterActivity</string>  
+    <string name="text_actioncenteractivity_title">活动中心</string> 
+    
+    </resources>
+      
+
+
