@@ -103,8 +103,8 @@
                     android:text="预估时长"
                     android:textSize="15sp" />
 
-                <EditText
-                    android:id="@+id/edt_releaseActiveActivity_time"
+                <TextView 
+                    android:id="@+id/txt_releaseActiveActivity_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -141,8 +141,8 @@
                     android:text="活动时间"
                     android:textSize="15sp" />
 
-                <EditText
-                    android:id="@+id/edt_releaseActiveActivity_date"
+                <TextView
+                    android:id="@+id/txt_releaseActiveActivity_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -303,12 +303,14 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal" >
 
-                    <GridView
-                        android:id="@+id/grid_releaseActiveActivity_picture"
+                    <LinearLayout
+                        android:id="@+id/layout_releaseActiveActivity_picture"
+                        android:layout_marginLeft="14dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="100dp"
-                        android:numColumns="3" >
-                    </GridView>
+                        android:layout_height="fill_parent"
+                        android:orientation="horizontal" >
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/img_releaseActiveActivity_add"
