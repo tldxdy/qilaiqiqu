@@ -64,6 +64,19 @@ public class ManageAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
+		int duration = list.get(position).getDuration()/60;
+		if(duration >= 24){
+			int days = duration / 24;
+			duration = duration % 24;
+			holder.timeTxt.setText(days + "天" + duration + "小时");
+		}else{
+			if(duration == 0){
+				holder.timeTxt.setText("1小时");
+			}else{
+				holder.timeTxt.setText(duration + "小时");
+			}
+		}
+		
 		holder.yearsTxt.setText(list.get(position).getStartDate().subSequence(0, 10));
 		holder.titleTxt.setText(list.get(position).getActivityTitle());
 		

@@ -54,7 +54,6 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="@drawable/corners_fragment_unpress_left"
             android:gravity="center"
             android:text="活动管理" />
 
@@ -64,7 +63,6 @@
             android:layout_height="fill_parent"
             android:layout_marginLeft="-1dp"
             android:layout_weight="1"
-            android:background="@drawable/corners_fragment_unpress_right"
             android:gravity="center"
             android:text="活动历史" />
     </LinearLayout>

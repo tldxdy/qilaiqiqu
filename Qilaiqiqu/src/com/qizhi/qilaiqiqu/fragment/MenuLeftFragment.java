@@ -305,7 +305,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 							.getInt("fansNum") + "");
 					userIntegralTxt.setText(user
 							.getInt("integral") + "");
-					if ("null".equals(user.getString("userMemo")) || "".equals(user.getString("userMemo"))) {
+					if ("null".equals(user.getString("userMemo")) || "".equals(user.getString("userMemo")) || user.getString("userMemo") == null) {
+						userMemoTxt.setText("");
 						userMemoTxt.setHint("这个人很懒，什么也没留下!");
 					} else {
 						userMemoTxt.setText(user

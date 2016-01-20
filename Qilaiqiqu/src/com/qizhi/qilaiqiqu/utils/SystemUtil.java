@@ -235,7 +235,7 @@ public class SystemUtil {
 			public void run() {
 				HttpClient client=new DefaultHttpClient();
 				client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 60000); 
-				HttpPost post = new HttpPost("http://120.55.195.170:80/common/uploadImage.html");//创建 HTTP POST 请求  
+				HttpPost post = new HttpPost(XUtilsUtil.URL + "common/uploadImage.html");//创建 HTTP POST 请求  
 				MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 				//builder.setCharset(Charset.forName("uft-8"));//设置请求的编码格式
 				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);//设置浏览器兼容模式

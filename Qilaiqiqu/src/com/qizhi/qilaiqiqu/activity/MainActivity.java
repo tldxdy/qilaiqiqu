@@ -407,7 +407,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public void imageUrl() {
 		HttpUtils http = new HttpUtils();
 		http.send(HttpRequest.HttpMethod.GET,
-				"http://120.55.195.170:80/common/querySysImageByIsOrder.html",
+				 XUtilsUtil.URL + "common/querySysImageByIsOrder.html",
 				new RequestCallBack<String>() {
 					@Override
 					public void onLoading(long total, long current,

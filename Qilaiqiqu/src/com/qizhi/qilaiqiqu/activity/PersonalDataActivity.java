@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -513,12 +515,14 @@ public class PersonalDataActivity extends BaseActivity implements
 		Bundle extras = data.getExtras();
 		if (extras != null) {
 			Bitmap photo = extras.getParcelable("data");
+			Drawable drawable = new BitmapDrawable(photo);
 			try {
 				img_path = new SystemUtil().saveMyBitmap(photo);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			photoImg.setImageBitmap(photo);
+			photoImg.setImageDrawable(drawable);
+			//photoImg.setImageBitmap(photo);
 		}
 	}
 

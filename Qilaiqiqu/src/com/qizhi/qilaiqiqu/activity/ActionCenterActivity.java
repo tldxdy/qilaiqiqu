@@ -79,7 +79,7 @@ public class ActionCenterActivity extends FragmentActivity implements OnClickLis
 					historyTxt.setTextColor(0xffffffff);
 					historyTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_press);
 					manageTxt.setTextColor(0xff6dbfed);
-					manageTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
+					manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_upspring);
 					break;
 					
 				}
@@ -117,7 +117,7 @@ public class ActionCenterActivity extends FragmentActivity implements OnClickLis
 			historyTxt.setTextColor(0xffffffff);
 			historyTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_press);
 			manageTxt.setTextColor(0xff6dbfed);
-			manageTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
+			manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_upspring);
 			viewPager.setCurrentItem(1);
 			break;
 		case R.id.layout_actioncenteractivity_back:

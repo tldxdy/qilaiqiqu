@@ -184,7 +184,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		aDetailModel = new ArticleMemoDetailModel();
 		list = new ArrayList<ArticleModel>();
 		articleModel = new ArticleModel();
-		listTravels = new ArrayList<TravelsinformationModel>();
+		
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_back);
@@ -300,6 +300,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			break;
 		case R.id.img_ridingDetailsActivity_revamp:
 			if (!ReleaseActivityfalg) {
+				listTravels = new ArrayList<TravelsinformationModel>();
 				for (int i = 0; i < list.size(); i++) {
 					TravelsinformationModel tm = new TravelsinformationModel();
 					tm.setTitle(list.get(i).getTitle());
@@ -919,11 +920,13 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		View mview = LayoutInflater.from(this).inflate(
 				R.layout.popup_delete_releaseactivity, null);
 
+		TextView textView = (TextView) mview.findViewById(R.id.txt_dialog_box_cancel);
 		Button confirmBtn = (Button) mview
 				.findViewById(R.id.btn_dialog_box_confirm);
 		Button cancelBtn = (Button) mview
 				.findViewById(R.id.btn_dialog_box_cancel);
 
+		textView.setText("你确定要删除这篇游记吗？");
 		final PopupWindow popupWindow = new PopupWindow(mview,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 

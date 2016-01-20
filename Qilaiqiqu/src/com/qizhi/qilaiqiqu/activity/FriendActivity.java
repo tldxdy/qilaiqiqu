@@ -104,12 +104,16 @@ public class FriendActivity extends FragmentActivity implements OnClickListener,
 				restImageAndText();
 				switch (currentItem) {
 				case 0:
-					fansTxt.setBackgroundResource(R.drawable.corners_fragment_press_left);
+					fansTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
 					fansTxt.setTextColor(getResources().getColor(R.color.white));
+					careTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
+					careTxt.setTextColor(getResources().getColor(R.color.bule));
 					break;
 				case 1:
-					careTxt.setBackgroundResource(R.drawable.corners_fragment_press_right);
+					careTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_press);
 					careTxt.setTextColor(getResources().getColor(R.color.white));
+					fansTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_upspring);
+					fansTxt.setTextColor(getResources().getColor(R.color.bule));
 					break;
 				}
 			}
@@ -150,22 +154,26 @@ public class FriendActivity extends FragmentActivity implements OnClickListener,
 		restImageAndText();
 		switch (i) {
 		case 0:
-			fansTxt.setBackgroundResource(R.drawable.corners_fragment_press_left);
+			fansTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
 			fansTxt.setTextColor(getResources().getColor(R.color.white));
+			careTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
+			careTxt.setTextColor(getResources().getColor(R.color.bule));
 			break;
 		case 1:
-			careTxt.setBackgroundResource(R.drawable.corners_fragment_press_right);
+			careTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_press);
 			careTxt.setTextColor(getResources().getColor(R.color.white));
+			fansTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_upspring);
+			fansTxt.setTextColor(getResources().getColor(R.color.bule));
 			break;
 		}
 		viewPager.setCurrentItem(i);
 	}
 
 	private void restImageAndText() {
-		fansTxt.setBackgroundResource(R.drawable.corners_fragment_unpress_left);
-		careTxt.setBackgroundResource(R.drawable.corners_fragment_unpress_right);
-		fansTxt.setTextColor(getResources().getColor(R.color.dark));
-		careTxt.setTextColor(getResources().getColor(R.color.dark));
+		fansTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
+		fansTxt.setTextColor(getResources().getColor(R.color.white));
+		careTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
+		careTxt.setTextColor(getResources().getColor(R.color.bule));
 	}
 
 	public void getCare() {

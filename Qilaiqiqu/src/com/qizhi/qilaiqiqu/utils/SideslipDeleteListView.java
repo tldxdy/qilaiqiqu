@@ -90,6 +90,8 @@ public class SideslipDeleteListView extends ListView {
 					// 重新设置leftMargin
 					mLayoutParams.leftMargin = scroll;
 					mPointChild.getChildAt(0).setLayoutParams(mLayoutParams);
+				}else if(nowX > mDownX){
+					isDeleteShown = false;
 				}
 				
 				return true;

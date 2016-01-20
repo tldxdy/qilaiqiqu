@@ -58,7 +58,6 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_my_message);
-		
 		initView();
 	}
 
@@ -88,6 +87,7 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		if(myMessageList.canClick()){
 			int systemMessageId = list.get(position).getSystemMessageId();
 			RequestParams params = new RequestParams();
 			params.addBodyParameter("systemMessageId", systemMessageId + "");
@@ -143,6 +143,7 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 					
 				}
 			});
+		}
 	}
 	
 	@Override

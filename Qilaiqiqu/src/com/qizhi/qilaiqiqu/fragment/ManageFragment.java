@@ -89,10 +89,10 @@ public class ManageFragment extends Fragment  implements OnItemClickListener,OnR
 					manageList.setOnRefreshListener(ManageFragment.this);
 					
 					if(pageIndex == 1){
-						new SystemUtil().makeToast(getActivity(), "刷新成功");
-					}else if(pageIndex < pageCount){
+						//new SystemUtil().makeToast(getActivity(), "刷新成功");
+					}else if(1 < pageIndex && pageIndex < pageCount){
 						new SystemUtil().makeToast(getActivity(), "加载成功");
-					}else{
+					}else if(pageIndex >= pageCount){
 						new SystemUtil().makeToast(getActivity(), "以显示全部内容");
 					}
 					// 更新UI

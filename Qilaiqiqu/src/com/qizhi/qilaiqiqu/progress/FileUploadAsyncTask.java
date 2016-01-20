@@ -22,6 +22,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,7 +33,7 @@ import android.os.Message;
 import android.widget.Toast;
 public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 
-	private String url = "http://120.55.195.170:80/common/uploadImage.html";
+	private String url =  XUtilsUtil.URL + "common/uploadImage.html";
 	private Context context;
 	private ProgressDialog pd;
 	private long totalSize;
@@ -54,7 +56,7 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 	protected void onPreExecute() {
 		pd = new ProgressDialog(context);
 		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		pd.setMessage("上传中"+number + "/" + sum);
+		pd.setMessage("上传第"+number + "/" + sum + "张");
 		pd.setCancelable(false);
 		pd.show();
 	}

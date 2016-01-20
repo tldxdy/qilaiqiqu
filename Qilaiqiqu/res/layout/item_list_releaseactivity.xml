@@ -60,6 +60,7 @@
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/layout_releaseactivity_location"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:background="#ccf5f5f5"

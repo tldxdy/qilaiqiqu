@@ -160,11 +160,20 @@
             android:src="@drawable/little_return" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageView2"
+            android:layout_marginLeft="24dp"
+            android:layout_toRightOf="@+id/imageView2"
+            android:text="@string/text_mymessageactivity_title"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/txt_fragment_mainactivity_informationnum"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignBottom="@+id/imageView2"
-            android:layout_marginRight="10dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="11dp"
             android:layout_toLeftOf="@+id/imageView1"
             android:background="@drawable/switch_txt"
             android:gravity="center"
@@ -177,18 +186,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignTop="@+id/imageView1"
-            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="21dp"
             android:src="@drawable/message" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageView2"
-            android:layout_marginLeft="24dp"
-            android:layout_toRightOf="@+id/imageView2"
-            android:text="@string/text_mymessageactivity_title"
-            android:textSize="16sp" />
 
     </RelativeLayout>
 

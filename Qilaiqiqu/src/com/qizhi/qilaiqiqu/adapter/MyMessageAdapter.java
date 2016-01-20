@@ -52,7 +52,7 @@ public class MyMessageAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return null;
+		return position;
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class MyMessageAdapter extends BaseAdapter {
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("systemMessageId", systemMessageId + "");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/systemMessage/querySystemMessageDetails.html", params, new CallBackPost() {
+		xUtilsUtil.httpPost("mobile/systemMessage/deleteSystemMessage.html", params, new CallBackPost() {
 			
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {

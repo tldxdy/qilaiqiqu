@@ -36,7 +36,6 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ReleaseListAdapter;
-import com.qizhi.qilaiqiqu.model.PublishTravelsModel;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.progress.FileUploadAsyncTask;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -72,8 +71,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 
 	private List<String> imgListUrl;
 
-	private PublishTravelsModel ptm;
-
 	private XUtilsUtil xUtilsUtil;
 
 	private SharedPreferences preferences;
@@ -83,6 +80,8 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	private int articleId;
 
 	private int num = 0;
+	
+	private int updateListSum;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -108,15 +107,19 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 					publishTravels();
 				}
 				break;
-			/*
-			 * case 2: if(!falg){ new
-			 * SystemUtil().makeToast(ReleaseActivity.this, "发表成功");
-			 * ReleaseActivity.this.finish(); }else{ new
-			 * SystemUtil().makeToast(ReleaseActivity.this, "修改成功");
-			 * ReleaseActivity.this.finish(); }
-			 * 
-			 * break;
-			 */
+			
+			 case 2: 
+				 int p = (Integer) msg.obj;
+				 if(falg){
+					 if(p < updateListSum){
+						 updateListSum = updateListSum - 1;
+					 }
+				 }
+				 list.remove(p);
+				 adapter.notifyDataSetChanged();
+			
+			 break;
+			 
 
 			default:
 				break;
@@ -138,7 +141,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 	@SuppressWarnings("unchecked")
 	private void initView() {
 		list = new ArrayList<TravelsinformationModel>();
-		ptm = new PublishTravelsModel();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 
@@ -164,6 +166,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		} else {
 			list = (ArrayList<TravelsinformationModel>) getIntent()
 					.getSerializableExtra("list");
+			updateListSum = list.size();
 			titleEdt.setText(list.get(0).getTitle());
 			titleNumTxt.setText(list.get(0).getTitle().length() + "/15");
 			browseTxt.setVisibility(View.GONE);
@@ -172,7 +175,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			titleTxt.setText("修改骑游记");
 		}
 
-		adapter = new ReleaseListAdapter(this, list, ptm, falg);
+		adapter = new ReleaseListAdapter(this, list, falg,handler,updateListSum);
 		releaseList.setAdapter(adapter);
 
 	}
@@ -193,7 +196,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				R.layout.item_list_releaseactivity_footer, null);
 		releaseAddImg = (ImageView) footerView
 				.findViewById(R.id.img_release_add);
-		releaseAddImg.setOnClickListener(this);
 		releaseList.addFooterView(footerView);
 	}
 
@@ -202,13 +204,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		browseTxt.setOnClickListener(this);
 		publishTxt.setOnClickListener(this);
 		titleEdt.addTextChangedListener(this);
+		
+		releaseAddImg.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.layout_releaseactivity_back:
-			finish();
+			ReleaseActivity.this.finish();
 			break;
 		case R.id.txt_releaseactivity_browse:
 			if (list.size() != 0) {
@@ -217,7 +221,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				intents.putExtra("previewList", (Serializable) list);
 				intents.putExtra("ReleaseActivityfalg", true);
 				startActivityForResult(intents, 3);
-
 			}
 			break;
 		case R.id.txt_releaseactivity_publish:
@@ -237,7 +240,18 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 					// preferences, handler, "QYJ");
 				}
 			} else {
-				publishTravels();
+				imgListUrl = new ArrayList<String>();
+				num = 0;
+				// photoUploading();
+
+				if (list.size() > updateListSum) {
+					num = updateListSum;
+					File file = new File(list.get(num).getArticleImage());
+					new FileUploadAsyncTask(this, num + 1, list.size() - updateListSum,
+							preferences, "QYJ", handler).execute(file);
+				}else{
+					publishTravels();
+				}
 			}
 
 			// 发布
@@ -326,8 +340,13 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				params.add(new BasicNameValuePair("articleImage", imgListUrl
 						.get(i)));
 			} else {
-				params.add(new BasicNameValuePair("articleImage", list.get(i)
-						.getArticleImage()));
+				if(i < updateListSum){
+					params.add(new BasicNameValuePair("articleImage", list.get(i)
+							.getArticleImage()));
+				}else{
+					params.add(new BasicNameValuePair("articleImage", imgListUrl
+							.get(i - updateListSum)));
+				}
 			}
 
 			if (list.get(i).getImageMemo() == null) {
@@ -401,30 +420,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		/*
-		 * 
-		 * //设置字符集 HttpEntity httpentity; try { httpentity = new
-		 * UrlEncodedFormEntity(params,"UTF-8");
-		 * httpRequest.setEntity(httpentity); HttpParams httpParams=new
-		 * BasicHttpParams();
-		 * 
-		 * httpRequest.setParams(httpParams); //取得HttpClient对象 HttpClient
-		 * httpclient=new DefaultHttpClient(); HttpResponse
-		 * response=httpclient.execute(httpRequest);
-		 * if(response.getStatusLine().getStatusCode() == 200){ //获取服务器返回页面的值
-		 * HttpEntity entity=response.getEntity(); String
-		 * xmlContent=EntityUtils.toString(entity);
-		 * System.out.println("------------------------------------");
-		 * System.out.println(xmlContent);
-		 * System.out.println("------------------------------------"); Message
-		 * msg = new Message(); msg.what = 2; msg.obj = xmlContent;
-		 * handler.sendMessage(msg);
-		 * 
-		 * } } catch (IOException e) { e.printStackTrace(); } }
-		 * 
-		 * }.start();
-		 */
 
 	}
 

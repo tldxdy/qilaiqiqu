@@ -3,23 +3,17 @@ package com.qizhi.qilaiqiqu.adapter;
 import java.util.List;
 
 import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.MapActivity;
-import com.qizhi.qilaiqiqu.activity.NativeImagesActivity;
-import com.qizhi.qilaiqiqu.activity.StartActivity;
-import com.qizhi.qilaiqiqu.activity.SystemMessageActivity;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
-import com.qizhi.qilaiqiqu.model.PublishTravelsModel;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.squareup.picasso.Picasso;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -54,24 +48,23 @@ public class ReleaseListAdapter extends BaseAdapter {
 
 	private Button confirmBtn;
 	private Button cancelBtn;
-
-	private PublishTravelsModel ptm;
-
 	private BitmapUtils bitmapUtils;
 
 	private boolean falg;
+	private Handler handler;
+	private int updateListSum;
 
 	public ReleaseListAdapter(Context context,
-			List<TravelsinformationModel> list, PublishTravelsModel ptm,
-			boolean falg) {
+			List<TravelsinformationModel> list,
+			boolean falg, Handler handler,int updateListSum) {
 
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		this.list = list;
-		this.ptm = ptm;
 		bitmapUtils = new BitmapUtils(context);
 		this.falg = falg;
-
+		this.handler = handler;
+		this.updateListSum = updateListSum;
 	}
 
 	@Override
@@ -97,8 +90,8 @@ public class ReleaseListAdapter extends BaseAdapter {
 					null);
 			holder.photoImg = (ImageView) convertView
 					.findViewById(R.id.img_releaseactivity_photo);
-			holder.locationImg = (ImageView) convertView
-					.findViewById(R.id.img_releaseactivity_location);
+			/*holder.locationImg = (ImageView) convertView
+					.findViewById(R.id.img_releaseactivity_location);*/
 			holder.deleteImg = (ImageView) convertView
 					.findViewById(R.id.img_releaseactivity_delete);
 
@@ -112,46 +105,43 @@ public class ReleaseListAdapter extends BaseAdapter {
 					.findViewById(R.id.edt_releaseactivity_content);
 			holder.legendEdit = (EditText) convertView
 					.findViewById(R.id.edt_releaseactivity_legend);
+			holder.locationLayout = (LinearLayout) convertView
+					.findViewById(R.id.layout_releaseactivity_location);
 
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		// Bitmap bm1 =
-		// BitmapFactory.decodeFile(list.get(position).getArticleImage());
-		// Bitmap bm =
-		// SystemUtil.compressImageFromFile(list.get(position).getArticleImage());
-		// Bitmap bm = SystemUtil.compressImage(bm1, 200);
-		// Bitmap bm = SystemUtil.ratio(bm1);
-		// holder.photoImg.setImageBitmap(bm);
+
+		
+		holder.contentEdit.setText(list.get(position).getMemo());
+		holder.legendEdit.setText(list.get(position).getImageMemo());
+		holder.locationTxt.setText(list.get(position).getAddress());
+		
 		if (!falg) {
 			bitmapUtils.display(holder.photoImg, list.get(position)
 					.getArticleImage());
 		} else {
-			Picasso.with(context)
+			if(position < updateListSum){
+				Picasso.with(context)
 					.load("http://weride.oss-cn-hangzhou.aliyuncs.com/"
 							+ list.get(position).getArticleImage().split("@")[0])
 					.into(holder.photoImg);
+			}else{
+				bitmapUtils.display(holder.photoImg, list.get(position)
+						.getArticleImage());
+			}
 		}
-		holder.contentEdit.setText(list.get(position).getMemo());
-		holder.legendEdit.setText(list.get(position).getImageMemo());
-		holder.locationTxt.setText(list.get(position).getAddress());
+		
 
-		holder.locationImg.setOnClickListener(new OnClickListener() {
+		holder.locationLayout.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 
-				/*
-				 * TravelsinformationModel tfm = list.get(position);
-				 * tfm.setAddress("杭州"); list.set(position, tfm);
-				 */
-				// list.get(position).setAddress("杭州");
-				// notifyDataSetChanged();
 				Intent intent = new Intent(context, MapActivity.class);
 				intent.putExtra("position", position);
 				((Activity) context).startActivityForResult(intent, 2);
-				// context.startActivity(new Intent(context,MapActivity.class));
 			}
 
 		});
@@ -163,13 +153,6 @@ public class ReleaseListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				/*
-				 * Matrix matrix=new Matrix();
-				 * holder.deleteImg.setScaleType(ScaleType.MATRIX); //required
-				 * matrix.postRotate((float) 90, holder.deleteImg.getWidth()/2,
-				 * holder.deleteImg.getHeight()/2);
-				 * holder.deleteImg.setImageMatrix(matrix);
-				 */
 
 				showPopupWindow(v, position, holder.deleteImg);
 
@@ -190,14 +173,6 @@ public class ReleaseListAdapter extends BaseAdapter {
 			@Override
 			public void afterTextChanged(Editable s) {
 				list.get(position).setMemo(s.toString().trim());
-				StringBuffer sb = new StringBuffer();
-				for (int i = 0; i < list.size(); i++) {
-					sb.append(list.get(i).getMemo());
-					if (i != list.size() - 1) {
-						sb.append("|");
-					}
-				}
-				ptm.setMemo(sb.toString());
 			}
 		});
 		// 图片说明监听
@@ -216,14 +191,6 @@ public class ReleaseListAdapter extends BaseAdapter {
 			@Override
 			public void afterTextChanged(Editable s) {
 				list.get(position).setImageMemo(s.toString().trim());
-				StringBuffer sb = new StringBuffer();
-				for (int i = 0; i < list.size(); i++) {
-					sb.append(list.get(i).getImageMemo());
-					if (i != list.size() - 1) {
-						sb.append("|");
-					}
-				}
-				ptm.setImageMemo(sb.toString());
 			}
 		});
 
@@ -280,9 +247,11 @@ public class ReleaseListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View arg0) {
-				list.remove(position);
-				notifyDataSetChanged();
-				popupWindow.dismiss();
+					Message msg = new Message();
+					msg.what = 2;
+					msg.obj = position;
+					handler.sendMessage(msg);
+					popupWindow.dismiss();
 			}
 		});
 
@@ -306,10 +275,11 @@ public class ReleaseListAdapter extends BaseAdapter {
 		private EditText legendEdit;
 
 		private ImageView photoImg;
-		private ImageView locationImg;
+		//private ImageView locationImg;
 		private ImageView deleteImg;
 
 		private TextView locationTxt;
+		private LinearLayout locationLayout;
 
 		private LinearLayout deleteLayout;
 
