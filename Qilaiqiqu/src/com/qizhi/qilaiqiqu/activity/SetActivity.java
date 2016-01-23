@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
@@ -187,6 +188,7 @@ public class SetActivity extends Activity implements OnClickListener {
 		cleanManager.clearAllCache(SetActivity.this);
 		try {
 			cacheTxt.setText(cleanManager.getTotalCacheSize(SetActivity.this));
+			new SystemUtil().makeToast(this, "缓存已清除");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -247,6 +249,7 @@ public class SetActivity extends Activity implements OnClickListener {
 						/**
 						 * SharedPreferences清空用户Id和uniqueKey
 						 */
+						
 						editor.putInt("userId", -1);
 						editor.putString("uniqueKey", null);
 						editor.putString("imUserName", null);

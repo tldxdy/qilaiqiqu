@@ -20,7 +20,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -465,6 +464,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
+		
 		if (position != 0 && pageIndex < Articlelist.size() + 2) {
 			Intent intent = new Intent(this, RidingDetailsActivity.class);
 			intent.putExtra("isMe", false);
@@ -612,8 +612,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						editor.putString("riderId", null);
 						editor.commit();
 						
-						startActivity(new Intent(MainActivity.this,
-								LoginActivity.class));
+//						MainActivity.this.finish();
+						/*startActivity(new Intent(MainActivity.this,
+								LoginActivity.class));*/
 					}
 
 				} catch (JSONException e) {

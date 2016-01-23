@@ -1,9 +1,12 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,11 +33,13 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.NumberPicker;
+import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -44,8 +49,7 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
-public class ReleaseActiveActivity extends Activity implements OnClickListener,
-		CallBackPost {
+public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 	private TextView timeTxt;
 	private TextView dateTxt;
@@ -77,8 +81,11 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 	private boolean isFirst = false;
 
 	private String data;
+	private String duration;
 
 	boolean isPut = false;
+
+	int num = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +185,14 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.txt_releaseActiveActivity_release:
-
+			if (themeEdt.getText() == null
+					|| timeTxt.getText().equals("请选择天数  请选择小时数")
+					|| dateTxt.getText().equals("请选择日期  请选择时间")
+					|| signatureEdt.getText() == null) {
+				new SystemUtil().makeToast(this, "必填项不能为空");
+			}else {
+				releasePictue();
+			}
 			break;
 
 		case R.id.layout_releaseActiveActivity_date:
@@ -186,7 +200,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 			break;
 
 		case R.id.layout_releaseActiveActivity_time:
-
+			showPopupWindowTime(v);
 			break;
 
 		case R.id.img_releaseActiveActivity_add:
@@ -194,6 +208,11 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 			 * startActivity(new Intent(ReleaseActiveActivity.this,
 			 * SelectImagesActivity.class));
 			 */
+			num++;
+			if (num == 3) {
+				addImg.setVisibility(View.GONE);
+			}
+
 			Intent i = new Intent(
 					Intent.ACTION_PICK,
 					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);// 调用android的图库
@@ -220,7 +239,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 				LinearLayout.LayoutParams.MATCH_PARENT));
 		picture.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-		// Picasso.with(this).load("file//"+uri).into(picture);
+		Toast.makeText(this, uri + "", 0).show();
 		picture.setImageBitmap(photo);
 
 		ImageView delete = new ImageView(this);
@@ -236,6 +255,10 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 			@Override
 			public void onClick(View arg0) {
 				frameLayout.setVisibility(View.GONE);
+				num--;
+				if (num != 3) {
+					addImg.setVisibility(View.VISIBLE);
+				}
 			}
 		});
 		delete.setImageResource(R.drawable.red_delete);
@@ -245,35 +268,74 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 		linearLayout.addView(frameLayout);
 	}
 
-	private void release() {
-		RequestParams params2 = new RequestParams();
-		params2.addBodyParameter("userId", preferences.getInt("userId", -1)
-				+ "");
-		params2.addBodyParameter("activityTitle", themeEdt.getText().toString());
-		params2.addBodyParameter("activityMemo", signatureEdt.getText()
+	/**
+	 * 上传图片
+	 */
+	private void releasePictue() {
+		RequestParams params = new RequestParams();
+
+		params.addBodyParameter("files", "");
+		params.addBodyParameter("type", "HD");
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+
+		xUtilsUtil.httpPost("common/uploadImage.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+
+						// 图片名称
+						String picName = "";
+
+						postAll(picName);
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+
+					}
+				});
+
+	}
+
+	/**
+	 * 上传所有信息
+	 */
+	private void postAll(String picName) {
+		RequestParams params = new RequestParams();
+		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
+		params.addBodyParameter("activityTitle", themeEdt.getText().toString());
+		params.addBodyParameter("activityMemo", signatureEdt.getText()
 				.toString());
-		params2.addBodyParameter("startDate", "");
-		params2.addBodyParameter("duration", "");
-		params2.addBodyParameter("lanInfo", "");
-		params2.addBodyParameter("lanName", "");
-		params2.addBodyParameter("mileage", "");
-		params2.addBodyParameter("activityImage", "");
-		params2.addBodyParameter("location", "");
-		params2.addBodyParameter("outlay", moneyTxt.getText().toString());
-		params2.addBodyParameter("uniqueKey", "");
+		params.addBodyParameter("startDate", dateTxt.getText().toString()
+				+ ":00");
+		params.addBodyParameter("duration", timeTxt.getText().toString());
+		params.addBodyParameter("lanInfo", "");
+		params.addBodyParameter("lanName", "");
+		params.addBodyParameter("mileage", "");
 
-		xUtilsUtil.httpPost("mobile/activity/publishActivity.html", params2,
-				this);
-	}
+		// activityImage 图片(多张用逗号隔开)
+		params.addBodyParameter("activityImage", picName);
 
-	@Override
-	public void onMySuccess(ResponseInfo<String> responseInfo) {
+		params.addBodyParameter("location", "");
+		params.addBodyParameter("outlay", moneyTxt.getText().toString());
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
 
-	}
+		xUtilsUtil.httpPost("mobile/activity/publishActivity.html", params,
+				new CallBackPost() {
 
-	@Override
-	public void onMyFailure(HttpException error, String msg) {
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
 
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+
+					}
+				});
 	}
 
 	/**
@@ -297,7 +359,6 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 							setAddView(new SystemUtil().saveMyBitmap(photo),
 									photo);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -388,8 +449,21 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 					int monthOfYear, int dayOfMonth) {
 				Calendar calendar = Calendar.getInstance();
 				calendar.set(year, monthOfYear, dayOfMonth);
-				SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日");
-				datas = format.format(calendar.getTime());
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				datas = format.format(calendar.getTime()) + " ";
+
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+				try {
+					Date now = df.parse(nowDate());
+					Date date = df.parse(format.format(calendar.getTime()));
+					if (now.getTime() < date.getTime()) {
+						isSelect = true;
+					} else {
+						isSelect = false;
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 
 			}
 		});
@@ -456,44 +530,44 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 
 	}
 
+	String day;
+	String hour;
+
 	private void showPopupWindowTime(View view) {
 		// 一个自定义的布局，作为显示的内容
 		View contentView = LayoutInflater.from(this).inflate(
-				R.layout.item_popup_datatimepicker, null);
+				R.layout.item_popup_timepicker, null);
 
-		DatePicker datePicker = (DatePicker) contentView
-				.findViewById(R.id.dpPicker);
-		TimePicker timePicker = (TimePicker) contentView
-				.findViewById(R.id.tpPicker);
+		NumberPicker dayPicker = (NumberPicker) contentView
+				.findViewById(R.id.daypicker);
+		NumberPicker hourPicker = (NumberPicker) contentView
+				.findViewById(R.id.houricker);
 		TextView mBtnConfirm = (TextView) contentView
-				.findViewById(R.id.datatimepicker_ok);
+				.findViewById(R.id.timepicker_ok);
 
-		Calendar minCalendar = Calendar.getInstance();
-		minCalendar.set(Calendar.HOUR_OF_DAY, 0);
-		minCalendar.set(Calendar.MINUTE, 0);
-		minCalendar.set(Calendar.SECOND, 0);
-		datePicker.setMinDate(minCalendar.getTimeInMillis());
-		datePicker.init(2016, 1, 1, new OnDateChangedListener() {
+		dayPicker.setMaxValue(30);
+		dayPicker.setMinValue(0);
+		dayPicker.setValue(0);
+
+		hourPicker.setMaxValue(24);
+		hourPicker.setMinValue(0);
+		hourPicker.setValue(9);
+
+		dayPicker.setOnValueChangedListener(new OnValueChangeListener() {
 
 			@Override
-			public void onDateChanged(DatePicker view, int year,
-					int monthOfYear, int dayOfMonth) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(year, monthOfYear, dayOfMonth);
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd ");
-				datas = format.format(calendar.getTime());
+			public void onValueChange(NumberPicker arg0, int oldVal, int newVal) {
+				day = newVal + "天";
 			}
 		});
-		timePicker.setIs24HourView(true);
-		timePicker
-				.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-					@Override
-					public void onTimeChanged(TimePicker view, int hourOfDay,
-							int minute) {
 
-						time = hourOfDay + ":" + minute;
-					}
-				});
+		hourPicker.setOnValueChangedListener(new OnValueChangeListener() {
+
+			@Override
+			public void onValueChange(NumberPicker arg0, int oldVal, int newVal) {
+				hour = newVal + "小时";
+			}
+		});
 
 		final PopupWindow popupWindow = new PopupWindow(contentView,
 				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, true);
@@ -515,14 +589,14 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 
 			@Override
 			public void onClick(View arg0) {
-				if (datas == null) {
-					datas = "请选择日期  ";
+				if (day == null) {
+					day = "请选择天数  ";
 				}
-				if (time == null) {
-					datas = "请选择时间";
+				if (hour == null) {
+					hour = "请选择小时数";
 				}
-				data = datas + time;
-				dateTxt.setText(data);
+				duration = day + hour;
+				timeTxt.setText(duration);
 				popupWindow.dismiss();
 			}
 		});
@@ -534,6 +608,16 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener,
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
 
+	}
+
+	/**
+	 * 
+	 * 获取系统时间
+	 * 
+	 */
+	public String nowDate() {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
+		return df.format(new Date());
 	}
 
 	@Override

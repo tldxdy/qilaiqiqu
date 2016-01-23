@@ -9,7 +9,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 
 public class XUtilsUtil {
 
-	public static String URL = "http://121.40.167.238:80/";
+	public static String URL = "http://120.55.195.170:80/";
 
 	public void httpPost(String url, RequestParams params,
 			final CallBackPost back) {

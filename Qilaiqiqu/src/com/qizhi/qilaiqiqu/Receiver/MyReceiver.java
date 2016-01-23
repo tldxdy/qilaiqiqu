@@ -13,6 +13,8 @@ import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
 
 import com.qizhi.qilaiqiqu.activity.DiscussActivity;
+import com.qizhi.qilaiqiqu.activity.FriendActivity;
+import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 
 /**
@@ -63,8 +65,12 @@ public class MyReceiver extends BroadcastReceiver {
 			try {
 				JSONObject jsonObject = new JSONObject(EXTRA);
 				key = jsonObject.getString("pushType");
-				JSONObject pushValue = new JSONObject(
-						jsonObject.getString("pushValue"));
+				System.out.println("key:" + key + "|||||||||||||||||||||||");
+				JSONObject pushValue = null;
+				if(!key.equals("YHGZ")){
+					pushValue = new JSONObject(
+							jsonObject.getString("pushValue"));
+				}
 
 				if (key.equals("QYJPL")) {
 					value = pushValue.getString("articleId");
@@ -74,6 +80,15 @@ public class MyReceiver extends BroadcastReceiver {
 					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
 
+				} else if (key.equals("YHGZ")) {
+					
+					System.out.println("|||||||||||||||||||||||+++++++++++++++++++++++");
+					Intent i = new Intent(context, FriendActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("friendFlag", 0);
+					context.startActivity(i);
+					
 				} else if (key.equals("QYJDZ")) {
 					String praiseNum = pushValue.getString("praiseNum");
 					String title = pushValue.getString("title");
@@ -91,13 +106,14 @@ public class MyReceiver extends BroadcastReceiver {
 
 				} else if (key.equals("QYJDS")) {
 					String integral = pushValue.getString("integral");
-					String sumIntegral = pushValue.getString("praiseNum");
+					String sumIntegral = pushValue.getString("sumIntegral");
 					String title = pushValue.getString("title");
 					String userName = pushValue.getString("userName");
 					value = pushValue.getString("articleId");
 					Intent i = new Intent(context, RidingDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
 					i.putExtra("jpushFlag", "JPushDS");
 					i.putExtra("sumIntegral", sumIntegral);
 					i.putExtra("integral", integral);

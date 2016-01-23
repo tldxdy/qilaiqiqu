@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -107,9 +108,9 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private List<ArticleModel> list;
 
 	private List<TravelsinformationModel> listTravels;
-	
+
 	private List<TravelsinformationModel> previewList;
-	
+
 	private Previewadapter previewadapter;
 
 	private ArticleMemoDetailModel aDetailModel;
@@ -123,15 +124,13 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private boolean ReleaseActivityfalg = false;
 
 	private String jpushFlag;
-	
-	
+
 	private int num = 0;
-	
+
 	private List<String> imgListUrl;
-	
-	
+
 	@SuppressLint("HandlerLeak")
-	private Handler handler = new Handler(){
+	private Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
@@ -140,13 +139,17 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			case 1:
 				String s = (String) msg.obj;
 				imgListUrl.add(s);
-				if(previewList.size()-1 != num){
+				if (previewList.size() - 1 != num) {
 					num = num + 1;
 					File file = new File(previewList.get(num).getArticleImage());
-					new FileUploadAsyncTask(RidingDetailsActivity.this, (num + 1), previewList.size(), preferences, "QYJ", handler).execute(file);
-					//new SystemUtil().httpClient(list.get(num).getArticleImage(), preferences, handler, "QYJ");
-					//photoUploading();
-				}else{
+					new FileUploadAsyncTask(RidingDetailsActivity.this,
+							(num + 1), previewList.size(), preferences, "QYJ",
+							handler).execute(file);
+					// new
+					// SystemUtil().httpClient(list.get(num).getArticleImage(),
+					// preferences, handler, "QYJ");
+					// photoUploading();
+				} else {
 					publishTravels();
 				}
 				break;
@@ -155,7 +158,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				break;
 			}
 		}
-		
+
 	};
 
 	@Override
@@ -184,7 +187,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		aDetailModel = new ArticleMemoDetailModel();
 		list = new ArrayList<ArticleModel>();
 		articleModel = new ArticleModel();
-		
+
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_back);
@@ -217,15 +220,16 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			shareImg.setVisibility(View.GONE);
 			deleteTxt.setVisibility(View.VISIBLE);
 		} else if (ReleaseActivityfalg) {
-			previewList = (List<TravelsinformationModel>) getIntent().getSerializableExtra("previewList");
-			
+			previewList = (List<TravelsinformationModel>) getIntent()
+					.getSerializableExtra("previewList");
+
 			cllectionImg.setVisibility(View.GONE);
 			layout_isShow.setVisibility(View.GONE);
 			revamTxt.setVisibility(View.VISIBLE);
 			shareImg.setVisibility(View.GONE);
 			deleteTxt.setVisibility(View.GONE);
 			revamTxt.setText("发布");
-			previewadapter = new Previewadapter(this, previewList,preferences);
+			previewadapter = new Previewadapter(this, previewList, preferences);
 			ridingList.setAdapter(previewadapter);
 			ridingList.setDividerHeight(0);
 		}
@@ -304,10 +308,14 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				for (int i = 0; i < list.size(); i++) {
 					TravelsinformationModel tm = new TravelsinformationModel();
 					tm.setTitle(list.get(i).getTitle());
-						tm.setAddress(list.get(i).getArticleDetailList().get(i).getAddress());
-						tm.setImageMemo(list.get(i).getArticleDetailList().get(i).getImageMemo());
-						tm.setMemo(list.get(i).getArticleDetailList().get(i).getMemo());
-					tm.setArticleImage(list.get(i).getArticleDetailList().get(i).getArticleImage());
+					tm.setAddress(list.get(i).getArticleDetailList().get(i)
+							.getAddress());
+					tm.setImageMemo(list.get(i).getArticleDetailList().get(i)
+							.getImageMemo());
+					tm.setMemo(list.get(i).getArticleDetailList().get(i)
+							.getMemo());
+					tm.setArticleImage(list.get(i).getArticleDetailList()
+							.get(i).getArticleImage());
 					listTravels.add(tm);
 				}
 				Intent intent = new Intent(this, ReleaseActivity.class);
@@ -315,12 +323,13 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				intent.putExtra("list", (Serializable) listTravels);
 				intent.putExtra("articleId", articleId);
 				startActivity(intent);
-			}else{
+			} else {
 				imgListUrl = new ArrayList<String>();
 				num = 0;
-				if(previewList.size() != 0){
+				if (previewList.size() != 0) {
 					File file = new File(previewList.get(num).getArticleImage());
-					new FileUploadAsyncTask(this, num + 1, previewList.size(), preferences, "QYJ", handler).execute(file);
+					new FileUploadAsyncTask(this, num + 1, previewList.size(),
+							preferences, "QYJ", handler).execute(file);
 				}
 			}
 			break;
@@ -764,12 +773,11 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 	@Override
 	protected void onStart() {
-		if(!ReleaseActivityfalg){
+		if (!ReleaseActivityfalg) {
 			uoloadData();
 		}
 		super.onStart();
 	}
-
 
 	private void uoloadData() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -799,9 +807,9 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 							articleModel = aDetailModel.getArticleMemo();
 
-							
 							list.removeAll(list);
-							for (int i = 0; i < articleModel.getArticleDetailList().size(); i++) {
+							for (int i = 0; i < articleModel
+									.getArticleDetailList().size(); i++) {
 								list.add(articleModel);
 							}
 							if (aDetailModel.isUserCollected()) {
@@ -865,15 +873,17 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	 * @param view
 	 *            popup所依附的布局
 	 */
-	private void showJPush(String jpushFlag) {
+	private void showJPush(String jf) {
 		String userName = null;
 		String title = null;
+		String sumIntegral = null;
+		String integral = null;
+
 		String praiseNum = null;
 
 		// 一个自定义的布局，作为显示的内容
 		View v = LayoutInflater.from(this).inflate(R.layout.item_popup_jpush,
 				null);
-		popup_ok = (TextView) v.findViewById(R.id.txt_JpushPopup_ok);
 		markPointTxt = (TextView) v.findViewById(R.id.txt_JpushPopup_message);
 		popup_cancel = (TextView) v.findViewById(R.id.txt_JpushPopup_cancel);
 		final PopupWindow popupWindow = new PopupWindow(v,
@@ -881,7 +891,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 		popupWindow.setTouchable(true);
 
-		if (jpushFlag.equals("JPushDZ")) {
+		if (jf.equals("JPushDZ")) {
 			praiseNum = getIntent().getStringExtra("praiseNum");
 			title = getIntent().getStringExtra("title");
 			userName = getIntent().getStringExtra("userName");
@@ -890,20 +900,42 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 					+ "<font color='#6dbfed'>" + title + "</font>"
 					+ "》点了赞哟!当前被点赞量为" + "<font color='#ff0000'>" + praiseNum
 					+ "</font>"));
-		} else if (jpushFlag.equals("JPushDS")) {
-
+		} else if (jf.equals("JPushDS")) {
+			sumIntegral = getIntent().getStringExtra("sumIntegral");
+			title = getIntent().getStringExtra("title");
+			integral = getIntent().getStringExtra("integral");
+			userName = getIntent().getStringExtra("userName");
+			markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
+					+ userName + "</font>" + " 觉得您的游记《"
+					+ "<font color='#6dbfed'>" + title + "</font>"
+					+ "》写得不错哟!给您打赏了" + "<font color='#ff0000'>" + integral
+					+ "</font>"
+					+ ",你现在的总积分是"
+					+ "<font color='#ff0000'>"
+					+ sumIntegral
+					+ "</font>" + "分"));
 		}
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-
+				jpushFlag = "";
 				return false;
 				// 这里如果返回true的话，touch事件将被拦截
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
 			}
 		});
+
+		popup_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+				jpushFlag = "";
+			}
+		});
+
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
 		// 我觉得这里是API的一个bug
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
@@ -920,7 +952,8 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		View mview = LayoutInflater.from(this).inflate(
 				R.layout.popup_delete_releaseactivity, null);
 
-		TextView textView = (TextView) mview.findViewById(R.id.txt_dialog_box_cancel);
+		TextView textView = (TextView) mview
+				.findViewById(R.id.txt_dialog_box_cancel);
 		Button confirmBtn = (Button) mview
 				.findViewById(R.id.btn_dialog_box_confirm);
 		Button cancelBtn = (Button) mview
@@ -969,86 +1002,85 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 	private void publishTravels() {
 
-				//使用NameValuePair来保存要传递的Post参数        
-				List<NameValuePair> params=new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair("uniqueKey",preferences.getString("uniqueKey", null)));
-				params.add(new BasicNameValuePair("userId",preferences.getInt("userId", -1) + ""));
-				params.add(new BasicNameValuePair("title",previewList.get(0).getTitle()));
-				
-				
-				
-				for(int i = 0; i < previewList.size(); i++){
-					
-					//需要注意的是  如果某个图片的说明 为空 时  请传递空 不能 少一个属性    每一个数组必须保证相同的长度
-						params.add(new BasicNameValuePair("articleImage",imgListUrl.get(i)));
+		// 使用NameValuePair来保存要传递的Post参数
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("uniqueKey", preferences.getString(
+				"uniqueKey", null)));
+		params.add(new BasicNameValuePair("userId", preferences.getInt(
+				"userId", -1) + ""));
+		params.add(new BasicNameValuePair("title", previewList.get(0)
+				.getTitle()));
 
-						if(previewList.get(i).getImageMemo() ==null){
-						params.add(new BasicNameValuePair("imageMemo",""));
-					}else{
-						params.add(new BasicNameValuePair("imageMemo",previewList.get(i).getImageMemo()));
-					}
+		for (int i = 0; i < previewList.size(); i++) {
 
-					if(previewList.get(i).getAddress() ==null){
-						params.add(new BasicNameValuePair("address",""));
-					}else{
-						params.add(new BasicNameValuePair("address",previewList.get(i).getAddress()));
-					}
-				
-					if(previewList.get(i).getMemo() ==null){
-						params.add(new BasicNameValuePair("memo",""));
-					}else{
-						params.add(new BasicNameValuePair("memo",previewList.get(i).getMemo()));
-					}
-				}
-				RequestParams params2 = new RequestParams();
-				try {
-					params2.setBodyEntity(new UrlEncodedFormEntity(params,"UTF-8"));
-					xUtilsUtil.httpPost("mobile/articleMemo/insertArticle.html" , params2,
-							new CallBackPost() {
+			// 需要注意的是 如果某个图片的说明 为空 时 请传递空 不能 少一个属性 每一个数组必须保证相同的长度
+			params.add(new BasicNameValuePair("articleImage", imgListUrl.get(i)));
 
-								@Override
-								public void onMySuccess(ResponseInfo<String> responseInfo) {
-									JSONObject jsonObject = null;
-									try {
-										jsonObject = new JSONObject(responseInfo.result);
-									} catch (JSONException e) {
-										e.printStackTrace();
-									}
-									if (jsonObject.optBoolean("result")) {
-										new SystemUtil().makeToast(RidingDetailsActivity.this,
-												"发表成功");
-										Intent intentConfirm=new Intent();
-							            setResult(3, intentConfirm);  
-										RidingDetailsActivity.this.finish();
-								}else{
-									new SystemUtil().makeToast(RidingDetailsActivity.this,
-											jsonObject.optString("message"));
-									RidingDetailsActivity.this.finish();
-									}
-								}
+			if (previewList.get(i).getImageMemo() == null) {
+				params.add(new BasicNameValuePair("imageMemo", ""));
+			} else {
+				params.add(new BasicNameValuePair("imageMemo", previewList.get(
+						i).getImageMemo()));
+			}
 
-								@Override
-								public void onMyFailure(HttpException error, String msg) {
+			if (previewList.get(i).getAddress() == null) {
+				params.add(new BasicNameValuePair("address", ""));
+			} else {
+				params.add(new BasicNameValuePair("address", previewList.get(i)
+						.getAddress()));
+			}
 
-								}
-							});
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		
-
-	}
-/*	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode != RESULT_CANCELED) {
-			switch (requestCode) {
-			case 3:
-				break;
+			if (previewList.get(i).getMemo() == null) {
+				params.add(new BasicNameValuePair("memo", ""));
+			} else {
+				params.add(new BasicNameValuePair("memo", previewList.get(i)
+						.getMemo()));
 			}
 		}
-		super.onActivityResult(requestCode, resultCode, data);
+		RequestParams params2 = new RequestParams();
+		try {
+			params2.setBodyEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+			xUtilsUtil.httpPost("mobile/articleMemo/insertArticle.html",
+					params2, new CallBackPost() {
+
+						@Override
+						public void onMySuccess(
+								ResponseInfo<String> responseInfo) {
+							JSONObject jsonObject = null;
+							try {
+								jsonObject = new JSONObject(responseInfo.result);
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							if (jsonObject.optBoolean("result")) {
+								new SystemUtil().makeToast(
+										RidingDetailsActivity.this, "发表成功");
+								Intent intentConfirm = new Intent();
+								setResult(3, intentConfirm);
+								RidingDetailsActivity.this.finish();
+							} else {
+								new SystemUtil().makeToast(
+										RidingDetailsActivity.this,
+										jsonObject.optString("message"));
+								RidingDetailsActivity.this.finish();
+							}
+						}
+
+						@Override
+						public void onMyFailure(HttpException error, String msg) {
+
+						}
+					});
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
-	
-	*/
+	/*
+	 * @Override protected void onActivityResult(int requestCode, int
+	 * resultCode, Intent data) { if (resultCode != RESULT_CANCELED) { switch
+	 * (requestCode) { case 3: break; } } super.onActivityResult(requestCode,
+	 * resultCode, data); }
+	 */
 }

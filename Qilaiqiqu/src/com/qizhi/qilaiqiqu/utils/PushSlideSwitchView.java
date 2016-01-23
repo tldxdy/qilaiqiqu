@@ -71,14 +71,14 @@ public class PushSlideSwitchView extends View {
 	 */
 	public void init() {
 		mSwitchBgSeleted = BitmapFactory.decodeResource(getResources(),
-				R.drawable.push_button_selected_bg);
+				R.drawable.turn_off);
 		mSwitchBgUnseleted = BitmapFactory.decodeResource(getResources(),
 				R.drawable.push_button_unselected_bg);
 
 		mSwitchBallSeleted = BitmapFactory.decodeResource(getResources(),
-				R.drawable.push_button_ball_selected);
+				R.drawable.turn_on);
 		mSwitchBallUnseleted = BitmapFactory.decodeResource(getResources(),
-				R.drawable.push_button_ball_unselected);
+				R.drawable.turn_om_unchosen);
 
 		mMoveLength = mSwitchBgSeleted.getWidth()
 				- mSwitchBallSeleted.getWidth();

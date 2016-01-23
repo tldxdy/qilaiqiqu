@@ -426,6 +426,7 @@ public class ImageCycleViewUtil extends FrameLayout {
 				public void onClick(View v) {
 					if (mOnPageClickListener != null) {
 						mOnPageClickListener.onClick(v, imageInfo);
+						
 						System.out
 								.println("fffffffffffffffffffffffffffffffffffff");
 					}
