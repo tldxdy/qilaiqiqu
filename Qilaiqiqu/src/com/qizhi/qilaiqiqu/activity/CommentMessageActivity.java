@@ -1,6 +1,7 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.model.CommentModel;
 import com.umeng.analytics.MobclickAgent;
 /**
  * 
@@ -25,12 +27,16 @@ public class CommentMessageActivity extends Activity implements OnClickListener,
 
 	private LinearLayout backLayout;		//返回图片
 	
+	private TextView nameTxt;	//回复人
+	private TextView stateTxt;	//回复
 	private TextView returnTitleTxt;	//回复标题
 	private TextView returnContentTxt;	//回复内容
 	private TextView ReturnNumTxt;	//回复字数
 	
 	private EditText myReturnEdt; //我的回复
 	private Button affirmBtn;	//确定回复
+	private CommentModel commentModel;
+	private int isComment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,47 +56,51 @@ public class CommentMessageActivity extends Activity implements OnClickListener,
 		returnTitleTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_title);
 		returnContentTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_content);
 		ReturnNumTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_num);
-		
+		nameTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_name);
+		stateTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_state);
 		myReturnEdt = (EditText) findViewById(R.id.edt_commentmessageactivity_my_return);
-		
 		affirmBtn = (Button) findViewById(R.id.btn_commentmessageactivity_affirm);
+		
+		
+		commentModel = (CommentModel) getIntent().getSerializableExtra("commentModel");
+		isComment = getIntent().getIntExtra("isComment", -1);
+		if(isComment == 1){
+			stateTxt.setText("评论了你的骑游记");
+		}else if(isComment == 2){
+			stateTxt.setText("回复了你的骑游记");
+		}
+		
+		
+		nameTxt.setText(commentModel.getUserName());
+		returnTitleTxt.setText(commentModel.getTitle());
+		returnContentTxt.setText("《"+commentModel.getMemo()+"》");
 	}
 
 	private void initEvent() {
-		String str1 = "独步天涯";
-		String str2 = "《大西北骑行》";
-		String s = "<font color='#6dbfed'>"+str1+"</font>"+"评论了你的骑游记"+"<font color='#6dbfed'>"+str2+"</font>";
-		returnTitleTxt.setText(Html.fromHtml(s));
-		ReturnNumTxt.setText(Html.fromHtml(0+"<font color='#9d9d9e'>/50</font>"));
 		backLayout.setOnClickListener(this);
 		myReturnEdt.addTextChangedListener(this);
 		affirmBtn.setOnClickListener(this);
 		
-		/* //此行必须有  
-		returnTitleTxt.setMovementMethod(LinkMovementMethod.getInstance());
-		
-		 SpannableString sp = new SpannableString(returnTitleTxt.getText().toString());  
-		 sp.setSpan(new ClickableSpan() {
-			@Override
-			public void onClick(View widget) {
-				System.out.println("点击了名字");
-			}
-		}, 0, str1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);   */
-	     
 	}
 	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.layout_commentmessageactivity_back:
-			CommentMessageActivity.this.finish();
-			//Toast.makeText(this, "点击返回", 0).show();
+			finish();
 			break;
 		case R.id.btn_commentmessageactivity_affirm:
 			Toast.makeText(this, "点击确认", 0).show();
+			comment();
 			break;
 		}
 	}
+
+	private void comment() {
+		
+	}
+
+
 
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count,

@@ -32,16 +32,13 @@ public class MyMessageAdapter extends BaseAdapter {
 	
 	private List<SystemMessageModel> list;
 	private Context context;
-	private SideslipDeleteListView myMessageList;
 	private XUtilsUtil xUtilsUtil;
 	private SharedPreferences preferences;
 	
-	public MyMessageAdapter(Context context, List<SystemMessageModel> list
-			, SideslipDeleteListView myMessageList){
+	public MyMessageAdapter(Context context, List<SystemMessageModel> list){
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		this.list = list;
-		this.myMessageList = myMessageList;
 		xUtilsUtil = new XUtilsUtil();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 	}
@@ -130,7 +127,6 @@ public class MyMessageAdapter extends BaseAdapter {
 				if (jsonObject.optBoolean("result")) {
 					list.remove(position);
 					notifyDataSetChanged();
-					myMessageList.turnToNormal();
 				}
 			}
 			

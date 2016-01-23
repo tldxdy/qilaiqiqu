@@ -1,12 +1,17 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.lang.reflect.Type;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,10 +24,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.model.UserLoginModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -289,5 +299,100 @@ public class RegisterActivity extends Activity implements OnClickListener,
 		super.onPause();
 		MobclickAgent.onPause(this);
 	}
+	
+	
+	
+
+	private void login() {
+		RequestParams params = new RequestParams("UTF-8");
+		String registrationID = JPushInterface
+				.getRegistrationID(RegisterActivity.this);
+		
+		params.addQueryStringParameter("mobilePhone", phoneEdt.getText()
+				.toString());
+		params.addQueryStringParameter("loginPwd", passEdt.getText()
+				.toString());
+		params.addQueryStringParameter("pushToken", registrationID);
+		
+		System.out
+		.println(registrationID
+				+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		params.addQueryStringParameter("adviceType", "ANDROID");
+		new XUtilsUtil().httpPost("common/queryUserLogin.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+
+					}
+
+					@SuppressLint("CommitPrefEdits")
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						String message = null;
+						boolean falg = false;
+						try {
+							jsonObject = new JSONObject(s);
+							falg = jsonObject.getBoolean("result");
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+
+						if (falg) {
+							try {
+								JSONObject data = jsonObject
+										.getJSONObject("data");
+								Gson gson = new Gson();
+								Type type = new TypeToken<UserLoginModel>() {
+								}.getType();
+								final UserLoginModel userLogin = gson.fromJson(
+										data.toString(), type);
+
+								/**
+								 * SharedPreferences存储用户Id和uniqueKey
+								 */
+								SharedPreferences sharedPreferences = getSharedPreferences(
+										"userLogin", Context.MODE_PRIVATE);
+								Editor editor = sharedPreferences.edit();// 获取编辑器
+								editor.putInt("userId", userLogin.getUserId());
+								editor.putString("uniqueKey",
+										userLogin.getUniqueKey());
+								editor.putString("imUserName",
+										userLogin.getImUserName());
+								editor.putString("imPassword",
+										userLogin.getImPassword());
+								editor.putString("mobilePhone",
+										userLogin.getMobilePhone());
+								editor.putString("riderId",
+										userLogin.getRiderId());
+								editor.putInt("loginFlag", 1);
+								editor.commit();
+
+								
+								
+								
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+
+						} else {
+							try {
+								message = jsonObject.getString("message");
+								new SystemUtil().makeToast(RegisterActivity.this,
+										message);
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+	}
+	
+	
+	
+	
+	
 	
 }

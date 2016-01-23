@@ -30,7 +30,7 @@ public class PullFreshListView extends ListView  implements OnScrollListener{
 	private final static int LOADING = 4;//正在加载
 	private int state = DONE;//当前状态
 	// 实际的padding的距离与界面上偏移距离的比例
-	private final static int RATIO = 3;
+	private final static int RATIO = 2;
 		
 	private OnRefreshListener onRefreshListener;
 	

@@ -129,7 +129,7 @@
     <string name="text_modifipass_title">修改密码</string>
     <string name="text_systemmessageactivity_title">系统消息</string>
     <string name="text_fragment_num">99</string>
-    <string name="txt__releaseactivity_title_num">0/15</string>
+    <string name="txt__releaseactivity_title_num">0/10</string>
     <string name="text_dialog_box_title">确定要删除这个故事吗？</string>
     <string name="text_quxiao">取消</string>
     <string name="text_introduce_title">软件介绍</string>
@@ -161,7 +161,9 @@
     
     <string name="title_activity_action_center">ActionCenterActivity</string>  
     <string name="text_actioncenteractivity_title">活动中心</string> 
-    
+    <string name="title_activity_activity_apply">ActivityApplyActivity</string>
+    <string name="title_activityactivity_title">群成员查看</string>
+    <string name="text_activityactivity_cancel">取消报名</string>
     </resources>
       
 

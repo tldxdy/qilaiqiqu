@@ -28,10 +28,6 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.MyMessageAdapter;
 import com.qizhi.qilaiqiqu.model.SystemMessageModel;
 import com.qizhi.qilaiqiqu.utils.SideslipDeleteListView;
-import com.qizhi.qilaiqiqu.utils.SlideCutListView;
-import com.qizhi.qilaiqiqu.utils.SlideCutListView.RemoveDirection;
-import com.qizhi.qilaiqiqu.utils.SlideCutListView.RemoveListener;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
@@ -49,7 +45,7 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 	private XUtilsUtil xUtilsUtil;
 	private Integer pageIndex = 1;
 	private SharedPreferences preferences;
-	List<SystemMessageModel> list;
+	private List<SystemMessageModel> list;
 
 	
 	
@@ -111,14 +107,28 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 							if("QYJPL".equals(smm.getMessageType())){
 								//骑游记评论
 								Intent intent = new Intent(MyMessageActivity.this, DiscussActivity.class);
-								intent.putExtra("articleId", jo.optInt("articleId"));//"articleId\":97,\"commentId\":2
+								intent.putExtra("parentId", jo.optInt("parentId"));
+								intent.putExtra("title", jo.optInt("title"));
+								intent.putExtra("memo", jo.optInt("memo"));
+								intent.putExtra("userId", jo.optInt("userId"));
+								intent.putExtra("userName", jo.optInt("userName"));
 								intent.putExtra("commentId", jo.optInt("commentId"));
+								intent.putExtra("articleId", jo.optInt("articleId"));//"articleId\":97,\"commentId\":2
+								intent.putExtra("superId", jo.optInt("superId"));
+								intent.putExtra("isComment", 1);
 								startActivity(intent);
 							}else if("QYJHF".equals(smm.getMessageType())){
 								//骑游记回复
 								Intent intent = new Intent(MyMessageActivity.this, DiscussActivity.class);
-								intent.putExtra("articleId", jo.optInt("articleId"));//"articleId\":97,\"commentId\":2
+								intent.putExtra("parentId", jo.optInt("parentId"));
+								intent.putExtra("title", jo.optInt("title"));
+								intent.putExtra("memo", jo.optInt("memo"));
+								intent.putExtra("userId", jo.optInt("userId"));
+								intent.putExtra("userName", jo.optInt("userName"));
 								intent.putExtra("commentId", jo.optInt("commentId"));
+								intent.putExtra("articleId", jo.optInt("articleId"));//"articleId\":97,\"commentId\":2
+								intent.putExtra("superId", jo.optInt("superId"));
+								intent.putExtra("isComment", 2);
 								startActivity(intent);
 							}else if("HDBM".equals(smm.getMessageType())){
 								//活动报名
@@ -181,7 +191,7 @@ public class MyMessageActivity extends Activity implements OnClickListener,OnIte
 			Gson gson = new Gson();
 			Type type = new TypeToken<List<SystemMessageModel>>(){}.getType();
 			list = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), type);
-			adapter = new MyMessageAdapter(this, list, myMessageList);
+			adapter = new MyMessageAdapter(this, list);
 			myMessageList.setAdapter(adapter);
 			myMessageList.setOnItemClickListener(this);
 		}

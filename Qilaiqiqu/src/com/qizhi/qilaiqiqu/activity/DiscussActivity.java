@@ -136,7 +136,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						flag = true;
 						String s = responseInfo.result;
 						JSONObject jsonObject = null;
 						try {
@@ -146,10 +145,18 @@ public class DiscussActivity extends Activity implements OnClickListener,
 						}
 						if (jsonObject.optBoolean("result")) {
 							contentEdit.setText("");
-							new SystemUtil().makeToast(DiscussActivity.this,
-									"评论成功");
+							if(flag){
+								new SystemUtil().makeToast(DiscussActivity.this,
+										"评论成功");
+							}else{
+								new SystemUtil().makeToast(DiscussActivity.this,
+										"回复成功");
+							}
+							discussBtn.setText("评论");
 							imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
 						}
+						
+						flag = true;
 						queryCommentPaginationList();
 					}
 
@@ -222,7 +229,10 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		System.out.println(position);
 		superId = list.get(position).getCommentId();
 		contentEdit.setHint("回复" + list.get(position).getUserName() + ":");
+		discussBtn.setText("回复");
 		contentEdit.setFocusable(true);
+		contentEdit.setFocusableInTouchMode(true);
+		contentEdit.requestFocus();
 		imm.showSoftInputFromInputMethod(contentEdit.getWindowToken(), 0);
 		imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 	}
@@ -242,6 +252,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 			if("".equals(contentEdit.getText().toString().trim())){
 				superId = -1;
 				contentEdit.setHint("说几句吧");
+				discussBtn.setText("评论");
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:

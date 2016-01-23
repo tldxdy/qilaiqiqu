@@ -26,7 +26,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActionCenterActivity;
 import com.qizhi.qilaiqiqu.activity.CollectActivity;
 import com.qizhi.qilaiqiqu.activity.LoginActivity;
-import com.qizhi.qilaiqiqu.activity.MyMessageActivity;
+import com.qizhi.qilaiqiqu.activity.MessageCenterActivity;
 import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
 import com.qizhi.qilaiqiqu.activity.RidingActivity;
 import com.qizhi.qilaiqiqu.activity.SetActivity;
@@ -149,7 +149,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			break;
 		case R.id.layout_personalfragment_my_message:
 			if(preferences.getInt("userId", -1) != -1){
-			Intent intent2 = new Intent(context, MyMessageActivity.class);
+			Intent intent2 = new Intent(context, MessageCenterActivity.class);
 			startActivity(intent2);
 			}else{
 				new SystemUtil().makeToast(getActivity(), "请登录");

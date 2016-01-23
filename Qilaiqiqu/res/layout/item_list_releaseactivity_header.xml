@@ -22,7 +22,7 @@
             android:background="@null"
             android:ems="10"
             android:hint="@string/edit_releaseactivity_title"
-            android:maxLength="15"
+            android:maxLength="10"
             android:paddingLeft="15dp"
             android:singleLine="true"
             android:textColor="#a1a1a1"
@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#00000000"
+            android:gravity="right"
             android:layout_marginRight="5dp"
             android:textColor="#a1a1a1"
             android:text="@string/txt__releaseactivity_title_num" />

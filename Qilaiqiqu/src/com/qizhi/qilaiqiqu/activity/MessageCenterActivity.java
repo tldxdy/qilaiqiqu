@@ -1,39 +1,24 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import java.util.ArrayList;
-
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.fragment.CareFragment;
-import com.qizhi.qilaiqiqu.fragment.FansFragment;
-import com.qizhi.qilaiqiqu.fragment.ManageFragment;
-import com.qizhi.qilaiqiqu.fragment.ActivityCenterFragmentPagerAdapter;
-
-import android.app.Activity;
-import android.content.SharedPreferences;
+import com.qizhi.qilaiqiqu.fragment.MessageCenterFragmentPagerAdapter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ActionCenterActivity extends FragmentActivity implements OnClickListener{
-
+public class MessageCenterActivity extends FragmentActivity implements OnClickListener{
 	private LinearLayout backLayout;
 	private TextView manageTxt;
 	private TextView historyTxt;
+	private TextView titleTxt;
 	
 	private ViewPager viewPager;
-	private ArrayList<Fragment> fragments;
-	private FragmentPagerAdapter adapter;
-	
-	private SharedPreferences sp;
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +29,17 @@ public class ActionCenterActivity extends FragmentActivity implements OnClickLis
 		addListener();
 		initEvent();
 	}
-
 	private void initView() {
 
 		viewPager = (ViewPager) findViewById(R.id.viewPager_actioncenteractivity);
+		titleTxt = (TextView) findViewById(R.id.text_actioncenteractivity_title);
 		manageTxt = (TextView) findViewById(R.id.txt_actioncenteractivity_manage);
 		historyTxt = (TextView) findViewById(R.id.txt_actioncenteractivity_history);
 		backLayout = (LinearLayout) findViewById(R.id.layout_actioncenteractivity_back);
-
-		ActivityCenterFragmentPagerAdapter adapter=new ActivityCenterFragmentPagerAdapter(
+		titleTxt.setText("消息中心");
+		manageTxt.setText("聊天");
+		historyTxt.setText("系统消息");
+		MessageCenterFragmentPagerAdapter adapter=new MessageCenterFragmentPagerAdapter(
 				getSupportFragmentManager());//需要继承FragmentActivity
 		viewPager.setAdapter(adapter);
 		manageTxt.setTextColor(0xffffffff);

@@ -13,7 +13,6 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.HistoryAdapter;
-import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
@@ -39,7 +38,7 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 	private Context context;
 	private SharedPreferences preferences;
 	private XUtilsUtil xUtilsUtil;
-	private int pageIndex;
+	private int pageIndex = 1;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,7 +79,6 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 				}
 				if (jsonObject.optBoolean("result")) {
 					pageIndex = jsonObject.optInt("pageIndex");
-					int pageCount = jsonObject.optInt("pageCount");
 					Gson gson = new Gson();
 					dataList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), new TypeToken<ArrayList<StartAndParticipantActivityModel>>(){}.getType());
 					
@@ -88,17 +86,6 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 					historyList.setAdapter(adapter);
 					historyList.setOnItemClickListener(HistoryFragment.this);
 					historyList.setOnRefreshListener(HistoryFragment.this);
-					if(pageIndex == 1){
-						//new SystemUtil().makeToast(getActivity(), "刷新成功");
-					}else if(1 < pageIndex && pageIndex < pageCount){
-						new SystemUtil().makeToast(getActivity(), "加载成功");
-					}else if(pageIndex >= pageCount){
-						new SystemUtil().makeToast(getActivity(), "以显示全部内容");
-					}
-					// 更新UI
-					adapter.notifyDataSetChanged();
-
-					historyList.finishRefreshing();
 				}
 				
 				
@@ -121,7 +108,7 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 	@Override
 	public void onRefresh() {
 		pageIndex = 1;
-		data();
+		dataJ();
 		
 	}
 
@@ -129,7 +116,53 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 	@Override
 	public void onLoadingMore() {
 		pageIndex = pageIndex + 1;
-		data();
+		dataJ();
+	}
+
+
+	private void dataJ() {
+		RequestParams params = new RequestParams();
+		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
+		params.addBodyParameter("pageIndex", pageIndex + "");
+		params.addBodyParameter("pageSize",  "10");
+		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+		xUtilsUtil.httpPost("mobile/activity/queryUserRelevantActivityStateActendList.html", params, new CallBackPost() {
+			
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				String s = responseInfo.result;
+				JSONObject jsonObject = null;
+				try {
+					jsonObject = new JSONObject(s);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (jsonObject.optBoolean("result")) {
+					pageIndex = jsonObject.optInt("pageIndex");
+					int pageCount = jsonObject.optInt("pageCount");
+					Gson gson = new Gson();
+					ArrayList<StartAndParticipantActivityModel> lists = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), new TypeToken<ArrayList<StartAndParticipantActivityModel>>(){}.getType());
+					if(pageIndex == 1){
+						dataList = lists;
+						new SystemUtil().makeToast(getActivity(), "刷新成功");
+					}else if(1 < pageIndex && pageIndex < pageCount){
+						dataList.addAll(lists);
+						new SystemUtil().makeToast(getActivity(), "加载成功");
+					}
+					// 更新UI
+					adapter.notifyDataSetChanged();
+				}else{
+					new SystemUtil().makeToast(getActivity(),	jsonObject.optString("message") );
+				}
+				
+				historyList.finishRefreshing();
+			}
+			
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				
+			}
+		});
 	}
 	
 }

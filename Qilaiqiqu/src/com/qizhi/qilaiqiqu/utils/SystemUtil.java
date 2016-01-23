@@ -91,6 +91,34 @@ public class SystemUtil {
 	 */
 	public static void Imagexutils(String url, ImageView sellersmallimg,Context context) {
 		Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).into(sellersmallimg);
+		
+/*		BitmapFactory.Options options = new BitmapFactory.Options();  
+		options.inJustDecodeBounds = true;  
+		Bitmap bitmap = BitmapFactory.decodeFile("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url, options); // 此时返回的bitmap为null  
+		*//** 
+		 *options.outHeight为原始图片的高 
+		 *//*  
+		int hh = options.outHeight;
+		int ww = options.outHeight;
+		
+		
+		int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
+		Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).resize(screenWidth, hh * screenWidth / ww).centerInside().into(sellersmallimg);*/
+/*		
+		int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
+		String[] s = url.split("@");
+		if(s.length == 2){
+			String ss = s[1].substring(1, s[1].length());
+			String w = ss.split("h")[0].trim();
+			String h = ss.split("h")[1].trim();
+			int ww = Integer.getInteger(w);
+			int hh = Integer.getInteger(h);
+			System.out.println(ss.split("h")[0] + ss.split("h")[1]);
+			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+s[0]).resize(screenWidth, hh * screenWidth / ww).centerInside().into(sellersmallimg);
+		}else{
+			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).into(sellersmallimg);
+		}*/
+		
 	}
 	
 	

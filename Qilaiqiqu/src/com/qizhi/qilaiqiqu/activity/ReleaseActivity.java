@@ -168,7 +168,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 					.getSerializableExtra("list");
 			updateListSum = list.size();
 			titleEdt.setText(list.get(0).getTitle());
-			titleNumTxt.setText(list.get(0).getTitle().length() + "/15");
+			titleNumTxt.setText(list.get(0).getTitle().length() + "/10");
 			browseTxt.setVisibility(View.GONE);
 			articleId = getIntent().getIntExtra("articleId", -1);
 			publishTxt.setText("修改");
@@ -305,7 +305,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void afterTextChanged(Editable s) {
-		titleNumTxt.setText(s.length() + "/15");
+		titleNumTxt.setText(s.length() + "/10");
 	}
 
 	private void publishTravels() {

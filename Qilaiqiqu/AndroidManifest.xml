@@ -245,6 +245,11 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.StartActivity"
             android:label="@string/title_activity_start" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.LoginActivity"
@@ -339,11 +344,7 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.ReleaseActiveActivity"
             android:windowSoftInputMode="adjustPan" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.SelectImagesActivity" >
         </activity>
@@ -351,6 +352,19 @@
             android:name="com.qizhi.qilaiqiqu.activity.ActionCenterActivity"
             android:label="@string/title_activity_action_center" >
         </activity>
+        <activity
+            android:name="com.qizhi.qilaiqiqu.activity.ActivityApplyActivity"
+            android:label="@string/title_activity_activity_apply" >
+            <!-- <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter> -->
+        </activity>
+        <activity
+            android:name="com.qizhi.qilaiqiqu.activity.MessageCenterActivity" >
+        </activity>
+        
     </application>
 
 </manifest>

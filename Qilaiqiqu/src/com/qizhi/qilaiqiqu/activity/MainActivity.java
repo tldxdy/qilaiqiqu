@@ -126,6 +126,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
+	private View dotView;
+	
 	private Handler handler = new Handler() {
 
 		@Override
@@ -180,7 +182,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		addImg = (ImageView) findViewById(R.id.img_mainActivity_add_photo);
 
 		slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
-
+		dotView = findViewById(R.id.view_dot);
+		
+		
 		addImg.setAlpha(204); // 透明度
 		searchImg.setAlpha(204); // 透明度
 
@@ -700,11 +704,49 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		Log.i("qilaiqiqu", "主页向服务器提交CID出错:" + msg + "!");
 	}
 
+
 	@Override
 	protected void onResume() {
+		isNews();
 		super.onResume();
 		MobclickAgent.onResume(this);
 
+	}
+
+	private void isNews() {
+		if (preferences.getInt("userId", -1) != -1) {
+			RequestParams params = new RequestParams("UTF-8");
+			params.addBodyParameter("userId", preferences.getInt("userId", -1)
+					+ "");
+			params.addBodyParameter("uniqueKey",
+					preferences.getString("uniqueKey", null));
+			xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html", params, new CallBackPost() {
+				
+				@Override
+				public void onMySuccess(ResponseInfo<String> responseInfo) {
+					JSONObject jsonObject = null;
+					try {
+						jsonObject = new JSONObject(responseInfo.result);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					if (jsonObject.optBoolean("result")) {
+						int num = jsonObject.optInt("data");
+						if(num == 0){
+							//系统统计数
+							dotView.setVisibility(View.GONE);
+						}else{
+							dotView.setVisibility(View.VISIBLE);
+						}
+					}
+				}
+				
+				@Override
+				public void onMyFailure(HttpException error, String msg) {
+					
+				}
+			});
+		}
 	}
 
 	@Override
