@@ -50,12 +50,12 @@
         android:layout_weight="1"
         android:background="#ffffff" >
 
-        <ListView
+        <com.qizhi.qilaiqiqu.ui.PullFreshListView
             android:id="@+id/list_discussactivity_discuss"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@null" >
-        </ListView>
+        </com.qizhi.qilaiqiqu.ui.PullFreshListView>
     </RelativeLayout>
 
     <LinearLayout

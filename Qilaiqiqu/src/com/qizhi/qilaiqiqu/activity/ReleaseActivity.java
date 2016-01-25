@@ -14,11 +14,14 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,6 +41,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ReleaseListAdapter;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.progress.FileUploadAsyncTask;
+import com.qizhi.qilaiqiqu.service.PhotoUploadingService;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -115,9 +119,9 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 						 updateListSum = updateListSum - 1;
 					 }
 				 }
-				 list.remove(p);
-				 adapter.notifyDataSetChanged();
-			
+				list.remove(p);
+				adapter = new ReleaseListAdapter(ReleaseActivity.this, list, falg,handler,updateListSum);
+				releaseList.setAdapter(adapter);
 			 break;
 			 
 
@@ -224,6 +228,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			}
 			break;
 		case R.id.txt_releaseactivity_publish:
+			if(PhotoUploadingService.isStart){
+				new SystemUtil().makeToast(this, "你有一篇游记在发布，请稍后");
+				break;
+			}
+			if("".equals(titleEdt.getText()
+					.toString().trim())){
+						new SystemUtil().makeToast(this, "标题不能为空");
+						break;
+					}
 			// new SystemUtil().makeToast(this, "发表");
 			// 图片上传
 			if (!falg) {
@@ -232,9 +245,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				// photoUploading();
 
 				if (list.size() != 0) {
-					File file = new File(list.get(num).getArticleImage());
+					Intent intent = new Intent("com.qizhi.qilaiqiqu.service.PhotoUploadingService");
+					intent.putExtra("list", (Serializable)list);
+					intent.putExtra("title", titleEdt.getText()
+				.toString().trim());
+					intent.putExtra("falg", falg);
+					 startService(intent);
+					/*File file = new File(list.get(num).getArticleImage());
 					new FileUploadAsyncTask(this, num + 1, list.size(),
-							preferences, "QYJ", handler).execute(file);
+							preferences, "QYJ", handler).execute(file);*/
 					// new
 					// SystemUtil().httpClient(list.get(num).getArticleImage(),
 					// preferences, handler, "QYJ");
@@ -243,15 +262,26 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				imgListUrl = new ArrayList<String>();
 				num = 0;
 				// photoUploading();
-
-				if (list.size() > updateListSum) {
+				if (list.size() != 0) {
+					Intent intent = new Intent("com.qizhi.qilaiqiqu.service.PhotoUploadingService");
+					intent.putExtra("list", (Serializable)list);
+					intent.putExtra("title", titleEdt.getText()
+				.toString().trim());
+					intent.putExtra("falg", falg);
+					intent.putExtra("updateListSum", updateListSum);
+					intent.putExtra("articleId", articleId);
+					startService(intent);
+					
+				}
+				
+				/*if (list.size() > updateListSum) {
 					num = updateListSum;
 					File file = new File(list.get(num).getArticleImage());
 					new FileUploadAsyncTask(this, num + 1, list.size() - updateListSum,
 							preferences, "QYJ", handler).execute(file);
 				}else{
 					publishTravels();
-				}
+				}*/
 			}
 
 			// 发布
@@ -266,7 +296,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 		}
 	}
 
-	@Override
+		@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode != RESULT_CANCELED) {
 			if (requestCode == 1) {

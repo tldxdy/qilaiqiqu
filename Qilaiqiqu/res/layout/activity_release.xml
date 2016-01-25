@@ -4,9 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+    
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -77,7 +75,9 @@
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </RelativeLayout>
-
+	<FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
             <ListView
                 android:id="@+id/list_releaseactivity_release"
                 android:layout_width="match_parent"
@@ -85,30 +85,21 @@
                 android:divider="#ffffffff"
                 android:dividerHeight="20dp" >
             </ListView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_releaseactivity_wait"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
             <ProgressBar
+                android:id="@+id/pro_releaseactivity_loading"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:indeterminate="true"
+                android:layout_gravity="center"
+            	android:orientation="vertical"
+            	android:visibility="gone"
                 android:indeterminateDrawable="@drawable/indeterminate_drawable"
                 android:indeterminateDuration="1000" />
-
-            <TextView
-                android:id="@+id/txt_releaseactivity_wait"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="正在上传。。。。"
-                android:textSize="16sp" />
+            
+            </FrameLayout>
         </LinearLayout>
-    </FrameLayout>
+
+        
+    
 
 </LinearLayout>

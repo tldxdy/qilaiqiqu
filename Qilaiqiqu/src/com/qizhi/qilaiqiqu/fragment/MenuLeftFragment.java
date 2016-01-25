@@ -346,7 +346,4 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			}
 		});
 	}
-
-	
-	
 }

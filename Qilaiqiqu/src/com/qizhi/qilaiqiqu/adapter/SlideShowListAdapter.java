@@ -189,16 +189,16 @@ public class SlideShowListAdapter extends BaseAdapter {
 		 */
 		
 		
-		holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
+		//holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
 		if(list.get(position - 1).getDefaultShowImage() != null){
 			
 			
-			String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
-					+ list.get(position - 1).getDefaultShowImage().split("\\@")[0];
+			/*String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
+					+ list.get(position - 1).getDefaultShowImage().split("\\@")[0];*/
 			
-			//SystemUtil.Imagexutils(internetUrl, holder.backgroundImg, context);
-			Picasso.with(context).load(internetUrl).resize(800, 480)
-			.centerInside().into(holder.backgroundImg);
+			SystemUtil.Imagexutils(list.get(position - 1).getDefaultShowImage(), holder.backgroundImg, context);
+			/*Picasso.with(context).load(internetUrl).resize(800, 480)
+			.centerInside().into(holder.backgroundImg);*/
 		}
 
 		// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);

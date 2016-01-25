@@ -36,8 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -50,6 +48,7 @@ import com.qizhi.qilaiqiqu.model.ArticleMemoDetailModel;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.progress.FileUploadAsyncTask;
+import com.qizhi.qilaiqiqu.service.PhotoUploadingService;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -100,6 +99,8 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private TextView markPointTxt;
 	private TextView popup_cancel;
 
+	
+	private LinearLayout loadingLayout;
 	// private LinearLayout layout_gradePopup_bg;
 	private LinearLayout layout_isShow;
 
@@ -191,7 +192,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_back);
-
+		
+		loadingLayout  = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_cartoon);
+		
+		
 		ridingList = (ListView) findViewById(R.id.list_ridingDetailsActivity_riding);
 
 		likeImg = (ImageView) findViewById(R.id.img_ridingDetailsActivity_like);
@@ -324,12 +328,24 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				intent.putExtra("articleId", articleId);
 				startActivity(intent);
 			} else {
+				if(PhotoUploadingService.isStart){
+					new SystemUtil().makeToast(this, "你有游记正在发布，请稍后再发布");
+					break;
+				}
 				imgListUrl = new ArrayList<String>();
 				num = 0;
+				// photoUploading();
+
 				if (previewList.size() != 0) {
+					Intent intent = new Intent("com.qizhi.qilaiqiqu.service.PhotoUploadingService");
+					intent.putExtra("list", (Serializable)previewList);
+					intent.putExtra("title", previewList.get(0).getTitle().toString().trim());
+					startService(intent);
+					loadingLayout.setVisibility(View.VISIBLE);
+				/*if (previewList.size() != 0) {
 					File file = new File(previewList.get(num).getArticleImage());
 					new FileUploadAsyncTask(this, num + 1, previewList.size(),
-							preferences, "QYJ", handler).execute(file);
+							preferences, "QYJ", handler).execute(file);*/
 				}
 			}
 			break;

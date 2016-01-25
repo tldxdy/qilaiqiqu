@@ -14,6 +14,8 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.DiscussListAdapter;
 import com.qizhi.qilaiqiqu.model.CommentPaginationListModel;
 import com.qizhi.qilaiqiqu.model.RidingCommentModel;
+import com.qizhi.qilaiqiqu.ui.PullFreshListView;
+import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -41,11 +43,11 @@ import android.widget.ListView;
  * 
  */
 public class DiscussActivity extends Activity implements OnClickListener,
-		OnItemClickListener, OnTouchListener {
+		OnItemClickListener, OnTouchListener, OnRefreshListener{
 
 	private LinearLayout backLayout;
 
-	private ListView discussList;
+	private PullFreshListView discussList;
 
 	private EditText contentEdit;
 
@@ -64,6 +66,10 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 	private int superId = -1;
 	private InputMethodManager imm;
+	
+	
+	
+	private int pageIndex = 1;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +95,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 		contentEdit = (EditText) findViewById(R.id.edt__discussactivity_content);
 
-		discussList = (ListView) findViewById(R.id.list_discussactivity_discuss);
+		discussList = (PullFreshListView) findViewById(R.id.list_discussactivity_discuss);
 		superId =getIntent().getIntExtra("commentId", -1);
 		if(superId != -1){
 			//contentEdit.setHint("回复" + list.get(position).getUserName() + ":");
@@ -108,9 +114,11 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_discussactivity_discuss:
-			if (!"".equals(contentEdit.getText().toString().trim()) && flag) {
+			//if (!"".equals(contentEdit.getText().toString().trim())) {
 				commentRiding();
-			}
+		/*	}else{
+				
+			}*/
 			break;
 		case R.id.layout_discussactivity_back:
 			finish();
@@ -119,7 +127,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	}
 
 	private void commentRiding() {
-		System.out.println(contentEdit.getText().toString());
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("articleId", articleId + "");
@@ -130,7 +137,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
 		params.addBodyParameter("commentMemo", contentEdit.getText().toString());
-		flag = false;
 		xUtilsUtil.httpPost("mobile/comment/insertComment.html", params,
 				new CallBackPost() {
 
@@ -145,6 +151,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 						}
 						if (jsonObject.optBoolean("result")) {
 							contentEdit.setText("");
+							contentEdit.setHint("说几句吧");
 							if(flag){
 								new SystemUtil().makeToast(DiscussActivity.this,
 										"评论成功");
@@ -153,23 +160,25 @@ public class DiscussActivity extends Activity implements OnClickListener,
 										"回复成功");
 							}
 							discussBtn.setText("评论");
+							
 							imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
+						}else{
+							new SystemUtil().makeToast(DiscussActivity.this,jsonObject.optString("message"));
 						}
-						
 						flag = true;
 						queryCommentPaginationList();
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						flag = true;
+						
 					}
 				});
 	}
 
 	private void queryCommentPaginationList() {
 		RequestParams params = new RequestParams("UTF-8");
-		params.addBodyParameter("pageIndex", "1");
+		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("articleId", articleId + "");
 		params.addBodyParameter("superId", "0");
 		xUtilsUtil.httpPost("common/queryCommentPaginationList.html", params,
@@ -198,6 +207,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 							discussList.setOnTouchListener(DiscussActivity.this);
 							
 							discussList.setOnItemClickListener(DiscussActivity.this);
+							discussList.setOnRefreshListener(DiscussActivity.this);
 							
 						}
 					}
@@ -226,9 +236,10 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
+		flag = false;
 		System.out.println(position);
-		superId = list.get(position).getCommentId();
-		contentEdit.setHint("回复" + list.get(position).getUserName() + ":");
+		superId = list.get(position - 1).getCommentId();
+		contentEdit.setHint("回复" + list.get(position - 1).getUserName() + ":");
 		discussBtn.setText("回复");
 		contentEdit.setFocusable(true);
 		contentEdit.setFocusableInTouchMode(true);
@@ -253,6 +264,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 				superId = -1;
 				contentEdit.setHint("说几句吧");
 				discussBtn.setText("评论");
+				flag = true;
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
@@ -269,5 +281,62 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		}
 
 		return super.onTouchEvent(event);
+	}
+
+	@Override
+	public void onRefresh() {
+		pageIndex = 1;
+		dataJ();
+	}
+
+	@Override
+	public void onLoadingMore() {
+		pageIndex = pageIndex + 1;
+		dataJ();
+	}
+
+	private void dataJ() {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addBodyParameter("pageIndex", pageIndex + "");
+		params.addBodyParameter("articleId", articleId + "");
+		params.addBodyParameter("superId", "0");
+		xUtilsUtil.httpPost("common/queryCommentPaginationList.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(s);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (jsonObject.optBoolean("result")) {
+							pageIndex = jsonObject.optInt("pageIndex");
+							Gson gson = new Gson();
+							Type type = new TypeToken<CommentPaginationListModel>() {
+							}.getType();
+							commentPaginationListModel = gson.fromJson(
+									jsonObject.toString(), type);
+
+							List<RidingCommentModel> lists = commentPaginationListModel.getDataList();
+							if(pageIndex == 1){
+								list = lists;
+							}else{
+								list.addAll(lists);
+							}
+						adapter.notifyDataSetChanged();
+						discussList.finishRefreshing();
+						
+							
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+
+					}
+				});
 	}
 }

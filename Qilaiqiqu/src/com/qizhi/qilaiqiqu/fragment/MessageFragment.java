@@ -14,8 +14,6 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.CommentMessageActivity;
-import com.qizhi.qilaiqiqu.activity.DiscussActivity;
-import com.qizhi.qilaiqiqu.activity.MyMessageActivity;
 import com.qizhi.qilaiqiqu.adapter.MyMessageAdapter;
 import com.qizhi.qilaiqiqu.model.CommentModel;
 import com.qizhi.qilaiqiqu.model.SystemMessageModel;
@@ -73,7 +71,7 @@ public class MessageFragment extends Fragment implements OnItemClickListener,OnR
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("pageIndex", pageIndex + "");
-		params.addBodyParameter("pageSize", "10");
+		params.addBodyParameter("pageSize", "20");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
 		xUtilsUtil.httpPost("mobile/systemMessage/querySystemMessageList.html", params, this);
 	}
@@ -157,6 +155,8 @@ public class MessageFragment extends Fragment implements OnItemClickListener,OnR
 			myMessageList.setAdapter(adapter);
 			myMessageList.setOnItemClickListener(this);
 			myMessageList.setOnRefreshListener(this);
+			
+			myMessageList.finishRefreshing();
 		}
 	}
 
@@ -168,13 +168,15 @@ public class MessageFragment extends Fragment implements OnItemClickListener,OnR
 	@Override
 	public void onRefresh() {
 		pageIndex = 1;
-		dataJ();
+		System.out.println("aaaaaa");
+		data();
 		
 	}
 
 
 	@Override
 	public void onLoadingMore() {
+		System.out.println(pageIndex);
 		pageIndex = pageIndex + 1;
 		dataJ();
 	}
@@ -184,7 +186,7 @@ public class MessageFragment extends Fragment implements OnItemClickListener,OnR
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("pageIndex", pageIndex + "");
-		params.addBodyParameter("pageSize", "10");
+		params.addBodyParameter("pageSize", "20");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
 		xUtilsUtil.httpPost("mobile/systemMessage/querySystemMessageList.html", params, new CallBackPost() {
 			

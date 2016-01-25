@@ -96,13 +96,12 @@ public class SearchResultAdapter extends BaseAdapter {
 			holder.likeImg.setImageResource(R.drawable.like_unpress);
 			// holder.likeImg.setTag(position);
 			// holder.photoImg.setImageResource(R.drawable.lena);
-			/*
-			 * SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage(
-			 * ) .split("\\@")[0], holder.backgroundImg, context);
-			 */
-			String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
+			
+			  SystemUtil.Imagexutils(list.get(position).getDefaultImage(), holder.backgroundImg, context);
+			 
+			/*String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
 					+ list.get(position).getDefaultImage().split("\\@")[0];
-			Picasso.with(context).load(internetUrl).into(holder.backgroundImg);
+			Picasso.with(context).load(internetUrl).into(holder.backgroundImg);*/
 
 			// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
 			holder.photoImg.setOnClickListener(new OnClickListener() {

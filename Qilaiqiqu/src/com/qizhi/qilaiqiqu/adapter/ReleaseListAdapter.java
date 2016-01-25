@@ -84,7 +84,7 @@ public class ReleaseListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		if (convertView == null) {
+//		if (convertView == null) {
 			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.item_list_releaseactivity,
 					null);
@@ -108,10 +108,10 @@ public class ReleaseListAdapter extends BaseAdapter {
 			holder.locationLayout = (LinearLayout) convertView
 					.findViewById(R.id.layout_releaseactivity_location);
 
-			convertView.setTag(holder);
+/*			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
-		}
+		}*/
 
 		
 		holder.contentEdit.setText(list.get(position).getMemo());

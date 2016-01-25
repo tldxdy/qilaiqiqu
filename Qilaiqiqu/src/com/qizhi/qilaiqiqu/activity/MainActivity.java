@@ -81,6 +81,7 @@ import com.qizhi.qilaiqiqu.utils.SplashView;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -132,6 +133,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
 	private View dotView;
+	
+	private boolean isDot = false;
 
 	private Handler handler = new Handler() {
 
@@ -169,6 +172,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		initLeft();
 		initEvent();
 		imageUrl();
+		data();
 
 	}
 
@@ -297,56 +301,80 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	public void onOpen() {
+		dotView.setVisibility(View.GONE);
 		photoImg.setVisibility(View.GONE);
 	}
 
 	@Override
 	public void onClose() {
+		if(isDot){
+			dotView.setVisibility(View.VISIBLE);
+		}else{
+			dotView.setVisibility(View.GONE);
+		}
 		photoImg.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	protected void onStart() {
-		photoImg.setImageResource(R.drawable.homepage_picture);
 		if (preferences.getInt("userId", -1) != -1) {
 			loginHuanXin();
 
-			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", preferences.getInt("userId", -1)
-					+ "");
-			xUtilsUtil.httpPost("common/queryCertainUser.html", params,
-					new CallBackPost() {
-
-						@Override
-						public void onMySuccess(
-								ResponseInfo<String> responseInfo) {
-							String s = responseInfo.result;
-							JSONObject jsonObject = null;
-							try {
-								jsonObject = new JSONObject(s);
-							} catch (JSONException e) {
-								e.printStackTrace();
-							}
-							if (jsonObject.optBoolean("result")) {
-								JSONObject json = jsonObject
-										.optJSONObject("data");
-								SystemUtil.loadImagexutils(
-										json.optString("userImage"), photoImg,
-										MainActivity.this);
-							}
-						}
-
-						@Override
-						public void onMyFailure(HttpException error, String msg) {
-
-						}
-					});
 		}
-		data();
+		//data();
+		headPortrait();
 
 		super.onStart();
 	}
 
+	@Override
+	protected void onStop() {
+		if(menu.isMenuShowing()){
+			menu.toggle();
+		}
+	super.onStop();
+	}
+	
+	/**
+	 * 头像
+	 */
+	private void headPortrait() {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addBodyParameter("userId", preferences.getInt("userId", -1)
+				+ "");
+		xUtilsUtil.httpPost("common/queryCertainUser.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMySuccess(
+							ResponseInfo<String> responseInfo) {
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(s);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (jsonObject.optBoolean("result")) {
+							JSONObject json = jsonObject
+									.optJSONObject("data");
+							Picasso.with(MainActivity.this).load("http://weride.oss-cn-hangzhou.aliyuncs.com/" + json.optString("userImage")).into(photoImg);
+							/*SystemUtil.loadImagexutils(
+									json.optString("userImage"), photoImg,
+									MainActivity.this);*/
+						}else{
+							photoImg.setImageResource(R.drawable.homepage_picture);
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+
+					}
+				});
+	}
+	
+	
 	private void data() {
 		RequestParams params = new RequestParams("UTF-8");
 		pageIndex = 1;
@@ -735,7 +763,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 									// 系统统计数
 									dotView.setVisibility(View.GONE);
 								} else {
-									dotView.setVisibility(View.VISIBLE);
+									isDot = true;
+									if (!menu.isMenuShowing()) {
+										dotView.setVisibility(View.VISIBLE);
+									}else{
+										dotView.setVisibility(View.GONE);
+									}
 								}
 							}
 						}

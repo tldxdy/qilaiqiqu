@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.load.engine.Resource;
 import com.lidroid.xutils.BitmapUtils;
+import com.qizhi.qilaiqiqu.R;
 import com.squareup.picasso.Picasso;
 
 import android.annotation.SuppressLint;
@@ -50,13 +51,13 @@ public class SystemUtil {
 
 	/**
 	 * @param 提示封装方法
-	 * @param a
+	 * @param context
 	 *            上下文
 	 * @param msg
 	 *            消息内容
 	 */
-	public void makeToast(Activity a, String msg) {
-		Toast.makeText(a, msg, Toast.LENGTH_SHORT).show();
+	public void makeToast(Context context, String msg) {
+		Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -90,34 +91,39 @@ public class SystemUtil {
 	 * @param context		上下文
 	 */
 	public static void Imagexutils(String url, ImageView sellersmallimg,Context context) {
-		Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).into(sellersmallimg);
+		//Picasso.with(context).load().into(sellersmallimg);
 		
-/*		BitmapFactory.Options options = new BitmapFactory.Options();  
+		/*BitmapFactory.Options options = new BitmapFactory.Options();  
 		options.inJustDecodeBounds = true;  
 		Bitmap bitmap = BitmapFactory.decodeFile("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url, options); // 此时返回的bitmap为null  
 		*//** 
 		 *options.outHeight为原始图片的高 
 		 *//*  
 		int hh = options.outHeight;
-		int ww = options.outHeight;
+		int ww = options.outHeight;*/
 		
 		
-		int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
-		Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).resize(screenWidth, hh * screenWidth / ww).centerInside().into(sellersmallimg);*/
-/*		
+		//int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
+		//Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).resize(screenWidth, hh * screenWidth / ww).centerInside().into(sellersmallimg);
+		
 		int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
 		String[] s = url.split("@");
 		if(s.length == 2){
 			String ss = s[1].substring(1, s[1].length());
 			String w = ss.split("h")[0].trim();
 			String h = ss.split("h")[1].trim();
-			int ww = Integer.getInteger(w);
-			int hh = Integer.getInteger(h);
-			System.out.println(ss.split("h")[0] + ss.split("h")[1]);
-			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+s[0]).resize(screenWidth, hh * screenWidth / ww).centerInside().into(sellersmallimg);
+			int ww = Integer.parseInt(w);
+			int hh = Integer.parseInt(h);
+			//System.out.println(ss.split("h")[0] + ss.split("h")[1]);
+			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+s[0])
+			.resize(screenWidth, hh * screenWidth / ww).centerInside()
+			.placeholder(R.drawable.bitmap_homepage)
+			.into(sellersmallimg);
 		}else{
-			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).into(sellersmallimg);
-		}*/
+			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url)
+			.placeholder(R.drawable.bitmap_homepage)
+			.into(sellersmallimg);
+		}
 		
 	}
 	
@@ -267,7 +273,8 @@ public class SystemUtil {
 				MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 				//builder.setCharset(Charset.forName("uft-8"));//设置请求的编码格式
 				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);//设置浏览器兼容模式
-				FileBody fileBody = new FileBody(new File(img_path));//把文件转换成流对象FileBody
+				File file = new File(img_path);
+				FileBody fileBody = new FileBody(file);//把文件转换成流对象FileBody
 				builder.addPart("files", fileBody);
 				builder.addTextBody("type", type);//设置请求参数
 				builder.addTextBody("uniqueKey", preferences.getString("uniqueKey", null));//设置请求参数
@@ -287,6 +294,7 @@ public class SystemUtil {
 							Message msg = new Message();
 							msg.what = 1;
 							msg.obj = s;
+							//file.delete();
 							handler.handleMessage(msg);
 						}
 					}
