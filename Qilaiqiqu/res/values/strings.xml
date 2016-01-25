@@ -163,8 +163,10 @@
     <string name="text_actioncenteractivity_title">活动中心</string> 
     <string name="title_activity_activity_apply">ActivityApplyActivity</string>
     <string name="title_activityactivity_title">群成员查看</string>
-    <string name="text_activityactivity_cancel">取消报名</string>
-    </resources>
+    <string name="text_activityactivity_cancel">取消报名</string>
+    <string name="text_appendActivity_title">已报名查看</string>
+
+    <string name="text_groupActivity_title">群成员</string>    </resources>
       
 
 

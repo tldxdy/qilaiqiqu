@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#6dbfed" >
+
+        <LinearLayout
+            android:id="@+id/layout_groupActivity_back"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/return_innavigationbar" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="返回"
+                android:textColor="@color/write" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/text_groupActivity_title"
+            android:textColor="@color/write"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="125dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="发起人"
+            android:textColor="@color/mainActivity_title"
+            android:textSize="16sp" >
+        </TextView>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/corners_grid" >
+
+            <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
+                android:id="@+id/groupActivity_ItemImage"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/demo" />
+
+            <TextView
+                android:id="@+id/groupActivity_ItemText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/groupActivity_ItemImage"
+                android:layout_centerHorizontal="true"
+                android:text="用户名"
+                android:textSize="14sp" >
+            </TextView>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="报名队员"
+        android:textColor="@color/mainActivity_title"
+        android:textSize="16sp" >
+    </TextView>
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="4"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" >
+    </GridView>
+
+</LinearLayout>

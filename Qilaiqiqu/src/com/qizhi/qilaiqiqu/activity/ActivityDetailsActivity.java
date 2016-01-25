@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,6 +19,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -61,11 +65,18 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 	private TextView activityTitleTxt;
 	private TextView participantCountTxt;
 
+	private TextView likeNumTxt;
 	private TextView isSignTxt1;
 	private TextView isSignTxt2;
 	private TextView isSignTxt3;
 	private LinearLayout isMelayout1;
 	private LinearLayout isMelayout2;
+
+	private LinearLayout appendLayout;
+
+	private ImageView likeImg;
+
+	private Animation animation;
 
 	private LinearLayout participantLayout;
 
@@ -77,6 +88,9 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 	private Activitys activity;
 
+	SharedPreferences sharedPreferences;
+	int activityId = 84;
+
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
 			setImageCycleViewUtil();
@@ -84,6 +98,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		}
 
 	};
+
+	private ActivityModel model;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +112,9 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 	}
 
 	private void initView() {
+		sharedPreferences = getSharedPreferences("userLogin",
+				Context.MODE_PRIVATE);
+
 		userImageImg = (CircleImageViewUtil) findViewById(R.id.img_activityDetails_photo);
 
 		participantLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_participant);
@@ -103,6 +122,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		likeTxt = (TextView) findViewById(R.id.txt_activityDetails_like);
 		scanNumTxt = (TextView) findViewById(R.id.txt_activityDetails_scanNum);
 		mileageTxt = (TextView) findViewById(R.id.txt_activityDetails_mileage);
+		likeNumTxt = (TextView) findViewById(R.id.txt_activityDetails_animation);
 		userNameTxt = (TextView) findViewById(R.id.txt_activityDetails_userName);
 		durationTxt = (TextView) findViewById(R.id.txt_activityDetails_duration);
 		startDateTxt = (TextView) findViewById(R.id.txt_activityDetails_startDate);
@@ -112,6 +132,11 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		activityTitleTxt = (TextView) findViewById(R.id.txt_activityDetails_activityTitle);
 		participantCountTxt = (TextView) findViewById(R.id.txt_activityDetails_participantCount);
 
+		likeImg = (ImageView) findViewById(R.id.img_activityDetails_like);
+
+		animation = AnimationUtils
+				.loadAnimation(this, R.anim.applaud_animation);
+
 		mImageCycleView = (ImageCycleViewUtil) findViewById(R.id.icc_activityDetails);
 
 		isSignTxt1 = (TextView) findViewById(R.id.txt_activityDetails_txt1);
@@ -119,12 +144,16 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		isSignTxt3 = (TextView) findViewById(R.id.txt_activityDetails_txt3);
 		isMelayout1 = (LinearLayout) findViewById(R.id.layout_activityDetails_button1);
 		isMelayout2 = (LinearLayout) findViewById(R.id.layout_activityDetails_button2);
+
+		appendLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_append);
 	}
 
 	private void initEvent() {
+		likeImg.setOnClickListener(this);
 		isSignTxt1.setOnClickListener(this);
 		isSignTxt2.setOnClickListener(this);
 		isSignTxt3.setOnClickListener(this);
+		appendLayout.setOnClickListener(this);
 		articleMemoTxt1.setOnClickListener(this);
 		articleMemoTxt2.setOnClickListener(this);
 	}
@@ -142,9 +171,11 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 		case R.id.txt_activityDetails_txt2:
 			if (isMe == 3) {
-				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 3", 0).show();
+				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 3", 0)
+						.show();
 			} else if (isMe == 1) {
-				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 2", 0).show();
+				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 2", 0)
+						.show();
 			}
 			break;
 
@@ -162,8 +193,98 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 					RidingDetailsActivity.class).putExtra("", articleMemoId1));
 			break;
 
-		case R.id.layout_activityDetails_button2:
+		case R.id.layout_activityDetails_append:
+			Intent intent = new Intent();
+			intent.setClass(ActivityDetailsActivity.this, AppendActivity.class);
+			intent.putExtra("append", (Serializable)model.getParticipantList());
+			startActivity(intent);
+			break;
 
+		case R.id.img_activityDetails_like:
+			if (activity.isUserPraised()) {
+				RequestParams params = new RequestParams("UTF-8");
+				params.addQueryStringParameter("activityId", activityId + "");
+				params.addQueryStringParameter("userId", 27 + "");
+				params.addQueryStringParameter("uniqueKey",
+						"1dEFs0/HS4o4OsMA1kHM6w==");
+				new XUtilsUtil().httpPost(
+						"mobile/activity/cancelPraiseActivity.html", params,
+						new CallBackPost() {
+
+							@Override
+							public void onMySuccess(
+									ResponseInfo<String> responseInfo) {
+								String result = responseInfo.result;
+								JSONObject object;
+								try {
+									object = new JSONObject(result);
+									if (object.getBoolean("result")) {
+										likeImg.setImageResource(R.drawable.admire_unchosen);
+										likeTxt.setText(object.getInt("data")
+												+ "");
+										activity.setUserPraised(false);
+									}
+								} catch (JSONException e) {
+									e.printStackTrace();
+
+								}
+							}
+
+							@Override
+							public void onMyFailure(HttpException error,
+									String msg) {
+
+							}
+						});
+			} else {
+				RequestParams params = new RequestParams("UTF-8");
+				params.addQueryStringParameter("activityId", activityId + "");
+				params.addQueryStringParameter("userId", 27 + "");
+				params.addQueryStringParameter("uniqueKey",
+						"1dEFs0/HS4o4OsMA1kHM6w==");
+				new XUtilsUtil().httpPost(
+
+				"mobile/activity/praiseActivity.html", params,
+						new CallBackPost() {
+							@Override
+							public void onMySuccess(
+									ResponseInfo<String> responseInfo) {
+								String result = responseInfo.result;
+								try {
+									JSONObject object = new JSONObject(result);
+									if (object.getBoolean("result")) {
+										likeNumTxt.setVisibility(View.VISIBLE);
+										likeNumTxt.startAnimation(animation);
+										new Handler().postDelayed(
+												new Runnable() {
+													public void run() {
+														likeNumTxt
+																.setVisibility(View.GONE);
+													}
+												}, 1000);
+										likeImg.setImageResource(R.drawable.admire_chose);
+										likeTxt.setText(object.getInt("data")
+												+ "");
+										System.out.println(activity
+												.isUserPraised());
+										activity.setUserPraised(true);
+										System.out.println(activity
+												.isUserPraised());
+									}
+								} catch (JSONException e) {
+									e.printStackTrace();
+								}
+							}
+
+							@Override
+							public void onMyFailure(HttpException error,
+									String msg) {
+								Toast.makeText(ActivityDetailsActivity.this,
+										activity.isUserPraised() + "", 0)
+										.show();
+							}
+						});
+			}
 			break;
 
 		default:
@@ -173,9 +294,10 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 	private void getActivityData() {
 		RequestParams params = new RequestParams("UTF-8");
-		params.addQueryStringParameter("activityId", 2 + "");
+		params.addQueryStringParameter("activityId", activityId + "");
 		params.addQueryStringParameter("location", "");
-		params.addQueryStringParameter("uniqueKey", "");
+		params.addQueryStringParameter("uniqueKey",
+				sharedPreferences.getString("uniqueKey", null));
 
 		new XUtilsUtil().httpPost("common/queryActivityByActivityId.html",
 				params, this);
@@ -192,8 +314,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 				Type type = new TypeToken<ActivityModel>() {
 				}.getType();
 
-				final ActivityModel model = gson.fromJson(jsonObject
-						.getJSONObject("data").toString(), type);
+				model = gson.fromJson(jsonObject.getJSONObject("data")
+						.toString(), type);
 
 				activity = model.getActivitys();
 
@@ -224,7 +346,11 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 					"http://weride.oss-cn-hangzhou.aliyuncs.com/" + split[i],
 					null, null, null));
 		}
-
+		if (activity.isUserPraised()) {
+			likeImg.setImageResource(R.drawable.admire_chose);
+		} else {
+			likeImg.setImageResource(R.drawable.admire_unchosen);
+		}
 		likeTxt.setText(activity.getPraiseNum() + "");
 		scanNumTxt.setText(activity.getScanNum() + "次浏览");
 		userNameTxt.setText(activity.getUserName());
@@ -346,6 +472,18 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
 
+	}
+
+	@Override
+	protected void onResume() {
+
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+
+		super.onPause();
 	}
 
 }

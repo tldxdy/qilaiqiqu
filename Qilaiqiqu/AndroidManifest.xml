@@ -237,6 +237,26 @@
             android:name="JPUSH_APPKEY"
             android:value="f96afde68d942052fefc7055" />
 
+        <!-- 腾讯QQ -->
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent1104904678" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- app activity -->
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MainActivity"
             android:label="@string/app_name"
@@ -245,11 +265,6 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.StartActivity"
             android:label="@string/title_activity_start" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.LoginActivity"
@@ -340,11 +355,15 @@
         <activity android:name="com.qizhi.qilaiqiqu.activity.BindPhoneActivity" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.ReleaseActiveActivity"
             android:windowSoftInputMode="adjustPan" >
-            
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.SelectImagesActivity" >
         </activity>
@@ -352,19 +371,10 @@
             android:name="com.qizhi.qilaiqiqu.activity.ActionCenterActivity"
             android:label="@string/title_activity_action_center" >
         </activity>
-        <activity
-            android:name="com.qizhi.qilaiqiqu.activity.ActivityApplyActivity"
-            android:label="@string/title_activity_activity_apply" >
-            <!-- <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> -->
+        <activity android:name="com.qizhi.qilaiqiqu.activity.MessageCenterActivity" >
         </activity>
-        <activity
-            android:name="com.qizhi.qilaiqiqu.activity.MessageCenterActivity" >
+        <activity android:name="com.qizhi.qilaiqiqu.activity.AppendActivity" >
         </activity>
-        
     </application>
 
 </manifest>

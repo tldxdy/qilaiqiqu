@@ -24,10 +24,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -40,6 +44,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -127,7 +132,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
 	private View dotView;
-	
+
 	private Handler handler = new Handler() {
 
 		@Override
@@ -183,8 +188,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 		slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
 		dotView = findViewById(R.id.view_dot);
-		
-		
+
 		addImg.setAlpha(204); // 透明度
 		searchImg.setAlpha(204); // 透明度
 
@@ -252,16 +256,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 			break;
 		case R.id.img_mainActivity_add_photo:
-			if (preferences.getInt("userId", -1) != -1) {
-				Intent intent = new Intent(this, NativeImagesActivity.class);
-				intent.putExtra("falg", false);
-				startActivity(intent);
-			} else {
-				new SystemUtil().makeToast(MainActivity.this, "请登录");
-				Intent intent = new Intent(this, LoginActivity.class);
-				startActivity(intent);
-				// finish();
-			}
+			
+			showPopupWindow(v);
+			
 			// Toast.makeText(this, "点击添加", 0).show();
 			break;
 		}
@@ -409,8 +406,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	public void imageUrl() {
 		HttpUtils http = new HttpUtils();
-		http.send(HttpRequest.HttpMethod.GET,
-				 XUtilsUtil.URL + "common/querySysImageByIsOrder.html",
+		http.send(HttpRequest.HttpMethod.GET, XUtilsUtil.URL
+				+ "common/querySysImageByIsOrder.html",
 				new RequestCallBack<String>() {
 					@Override
 					public void onLoading(long total, long current,
@@ -468,7 +465,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
-		
+
 		if (position != 0 && pageIndex < Articlelist.size() + 2) {
 			Intent intent = new Intent(this, RidingDetailsActivity.class);
 			intent.putExtra("isMe", false);
@@ -615,10 +612,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						editor.putString("mobilePhone", null);
 						editor.putString("riderId", null);
 						editor.commit();
-						
-//						MainActivity.this.finish();
-						/*startActivity(new Intent(MainActivity.this,
-								LoginActivity.class));*/
+
+						// MainActivity.this.finish();
+						/*
+						 * startActivity(new Intent(MainActivity.this,
+						 * LoginActivity.class));
+						 */
 					}
 
 				} catch (JSONException e) {
@@ -634,7 +633,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	}
 
 	private int loginFlag;
-
 
 	private void loginHuanXin() {
 
@@ -704,7 +702,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		Log.i("qilaiqiqu", "主页向服务器提交CID出错:" + msg + "!");
 	}
 
-
 	@Override
 	protected void onResume() {
 		isNews();
@@ -720,32 +717,34 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					+ "");
 			params.addBodyParameter("uniqueKey",
 					preferences.getString("uniqueKey", null));
-			xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html", params, new CallBackPost() {
-				
-				@Override
-				public void onMySuccess(ResponseInfo<String> responseInfo) {
-					JSONObject jsonObject = null;
-					try {
-						jsonObject = new JSONObject(responseInfo.result);
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-					if (jsonObject.optBoolean("result")) {
-						int num = jsonObject.optInt("data");
-						if(num == 0){
-							//系统统计数
-							dotView.setVisibility(View.GONE);
-						}else{
-							dotView.setVisibility(View.VISIBLE);
+			xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html",
+					params, new CallBackPost() {
+
+						@Override
+						public void onMySuccess(
+								ResponseInfo<String> responseInfo) {
+							JSONObject jsonObject = null;
+							try {
+								jsonObject = new JSONObject(responseInfo.result);
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							if (jsonObject.optBoolean("result")) {
+								int num = jsonObject.optInt("data");
+								if (num == 0) {
+									// 系统统计数
+									dotView.setVisibility(View.GONE);
+								} else {
+									dotView.setVisibility(View.VISIBLE);
+								}
+							}
 						}
-					}
-				}
-				
-				@Override
-				public void onMyFailure(HttpException error, String msg) {
-					
-				}
-			});
+
+						@Override
+						public void onMyFailure(HttpException error, String msg) {
+
+						}
+					});
 		}
 	}
 
@@ -961,6 +960,84 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public void shouqijianpan() {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(inputEdt.getWindowToken(), 0);
+	}
+
+	private void showPopupWindow(View view) {
+
+		// 一个自定义的布局，作为显示的内容
+		View mview = LayoutInflater.from(this).inflate(
+				R.layout.item_popup_release, null);
+
+		TextView youjiTxt = (TextView) mview
+				.findViewById(R.id.txt_releasePopup_youji);
+		TextView activeTxt = (TextView) mview
+				.findViewById(R.id.txt_releasePopup_active);
+		TextView cancelTxt = (TextView) mview
+				.findViewById(R.id.txt_releasePopup_cancel);
+
+		final PopupWindow popupWindow = new PopupWindow(mview,
+				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, true);
+
+		popupWindow.setTouchable(true);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		youjiTxt.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if (preferences.getInt("userId", -1) != -1) {
+					Intent intent = new Intent(MainActivity.this, NativeImagesActivity.class);
+					intent.putExtra("falg", false);
+					startActivity(intent);
+				} else {
+					new SystemUtil().makeToast(MainActivity.this, "请登录");
+					Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+					startActivity(intent);
+					// finish();
+				}
+			}
+		});
+
+		activeTxt.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if (preferences.getInt("userId", -1) != -1) {
+					Intent intent = new Intent(MainActivity.this, ReleaseActiveActivity.class);
+					startActivity(intent);
+				} else {
+					new SystemUtil().makeToast(MainActivity.this, "请登录");
+					Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+					startActivity(intent);
+					// finish();
+				}
+			}
+		});
+
+		cancelTxt.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 50);
+
 	}
 
 }

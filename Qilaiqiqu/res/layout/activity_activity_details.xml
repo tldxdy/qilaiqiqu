@@ -20,7 +20,6 @@
             android:orientation="horizontal" >
 
             <ImageButton
-                android:id="@+id/btn_activityDetails_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -114,7 +113,7 @@
                         android:id="@+id/img_activityDetails_photo"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:src="@drawable/persional_picture"
                         app1:border_width="0dp" />
 
@@ -122,14 +121,14 @@
                         android:id="@+id/txt_activityDetails_userName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:textColor="@color/dark"
-                        android:textSize="17sp" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:text="发起"
                         android:textColor="@color/mapblue"
                         android:textSize="14sp" />
@@ -138,7 +137,7 @@
                         android:id="@+id/txt_activityDetails_scanNum"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:text="123次浏览"
                         android:textColor="@color/mapblue"
                         android:textSize="12sp" />
@@ -201,13 +200,16 @@
 
                     <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="fill_parent"
                         android:layout_marginRight="20dp" >
 
                         <ImageView
                             android:id="@+id/img_activityDetails_like"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
                             android:src="@drawable/like_press" />
 
                         <TextView
@@ -223,7 +225,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/animation"
+                            android:id="@+id/txt_activityDetails_animation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -420,7 +422,8 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:id="@+id/layout_activityDetails_append"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:orientation="horizontal" >
@@ -431,16 +434,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingLeft="15dp" >
-
-                        <!--
-                        <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
-                            android:id="@+id/img_activityDetails_participant1"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_marginLeft="15dp"
-                            android:src="@drawable/persional_picture"
-                            app1:border_width="0dp" />
-                        -->
 
                     </LinearLayout>
 

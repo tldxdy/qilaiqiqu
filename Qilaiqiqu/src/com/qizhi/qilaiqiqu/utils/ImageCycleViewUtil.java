@@ -3,10 +3,6 @@ package com.qizhi.qilaiqiqu.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,7 +14,6 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,18 +21,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.model.CarouselModel;
 
 /**
  * <Pre>
@@ -426,9 +411,6 @@ public class ImageCycleViewUtil extends FrameLayout {
 				public void onClick(View v) {
 					if (mOnPageClickListener != null) {
 						mOnPageClickListener.onClick(v, imageInfo);
-						
-						System.out
-								.println("fffffffffffffffffffffffffffffffffffff");
 					}
 				}
 			});

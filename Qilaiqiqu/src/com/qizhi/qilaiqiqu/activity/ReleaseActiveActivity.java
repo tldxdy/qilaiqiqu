@@ -64,6 +64,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 	private LinearLayout dateLayout;
 	private LinearLayout timeLayout;
+	private LinearLayout backLayout;
 
 	private LinearLayout pictureLayout;
 
@@ -112,6 +113,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		timeLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_time);
 		pictureLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_picture);
 
+		backLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_back);
+
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		addImg = (ImageView) findViewById(R.id.img_releaseActiveActivity_add);
@@ -135,6 +138,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 		dateLayout.setOnClickListener(this);
 		timeLayout.setOnClickListener(this);
+
+		backLayout.setOnClickListener(this);
 
 		releaseTxt.setOnClickListener(this);
 		themeEdt.addTextChangedListener(new TextWatcher() {
@@ -190,7 +195,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 					|| dateTxt.getText().equals("请选择日期  请选择时间")
 					|| signatureEdt.getText() == null) {
 				new SystemUtil().makeToast(this, "必填项不能为空");
-			}else {
+			} else {
 				releasePictue();
 			}
 			break;
@@ -218,6 +223,10 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);// 调用android的图库
 			i.setType("image/*");
 			startActivityForResult(i, 1);
+			break;
+
+		case R.id.layout_releaseActiveActivity_back:
+			finish();
 			break;
 
 		default:

@@ -1,14 +1,24 @@
 package com.qizhi.qilaiqiqu.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ActivityModel {
+public class ActivityModel implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4243357488988840130L;
 	private List<ParticipantList> participantList;
 	private List<ArticleMemoList> articleMemoList;
 	private int participantCount;
 	private Activitys activity;
 
-	public class ParticipantList {
+	public class ParticipantList implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private String state;
 		private int activityId;
 		private int userId;
 		private String activityTitle;
@@ -19,7 +29,6 @@ public class ActivityModel {
 		private int integral;
 		private String applyDate;
 		private String isReward;
-		private String state;
 		private String userName;
 
 		public int getActivityId() {
@@ -120,7 +129,11 @@ public class ActivityModel {
 
 	}
 
-	public class ArticleMemoList {
+	public class ArticleMemoList implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private int userId;
 		private String createDate;
 		private String memo;
@@ -358,7 +371,11 @@ public class ActivityModel {
 
 	}
 
-	public class Activitys {
+	public class Activitys implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private int duration;
 		private String startDate;
 		private int activityId;

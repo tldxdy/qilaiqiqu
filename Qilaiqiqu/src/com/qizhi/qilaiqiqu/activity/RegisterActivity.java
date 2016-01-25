@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -237,7 +238,6 @@ public class RegisterActivity extends Activity implements OnClickListener,
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				i--;
 				Message message = handler.obtainMessage();
 				message.arg1 = i;
@@ -265,9 +265,9 @@ public class RegisterActivity extends Activity implements OnClickListener,
 			if (jsonObject.getBoolean("result")) {
 				if (finishFlag == 1) {
 					new SystemUtil().makeToast(RegisterActivity.this, "验证码已发送");
-				}else {
-					new SystemUtil().makeToast(RegisterActivity.this, "注册成功");
-					finish();
+				} else {
+					new SystemUtil().makeToast(RegisterActivity.this, "注册成功,自动帮您登录");
+					login();
 				}
 			} else {
 				String string = jsonObject.getString("message");
@@ -293,30 +293,22 @@ public class RegisterActivity extends Activity implements OnClickListener,
 		super.onResume();
 		MobclickAgent.onResume(this);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
 	}
-	
-	
-	
 
 	private void login() {
 		RequestParams params = new RequestParams("UTF-8");
 		String registrationID = JPushInterface
 				.getRegistrationID(RegisterActivity.this);
-		
+
 		params.addQueryStringParameter("mobilePhone", phoneEdt.getText()
 				.toString());
-		params.addQueryStringParameter("loginPwd", passEdt.getText()
-				.toString());
+		params.addQueryStringParameter("loginPwd", passEdt.getText().toString());
 		params.addQueryStringParameter("pushToken", registrationID);
-		
-		System.out
-		.println(registrationID
-				+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		params.addQueryStringParameter("adviceType", "ANDROID");
 		new XUtilsUtil().httpPost("common/queryUserLogin.html", params,
 				new CallBackPost() {
@@ -370,8 +362,9 @@ public class RegisterActivity extends Activity implements OnClickListener,
 								editor.putInt("loginFlag", 1);
 								editor.commit();
 
-								
-								
+								startActivity(new Intent(RegisterActivity.this,
+										MainActivity.class));
+								RegisterActivity.this.finish();
 								
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -380,8 +373,8 @@ public class RegisterActivity extends Activity implements OnClickListener,
 						} else {
 							try {
 								message = jsonObject.getString("message");
-								new SystemUtil().makeToast(RegisterActivity.this,
-										message);
+								new SystemUtil().makeToast(
+										RegisterActivity.this, message);
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
@@ -389,10 +382,5 @@ public class RegisterActivity extends Activity implements OnClickListener,
 					}
 				});
 	}
-	
-	
-	
-	
-	
-	
+
 }

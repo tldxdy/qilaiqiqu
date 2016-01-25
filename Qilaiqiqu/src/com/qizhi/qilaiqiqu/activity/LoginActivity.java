@@ -39,6 +39,9 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -72,6 +75,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_login);
 		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID);
+		mTencent = Tencent.createInstance("tencent1104904678",
+				this.getApplicationContext());
 		initView();
 		initEvent();
 	}
@@ -242,6 +247,30 @@ public class LoginActivity extends Activity implements OnClickListener {
 		MobclickAgent.onPause(this);
 	}
 
+	private class BaseUiListener implements IUiListener {
+		public void onComplete(JSONObject response) {
+			doComplete(response);
+		}
+
+		protected void doComplete(JSONObject values) {
+		}
+
+		@Override
+		public void onError(UiError e) {
+		}
+
+		@Override
+		public void onCancel() {
+		}
+
+		@Override
+		public void onComplete(Object arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+	}
+
 	/**
 	 * 菜单、返回键响应
 	 */
@@ -257,6 +286,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	 * 双击退出函数
 	 */
 	private static Boolean isExit = false;
+	private Tencent mTencent;
 
 	private void exitBy2Click() {
 		Timer tExit = null;
