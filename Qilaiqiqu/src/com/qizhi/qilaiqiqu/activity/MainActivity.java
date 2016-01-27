@@ -133,7 +133,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
 	private View dotView;
-	
+
 	private boolean isDot = false;
 
 	private Handler handler = new Handler() {
@@ -193,8 +193,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
 		dotView = findViewById(R.id.view_dot);
 
-		addImg.setAlpha(204); // 透明度
-		searchImg.setAlpha(204); // 透明度
+//		addImg.setAlpha(204); // 透明度
+//		searchImg.setAlpha(204); // 透明度
 
 		xUtilsUtil = new XUtilsUtil();
 		Articlelist = new ArrayList<ArticleModel>();
@@ -260,9 +260,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 			break;
 		case R.id.img_mainActivity_add_photo:
-			
+
 			showPopupWindow(v);
-			
+
 			// Toast.makeText(this, "点击添加", 0).show();
 			break;
 		}
@@ -307,9 +307,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	public void onClose() {
-		if(isDot){
+		if (isDot) {
 			dotView.setVisibility(View.VISIBLE);
-		}else{
+		} else {
 			dotView.setVisibility(View.GONE);
 		}
 		photoImg.setVisibility(View.VISIBLE);
@@ -321,7 +321,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			loginHuanXin();
 
 		}
-		//data();
+		// data();
 		headPortrait();
 
 		super.onStart();
@@ -329,25 +329,23 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	protected void onStop() {
-		if(menu.isMenuShowing()){
+		if (menu.isMenuShowing()) {
 			menu.toggle();
 		}
-	super.onStop();
+		super.onStop();
 	}
-	
+
 	/**
 	 * 头像
 	 */
 	private void headPortrait() {
 		RequestParams params = new RequestParams("UTF-8");
-		params.addBodyParameter("userId", preferences.getInt("userId", -1)
-				+ "");
+		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		xUtilsUtil.httpPost("common/queryCertainUser.html", params,
 				new CallBackPost() {
 
 					@Override
-					public void onMySuccess(
-							ResponseInfo<String> responseInfo) {
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
 						String s = responseInfo.result;
 						JSONObject jsonObject = null;
 						try {
@@ -356,13 +354,17 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
-							JSONObject json = jsonObject
-									.optJSONObject("data");
-							Picasso.with(MainActivity.this).load("http://weride.oss-cn-hangzhou.aliyuncs.com/" + json.optString("userImage")).into(photoImg);
-							/*SystemUtil.loadImagexutils(
-									json.optString("userImage"), photoImg,
-									MainActivity.this);*/
-						}else{
+							JSONObject json = jsonObject.optJSONObject("data");
+							Picasso.with(MainActivity.this)
+									.load("http://weride.oss-cn-hangzhou.aliyuncs.com/"
+											+ json.optString("userImage"))
+									.into(photoImg);
+							/*
+							 * SystemUtil.loadImagexutils(
+							 * json.optString("userImage"), photoImg,
+							 * MainActivity.this);
+							 */
+						} else {
 							photoImg.setImageResource(R.drawable.homepage_picture);
 						}
 					}
@@ -373,8 +375,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					}
 				});
 	}
-	
-	
+
 	private void data() {
 		RequestParams params = new RequestParams("UTF-8");
 		pageIndex = 1;
@@ -766,7 +767,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 									isDot = true;
 									if (!menu.isMenuShowing()) {
 										dotView.setVisibility(View.VISIBLE);
-									}else{
+									} else {
 										dotView.setVisibility(View.GONE);
 									}
 								}
@@ -1029,12 +1030,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			@Override
 			public void onClick(View arg0) {
 				if (preferences.getInt("userId", -1) != -1) {
-					Intent intent = new Intent(MainActivity.this, NativeImagesActivity.class);
+					Intent intent = new Intent(MainActivity.this,
+							NativeImagesActivity.class);
 					intent.putExtra("falg", false);
 					startActivity(intent);
 				} else {
 					new SystemUtil().makeToast(MainActivity.this, "请登录");
-					Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+					Intent intent = new Intent(MainActivity.this,
+							LoginActivity.class);
 					startActivity(intent);
 					// finish();
 				}
@@ -1046,11 +1049,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			@Override
 			public void onClick(View arg0) {
 				if (preferences.getInt("userId", -1) != -1) {
-					Intent intent = new Intent(MainActivity.this, ReleaseActiveActivity.class);
+					Intent intent = new Intent(MainActivity.this,
+							ReleaseActiveActivity.class);
 					startActivity(intent);
 				} else {
 					new SystemUtil().makeToast(MainActivity.this, "请登录");
-					Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+					Intent intent = new Intent(MainActivity.this,
+							LoginActivity.class);
 					startActivity(intent);
 					// finish();
 				}
@@ -1064,7 +1069,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				popupWindow.dismiss();
 			}
 		});
-		
+
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.corners_layout));

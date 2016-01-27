@@ -27,7 +27,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author leiqian
  * 
  */
-public class StartActivity extends Activity implements CallBackPost {
+public class StartActivity extends Activity {
 
 	private Timer timer;
 	private TimerTask task;
@@ -102,26 +102,14 @@ public class StartActivity extends Activity implements CallBackPost {
 	}
 
 	/**
-	 * 向微信终端注册APP_Id
+	 * 向微信终端注册APP_ID_WX
 	 */
 	private void regToWx() {
 		// 通过WXAPIFactory工厂,获取IWXAPI的实例
 		api = WXAPIFactory.createWXAPI(StartActivity.this,
-				ConstantsUtil.APP_ID, true);
-		// 将应用的APP_Id注册到微信
-		api.registerApp(ConstantsUtil.APP_ID);
-	}
-
-	@Override
-	public void onMySuccess(ResponseInfo<String> responseInfo) {
-		System.out.println("启动界面向服务器提交CID成功!" + responseInfo.result);
-		Log.i("qilaiqiqu", "启动界面向服务器提交CID成功!" + responseInfo.result);
-	}
-
-	@Override
-	public void onMyFailure(HttpException error, String msg) {
-		System.out.println("启动界面向服务器提交CID出错:" + msg + "!");
-		Log.i("qilaiqiqu", "启动界面向服务器提交CID出错:" + msg + "!");
+				ConstantsUtil.APP_ID_WX, true);
+		// 将应用的APP_ID_WX注册到微信
+		api.registerApp(ConstantsUtil.APP_ID_WX);
 	}
 
 }

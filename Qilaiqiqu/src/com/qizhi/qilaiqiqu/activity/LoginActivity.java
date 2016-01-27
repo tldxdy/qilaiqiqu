@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +37,8 @@ import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.tencent.connect.UserInfo;
+import com.tencent.connect.common.Constants;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
@@ -69,13 +72,17 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private IWXAPI api;
 
+	private IUiListener loginListener; // 腾讯授权登录监听器
+
+	private UserInfo userInfo;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_login);
-		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID);
-		mTencent = Tencent.createInstance("tencent1104904678",
+		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID_WX);
+		mTencent = Tencent.createInstance(ConstantsUtil.APP_ID_TX,
 				this.getApplicationContext());
 		initView();
 		initEvent();
@@ -95,6 +102,54 @@ public class LoginActivity extends Activity implements OnClickListener {
 		qqImg = (ImageView) findViewById(R.id.img_loginactivity_qq);
 		wechatImg = (ImageView) findViewById(R.id.img_loginactivity_wechat);
 		weiboImg = (ImageView) findViewById(R.id.img_loginactivity_weibo);
+
+		loginListener = new IUiListener() {
+
+			@Override
+			public void onError(UiError arg0) {
+
+			}
+
+			@Override
+			public void onComplete(Object value) {
+				// TODO Auto-generated method stub
+
+				System.out.println("有数据返回..");
+				if (value == null) {
+					return;
+				}
+
+				try {
+					JSONObject jo = (JSONObject) value;
+
+					int ret = jo.getInt("ret");
+
+					System.out.println("json=" + String.valueOf(jo));
+
+					if (ret == 0) {
+						Toast.makeText(LoginActivity.this, "登录成功",
+								Toast.LENGTH_LONG).show();
+
+						String openID = jo.getString("openid");
+						String accessToken = jo.getString("access_token");
+						String expires = jo.getString("expires_in");
+						mTencent.setOpenId(openID);
+						mTencent.setAccessToken(accessToken, expires);
+						Toast.makeText(LoginActivity.this, jo+"",
+								Toast.LENGTH_LONG).show();
+					}
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+
+			}
+
+			@Override
+			public void onCancel() {
+
+			}
+		};
 
 	}
 
@@ -135,7 +190,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 			break;
 
 		case R.id.img_loginactivity_qq:
-			new SystemUtil().makeToast(this, "qq登录");
+			// 如果session无效，就开始登录
+			if (!mTencent.isSessionValid()) {
+				// 开始qq授权登录
+				mTencent.login(LoginActivity.this, "all", loginListener);
+			}
 			break;
 
 		case R.id.img_loginactivity_wechat:
@@ -143,6 +202,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 			req.scope = "snsapi_userinfo";
 			req.state = "qilaiqiqu";
 			api.sendReq(req);
+			LoginActivity.this.finish();
 			break;
 
 		case R.id.img_loginactivity_weibo:
@@ -247,28 +307,24 @@ public class LoginActivity extends Activity implements OnClickListener {
 		MobclickAgent.onPause(this);
 	}
 
-	private class BaseUiListener implements IUiListener {
-		public void onComplete(JSONObject response) {
-			doComplete(response);
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("TAG", "-->onActivityResult " + requestCode + " resultCode="
+				+ resultCode);
+		mTencent.onActivityResultData(requestCode, resultCode, data,
+				loginListener);
+		if (requestCode == Constants.REQUEST_API) {
+			// if(resultCode == Constants.RESULT_LOGIN) {
+			Tencent.handleResultData(data, loginListener);
+			Log.d("TAG", "-->onActivityResult handle logindata");
+			// }
+		} else if (requestCode == Constants.REQUEST_APPBAR) { // app��Ӧ�ðɵ�¼
+			// if (resultCode == Constants.RESULT_LOGIN) {
+			Toast.makeText(LoginActivity.this,
+					data.getStringExtra(Constants.LOGIN_INFO), 0).show();
+			// }
 		}
-
-		protected void doComplete(JSONObject values) {
-		}
-
-		@Override
-		public void onError(UiError e) {
-		}
-
-		@Override
-		public void onCancel() {
-		}
-
-		@Override
-		public void onComplete(Object arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	/**
