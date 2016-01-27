@@ -26,20 +26,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.NumberPicker;
 import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -83,8 +85,6 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 	private String data;
 	private String duration;
-
-	boolean isPut = false;
 
 	int num = 0;
 
@@ -243,6 +243,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		frameLayout.setLayoutParams(fp);
 
 		ImageView picture = new ImageView(this);
+		picture.setScaleType(ScaleType.CENTER_CROP);
 		picture.setLayoutParams(new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT,
 				LinearLayout.LayoutParams.MATCH_PARENT));
@@ -434,7 +435,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		View contentView = LayoutInflater.from(this).inflate(
 				R.layout.item_popup_datatimepicker, null);
 
-		DatePicker datePicker = (DatePicker) contentView
+		final DatePicker datePicker = (DatePicker) contentView
 				.findViewById(R.id.dpPicker);
 		final TimePicker timePicker = (TimePicker) contentView
 				.findViewById(R.id.tpPicker);
@@ -450,7 +451,9 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		final Time t = new Time();
 		t.setToNow();
 
-		timePicker.setIs24HourView(true);
+		((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
+				.getChildAt(0).setVisibility(View.GONE);
+
 		datePicker.init(2016, 1, 1, new OnDateChangedListener() {
 
 			@Override
@@ -477,6 +480,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			}
 		});
 
+		timePicker.setIs24HourView(true);
 		timePicker
 				.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 					@Override
@@ -490,8 +494,11 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 								timePicker.setCurrentMinute(t.minute);
 							}
 						}
-
-						time = hourOfDay + ":" + minute;
+						if (minute < 10) {
+							time = hourOfDay + ":0" + minute;
+						} else {
+							time = hourOfDay + ":" + minute;
+						}
 					}
 				});
 
@@ -516,13 +523,13 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			@Override
 			public void onClick(View arg0) {
 				if (datas == null) {
-					datas = "请选择日期  ";
+					datas = String.valueOf(datePicker.getYear()) + "-"
+							+ String.valueOf(datePicker.getMonth()) + "-"
+							+ String.valueOf(datePicker.getDayOfMonth());
 				}
 				if (time == null) {
-					time = "请选择时间";
-				}
-				if (!datas.equals("请选择日期") && !time.equals("请选择时间")) {
-					isPut = true;
+					time = String.valueOf(timePicker.getCurrentHour()) + ":"
+							+ String.valueOf(timePicker.getCurrentMinute());
 				}
 				data = datas + time;
 				dateTxt.setText(data);
@@ -599,10 +606,10 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			@Override
 			public void onClick(View arg0) {
 				if (day == null) {
-					day = "请选择天数  ";
+					day = "0天  ";
 				}
 				if (hour == null) {
-					hour = "请选择小时数";
+					hour = "0小时";
 				}
 				duration = day + hour;
 				timeTxt.setText(duration);

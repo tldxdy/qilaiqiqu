@@ -49,9 +49,9 @@
         android:orientation="vertical" >
 
         <TextView
-            android:gravity="center"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="发起人"
             android:textColor="@color/mainActivity_title"
             android:textSize="16sp" >
@@ -97,7 +97,7 @@
     <GridView
         android:id="@+id/gridview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="40dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="15dp"
@@ -107,5 +107,16 @@
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dp" >
     </GridView>
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="38dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="65dp"
+        android:background="@drawable/corners_bg_blue"
+        android:gravity="center"
+        android:text="取消报名"
+        android:textColor="@color/write"
+        android:textSize="16sp" />
 
 </LinearLayout>

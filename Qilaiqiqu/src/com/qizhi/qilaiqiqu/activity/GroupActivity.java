@@ -2,20 +2,18 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.util.List;
 
-import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.adapter.AppendGridAdapter;
-import com.qizhi.qilaiqiqu.model.ActivityModel.ParticipantList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.qizhi.qilaiqiqu.R;
 
 public class GroupActivity extends Activity implements OnItemClickListener, OnClickListener  {
 	

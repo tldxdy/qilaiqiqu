@@ -38,6 +38,7 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.tencent.connect.UserInfo;
+import com.tencent.connect.auth.QQToken;
 import com.tencent.connect.common.Constants;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -135,8 +136,31 @@ public class LoginActivity extends Activity implements OnClickListener {
 						String expires = jo.getString("expires_in");
 						mTencent.setOpenId(openID);
 						mTencent.setAccessToken(accessToken, expires);
-						Toast.makeText(LoginActivity.this, jo+"",
-								Toast.LENGTH_LONG).show();
+
+						QQToken qqToken = mTencent.getQQToken();
+						UserInfo info = new UserInfo(getApplicationContext(),
+								qqToken);
+						info.getUserInfo(new IUiListener() {
+
+							@Override
+							public void onError(UiError arg0) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void onComplete(Object response) {
+								JSONObject re = (JSONObject) response;
+								System.out.println("response="
+										+ String.valueOf(response));
+							}
+
+							@Override
+							public void onCancel() {
+								// TODO Auto-generated method stub
+
+							}
+						});
 					}
 
 				} catch (Exception e) {
@@ -313,15 +337,24 @@ public class LoginActivity extends Activity implements OnClickListener {
 				+ resultCode);
 		mTencent.onActivityResultData(requestCode, resultCode, data,
 				loginListener);
+
+		System.out.println("requestCode:" + requestCode
+				+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		System.out.println("resultCode:" + resultCode
+				+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
 		if (requestCode == Constants.REQUEST_API) {
 			// if(resultCode == Constants.RESULT_LOGIN) {
+			System.out
+					.println("data:" + data + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			Tencent.handleResultData(data, loginListener);
 			Log.d("TAG", "-->onActivityResult handle logindata");
 			// }
 		} else if (requestCode == Constants.REQUEST_APPBAR) { // app��Ӧ�ðɵ�¼
 			// if (resultCode == Constants.RESULT_LOGIN) {
 			Toast.makeText(LoginActivity.this,
-					data.getStringExtra(Constants.LOGIN_INFO), 0).show();
+					data.getStringExtra(Constants.LOGIN_INFO) + "........", 0)
+					.show();
 			// }
 		}
 		super.onActivityResult(requestCode, resultCode, data);
