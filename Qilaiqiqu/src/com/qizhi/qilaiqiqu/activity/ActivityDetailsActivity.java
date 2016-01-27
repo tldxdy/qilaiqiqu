@@ -67,15 +67,17 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 	private TextView activityTitleTxt;
 	private TextView participantCountTxt;
 
+	private TextView dianTxt;
+	
 	private TextView likeNumTxt;
 	private TextView isSignTxt1;
 	private TextView isSignTxt2;
 	private TextView isSignTxt3;
 	private LinearLayout isMelayout1;
 	private LinearLayout isMelayout2;
-	
+
 	private LinearLayout backLayout;
-	
+
 	private LinearLayout appendLayout;
 
 	private ImageView likeImg;
@@ -125,6 +127,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 		participantLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_participant);
 
+		dianTxt = (TextView) findViewById(R.id.txt_activityDetails_dian);
+		
 		likeTxt = (TextView) findViewById(R.id.txt_activityDetails_like);
 		scanNumTxt = (TextView) findViewById(R.id.txt_activityDetails_scanNum);
 		mileageTxt = (TextView) findViewById(R.id.txt_activityDetails_mileage);
@@ -140,8 +144,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 		likeImg = (ImageView) findViewById(R.id.img_activityDetails_like);
 		cllectionImg = (ImageView) findViewById(R.id.img_activityDetails_cllection);
-		
-		
+
 		animation = AnimationUtils
 				.loadAnimation(this, R.anim.applaud_animation);
 
@@ -155,7 +158,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 		appendLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_append);
 		backLayout = (LinearLayout) findViewById(R.id.layout_activityDetailsActivity_back);
-		
+
 		activityId = getIntent().getIntExtra("activityId", -1);
 	}
 
@@ -190,27 +193,30 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 3", 0)
 						.show();
 			} else if (isMe == 1) {
-				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 2", 0);
+				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 2", 0)
+						.show();
 
 			}
 			break;
 
 		case R.id.txt_activityDetails_txt3:
-			if(sharedPreferences.getInt("userId", -1) == -1){
+			if (sharedPreferences.getInt("userId", -1) == -1) {
 				new SystemUtil().makeToast(this, "请登录");
 				Intent intent = new Intent(this, LoginActivity.class);
 				startActivity(intent);
 				break;
 			}
 			if (isMe == 2) {
+				
 				RequestParams params = new RequestParams("UTF-8");
 				params.addQueryStringParameter("activityId", activityId + "");
-				params.addQueryStringParameter("userId", sharedPreferences.getInt("userId", -1) + "");
+				params.addQueryStringParameter("userId",
+						sharedPreferences.getInt("userId", -1) + "");
 				params.addQueryStringParameter("uniqueKey",
 						sharedPreferences.getString("uniqueKey", null));
 				new XUtilsUtil().httpPost(
-						"mobile/participant/appendActivityParticipant.html", params,
-						new CallBackPost() {
+						"mobile/participant/appendActivityParticipant.html",
+						params, new CallBackPost() {
 
 							@Override
 							public void onMySuccess(
@@ -223,7 +229,13 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 										isSignTxt1.setText("已报名");
 										isSignTxt2.setText("去聊天");
 										isMelayout2.setVisibility(View.GONE);
-										new SystemUtil().makeToast(ActivityDetailsActivity.this, "已成功报名");
+										new SystemUtil().makeToast(
+												ActivityDetailsActivity.this,
+												"已成功报名");
+									}else {
+										new SystemUtil().makeToast(
+												ActivityDetailsActivity.this,
+												object.getString("message"));
 									}
 								} catch (JSONException e) {
 									e.printStackTrace();
@@ -234,7 +246,9 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 							@Override
 							public void onMyFailure(HttpException error,
 									String msg) {
-
+								new SystemUtil().makeToast(
+										ActivityDetailsActivity.this,
+										msg);
 							}
 						});
 			}
@@ -248,21 +262,22 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		case R.id.layout_activityDetails_append:
 			Intent intent = new Intent();
 			intent.setClass(ActivityDetailsActivity.this, AppendActivity.class);
-			intent.putExtra("append", (Serializable)model.getParticipantList());
+			intent.putExtra("append", (Serializable) model.getParticipantList());
 			startActivity(intent);
 			break;
 		case R.id.img_activityDetails_cllection:
-			if(sharedPreferences.getInt("userId", -1) == -1){
+			if (sharedPreferences.getInt("userId", -1) == -1) {
 				new SystemUtil().makeToast(this, "请登录");
 				Intent intent2 = new Intent(this, LoginActivity.class);
 				startActivity(intent2);
 				break;
 			}
-			
-			if(activity.isUserCollected()){
+
+			if (activity.isUserCollected()) {
 				RequestParams params = new RequestParams("UTF-8");
 				params.addQueryStringParameter("activityId", activityId + "");
-				params.addQueryStringParameter("userId", sharedPreferences.getInt("userId", -1) + "");
+				params.addQueryStringParameter("userId",
+						sharedPreferences.getInt("userId", -1) + "");
 				params.addQueryStringParameter("uniqueKey",
 						sharedPreferences.getString("uniqueKey", null));
 				new XUtilsUtil().httpPost(
@@ -277,7 +292,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 								try {
 									object = new JSONObject(result);
 									if (object.getBoolean("result")) {
-										cllectionImg.setImageResource(R.drawable.cllection_unchosen);
+										cllectionImg
+												.setImageResource(R.drawable.cllection_unchosen);
 										activity.setUserCollected(false);
 									}
 								} catch (JSONException e) {
@@ -292,10 +308,11 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 							}
 						});
-			}else{
+			} else {
 				RequestParams params = new RequestParams("UTF-8");
 				params.addQueryStringParameter("activityId", activityId + "");
-				params.addQueryStringParameter("userId", sharedPreferences.getInt("userId", -1) + "");
+				params.addQueryStringParameter("userId",
+						sharedPreferences.getInt("userId", -1) + "");
 				params.addQueryStringParameter("uniqueKey",
 						sharedPreferences.getString("uniqueKey", null));
 				new XUtilsUtil().httpPost(
@@ -310,7 +327,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 								try {
 									object = new JSONObject(result);
 									if (object.getBoolean("result")) {
-										cllectionImg.setImageResource(R.drawable.clection_chosen);
+										cllectionImg
+												.setImageResource(R.drawable.clection_chosen);
 										activity.setUserCollected(true);
 									}
 								} catch (JSONException e) {
@@ -326,11 +344,10 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 							}
 						});
 			}
-			
-			
+
 			break;
 		case R.id.img_activityDetails_like:
-			if(sharedPreferences.getInt("userId", -1) == -1){
+			if (sharedPreferences.getInt("userId", -1) == -1) {
 				new SystemUtil().makeToast(this, "请登录");
 				Intent intent3 = new Intent(this, LoginActivity.class);
 				startActivity(intent3);
@@ -339,7 +356,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 			if (activity.isUserPraised()) {
 				RequestParams params = new RequestParams("UTF-8");
 				params.addQueryStringParameter("activityId", activityId + "");
-				params.addQueryStringParameter("userId", sharedPreferences.getInt("userId", -1) + "");
+				params.addQueryStringParameter("userId",
+						sharedPreferences.getInt("userId", -1) + "");
 				params.addQueryStringParameter("uniqueKey",
 						sharedPreferences.getString("uniqueKey", null));
 				new XUtilsUtil().httpPost(
@@ -374,7 +392,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 			} else {
 				RequestParams params = new RequestParams("UTF-8");
 				params.addQueryStringParameter("activityId", activityId + "");
-				params.addQueryStringParameter("userId", sharedPreferences.getInt("userId", -1) + "");
+				params.addQueryStringParameter("userId",
+						sharedPreferences.getInt("userId", -1) + "");
 				params.addQueryStringParameter("uniqueKey",
 						sharedPreferences.getString("uniqueKey", null));
 				new XUtilsUtil().httpPost(
@@ -414,12 +433,11 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 							@Override
 							public void onMyFailure(HttpException error,
 									String msg) {
-								
-								
-								
-								/*Toast.makeText(ActivityDetailsActivity.this,
-										activity.isUserPraised() + "", 0)
-										.show();*/
+
+								/*
+								 * Toast.makeText(ActivityDetailsActivity.this,
+								 * activity.isUserPraised() + "", 0) .show();
+								 */
 							}
 						});
 			}
@@ -474,13 +492,16 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 	}
 
 	private void setView(final ActivityModel model) {
-		
-		if(activity.getUserImage() == null || "null".equals(activity.getUserImage()) || "".equals(activity.getUserImage().trim())){
+
+		if (activity.getUserImage() == null
+				|| "null".equals(activity.getUserImage())
+				|| "".equals(activity.getUserImage().trim())) {
 			Picasso.with(ActivityDetailsActivity.this)
-			.load(R.drawable.bitmap_homepage).into(userImageImg);
-		}else{
+					.load(R.drawable.bitmap_homepage).into(userImageImg);
+		} else {
 			Picasso.with(ActivityDetailsActivity.this)
-			.load(imageUrl + activity.getUserImage()).into(userImageImg);
+					.load(imageUrl + activity.getUserImage())
+					.into(userImageImg);
 		}
 
 		String[] split = activity.getActivityImage().split(",");
@@ -495,29 +516,39 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		} else {
 			likeImg.setImageResource(R.drawable.admire_unchosen);
 		}
-		if(activity.isUserCollected()){
+		if (activity.isUserCollected()) {
 			cllectionImg.setImageResource(R.drawable.clection_chosen);
-		}else{
+		} else {
 			cllectionImg.setImageResource(R.drawable.cllection_unchosen);
 		}
-		
-		
-		
+
 		likeTxt.setText(activity.getPraiseNum() + "");
 		scanNumTxt.setText(activity.getScanNum() + "次浏览");
 		userNameTxt.setText(activity.getUserName());
 		activityTitleTxt.setText(activity.getActivityTitle());
 		mileageTxt.setText(activity.getMileage());
-		if(activity.getDuration() / 24 > 0){
-			int days = activity.getDuration() / 24;
-			int hour = activity.getDuration() % 24;
-			durationTxt.setText(days + "天" + hour + "小时");
-		}else{
-			durationTxt.setText(activity.getDuration() + "小时");
+		int hour = activity.getDuration() / 60;
+		if (hour / 24 > 0) {
+			int days = hour / 24;
+			hour = hour % 24;
+			if (hour == 0) {
+				durationTxt.setText(days + "天");
+			} else {
+				durationTxt.setText(days + "天" + hour + "小时");
+			}
+		} else {
+			durationTxt.setText(hour + "小时");
 		}
-		startDateTxt.setText(activity.getStartDate());
+		startDateTxt.setText(activity.getStartDate().substring(0,
+				activity.getStartDate().length() - 3));
 		activityMemoTxt.setText(activity.getActivityMemo());
 		participantCountTxt.setText(model.getParticipantCount() + "人");
+		if(model.getParticipantCount() == 0){
+			dianTxt.setVisibility(View.GONE);
+		}else {
+			dianTxt.setVisibility(View.VISIBLE);
+		}
+		
 		for (int i = 0; i < model.getArticleMemoList().size() - 1; i++) {
 			articleMemoTxt1.setText(model.getArticleMemoList().get(i)
 					.getTitle());
@@ -548,11 +579,14 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 					.into(imageView);
 		}
 
-		if(activity.isInvolved()){
+		if (activity.isInvolved()) {
 			isMe = 3;
+			isSignTxt1.setText("已报名");
+			isSignTxt2.setText("去聊天");
+			isMelayout2.setVisibility(View.GONE);
 		}
-		
-		if(sharedPreferences.getInt("userId", -1) == activity.getUserId()){
+
+		if (sharedPreferences.getInt("userId", -1) == activity.getUserId()) {
 			isMe = 1;
 		}
 		if (isMe == 1) {
@@ -589,28 +623,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 
 					@Override
 					public void onClick(View imageView, ImageInfo imageInfo) {
-						// if (imageInfo.type.toString().equals("URL")) {
-						// Uri uri = Uri.parse(imageInfo.value.toString());
-						// Intent intent = new Intent(Intent.ACTION_VIEW,
-						// uri);
-						// context.startActivity(intent);
-						// } else if (imageInfo.type.toString().equals("APP")) {
-						// if (imageInfo.bannerType.toString().equals(
-						// "QYJ")) {
-						//
-						// context.startActivity(new Intent(context,
-						// RidingDetailsActivity.class)
-						// .putExtra("articleId", Integer
-						// .parseInt(imageInfo.value
-						// .toString())));
-						// } else if (imageInfo.bannerType.toString()
-						// .equals("PQS")) {
-						//
-						// } else if (imageInfo.bannerType.toString()
-						// .equals("HD")) {
-						//
-						// }
-						// }
+
 					}
 				});
 
