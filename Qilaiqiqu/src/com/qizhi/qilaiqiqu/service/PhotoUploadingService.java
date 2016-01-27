@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,9 @@ import org.json.JSONObject;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
+import com.qizhi.qilaiqiqu.activity.ReleaseActivity;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
+import com.qizhi.qilaiqiqu.progress.FileUploadAsyncTask;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -63,8 +66,12 @@ public class PhotoUploadingService extends Service {
 				imgListUrl.add(s);
 				if (list.size() - 1 != num) {
 					num = num + 1;
-					 new SystemUtil().httpClient(list.get(num).getArticleImage(),
-					 preferences, handler, "QYJ");
+					 File file = new File(list.get(num).getArticleImage());
+					 new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
+								.execute(file);
+					
+					/* new SystemUtil().httpClient(list.get(num).getArticleImage(),
+					 preferences, handler, "QYJ");*/
 					// photoUploading();
 				} else {
 					publishTravels();
@@ -112,13 +119,19 @@ public class PhotoUploadingService extends Service {
 			 imgListUrl = new ArrayList<String>();
 			 if(!falg){
 				 num = 0;
-				 new SystemUtil().httpClient(list.get(num).getArticleImage(),preferences, handler, "QYJ");
+				 File file = new File(list.get(num).getArticleImage());
+				 new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
+							.execute(file);
+				 //new SystemUtil().httpClient(list.get(num).getArticleImage(),preferences, handler, "QYJ");
 			 }else{
 				 articleId = intent.getIntExtra("articleId", -1);
 				 updateListSum = intent.getIntExtra("updateListSum", -1);
 				 if (list.size() > updateListSum) {
 					num = updateListSum;
-					new SystemUtil().httpClient(list.get(num).getArticleImage(),preferences, handler, "QYJ");
+					 File file = new File(list.get(num).getArticleImage());
+					 new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
+								.execute(file);
+					//new SystemUtil().httpClient(list.get(num).getArticleImage(),preferences, handler, "QYJ");
 					
 				}else{
 					publishTravels();

@@ -147,10 +147,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				imgListUrl.add(s);
 				if (previewList.size() - 1 != num) {
 					num = num + 1;
-					File file = new File(previewList.get(num).getArticleImage());
+					/*File file = new File(previewList.get(num).getArticleImage());
 					new FileUploadAsyncTask(RidingDetailsActivity.this,
 							(num + 1), previewList.size(), preferences, "QYJ",
-							handler).execute(file);
+							handler).execute(file);*/
 					// new
 					// SystemUtil().httpClient(list.get(num).getArticleImage(),
 					// preferences, handler, "QYJ");
@@ -343,11 +343,13 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				// photoUploading();
 
 				if (previewList.size() != 0) {
-					Intent intent = new Intent("com.qizhi.qilaiqiqu.service.PhotoUploadingService");
+					Intent intent = new Intent();
 					intent.putExtra("list", (Serializable)previewList);
-					intent.putExtra("title", previewList.get(0).getTitle().toString().trim());
+					intent.putExtra("title", previewList.get(0).getTitle().toString());
+					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
+					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
 					startService(intent);
-					loadingLayout.setVisibility(View.VISIBLE);
+					//loadingLayout.setVisibility(View.VISIBLE);
 				/*if (previewList.size() != 0) {
 					File file = new File(previewList.get(num).getArticleImage());
 					new FileUploadAsyncTask(this, num + 1, previewList.size(),

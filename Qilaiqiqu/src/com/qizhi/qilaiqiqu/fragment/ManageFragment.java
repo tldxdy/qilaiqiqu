@@ -13,6 +13,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView;
@@ -22,6 +23,7 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -95,7 +97,9 @@ public class ManageFragment extends Fragment  implements OnItemClickListener,OnR
 	
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		new SystemUtil().makeToast(getActivity(), position +"");
+		Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
+		intent.putExtra("activityId", dataList.get(position - 1).getActivityId());
+		getActivity().startActivity(intent);
 	}
 
 

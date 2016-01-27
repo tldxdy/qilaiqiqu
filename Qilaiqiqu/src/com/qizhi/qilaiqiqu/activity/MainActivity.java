@@ -740,7 +740,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	}
 
 	private void isNews() {
-		if (preferences.getInt("userId", -1) != -1) {
+		//if (preferences.getInt("userId", -1) != -1) {
 			RequestParams params = new RequestParams("UTF-8");
 			params.addBodyParameter("userId", preferences.getInt("userId", -1)
 					+ "");
@@ -771,6 +771,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 										dotView.setVisibility(View.GONE);
 									}
 								}
+							}else{
+								dotView.setVisibility(View.GONE);
 							}
 						}
 
@@ -779,7 +781,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 						}
 					});
-		}
+		//}
 	}
 
 	@Override
@@ -1041,6 +1043,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					startActivity(intent);
 					// finish();
 				}
+				popupWindow.dismiss();
 			}
 		});
 
@@ -1059,6 +1062,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					startActivity(intent);
 					// finish();
 				}
+				popupWindow.dismiss();
 			}
 		});
 
@@ -1074,7 +1078,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.corners_layout));
 		// 设置好参数之后再show
-		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 50);
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 63);
 
 	}
 

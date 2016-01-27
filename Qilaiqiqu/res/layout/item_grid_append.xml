@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/img_appendGrid_itemImage"
         android:layout_centerHorizontal="true"
+        android:singleLine="true"
         android:textSize="14sp" >
     </TextView>
 

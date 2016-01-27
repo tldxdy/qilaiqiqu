@@ -109,6 +109,8 @@ public class PersonalDataActivity extends BaseActivity implements
 	private SharedPreferences preferences;
 
 	private CertainUserModel certainUserModel;
+	
+	private boolean falg = true;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 
@@ -246,6 +248,10 @@ public class PersonalDataActivity extends BaseActivity implements
 	}
 
 	private void setViewData() {
+		if(!falg){
+			return;
+		}
+		
 		if (img_path != null) {
 			new SystemUtil().httpClient(img_path, preferences, handler, "USER");
 			// photoUploading();
@@ -515,14 +521,14 @@ public class PersonalDataActivity extends BaseActivity implements
 		Bundle extras = data.getExtras();
 		if (extras != null) {
 			Bitmap photo = extras.getParcelable("data");
-			Drawable drawable = new BitmapDrawable(photo);
+			//Drawable drawable = new BitmapDrawable(photo);
 			try {
 				img_path = new SystemUtil().saveMyBitmap(photo);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			photoImg.setImageDrawable(drawable);
-			//photoImg.setImageBitmap(photo);
+			//photoImg.setImageDrawable(drawable);
+			photoImg.setImageBitmap(photo);
 		}
 	}
 
@@ -555,6 +561,7 @@ public class PersonalDataActivity extends BaseActivity implements
 	 * msg); } }); }
 	 */
 	private void informationUpdate() {
+		falg = false;
 		if (!"".equals(nickEdt.getText().toString().trim())
 				&& !"".equals(usernameTxt.getText().toString().trim())
 				&& !"".equals(certainUserModel.getUserImage())) {
@@ -586,6 +593,7 @@ public class PersonalDataActivity extends BaseActivity implements
 								ResponseInfo<String> responseInfo) {
 							new SystemUtil().makeToast(
 									PersonalDataActivity.this, "修改成功");
+							falg = true;
 							// 更新环信用户昵称
 							EMChatManager.getInstance().updateCurrentUserNick(
 									nickEdt.getText().toString().trim());

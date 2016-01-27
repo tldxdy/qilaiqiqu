@@ -355,7 +355,7 @@
             android:name="com.qizhi.qilaiqiqu.service.PhotoUploadingService"
             android:enabled="true" >
             <intent-filter>
-                <action android:name="com.qizhi.qilaiqiqu.service.PhotoUploadingService" />
+                <action android:name="com.qizhi.qilaiqiqu.service.photoUploadingService" />
             </intent-filter>
         </service>
     </application>

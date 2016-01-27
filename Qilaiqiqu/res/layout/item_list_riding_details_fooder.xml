@@ -60,6 +60,7 @@
                         android:layout_marginLeft="10dp"
                         android:gravity="center"
                         android:text="发起"
+                        android:textColor="@color/mapblue"
                         android:paddingTop="4dp"
                         android:textSize="12sp" />
                 </LinearLayout>

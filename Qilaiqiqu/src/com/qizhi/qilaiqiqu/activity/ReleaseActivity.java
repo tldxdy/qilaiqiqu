@@ -98,11 +98,11 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				String s = (String) msg.obj;
 				imgListUrl.add(s);
 				if (list.size() - 1 != num) {
-					num = num + 1;
+					/*num = num + 1;
 					File file = new File(list.get(num).getArticleImage());
 					new FileUploadAsyncTask(ReleaseActivity.this, (num + 1),
 							list.size(), preferences, "QYJ", handler)
-							.execute(file);
+							.execute(file);*/
 					// new
 					// SystemUtil().httpClient(list.get(num).getArticleImage(),
 					// preferences, handler, "QYJ");
@@ -259,12 +259,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				// photoUploading();
 
 				if (list.size() != 0) {
-					Intent intent = new Intent("com.qizhi.qilaiqiqu.service.PhotoUploadingService");
+					
+					Intent intent = new Intent();
 					intent.putExtra("list", (Serializable)list);
 					intent.putExtra("title", titleEdt.getText()
 				.toString().trim());
 					intent.putExtra("falg", falg);
-					 startService(intent);
+					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
+					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
+					startService(intent);
 					/*File file = new File(list.get(num).getArticleImage());
 					new FileUploadAsyncTask(this, num + 1, list.size(),
 							preferences, "QYJ", handler).execute(file);*/
@@ -277,13 +280,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				num = 0;
 				// photoUploading();
 				if (list.size() != 0) {
-					Intent intent = new Intent("com.qizhi.qilaiqiqu.service.PhotoUploadingService");
+					Intent intent = new Intent();
 					intent.putExtra("list", (Serializable)list);
 					intent.putExtra("title", titleEdt.getText()
 				.toString().trim());
 					intent.putExtra("falg", falg);
 					intent.putExtra("updateListSum", updateListSum);
 					intent.putExtra("articleId", articleId);
+					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
+					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
 					startService(intent);
 					
 				}

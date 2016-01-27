@@ -35,18 +35,18 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 
 	private String url =  XUtilsUtil.URL + "common/uploadImage.html";
 	private Context context;
-	private ProgressDialog pd;
+	//private ProgressDialog pd;
 	private long totalSize;
-	private int sum;
-	private int number;
+	//private int sum;
+	//private int number;
 	private SharedPreferences preferences;
 	private String type;
 	private Handler handler;
 
-	public FileUploadAsyncTask(Context context, int number, int sum, SharedPreferences preferences, String type, Handler handler) {
+	public FileUploadAsyncTask(Context context, SharedPreferences preferences, String type, Handler handler) {
 		this.context = context;
-		this.sum = sum;
-		this.number = number;
+		//this.sum = sum;
+		//this.number = number;
 		this.preferences = preferences;
 		this.type = type;
 		this.handler = handler;
@@ -54,11 +54,11 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 
 	@Override
 	protected void onPreExecute() {
-		pd = new ProgressDialog(context);
+		/*pd = new ProgressDialog(context);
 		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		pd.setMessage("上传第"+number + "/" + sum + "张");
 		pd.setCancelable(false);
-		pd.show();
+		pd.show();*/
 	}
 
 	@Override
@@ -85,12 +85,12 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 
 	@Override
 	protected void onProgressUpdate(Integer... progress) {
-		pd.setProgress((int) (progress[0]));
+			//pd.setProgress((int) (progress[0]));
 	}
 
 	@Override
 	protected void onPostExecute(String result) {
-		pd.dismiss();
+		//pd.dismiss();
 		if(result != null){
 			Message msg = new Message();
 			msg.what = 1;
