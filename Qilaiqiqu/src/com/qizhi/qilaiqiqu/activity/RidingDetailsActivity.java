@@ -30,6 +30,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,6 +46,7 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.Previewadapter;
 import com.qizhi.qilaiqiqu.adapter.RidingDetailsListAdapter;
+import com.qizhi.qilaiqiqu.model.ActivityListRecommendModel;
 import com.qizhi.qilaiqiqu.model.ArticleMemoDetailModel;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
@@ -61,7 +64,7 @@ import com.umeng.analytics.MobclickAgent;
  */
 
 public class RidingDetailsActivity extends Activity implements OnClickListener,
-		CallBackPost {
+		CallBackPost, OnItemClickListener {
 
 	private LinearLayout backLayout;
 
@@ -129,6 +132,8 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private int num = 0;
 
 	private List<String> imgListUrl;
+	
+	private List<ActivityListRecommendModel> recommendList;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -332,6 +337,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 					new SystemUtil().makeToast(this, "你有游记正在发布，请稍后再发布");
 					break;
 				}
+				
 				imgListUrl = new ArrayList<String>();
 				num = 0;
 				// photoUploading();
@@ -828,6 +834,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 									.getArticleDetailList().size(); i++) {
 								list.add(articleModel);
 							}
+							recommendList = aDetailModel.getActivityList();
 							if (aDetailModel.isUserCollected()) {
 								cllectionImg
 										.setImageResource(R.drawable.clection_chosen);
@@ -841,9 +848,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 									+ articleModel.getVirtualPraise() + "");
 
 							adapter = new RidingDetailsListAdapter(
-									RidingDetailsActivity.this, list);
+									RidingDetailsActivity.this, list,recommendList);
 							ridingList.setAdapter(adapter);
 							ridingList.setDividerHeight(0);
+							ridingList.setOnItemClickListener(RidingDetailsActivity.this);
 
 						}
 					}
@@ -855,6 +863,23 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				});
 	}
 
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+		if((position - list.size() - 2) >= 0){
+			recommendList.get((position - list.size() - 2));
+			Intent intent = new Intent(this,ActivityDetailsActivity.class);
+			intent.putExtra("activityId", recommendList.get((position - list.size() - 2)).getActivityId());
+			startActivity(intent);
+			//new SystemUtil().makeToast(this, "" + (position - list.size() - 2) );
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
 		String s = responseInfo.result;
@@ -1016,6 +1041,9 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 	}
 
+	/**
+	 * 预览发布
+	 */
 	private void publishTravels() {
 
 		// 使用NameValuePair来保存要传递的Post参数
@@ -1099,4 +1127,5 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	 * (requestCode) { case 3: break; } } super.onActivityResult(requestCode,
 	 * resultCode, data); }
 	 */
+
 }

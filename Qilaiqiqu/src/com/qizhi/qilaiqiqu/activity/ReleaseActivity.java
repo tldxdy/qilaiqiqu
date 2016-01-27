@@ -219,6 +219,15 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			ReleaseActivity.this.finish();
 			break;
 		case R.id.txt_releaseactivity_browse:
+			if("".equals(titleEdt.getText()
+					.toString().trim())){
+						new SystemUtil().makeToast(this, "标题不能为空");
+						break;
+					}
+			if(list.size() == 0){
+					new SystemUtil().makeToast(this, "请添加游记图片");
+					break;
+			}
 			if (list.size() != 0) {
 				Intent intents = new Intent(this, RidingDetailsActivity.class);
 				list.get(0).setTitle(titleEdt.getText().toString().trim());
@@ -232,11 +241,16 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				new SystemUtil().makeToast(this, "你有一篇游记在发布，请稍后");
 				break;
 			}
+			if(list.size() == 0){
+				new SystemUtil().makeToast(this, "请添加游记图片");
+				break;
+		}
 			if("".equals(titleEdt.getText()
 					.toString().trim())){
 						new SystemUtil().makeToast(this, "标题不能为空");
 						break;
 					}
+			
 			// new SystemUtil().makeToast(this, "发表");
 			// 图片上传
 			if (!falg) {
@@ -400,8 +414,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 			}
 
 		}
-		System.out.println("------------------------------------");
-		System.out.println(params.toString());
 		RequestParams params2 = new RequestParams();
 		try {
 			params2.setBodyEntity(new UrlEncodedFormEntity(params, "UTF-8"));
@@ -416,9 +428,6 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 				@Override
 				public void onMySuccess(ResponseInfo<String> responseInfo) {
 					JSONObject jsonObject = null;
-					System.out.println("------------------------------------");
-					System.out.println(responseInfo.result);
-					System.out.println("------------------------------------");
 					try {
 						jsonObject = new JSONObject(responseInfo.result);
 					} catch (JSONException e) {

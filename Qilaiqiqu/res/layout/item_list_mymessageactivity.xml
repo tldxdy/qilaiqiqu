@@ -11,7 +11,7 @@
         android:orientation="horizontal" 
         android:gravity="center_vertical">
 
-        <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
+    <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
             android:id="@+id/img_mymessageactivity_portrait"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -42,15 +42,5 @@
         </LinearLayout>
         
     </LinearLayout>
-    <TextView
-        android:id="@+id/delete"
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
-        android:background="#FFFF0000"
-        android:gravity="center"
-        android:paddingLeft="20dp"
-        android:textColor="@android:color/white"
-        android:paddingRight="20dp"
-        android:text="删除" />
 
 </LinearLayout>

@@ -166,7 +166,9 @@
     <string name="text_activityactivity_cancel">取消报名</string>
     <string name="text_appendActivity_title">已报名查看</string>
 
-    <string name="text_groupActivity_title">群成员</string>    </resources>
+    <string name="text_groupActivity_title">群成员</string>    
+    
+    </resources>
       
 
 

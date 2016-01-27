@@ -152,6 +152,8 @@ public class CommentMessageActivity extends Activity implements OnClickListener,
 					}else if(isComment == 2){
 						new SystemUtil().makeToast(CommentMessageActivity.this, "回复成功");
 					}
+				}else{
+					new SystemUtil().makeToast(CommentMessageActivity.this, jsonObject.optString("message"));
 				}
 				myReturnEdt.setText("");
 			}

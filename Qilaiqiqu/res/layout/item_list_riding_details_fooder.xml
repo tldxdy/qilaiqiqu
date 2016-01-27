@@ -3,23 +3,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="20dp"
+    android:background="#ffffffff"
     android:orientation="vertical" >
 
     <FrameLayout
         android:layout_width="fill_parent"
+        android:layout_marginBottom="30dp"
         android:layout_height="wrap_content" >
-
+	<LinearLayout 
+    		android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/corners_activity_img"
+            android:orientation="vertical">
         <ImageView
+            android:id="@+id/img_riding_details_showphoto"
             android:layout_width="fill_parent"
             android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/corners_activity_img"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center|bottom"
             android:scaleType="centerCrop"
             android:src="@drawable/demo2" />
-
+        </LinearLayout>
         <FrameLayout
             android:layout_width="fill_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_height="70dp" >
 
             <LinearLayout
@@ -36,9 +46,10 @@
                     android:orientation="horizontal" >
 
                     <TextView
+                        android:id="@+id/txt_riding_details_name"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
-                        android:layout_marginLeft="15dp"
+                        android:layout_marginLeft="20dp"
                         android:gravity="center"
                         android:text="独步天涯"
                         android:textSize="13sp" />
@@ -57,10 +68,14 @@
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:orientation="horizontal" >
 
                     <TextView
+                        android:id="@+id/txt_riding_details_title"
                         android:layout_marginLeft="35dp"
+                        android:layout_marginRight="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:gravity="center"
@@ -70,6 +85,7 @@
             </LinearLayout>
 
             <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
+                android:id="@+id/img_riding_details_headphoto"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"

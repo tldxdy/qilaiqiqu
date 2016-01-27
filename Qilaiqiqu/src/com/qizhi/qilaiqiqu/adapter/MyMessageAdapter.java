@@ -65,7 +65,6 @@ public class MyMessageAdapter extends BaseAdapter {
 			holder.contentTxt = (TextView) convertView.findViewById(R.id.txt_mymessageactivity_content);
 			holder.systemMessageTxt = (TextView) convertView.findViewById(R.id.txt_mymessageactivity_system_message);
 			holder.portraitImg = (ImageView) convertView.findViewById(R.id.img_mymessageactivity_portrait);
-			holder.deleteTxt = (TextView) convertView.findViewById(R.id.delete);
 			convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder) convertView.getTag();
@@ -90,20 +89,6 @@ public class MyMessageAdapter extends BaseAdapter {
 			holder.systemMessageTxt.setText("陪骑士消息");
 		}
 		holder.systemMessageTxt.setTextColor(0xff6dbfed);
-		
-		holder.deleteTxt.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				
-				delete(list.get(position).getSystemMessageId(),position);
-				
-			}
-
-
-		});
-		
-		
 		
 		
 		return convertView;
@@ -140,7 +125,6 @@ public class MyMessageAdapter extends BaseAdapter {
 	
 	public class ViewHolder{
 		private TextView contentTxt;
-		private TextView deleteTxt;
 		private TextView systemMessageTxt;
 		private ImageView portraitImg;
 	}

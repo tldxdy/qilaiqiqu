@@ -6,7 +6,7 @@ public class ArticleMemoDetailModel {
 	private boolean userCollected;
 	private boolean userPraised;
 	private ArticleModel articleMemo;
-	private List<?> activityList;
+	private List<ActivityListRecommendModel> activityList;
 	public boolean isUserCollected() {
 		return userCollected;
 	}
@@ -25,13 +25,13 @@ public class ArticleMemoDetailModel {
 	public void setArticleMemo(ArticleModel articleMemo) {
 		this.articleMemo = articleMemo;
 	}
-	public List<?> getActivityList() {
+	public List<ActivityListRecommendModel> getActivityList() {
 		return activityList;
 	}
-	public void setActivityList(List<?> activityList) {
+	public void setActivityList(List<ActivityListRecommendModel> activityList) {
 		this.activityList = activityList;
 	}
-	
+
 
 	
 }

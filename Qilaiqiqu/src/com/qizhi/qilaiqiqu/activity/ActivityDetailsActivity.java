@@ -89,7 +89,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 	private Activitys activity;
 
 	SharedPreferences sharedPreferences;
-	int activityId = 84;
+	private int activityId;
 
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -146,6 +146,8 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		isMelayout2 = (LinearLayout) findViewById(R.id.layout_activityDetails_button2);
 
 		appendLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_append);
+		
+		activityId = getIntent().getIntExtra("activityId", -1);
 	}
 
 	private void initEvent() {
