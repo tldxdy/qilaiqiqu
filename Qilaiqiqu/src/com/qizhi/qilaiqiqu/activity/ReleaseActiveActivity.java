@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -402,14 +403,15 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.setDataAndType(uri, "image/*");
+		//intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 		// 设置裁剪
-		intent.putExtra("crop", "true");
+		intent.putExtra("crop", true);
 		// aspectX aspectY 是宽高的比例
-		intent.putExtra("aspectX", 4.1);
-		intent.putExtra("aspectY", 4);
+		intent.putExtra("aspectX", 1);
+		intent.putExtra("aspectY", 1);
 		// outputX outputY 是裁剪图片宽高
-		// intent.putExtra("outputX", 480);
-		// intent.putExtra("outputY", 480);
+		 intent.putExtra("outputX", 300);
+		 intent.putExtra("outputY", 300);
 		intent.putExtra("return-data", true);
 		startActivityForResult(intent, 2);
 	}

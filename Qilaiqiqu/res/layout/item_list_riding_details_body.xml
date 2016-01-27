@@ -12,7 +12,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        android:background="@color/f8f8" >
+        android:background="@drawable/switch_rounded_layout_top" >
 
         <TextView
             android:id="@+id/txt_ridingDatilsList_ridingTitle"
@@ -35,9 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
-            android:layout_marginTop="10dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
+            android:layout_marginBottom="10dp"
             android:src="@drawable/bitmap_homepage" />
 
         <ImageView
@@ -45,6 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
             android:src="@drawable/delta_white" />
     </FrameLayout>
@@ -79,7 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        android:background="@color/f8f8" >
+        android:background="@drawable/switch_rounded_layout_bottom" >
 
         <TextView
             android:id="@+id/txt_ridingDatilsList_ridingContent"

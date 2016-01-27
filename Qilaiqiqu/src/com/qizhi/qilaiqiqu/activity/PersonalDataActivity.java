@@ -505,8 +505,8 @@ public class PersonalDataActivity extends BaseActivity implements
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);
 		// outputX outputY 是裁剪图片宽高
-		intent.putExtra("outputX", 480);
-		intent.putExtra("outputY", 480);
+		 intent.putExtra("outputX", 300);
+		 intent.putExtra("outputY", 300);
 		intent.putExtra("return-data", true);
 		startActivityForResult(intent, RESULT_REQUEST_CODE);
 	}
