@@ -15,6 +15,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.LoginActivity;
 import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -101,9 +102,10 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 				editor.putString("riderId", data.getString("riderId"));
 				editor.putInt("loginFlag", 1);
 				editor.commit();
-				
+
 				System.out.println(result);
-				
+				startActivity(new Intent(WXEntryActivity.this,
+						MainActivity.class));
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

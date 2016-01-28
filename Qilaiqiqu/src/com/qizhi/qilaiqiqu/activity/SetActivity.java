@@ -16,7 +16,6 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
@@ -132,8 +131,8 @@ public class SetActivity extends Activity implements OnClickListener {
 			@Override
 			public void onSwitchChange(PushSlideSwitchView switchView,
 					boolean isChecked) {
-				new SystemUtil().makeToast(SetActivity.this, "滑动开关1:"
-						+ isChecked);
+				// new SystemUtil().makeToast(SetActivity.this, "滑动开关1:"
+				// + isChecked);
 			}
 		});
 		// view2.setOnChangeListener(new OnSwitchChangedListener() {
@@ -239,7 +238,7 @@ public class SetActivity extends Activity implements OnClickListener {
 		params.addBodyParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
 		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
-			
+
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {
 				String result = responseInfo.result;
@@ -249,7 +248,7 @@ public class SetActivity extends Activity implements OnClickListener {
 						/**
 						 * SharedPreferences清空用户Id和uniqueKey
 						 */
-						
+
 						editor.putInt("userId", -1);
 						editor.putString("uniqueKey", null);
 						editor.putString("imUserName", null);
@@ -260,16 +259,16 @@ public class SetActivity extends Activity implements OnClickListener {
 						SetActivity.this.finish();
 						startActivity(new Intent(SetActivity.this,
 								LoginActivity.class));
-					}	
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 			}
-			
+
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				
+
 			}
 		});
 

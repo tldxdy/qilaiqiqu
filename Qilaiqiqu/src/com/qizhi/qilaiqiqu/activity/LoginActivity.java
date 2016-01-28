@@ -126,7 +126,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 					int ret = jo.getInt("ret");
 
 					System.out.println("json=" + String.valueOf(jo));
-
 					if (ret == 0) {
 						Toast.makeText(LoginActivity.this, "登录成功",
 								Toast.LENGTH_LONG).show();
@@ -299,8 +298,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 								editor.commit();
 
 								LoginActivity.this.finish();
-								 startActivity(new Intent(LoginActivity.this,
-								 MainActivity.class));
+								startActivity(new Intent(LoginActivity.this,
+										MainActivity.class));
 
 							} catch (JSONException e) {
 								e.printStackTrace();

@@ -42,11 +42,10 @@
                 android:layout_height="8dp"
                 android:layout_alignBottom="@+id/textView1"
                 android:layout_alignLeft="@+id/img_mainActivity_photo"
-                android:layout_marginLeft="30dp"
                 android:layout_marginBottom="20dp"
-                android:visibility="gone"
-                android:background="@drawable/switch_rounded_dot" />
-
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/switch_rounded_dot"
+                android:visibility="gone" />
         </RelativeLayout>
 
         <LinearLayout
@@ -104,43 +103,48 @@
             android:gravity="bottom|center_horizontal"
             android:orientation="horizontal" >
 
-            <ImageView
+            <RelativeLayout
                 android:id="@+id/img_mainActivity_add_photo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/homepage_buttton_left" />
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="204"
+                    android:src="@drawable/homepage_buttton_left" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/release" />
+            </RelativeLayout>
 
             <View
                 android:layout_width="2dp"
                 android:layout_height="35dp"
                 android:background="#00ffffff" />
 
-            <ImageView
+            <RelativeLayout
                 android:id="@+id/img_mainActivity_search_photo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/homepage_button_right" />
-        </LinearLayout>
+                android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="36dp"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal" >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="204"
+                    android:src="@drawable/homepage_button_right" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="18dp"
-                android:src="@drawable/release" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/search" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/search" />
+            </RelativeLayout>
         </LinearLayout>
 
         <ListView

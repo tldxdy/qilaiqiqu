@@ -235,7 +235,6 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
         </activity>
         <activity

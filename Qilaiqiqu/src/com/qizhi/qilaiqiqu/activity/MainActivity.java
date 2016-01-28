@@ -112,8 +112,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private TextView searchCancel;
 
 	private ImageView photoImg;
-	private ImageView searchImg;
-	private ImageView addImg;
+	private RelativeLayout searchImg;
+	private RelativeLayout addImg;
 
 	private PullFreshListView slideShowList;
 
@@ -188,7 +188,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	}
 
-	@SuppressWarnings("deprecation")
 	private void initView() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
@@ -199,14 +198,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		searchList = (ListView) findViewById(R.id.list_mainActivity_searchResult);
 
 		photoImg = (ImageView) findViewById(R.id.img_mainActivity_photo);
-		searchImg = (ImageView) findViewById(R.id.img_mainActivity_search_photo);
-		addImg = (ImageView) findViewById(R.id.img_mainActivity_add_photo);
+		searchImg = (RelativeLayout) findViewById(R.id.img_mainActivity_search_photo);
+		addImg = (RelativeLayout) findViewById(R.id.img_mainActivity_add_photo);
 
 		slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
 		dotView = findViewById(R.id.view_dot);
-
-		addImg.setAlpha(204); // 透明度
-		searchImg.setAlpha(204); // 透明度
 
 		xUtilsUtil = new XUtilsUtil();
 		Articlelist = new ArrayList<ArticleModel>();
@@ -272,7 +268,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 			break;
 		case R.id.img_mainActivity_add_photo:
-
+			addImg.setVisibility(View.GONE);
+			searchImg.setVisibility(View.GONE);
 			showPopupWindow(v);
 
 			// Toast.makeText(this, "点击添加", 0).show();
@@ -814,6 +811,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	}
 
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		ActivityCollectorUtil.removeActivity(this);
+	}
+
+	@Override
 	public void onRefresh() {
 		data();
 	}
@@ -1043,6 +1046,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 
+				addImg.setVisibility(View.VISIBLE);
+				searchImg.setVisibility(View.VISIBLE);
 				return false;
 				// 这里如果返回true的话，touch事件将被拦截
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
@@ -1092,6 +1097,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 			@Override
 			public void onClick(View arg0) {
+				addImg.setVisibility(View.VISIBLE);
+				searchImg.setVisibility(View.VISIBLE);
 				popupWindow.dismiss();
 			}
 		});

@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -214,7 +213,6 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			 * startActivity(new Intent(ReleaseActiveActivity.this,
 			 * SelectImagesActivity.class));
 			 */
-			num++;
 			if (num == 3) {
 				addImg.setVisibility(View.GONE);
 			}
@@ -369,6 +367,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 							Bitmap photo = extras.getParcelable("data");
 							setAddView(new SystemUtil().saveMyBitmap(photo),
 									photo);
+							num++;
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -403,15 +402,15 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.setDataAndType(uri, "image/*");
-		//intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+		// intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 		// 设置裁剪
 		intent.putExtra("crop", true);
 		// aspectX aspectY 是宽高的比例
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);
 		// outputX outputY 是裁剪图片宽高
-		 intent.putExtra("outputX", 300);
-		 intent.putExtra("outputY", 300);
+		intent.putExtra("outputX", 300);
+		intent.putExtra("outputY", 300);
 		intent.putExtra("return-data", true);
 		startActivityForResult(intent, 2);
 	}
@@ -455,32 +454,36 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 		((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
 				.getChildAt(0).setVisibility(View.GONE);
+		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-		datePicker.init(2016, 1, 1, new OnDateChangedListener() {
+		datePicker.init(minCalendar.get(Calendar.YEAR),
+				minCalendar.get(Calendar.MONTH),
+				minCalendar.get(Calendar.DATE), new OnDateChangedListener() {
 
-			@Override
-			public void onDateChanged(DatePicker view, int year,
-					int monthOfYear, int dayOfMonth) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(year, monthOfYear, dayOfMonth);
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-				datas = format.format(calendar.getTime()) + " ";
+					@Override
+					public void onDateChanged(DatePicker view, int year,
+							int monthOfYear, int dayOfMonth) {
+						Calendar calendar = Calendar.getInstance();
+						calendar.set(year, monthOfYear, dayOfMonth);
+						SimpleDateFormat format = new SimpleDateFormat(
+								"yyyy-MM-dd");
+						datas = format.format(calendar.getTime()) + " ";
 
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-				try {
-					Date now = df.parse(nowDate());
-					Date date = df.parse(format.format(calendar.getTime()));
-					if (now.getTime() < date.getTime()) {
-						isSelect = true;
-					} else {
-						isSelect = false;
+						try {
+							Date now = df.parse(nowDate());
+							Date date = df.parse(format.format(calendar
+									.getTime()));
+							if (now.getTime() < date.getTime()) {
+								isSelect = true;
+							} else {
+								isSelect = false;
+							}
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+
 					}
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-
-			}
-		});
+				});
 
 		timePicker.setIs24HourView(true);
 		timePicker
@@ -526,8 +529,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			public void onClick(View arg0) {
 				if (datas == null) {
 					datas = String.valueOf(datePicker.getYear()) + "-"
-							+ String.valueOf(datePicker.getMonth()) + "-"
-							+ String.valueOf(datePicker.getDayOfMonth());
+							+ (String.valueOf(datePicker.getMonth()) + 1) + "-"
+							+ String.valueOf(datePicker.getDayOfMonth()) + " ";
 				}
 				if (time == null) {
 					time = String.valueOf(timePicker.getCurrentHour()) + ":"
@@ -569,7 +572,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 		hourPicker.setMaxValue(24);
 		hourPicker.setMinValue(0);
-		hourPicker.setValue(9);
+		hourPicker.setValue(0);
 
 		dayPicker.setOnValueChangedListener(new OnValueChangeListener() {
 
