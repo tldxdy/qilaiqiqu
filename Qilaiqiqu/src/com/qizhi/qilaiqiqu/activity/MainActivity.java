@@ -76,6 +76,7 @@ import com.qizhi.qilaiqiqu.model.SearchResultModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel.SearchDataList;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
+import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.SplashView;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -92,6 +93,9 @@ import com.umeng.analytics.MobclickAgent;
 public class MainActivity extends FragmentActivity implements OnClickListener,
 		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost,
 		OnRefreshListener, TextWatcher {
+
+	// 定义action常量
+	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
 
 	private SplashView splashView;
 	private FrameLayout frameLayout;
@@ -136,6 +140,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	private boolean isDot = false;
 
+	boolean isdialog = true;
+
 	private Handler handler = new Handler() {
 
 		@Override
@@ -157,6 +163,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		ActivityCollectorUtil.addActivity(this);
+
 		View view = LayoutInflater.from(this).inflate(R.layout.activity_main,
 				null);
 		frameLayout = new FrameLayout(this);
@@ -165,6 +174,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		if (loginFlag == 1) {
 			frameLayout.addView(view);
 			frameLayout.addView(splashView);
+			setContentView(frameLayout);
+		} else {
+			frameLayout.addView(view);
 			setContentView(frameLayout);
 		}
 
@@ -193,8 +205,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
 		dotView = findViewById(R.id.view_dot);
 
-//		addImg.setAlpha(204); // 透明度
-//		searchImg.setAlpha(204); // 透明度
+		addImg.setAlpha(204); // 透明度
+		searchImg.setAlpha(204); // 透明度
 
 		xUtilsUtil = new XUtilsUtil();
 		Articlelist = new ArrayList<ArticleModel>();
@@ -558,9 +570,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 								.makeToast(MainActivity.this, "帐号已经被移除");
 					} else if (error == EMError.CONNECTION_CONFLICT) {
 						// 显示帐号在其他设备登陆
-						new SystemUtil().makeToast(MainActivity.this,
-								"帐号在其他设备登陆,请重新登录");
-						logOut();
+						new SystemUtil().makeToast(MainActivity.this, isdialog
+								+ "");
+						if (isdialog) {
+
+							logOut();
+							isdialog = false;
+						}
 					} else {
 						if (NetUtils.hasNetwork(MainActivity.this)) {
 							// 连接不到聊天服务器
@@ -641,6 +657,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						editor.putString("mobilePhone", null);
 						editor.putString("riderId", null);
 						editor.commit();
+
+						// 实例化Intent
+						Intent intent = new Intent();
+						// 设置Intent的action属性
+						intent.setAction(ACTION);
+						// 发出广播
+						sendBroadcast(intent);
+						isdialog = true;
 
 						// MainActivity.this.finish();
 						/*
@@ -740,48 +764,46 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	}
 
 	private void isNews() {
-		//if (preferences.getInt("userId", -1) != -1) {
-			RequestParams params = new RequestParams("UTF-8");
-			params.addBodyParameter("userId", preferences.getInt("userId", -1)
-					+ "");
-			params.addBodyParameter("uniqueKey",
-					preferences.getString("uniqueKey", null));
-			xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html",
-					params, new CallBackPost() {
+		// if (preferences.getInt("userId", -1) != -1) {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
+		params.addBodyParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+		xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html",
+				params, new CallBackPost() {
 
-						@Override
-						public void onMySuccess(
-								ResponseInfo<String> responseInfo) {
-							JSONObject jsonObject = null;
-							try {
-								jsonObject = new JSONObject(responseInfo.result);
-							} catch (JSONException e) {
-								e.printStackTrace();
-							}
-							if (jsonObject.optBoolean("result")) {
-								int num = jsonObject.optInt("data");
-								if (num == 0) {
-									// 系统统计数
-									dotView.setVisibility(View.GONE);
-								} else {
-									isDot = true;
-									if (!menu.isMenuShowing()) {
-										dotView.setVisibility(View.VISIBLE);
-									} else {
-										dotView.setVisibility(View.GONE);
-									}
-								}
-							}else{
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(responseInfo.result);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (jsonObject.optBoolean("result")) {
+							int num = jsonObject.optInt("data");
+							if (num == 0) {
+								// 系统统计数
 								dotView.setVisibility(View.GONE);
+							} else {
+								isDot = true;
+								if (!menu.isMenuShowing()) {
+									dotView.setVisibility(View.VISIBLE);
+								} else {
+									dotView.setVisibility(View.GONE);
+								}
 							}
+						} else {
+							dotView.setVisibility(View.GONE);
 						}
+					}
 
-						@Override
-						public void onMyFailure(HttpException error, String msg) {
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
 
-						}
-					});
-		//}
+					}
+				});
+		// }
 	}
 
 	@Override

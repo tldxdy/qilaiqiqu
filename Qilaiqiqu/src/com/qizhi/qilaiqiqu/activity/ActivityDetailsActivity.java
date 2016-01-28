@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,7 +42,7 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
 
-public class ActivityDetailsActivity extends Activity implements CallBackPost,
+public class ActivityDetailsActivity extends HuanxinLogOutActivity implements CallBackPost,
 		OnClickListener {
 
 	private CircleImageViewUtil userImageImg;
@@ -68,7 +67,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 	private TextView participantCountTxt;
 
 	private TextView dianTxt;
-	
+
 	private TextView likeNumTxt;
 	private TextView isSignTxt1;
 	private TextView isSignTxt2;
@@ -128,7 +127,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 		participantLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_participant);
 
 		dianTxt = (TextView) findViewById(R.id.txt_activityDetails_dian);
-		
+
 		likeTxt = (TextView) findViewById(R.id.txt_activityDetails_like);
 		scanNumTxt = (TextView) findViewById(R.id.txt_activityDetails_scanNum);
 		mileageTxt = (TextView) findViewById(R.id.txt_activityDetails_mileage);
@@ -207,7 +206,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 				break;
 			}
 			if (isMe == 2) {
-				
+
 				RequestParams params = new RequestParams("UTF-8");
 				params.addQueryStringParameter("activityId", activityId + "");
 				params.addQueryStringParameter("userId",
@@ -232,7 +231,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 										new SystemUtil().makeToast(
 												ActivityDetailsActivity.this,
 												"已成功报名");
-									}else {
+									} else {
 										new SystemUtil().makeToast(
 												ActivityDetailsActivity.this,
 												object.getString("message"));
@@ -247,8 +246,7 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 							public void onMyFailure(HttpException error,
 									String msg) {
 								new SystemUtil().makeToast(
-										ActivityDetailsActivity.this,
-										msg);
+										ActivityDetailsActivity.this, msg);
 							}
 						});
 			}
@@ -543,12 +541,12 @@ public class ActivityDetailsActivity extends Activity implements CallBackPost,
 				activity.getStartDate().length() - 3));
 		activityMemoTxt.setText(activity.getActivityMemo());
 		participantCountTxt.setText(model.getParticipantCount() + "人");
-		if(model.getParticipantCount() == 0){
+		if (model.getParticipantCount() == 0) {
 			dianTxt.setVisibility(View.GONE);
-		}else {
+		} else {
 			dianTxt.setVisibility(View.VISIBLE);
 		}
-		
+
 		for (int i = 0; i < model.getArticleMemoList().size() - 1; i++) {
 			articleMemoTxt1.setText(model.getArticleMemoList().get(i)
 					.getTitle());

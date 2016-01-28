@@ -299,8 +299,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 								editor.commit();
 
 								LoginActivity.this.finish();
-								// startActivity(new Intent(LoginActivity.this,
-								// MainActivity.class));
+								 startActivity(new Intent(LoginActivity.this,
+								 MainActivity.class));
 
 							} catch (JSONException e) {
 								e.printStackTrace();
