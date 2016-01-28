@@ -21,9 +21,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.bumptech.glide.load.Transformation;
-import com.bumptech.glide.load.engine.Resource;
 import com.lidroid.xutils.BitmapUtils;
 import com.qizhi.qilaiqiqu.R;
 import com.squareup.picasso.Picasso;
@@ -106,6 +103,7 @@ public class SystemUtil {
 		//int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
 		//Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).resize(screenWidth, hh * screenWidth / ww).centerInside().into(sellersmallimg);
 		
+		@SuppressWarnings("deprecation")
 		int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
 		String[] s = url.split("@");
 		if(s.length == 2){
@@ -157,7 +155,7 @@ public class SystemUtil {
           
         bitmap = BitmapFactory.decodeFile(srcPath, newOpts);  
 		
-        return compressImage(bitmap, 1024);  
+        return compressImage(bitmap, 512);  
     }
 	/**
 	 * 

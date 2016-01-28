@@ -22,6 +22,7 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -52,6 +53,10 @@ public class PhotoUploadingService extends Service {
 	
 	private int articleId;
 	
+	private int screenWidth;
+	
+	private SystemUtil sUtil;
+	
 	
 
 	@SuppressLint("HandlerLeak")
@@ -66,13 +71,17 @@ public class PhotoUploadingService extends Service {
 				imgListUrl.add(s);
 				if (list.size() - 1 != num) {
 					num = num + 1;
-					 File file = new File(list.get(num).getArticleImage());
-					 new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
-								.execute(file);
-					
-					/* new SystemUtil().httpClient(list.get(num).getArticleImage(),
-					 preferences, handler, "QYJ");*/
-					// photoUploading();
+					try {
+						String f = sUtil.saveMyBitmap(SystemUtil.compressImageFromFile(list.get(num).getArticleImage(), screenWidth));
+						File file = new File(f);
+						
+						
+						
+						new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
+						.execute(file);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				} else {
 					publishTravels();
 				}
@@ -100,6 +109,7 @@ public class PhotoUploadingService extends Service {
 		imgListUrl = new ArrayList<String>();
 		list = new ArrayList<TravelsinformationModel>();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
+		sUtil = new SystemUtil();
 		super.onCreate();
 	}
 
@@ -115,34 +125,44 @@ public class PhotoUploadingService extends Service {
 		 if (intent != null) {  
 			 list = (List<TravelsinformationModel>) intent.getSerializableExtra("list");
 			 title = intent.getStringExtra("title");
+			 screenWidth = intent.getIntExtra("screenWidth",1200);
 			 falg = intent.getBooleanExtra("falg", false);
 			 imgListUrl = new ArrayList<String>();
 			 if(!falg){
 				 num = 0;
-				 File file = new File(list.get(num).getArticleImage());
-				 new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
-							.execute(file);
+				 String f;
+				try {
+					f = sUtil.saveMyBitmap(SystemUtil.compressImageFromFile(list.get(num).getArticleImage(), screenWidth));
+					File file = new File(f);
+					
+					new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
+					.execute(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				 //new SystemUtil().httpClient(list.get(num).getArticleImage(),preferences, handler, "QYJ");
 			 }else{
 				 articleId = intent.getIntExtra("articleId", -1);
 				 updateListSum = intent.getIntExtra("updateListSum", -1);
 				 if (list.size() > updateListSum) {
 					num = updateListSum;
-					 File file = new File(list.get(num).getArticleImage());
-					 new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
-								.execute(file);
-					//new SystemUtil().httpClient(list.get(num).getArticleImage(),preferences, handler, "QYJ");
+					String f;
+					try {
+						f = sUtil.saveMyBitmap(SystemUtil.compressImageFromFile(list.get(num).getArticleImage(), screenWidth));
+						File file = new File(f);
+						
+						new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
+						.execute(file);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					
 				}else{
 					publishTravels();
 				}
 			 }
 			 
-			 
-			 //imgListUrl = intent.getStringArrayListExtra("imgListUrl");
 		 }
-		
-		
 		
 		super.onStart(intent, startId);
 	}
@@ -160,18 +180,6 @@ public class PhotoUploadingService extends Service {
 	}
 
 	private void publishTravels() {
-		/*
-		 * new Thread(){
-		 * 
-		 * @Override public void run() { super.run();
-		 */
-		/*
-		 * String httpUrl; if(!falg){ httpUrl =
-		 * "http://120.55.195.170:80/mobile/articleMemo/insertArticle.html";
-		 * }else{ httpUrl =
-		 * "http://120.55.195.170:80/mobile/articleMemo/updateArticle.html"; }
-		 * HttpPost httpRequest=new HttpPost(httpUrl);
-		 */
 		// 使用NameValuePair来保存要传递的Post参数
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("uniqueKey", preferences.getString(

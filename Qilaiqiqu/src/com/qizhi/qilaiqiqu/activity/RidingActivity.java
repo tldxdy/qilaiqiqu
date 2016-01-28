@@ -151,6 +151,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 				list = ridingModel.getDataList();
 				adapter = new RidingListAdapter(this, list);
 				ridingList.setAdapter(adapter);
+				ridingList.setDividerHeight(0);
 				ridingList.setOnItemClickListener(this);
 				ridingList.setOnRefreshListener(this);
 			}else{

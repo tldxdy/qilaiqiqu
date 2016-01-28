@@ -150,6 +150,7 @@ public class CollectActivity extends Activity implements OnClickListener,OnItemC
 				list = lists;
 				adapter = new CollectListAdapter(this,list);
 				collectList.setAdapter(adapter);
+				collectList.setDividerHeight(0);
 				collectList.setOnItemClickListener(this);
 				collectList.setOnRefreshListener(this);
 				}else{

@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -35,6 +34,7 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 
 	private String url =  XUtilsUtil.URL + "common/uploadImage.html";
 	private Context context;
+	private File file;
 	//private ProgressDialog pd;
 	private long totalSize;
 	//private int sum;
@@ -67,7 +67,7 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 		MultipartEntityBuilder entitys = MultipartEntityBuilder.create();
 		entitys.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 		entitys.setCharset(Charset.forName(HTTP.UTF_8));
-		File file = params[0];
+		file = params[0];
 		entitys.addPart("files", new FileBody(file));
 		entitys.addTextBody("type", type);//设置请求参数
 		entitys.addTextBody("uniqueKey", preferences.getString("uniqueKey", null));//设置请求参数
@@ -91,6 +91,7 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		//pd.dismiss();
+		file.delete();
 		if(result != null){
 			Message msg = new Message();
 			msg.what = 1;
@@ -99,6 +100,7 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 		}else{
 			Toast.makeText(context, "图片上传失败", Toast.LENGTH_SHORT).show();
 		}
+		
 	}
 
 	/**

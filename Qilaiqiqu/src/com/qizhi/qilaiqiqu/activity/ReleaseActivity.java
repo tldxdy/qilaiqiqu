@@ -265,6 +265,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 					intent.putExtra("title", titleEdt.getText()
 				.toString().trim());
 					intent.putExtra("falg", falg);
+					intent.putExtra("screenWidth", this.getWindowManager().getDefaultDisplay().getWidth());
 					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
 					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
 					startService(intent);
@@ -287,6 +288,7 @@ public class ReleaseActivity extends Activity implements OnClickListener,
 					intent.putExtra("falg", falg);
 					intent.putExtra("updateListSum", updateListSum);
 					intent.putExtra("articleId", articleId);
+					intent.putExtra("screenWidth", this.getWindowManager().getDefaultDisplay().getWidth());
 					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
 					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
 					startService(intent);

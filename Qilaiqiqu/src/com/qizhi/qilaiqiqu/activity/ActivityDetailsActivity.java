@@ -24,8 +24,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -181,19 +179,17 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements Ca
 			break;
 		case R.id.txt_activityDetails_txt1:
 			if (isMe == 1) {
-				Toast.makeText(ActivityDetailsActivity.this, "我发起的", 0).show();
+				new SystemUtil().makeToast(this, "我发起的");
 			} else if (isMe == 2) {
-				Toast.makeText(ActivityDetailsActivity.this, "已报名", 0).show();
+				new SystemUtil().makeToast(this, "已报名");
 			}
 			break;
 
 		case R.id.txt_activityDetails_txt2:
 			if (isMe == 3) {
-				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 3", 0)
-						.show();
+				new SystemUtil().makeToast(this, "去聊天isMe == 3");
 			} else if (isMe == 1) {
-				Toast.makeText(ActivityDetailsActivity.this, "去聊天isMe == 2", 0)
-						.show();
+				new SystemUtil().makeToast(this, "去聊天isMe == 2");
 
 			}
 			break;
