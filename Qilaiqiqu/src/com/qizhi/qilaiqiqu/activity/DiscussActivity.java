@@ -166,6 +166,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 							new SystemUtil().makeToast(DiscussActivity.this,jsonObject.optString("message"));
 						}
 						flag = true;
+						pageIndex = 1;
 						queryCommentPaginationList();
 					}
 
@@ -187,6 +188,10 @@ public class DiscussActivity extends Activity implements OnClickListener,
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
 						String s = responseInfo.result;
+						System.out.println("------------------------------------------");
+						System.out.println(s);
+						System.out.println("------------------------------------------");
+						
 						JSONObject jsonObject = null;
 						try {
 							jsonObject = new JSONObject(s);
@@ -201,6 +206,9 @@ public class DiscussActivity extends Activity implements OnClickListener,
 									jsonObject.toString(), type);
 
 							list = commentPaginationListModel.getDataList();
+							System.out.println("------------------------------------------");
+							System.out.println(list.size());
+							System.out.println("------------------------------------------");
 							adapter = new DiscussListAdapter(
 									DiscussActivity.this, list);
 							discussList.setAdapter(adapter);
@@ -209,12 +217,17 @@ public class DiscussActivity extends Activity implements OnClickListener,
 							discussList.setOnItemClickListener(DiscussActivity.this);
 							discussList.setOnRefreshListener(DiscussActivity.this);
 							
+						}else{
+							new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
+							System.out.println("------------------------------------------");
+							System.out.println(jsonObject.optString("message"));
+							System.out.println("------------------------------------------");
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-
+						new SystemUtil().makeToast(DiscussActivity.this, msg);
 					}
 				});
 	}
@@ -329,6 +342,12 @@ public class DiscussActivity extends Activity implements OnClickListener,
 						adapter.notifyDataSetChanged();
 						discussList.finishRefreshing();
 						
+							
+						}else{
+							new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
+							System.out.println("------------------------------------------");
+							System.out.println(jsonObject.optString("message"));
+							System.out.println("------------------------------------------");
 							
 						}
 					}

@@ -228,13 +228,13 @@ public class NativeImagesActivity extends Activity implements OnClickListener {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			bitmapUtils.display(holder.photoImg,
-					"file://" + imageUrls.get(position));
-			/*
-			 * Picasso.with(mContext).load("file://" +
-			 * imageUrls.get(position)).resize(800, 480)
-			 * .centerCrop().into(holder.photoImg);
-			 */
+			/*bitmapUtils.display(holder.photoImg,
+					"file://" + imageUrls.get(position));*/
+			
+			 Picasso.with(mContext).load("file://" +
+					 imageUrls.get(position)).resize(480, 480)
+					 	.centerInside().into(holder.photoImg);
+			 
 
 			holder.photoChk.setTag(position);
 			holder.photoChk.setChecked(mSparseBooleanArray.get(position));

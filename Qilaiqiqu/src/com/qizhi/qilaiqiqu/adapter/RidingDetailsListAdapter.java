@@ -3,7 +3,6 @@ package com.qizhi.qilaiqiqu.adapter;
 import java.util.ArrayList;
 import java.util.List;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 import com.qizhi.qilaiqiqu.model.ActivityListRecommendModel;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -80,54 +79,114 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 		return super.getItemViewType(position);
 	}
 	
+	  //返回样式的数量
+    @Override
+    public int getViewTypeCount() {
+    	
+        return 4;
+    }
+	
+	
 	
 	@Override
 	public View getView(int position, View view, ViewGroup arg2) {
-		View zeroView;
-		View oneView;
-		View twoView;
-		View threeView;
-		
+		ZeroViewHolder zeroholder = null;
+		OneViewHolder oneholder = null;
+		TwoViewHolder twoholder = null;
+		ThreeViewHolder threeholder = null;
 		currentType = getItemViewType(position);
-		if(currentType == TYPE_ZERO){
-			zeroView = inflater.inflate(R.layout.item_list_riding_details_header,
-					null);
-			ImageView photoImg = (ImageView) zeroView.findViewById(R.id.img_ridingDetailsList_photo);
-			TextView title = (TextView) zeroView.findViewById(R.id.txt_ridingDetailsList_ridingName);
-			
-			SystemUtil.Imagexutils(list.get(position).getUserImage(), photoImg, context);
-			title.setText(list.get(position).getTitle());
-			view = zeroView;
-		}else if(currentType == TYPE_ONE){
-			ViewHolder oneholder = null;
-			//if(view == null){
-				oneholder = new ViewHolder();
-				oneView = inflater.inflate(R.layout.item_list_riding_details_body,
+		
+		if(view == null){
+			switch (currentType) {
+			case TYPE_ZERO:
+				zeroholder = new ZeroViewHolder();
+				view = inflater.inflate(R.layout.item_list_riding_details_header,
 						null);
-				oneholder.pictureImg = (ImageView) oneView
+				zeroholder.photoImg = (ImageView) view.findViewById(R.id.img_ridingDetailsList_photo);
+				zeroholder.title = (TextView) view.findViewById(R.id.txt_ridingDetailsList_ridingName);
+				
+				view.setTag(zeroholder);
+				
+				break;
+			case TYPE_ONE:
+				oneholder = new OneViewHolder();
+				view = inflater.inflate(R.layout.item_list_riding_details_body,
+						null);
+				oneholder.pictureImg = (ImageView) view
 						.findViewById(R.id.img_ridingDatilsList_picture);
-				oneholder.cornerImg = (ImageView) oneView
+				oneholder.cornerImg = (ImageView) view
 						.findViewById(R.id.img_ridingDatilsList_corner);
 				
-				oneholder.ridingTitleTxt = (TextView) oneView
+				oneholder.ridingTitleTxt = (TextView) view
 						.findViewById(R.id.txt_ridingDatilsList_ridingTitle);
-				oneholder.locationTxt = (TextView) oneView
+				oneholder.locationTxt = (TextView) view
 						.findViewById(R.id.txt_ridingDatilsList_location);
-				oneholder.ridingContentTxt = (TextView) oneView
+				oneholder.ridingContentTxt = (TextView) view
 						.findViewById(R.id.txt_ridingDatilsList_ridingContent);
 				
-				oneholder.ridingContentLayout = (LinearLayout) oneView
+				oneholder.ridingContentLayout = (LinearLayout) view
 						.findViewById(R.id.layout_ridingDatilsList_ridingContent);
-				oneholder.ridingTitleLayout = (LinearLayout) oneView
+				oneholder.ridingTitleLayout = (LinearLayout) view
 						.findViewById(R.id.layout_ridingDatilsList_ridingTitle);
-				oneholder.locationLayout = (LinearLayout) oneView
+				oneholder.locationLayout = (LinearLayout) view
 						.findViewById(R.id.layout_ridingDatilsList_location);
+				
+				view.setTag(oneholder);
+				
+				break;
+			case TYPE_TWO:
+				twoholder = new TwoViewHolder();
+				view = inflater.inflate(R.layout.item_list_riding_details_recommend,
+						null);
+				twoholder.title = (TextView) view.findViewById(R.id.txt_riding_details_activity_recommend);
 
-				//oneView.setTag(oneholder);
-				view = oneView;
-			//}else{
-		//		oneholder = (ViewHolder) view.getTag();
-		//	}
+				view.setTag(twoholder);
+				
+	
+				break;
+			case TYPE_THREE:
+				threeholder = new ThreeViewHolder();
+				view = inflater.inflate(R.layout.item_list_riding_details_fooder,
+						null);
+
+				threeholder.headphotoImg = (ImageView) view
+						.findViewById(R.id.img_riding_details_headphoto);
+				threeholder.showphotoImg = (ImageView) view
+						.findViewById(R.id.img_riding_details_showphoto);
+				
+				threeholder.activityTitleTxt = (TextView) view
+						.findViewById(R.id.txt_riding_details_title);
+				threeholder.activitynameTxt = (TextView) view
+						.findViewById(R.id.txt_riding_details_name);
+				
+				view.setTag(threeholder);
+				
+				break;
+			}
+		}else{
+			switch (currentType) {
+			case TYPE_ZERO:
+				zeroholder = (ZeroViewHolder) view.getTag();
+				break;
+			case TYPE_ONE:
+				oneholder = (OneViewHolder) view.getTag();
+				break;
+			case TYPE_TWO:
+				twoholder = (TwoViewHolder) view.getTag();
+				break;
+			case TYPE_THREE:
+				threeholder = (ThreeViewHolder) view.getTag();
+				break;
+			}
+		}
+		
+		switch (currentType) {
+		case TYPE_ZERO:
+			SystemUtil.Imagexutils(list.get(position).getUserImage(), zeroholder.photoImg, context);
+			zeroholder.title.setText(list.get(position).getTitle());
+			
+			break;
+		case TYPE_ONE:
 			oneholder.ridingTitleTxt.setText("");
 			oneholder.ridingContentTxt.setText("");
 			oneholder.locationTxt.setText("");
@@ -136,155 +195,59 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 			oneholder.locationLayout.setVisibility(View.GONE);
 			oneholder.cornerImg.setVisibility(View.GONE);
 			
-			if(!list.get(position-1).getArticleDetailList().get(position-1).getMemo().equals("")){
+			if(!list.get(position - 1).getArticleDetailList().get(position - 1).getMemo().equals("")){
 				oneholder.ridingTitleLayout.setVisibility(View.VISIBLE);
-				oneholder.ridingTitleTxt.setText(" \u3000" + list.get(position-1).getArticleDetailList().get(position-1).getMemo());
+				oneholder.ridingTitleTxt.setText(" \u3000" + list.get(position - 1).getArticleDetailList().get(position - 1).getMemo());
 			}
-			if(!list.get(position-1).getArticleDetailList().get(position-1).getAddress().equals("")){
+			if(!list.get(position - 1).getArticleDetailList().get(position - 1).getAddress().equals("")){
 				oneholder.locationLayout.setVisibility(View.VISIBLE);
 				oneholder.cornerImg.setVisibility(View.VISIBLE);
-				oneholder.locationTxt.setText(list.get(position-1).getArticleDetailList().get(position-1).getAddress());
+				oneholder.locationTxt.setText(list.get(position - 1).getArticleDetailList().get(position - 1).getAddress());
 			}
-			if(!list.get(position-1).getArticleDetailList().get(position-1).getImageMemo().equals("")){
+			if(!list.get(position - 1).getArticleDetailList().get(position - 1).getImageMemo().equals("")){
 				oneholder.ridingContentLayout.setVisibility(View.VISIBLE);
-				oneholder.ridingContentTxt.setText(" \u3000" + list.get(position-1).getArticleDetailList().get(position-1).getImageMemo());
+				oneholder.ridingContentTxt.setText(" \u3000" + list.get(position - 1).getArticleDetailList().get(position - 1).getImageMemo());
 			}
 
 			SystemUtil.Imagexutils(
-					list.get(position-1).getArticleDetailList().get(position-1).getArticleImage(), oneholder.pictureImg, context);
+					list.get(position - 1).getArticleDetailList().get(position - 1).getArticleImage(), oneholder.pictureImg, context);
 			
 			
-		}else if(currentType == TYPE_TWO){
-			twoView = inflater.inflate(R.layout.item_list_riding_details_recommend,
-					null);
-			TextView title = (TextView) twoView.findViewById(R.id.txt_riding_details_activity_recommend);
 			
-			title.setText("推荐活动");
-			view = twoView;
-		}else if(currentType == TYPE_THREE){
-			ActivityHolder twoholder = null;
-			//if(view == null){
-				twoholder = new ActivityHolder();
-				threeView = inflater.inflate(R.layout.item_list_riding_details_fooder,
-						null);
+			break;
+		case TYPE_TWO:
 
-				twoholder.headphotoImg = (ImageView) threeView
-						.findViewById(R.id.img_riding_details_headphoto);
-				twoholder.showphotoImg = (ImageView) threeView
-						.findViewById(R.id.img_riding_details_showphoto);
-				
-				twoholder.activityTitleTxt = (TextView) threeView
-						.findViewById(R.id.txt_riding_details_title);
-				twoholder.activitynameTxt = (TextView) threeView
-						.findViewById(R.id.txt_riding_details_name);
+			twoholder.title.setText("推荐活动");
+			
+			break;
+		case TYPE_THREE:
 
-				SystemUtil.Imagexutils(lists.get(position - list.size() - 2).getUserImage(), twoholder.headphotoImg, context);
-				
-				if(lists.get(position - list.size() - 2).getDefaultImage() == null || "null".equals(lists.get(position - list.size() - 2))
-						|| "".equals(lists.get(position - list.size() - 2))){
-					twoholder.showphotoImg.setImageResource(R.drawable.bitmap_homepage);
-				}else{
-					SystemUtil.Imagexutils(lists.get(position - list.size() - 2).getDefaultImage(), twoholder.showphotoImg, context);
-				}
-				
-				twoholder.activityTitleTxt.setText(lists.get(position - list.size() - 2).getActivityTitle());
-				twoholder.activitynameTxt.setText(lists.get(position - list.size() - 2).getUserName());
-				
-				
-				
-				
-			//	threeView.setTag(twoholder);
-				view = threeView;
-			//}else{
-	//			twoholder = (ActivityHolder) view.getTag();
-		//	}
+			SystemUtil.Imagexutils(lists.get(position - list.size() - 2).getUserImage(), threeholder.headphotoImg, context);
 			
+			if(lists.get(position - list.size() - 2).getDefaultImage() == null || "null".equals(lists.get(position - list.size() - 2))
+					|| "".equals(lists.get(position - list.size() - 2))){
+				threeholder.showphotoImg.setImageResource(R.drawable.bitmap_homepage);
+			}else{
+				SystemUtil.Imagexutils(lists.get(position - list.size() - 2).getDefaultImage(), threeholder.showphotoImg, context);
+			}
 			
+			threeholder.activityTitleTxt.setText(lists.get(position - list.size() - 2).getActivityTitle());
+			threeholder.activitynameTxt.setText(lists.get(position - list.size() - 2).getUserName());
 			
+			break;
 		}
 		
 		
-		
-/*		holder = new ViewHolder();
-		if(position == 0){
-			view = inflater.inflate(R.layout.item_list_riding_details_header,
-					null);
-			ImageView photoImg = (ImageView) view.findViewById(R.id.img_ridingDetailsList_photo);
-			TextView title = (TextView) view.findViewById(R.id.txt_ridingDetailsList_ridingName);
-			
-			SystemUtil.Imagexutils(list.get(position).getUserImage(), photoImg, context);
-			title.setText(list.get(position).getTitle());
-			
-			return view;
-		}*/
-		
-		
-		
-
-/*		if (view == null || view.getTag() == null) {
-
-			view = inflater.inflate(R.layout.item_list_riding_details_body,
-					null);
-			
-			holder.pictureImg = (ImageView) view
-					.findViewById(R.id.img_ridingDatilsList_picture);
-			holder.cornerImg = (ImageView) view
-					.findViewById(R.id.img_ridingDatilsList_corner);
-			
-			holder.ridingTitleTxt = (TextView) view
-					.findViewById(R.id.txt_ridingDatilsList_ridingTitle);
-			holder.locationTxt = (TextView) view
-					.findViewById(R.id.txt_ridingDatilsList_location);
-			holder.ridingContentTxt = (TextView) view
-					.findViewById(R.id.txt_ridingDatilsList_ridingContent);
-			
-			holder.ridingContentLayout = (LinearLayout) view
-					.findViewById(R.id.layout_ridingDatilsList_ridingContent);
-			holder.ridingTitleLayout = (LinearLayout) view
-					.findViewById(R.id.layout_ridingDatilsList_ridingTitle);
-			holder.locationLayout = (LinearLayout) view
-					.findViewById(R.id.layout_ridingDatilsList_location);
-
-			view.setTag(holder);
-
-		} else {
-			holder = (ViewHolder) view.getTag();
-		}
-		holder.ridingTitleTxt.setText("");
-		holder.ridingContentTxt.setText("");
-		holder.locationTxt.setText("");
-		holder.ridingTitleLayout.setVisibility(View.GONE);
-		holder.ridingContentLayout.setVisibility(View.GONE);
-		holder.locationLayout.setVisibility(View.GONE);
-		holder.cornerImg.setVisibility(View.GONE);
-		
-		if(!list.get(position-1).getArticleDetailList().get(position-1).getMemo().equals("")){
-			holder.ridingTitleLayout.setVisibility(View.VISIBLE);
-			holder.ridingTitleTxt.setText(" \u3000" + list.get(position-1).getArticleDetailList().get(position-1).getMemo());
-		}
-		if(!list.get(position-1).getArticleDetailList().get(position-1).getAddress().equals("")){
-			holder.locationLayout.setVisibility(View.VISIBLE);
-			holder.cornerImg.setVisibility(View.VISIBLE);
-			holder.locationTxt.setText(list.get(position-1).getArticleDetailList().get(position-1).getAddress());
-		}
-		if(!list.get(position-1).getArticleDetailList().get(position-1).getImageMemo().equals("")){
-			holder.ridingContentLayout.setVisibility(View.VISIBLE);
-			holder.ridingContentTxt.setText(" \u3000" + list.get(position-1).getArticleDetailList().get(position-1).getImageMemo());
-		}
-
-		SystemUtil.Imagexutils(
-				list.get(position-1).getArticleDetailList().get(position-1).getArticleImage()
-						.split("@")[0], holder.pictureImg, context);
-		*/
-		/*SystemUtil.loadImagexutils(
-				list.get(position).getArticleImage().split("\\|")[position]
-						.split("@")[0], holder.pictureImg, context);*/
-
-
 		return view;
 	}
 	
-	public class ViewHolder {
+	public class ZeroViewHolder{
+		private ImageView photoImg;
+		private TextView title;
+	}
+	
+	
+	public class OneViewHolder {
 		private ImageView pictureImg;
 		private ImageView cornerImg;
 		private TextView ridingTitleTxt;
@@ -296,7 +259,11 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 		private LinearLayout ridingContentLayout;
 	}
 	
-	public class ActivityHolder {
+	public class TwoViewHolder{
+		private TextView title;
+	}
+	
+	public class ThreeViewHolder {
 		private ImageView headphotoImg;
 		private ImageView showphotoImg;
 		private TextView activityTitleTxt;
