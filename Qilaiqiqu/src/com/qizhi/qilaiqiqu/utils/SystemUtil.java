@@ -88,21 +88,7 @@ public class SystemUtil {
 	 * @param context		上下文
 	 */
 	public static void Imagexutils(String url, ImageView sellersmallimg,Context context) {
-		//Picasso.with(context).load().into(sellersmallimg);
-		
-		/*BitmapFactory.Options options = new BitmapFactory.Options();  
-		options.inJustDecodeBounds = true;  
-		Bitmap bitmap = BitmapFactory.decodeFile("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url, options); // 此时返回的bitmap为null  
-		*//** 
-		 *options.outHeight为原始图片的高 
-		 *//*  
-		int hh = options.outHeight;
-		int ww = options.outHeight;*/
-		
-		
-		//int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
-		//Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url).resize(screenWidth, hh * screenWidth / ww).centerInside().into(sellersmallimg);
-		
+
 		@SuppressWarnings("deprecation")
 		int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
 		String[] s = url.split("@");
@@ -114,12 +100,14 @@ public class SystemUtil {
 			int hh = Integer.parseInt(h);
 			//System.out.println(ss.split("h")[0] + ss.split("h")[1]);
 			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+s[0])
-			.resize(screenWidth, hh * screenWidth / ww).centerInside()
+			.resize(screenWidth/2, hh * screenWidth / ww/2).centerInside()
 			.placeholder(R.drawable.bitmap_homepage)
+			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);
 		}else{
 			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url)
 			.placeholder(R.drawable.bitmap_homepage)
+			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);
 		}
 		
@@ -143,10 +131,11 @@ public class SystemUtil {
         float ww = 480f;//  
 */        int be = 1;  
         if (w > ww) {  
-            be = (int) (newOpts.outWidth / ww);  
+            be = (int) (newOpts.outWidth / ww + 0.5);  
         }
         if (be <= 0)  
-            be = 1;  
+            be = 1; 
+        
         newOpts.inSampleSize = be;//设置采样率  
           
         newOpts.inPreferredConfig = Config.ARGB_8888;//该模式是默认的,可不设  
@@ -155,7 +144,7 @@ public class SystemUtil {
           
         bitmap = BitmapFactory.decodeFile(srcPath, newOpts);  
 		
-        return compressImage(bitmap, 512);  
+        return compressImage(bitmap, 128);  
     }
 	/**
 	 * 
@@ -167,13 +156,18 @@ public class SystemUtil {
 		  
         ByteArrayOutputStream baos = new ByteArrayOutputStream();  
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中  
-        int options = 100;  
+        int options = 100; 
+        System.out.println("================================");
+        System.out.println(baos.toByteArray().length / 1024);
+        System.out.println("================================");
         while ( baos.toByteArray().length / 1024 > imageSize) {  
             baos.reset();//重置baos即清空baos  
             options = options - 10;//每次都减少10
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中  
-            
         }  
+        System.out.println("================================");
+        System.out.println(baos.toByteArray().length / 1024);
+        System.out.println("================================");
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中  
         Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片  
         return bitmap;  

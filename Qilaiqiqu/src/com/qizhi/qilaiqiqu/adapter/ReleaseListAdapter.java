@@ -1,11 +1,13 @@
 package com.qizhi.qilaiqiqu.adapter;
 
+import java.io.File;
 import java.util.List;
 
 import com.lidroid.xutils.BitmapUtils;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.MapActivity;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.squareup.picasso.Picasso;
 
 import android.app.ActionBar.LayoutParams;
@@ -119,15 +121,16 @@ public class ReleaseListAdapter extends BaseAdapter {
 		holder.locationTxt.setText(list.get(position).getAddress());
 		
 		if (!falg) {
+			//Picasso.with(context).load(new File(list.get(position).getArticleImage())).into(holder.photoImg);
 			bitmapUtils.display(holder.photoImg, list.get(position)
 					.getArticleImage());
 		} else {
 			if(position < updateListSum){
-				Picasso.with(context)
-					.load("http://weride.oss-cn-hangzhou.aliyuncs.com/"
-							+ list.get(position).getArticleImage().split("@")[0])
-					.into(holder.photoImg);
+				SystemUtil.Imagexutils(list.get(position).getArticleImage(), holder.photoImg, context);
+
 			}else{
+				
+				//Picasso.with(context).load(new File(list.get(position).getArticleImage())).into(holder.photoImg);
 				bitmapUtils.display(holder.photoImg, list.get(position)
 						.getArticleImage());
 			}

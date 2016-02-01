@@ -24,7 +24,7 @@
             android:layout_marginRight="10dp"
             android:layout_gravity="center|bottom"
             android:scaleType="centerCrop"
-            android:src="@drawable/demo2" />
+            android:src="@drawable/bitmap_picture" />
         </LinearLayout>
         <FrameLayout
             android:layout_width="fill_parent"
@@ -51,7 +51,6 @@
                         android:layout_weight="1"
                         android:layout_height="fill_parent"
                         android:gravity="center"
-                        android:text="独步天涯"
                         android:textSize="13sp" />
 
                     <TextView
@@ -78,7 +77,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:gravity="center"
-                        android:text="骑行西湖骑行西湖西湖"
                         android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -90,7 +88,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:src="@drawable/demo2" />
+                android:src="@drawable/homepage_picture" />
         </FrameLayout>
     </FrameLayout>
 

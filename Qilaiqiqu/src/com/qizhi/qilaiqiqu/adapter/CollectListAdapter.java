@@ -75,10 +75,8 @@ public class CollectListAdapter extends BaseAdapter {
 		holder.titleTxt.setText(list.get(position).getTitle());
 		holder.numberTxt.setText(list.get(position).getScanNum()+"次浏览");
 		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.photoImg, context);
-		//SystemUtil.loadImagexutils(list.get(position).getUserImage(), holder.photoImg, context);
-		//holder.photoImg.setImageResource(R.drawable.lena);
 		if(list.get(position).getDefaultShowImage() != null){
-			SystemUtil.Imagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
+			SystemUtil.Imagexutils(list.get(position).getDefaultShowImage(), holder.pictureImg, context);
 		}
 		//SystemUtil.loadImagexutils(list.get(position).getDefaultShowImage().split("\\@")[0], holder.pictureImg, context);
 		//holder.pictureImg.setBackgroundResource(R.drawable.demo2);

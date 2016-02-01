@@ -213,8 +213,9 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			 * startActivity(new Intent(ReleaseActiveActivity.this,
 			 * SelectImagesActivity.class));
 			 */
-			if (num == 3) {
+			if (num >= 3) {
 				addImg.setVisibility(View.GONE);
+				break;
 			}
 
 			Intent i = new Intent(

@@ -50,7 +50,7 @@ public class XCRoundRectImageView extends ImageView{
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();  
             Bitmap b = getRoundBitmap(bitmap, 5);  
             final Rect rectSrc = new Rect(0, 0, b.getWidth(), b.getWidth());  
-            final Rect rectDest = new Rect(0,0,getWidth(),getWidth());
+            final Rect rectDest = new Rect(0,0,getWidth(),getHeight());
             paint.reset();  
             canvas.drawBitmap(b, rectSrc, rectDest, paint);  
   

@@ -438,6 +438,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					public void onMyFailure(HttpException error, String msg) {
 						new SystemUtil().makeToast(MainActivity.this,
 								"网络请求失败，请检查网络");
+						slideShowList.finishRefreshing();
 					}
 				});
 	}
@@ -782,6 +783,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							if (num == 0) {
 								// 系统统计数
 								dotView.setVisibility(View.GONE);
+								isDot = false;
 							} else {
 								isDot = true;
 								if (!menu.isMenuShowing()) {
@@ -877,6 +879,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					public void onMyFailure(HttpException error, String msg) {
 						new SystemUtil().makeToast(MainActivity.this,
 								"网络请求失败，请检查网络");
+						slideShowList.finishRefreshing();
 					}
 				});
 	}

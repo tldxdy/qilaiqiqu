@@ -85,6 +85,9 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 
 	@Override
 	protected void onProgressUpdate(Integer... progress) {
+		/*System.out.println("-----------------------------");
+		System.out.println((int) (progress[0]));
+		System.out.println("-----------------------------");*/
 			//pd.setProgress((int) (progress[0]));
 	}
 
