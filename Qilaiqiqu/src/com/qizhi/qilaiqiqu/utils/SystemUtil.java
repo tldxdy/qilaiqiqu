@@ -29,7 +29,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.Config;
@@ -131,7 +130,7 @@ public class SystemUtil {
         float ww = 480f;//  
 */        int be = 1;  
         if (w > ww) {  
-            be = (int) (newOpts.outWidth / ww + 0.5);  
+            be = (int) (newOpts.outWidth / ww );  
         }
         if (be <= 0)  
             be = 1; 
@@ -144,34 +143,10 @@ public class SystemUtil {
           
         bitmap = BitmapFactory.decodeFile(srcPath, newOpts);  
 		
-        return compressImage(bitmap, 128);  
-    }
-	/**
-	 * 
-	 * @param image  图片
-	 * @param imageSize  压缩大小
-	 * @return
-	 */
-	public static Bitmap compressImage(Bitmap image , Integer imageSize) {  
-		  
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中  
-        int options = 100; 
-        System.out.println("================================");
-        System.out.println(baos.toByteArray().length / 1024);
-        System.out.println("================================");
-        while ( baos.toByteArray().length / 1024 > imageSize) {  
-            baos.reset();//重置baos即清空baos  
-            options = options - 10;//每次都减少10
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中  
-        }  
-        System.out.println("================================");
-        System.out.println(baos.toByteArray().length / 1024);
-        System.out.println("================================");
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中  
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片  
         return bitmap;  
     }
+
+
 	
 	@SuppressLint("NewApi")
 	public String saveMyBitmap(Bitmap mBitmap) throws IOException {
@@ -191,68 +166,37 @@ public class SystemUtil {
 		String s = outDir.toString();
 		
 		FileOutputStream fos = new FileOutputStream(outDir);
-		mBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);  
+		mBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);  
 		fos.flush();
 		fos.close();
 		
 		return s;
 	}
 	
+
 	/**
-	* 获取压缩后的图片
-	* @param res
-	* @param resId
-	* @param reqWidth            所需图片压缩尺寸最小宽度
-	* @param reqHeight           所需图片压缩尺寸最小高度
-	* @return
-	*/
-	public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+	 * 
+	 * @param image  图片
+	 * @param imageSize  压缩大小
+	 * @return
+	 */
+	public static Bitmap compressImage(Bitmap image , Integer imageSize) {  
+		  
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();  
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中  
+        int options = 100; 
 
-		// 首先不加载图片,仅获取图片尺寸
-		final BitmapFactory.Options options = new BitmapFactory.Options();
-		// 当inJustDecodeBounds设为true时,不会加载图片仅获取图片尺寸信息
-		options.inJustDecodeBounds = true;
-		// 此时仅会将图片信息会保存至options对象内,decode方法不会返回bitmap对象
-		BitmapFactory.decodeResource(res, resId, options);
+        while ( baos.toByteArray().length / 1024 > imageSize) {  
+            baos.reset();//重置baos即清空baos  
+            options = options - 10;//每次都减少10
+            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中  
+        }  
 
-		// 计算压缩比例,如inSampleSize=4时,图片会压缩成原图的1/4
-		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-		// 当inJustDecodeBounds设为false时,BitmapFactory.decode...就会返回图片对象了
-		options.inJustDecodeBounds = false;
-		// 利用计算的比例值获取压缩后的图片对象
-		return BitmapFactory.decodeResource(res, resId, options);
-	}
-	/**
-	* 计算压缩比例值
-	* @param options       解析图片的配置信息
-	* @param reqWidth            所需图片压缩尺寸最小宽度
-	* @param reqHeight           所需图片压缩尺寸最小高度
-	* @return
-	*/
-	public	static	int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		// 保存图片原宽高值
-			final int height = options.outHeight;
-			final int width = options.outWidth;
-			// 初始化压缩比例为1
-			int inSampleSize = 1;
-
-			// 当图片宽高值任何一个大于所需压缩图片宽高值时,进入循环计算系统
-         	if (height > reqHeight || width > reqWidth) {
-
-				final int halfHeight = height / 2;
-				final int halfWidth = width / 2;
-
-				// 压缩比例值每次循环两倍增加,
-				// 直到原图宽高值的一半除以压缩值后都~大于所需宽高值为止
-				while ((halfHeight / inSampleSize) >= reqHeight
-							&& (halfWidth / inSampleSize) >= reqWidth) {
-						inSampleSize *= 2;
-			}
-		}
-
-		return inSampleSize;
-	}
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中  
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片  
+        return bitmap;  
+    }
+	
 	
 
 	public void httpClient(final String img_path, final SharedPreferences preferences, final Handler handler,final String type){
