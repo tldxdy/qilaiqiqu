@@ -809,12 +809,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		handler.removeCallbacksAndMessages(null);
 		ActivityCollectorUtil.removeActivity(this);
 	}
 
@@ -1113,5 +1113,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 63);
 
 	}
+
 
 }

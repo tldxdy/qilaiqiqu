@@ -40,8 +40,8 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
 
-public class ActivityDetailsActivity extends HuanxinLogOutActivity implements CallBackPost,
-		OnClickListener {
+public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
+		CallBackPost, OnClickListener {
 
 	private CircleImageViewUtil userImageImg;
 
@@ -656,6 +656,12 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements Ca
 	protected void onPause() {
 
 		super.onPause();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		handler.removeCallbacksAndMessages(null);
 	}
 
 }
