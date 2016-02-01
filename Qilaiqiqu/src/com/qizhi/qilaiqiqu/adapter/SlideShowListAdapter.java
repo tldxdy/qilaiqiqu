@@ -167,7 +167,6 @@ public class SlideShowListAdapter extends BaseAdapter {
 			holder = (ViewHolder) view.getTag();
 		}
 
-		
 		holder.timeTxt.setText(list.get(position - 1).getCreateDate()
 				.substring(0, 10));
 		holder.titleTxt.setText(list.get(position - 1).getTitle());
@@ -175,8 +174,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 				+ list.get(position - 1).getVirtualScan() + "次浏览");
 		holder.likeTxt.setText((list.get(position - 1).getPraiseNum() + list
 				.get(position - 1).getVirtualPraise()) + "");
-		
-		
+
 		SystemUtil.loadImagexutils(list.get(position - 1).getUserImage(),
 				holder.photoImg, context);
 		holder.likeImg.setImageResource(R.drawable.like_unpress);
@@ -187,18 +185,23 @@ public class SlideShowListAdapter extends BaseAdapter {
 		 * 1).getDefaultShowImage() .split("\\@")[0], holder.backgroundImg,
 		 * context);
 		 */
-		
-		
-		//holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
-		if(list.get(position - 1).getDefaultShowImage() != null){
-			
-			
-			/*String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
-					+ list.get(position - 1).getDefaultShowImage().split("\\@")[0];*/
-			
-			SystemUtil.Imagexutils(list.get(position - 1).getDefaultShowImage(), holder.backgroundImg, context);
-			/*Picasso.with(context).load(internetUrl).resize(800, 480)
-			.centerInside().into(holder.backgroundImg);*/
+
+		// holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
+		if (list.get(position - 1).getDefaultShowImage() != null) {
+
+			/*
+			 * String internetUrl =
+			 * "http://weride.oss-cn-hangzhou.aliyuncs.com/" + list.get(position
+			 * - 1).getDefaultShowImage().split("\\@")[0];
+			 */
+
+			SystemUtil.Imagexutils(
+					list.get(position - 1).getDefaultShowImage(),
+					holder.backgroundImg, context);
+			/*
+			 * Picasso.with(context).load(internetUrl).resize(800, 480)
+			 * .centerInside().into(holder.backgroundImg);
+			 */
 		}
 
 		// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
