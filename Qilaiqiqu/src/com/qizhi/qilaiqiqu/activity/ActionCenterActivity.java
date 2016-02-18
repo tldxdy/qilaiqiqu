@@ -1,19 +1,7 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import java.util.ArrayList;
-
-import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.fragment.CareFragment;
-import com.qizhi.qilaiqiqu.fragment.FansFragment;
-import com.qizhi.qilaiqiqu.fragment.ManageFragment;
-import com.qizhi.qilaiqiqu.fragment.ActivityCenterFragmentPagerAdapter;
-
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
@@ -22,6 +10,9 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.fragment.ActivityCenterFragmentPagerAdapter;
+
 public class ActionCenterActivity extends FragmentActivity implements OnClickListener{
 
 	private LinearLayout backLayout;
@@ -29,10 +20,7 @@ public class ActionCenterActivity extends FragmentActivity implements OnClickLis
 	private TextView historyTxt;
 	
 	private ViewPager viewPager;
-	private ArrayList<Fragment> fragments;
-	private FragmentPagerAdapter adapter;
 	
-	private SharedPreferences sp;
 	
 	
 	@Override

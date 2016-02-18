@@ -10,8 +10,6 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.easemob.chat.EMChat;
-import com.easemob.chat.EMChatManager;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
 
 public class WeRideApplication extends Application {
 

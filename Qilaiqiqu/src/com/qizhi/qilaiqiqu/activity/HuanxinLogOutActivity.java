@@ -19,4 +19,5 @@ public class HuanxinLogOutActivity extends Activity {
 		super.onDestroy();
 		ActivityCollectorUtil.removeActivity(this);
 	}
+	
 }

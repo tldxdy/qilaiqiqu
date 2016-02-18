@@ -12,9 +12,9 @@ import android.os.Bundle;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
 
+import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.activity.DiscussActivity;
 import com.qizhi.qilaiqiqu.activity.FriendActivity;
-import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 
 /**
@@ -65,9 +65,8 @@ public class MyReceiver extends BroadcastReceiver {
 			try {
 				JSONObject jsonObject = new JSONObject(EXTRA);
 				key = jsonObject.getString("pushType");
-				System.out.println("key:" + key + "|||||||||||||||||||||||");
 				JSONObject pushValue = null;
-				if(!key.equals("YHGZ")){
+				if (!key.equals("YHGZ")) {
 					pushValue = new JSONObject(
 							jsonObject.getString("pushValue"));
 				}
@@ -81,14 +80,13 @@ public class MyReceiver extends BroadcastReceiver {
 					context.startActivity(i);
 
 				} else if (key.equals("YHGZ")) {
-					
-					System.out.println("|||||||||||||||||||||||+++++++++++++++++++++++");
+
 					Intent i = new Intent(context, FriendActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("friendFlag", 0);
 					context.startActivity(i);
-					
+
 				} else if (key.equals("QYJDZ")) {
 					String praiseNum = pushValue.getString("praiseNum");
 					String title = pushValue.getString("title");
@@ -136,6 +134,14 @@ public class MyReceiver extends BroadcastReceiver {
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("articleId", Integer.parseInt(value));
+					context.startActivity(i);
+				} else if (key.equals("FQHD")) {
+					value = pushValue.getString("articleId");
+					Intent i = new Intent(context,
+							ActivityDetailsActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("activityId", Integer.parseInt(value));
 					context.startActivity(i);
 				}
 			} catch (JSONException e) {

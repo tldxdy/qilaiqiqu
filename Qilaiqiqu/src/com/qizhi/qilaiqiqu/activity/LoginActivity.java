@@ -334,6 +334,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d("TAG", "-->onActivityResult " + requestCode + " resultCode="
 				+ resultCode);
+		
 		mTencent.onActivityResultData(requestCode, resultCode, data,
 				loginListener);
 

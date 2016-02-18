@@ -17,8 +17,6 @@ import com.qizhi.qilaiqiqu.R;
 
 public class GroupActivity extends Activity implements OnItemClickListener, OnClickListener  {
 	
-	private List<?> members;
-
 	private GridView gridview;
 	private LinearLayout backLayout;
 	

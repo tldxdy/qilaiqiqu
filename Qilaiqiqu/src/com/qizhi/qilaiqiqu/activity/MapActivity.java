@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -21,9 +22,8 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -49,6 +49,8 @@ import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
+import com.amap.api.services.geocoder.GeocodeAddress;
+import com.amap.api.services.geocoder.GeocodeQuery;
 import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.GeocodeSearch.OnGeocodeSearchListener;
@@ -67,8 +69,8 @@ import com.umeng.analytics.MobclickAgent;
 
 public class MapActivity extends Activity implements OnClickListener,
 		TextWatcher, LocationSource, AMapLocationListener,
-		OnCheckedChangeListener, OnMarkerClickListener, InfoWindowAdapter,
-		OnPoiSearchListener, OnMapLongClickListener, OnGeocodeSearchListener {
+		OnMarkerClickListener, InfoWindowAdapter, OnPoiSearchListener,
+		OnMapLongClickListener, OnGeocodeSearchListener {
 
 	private TextView searButton;
 	private LinearLayout backLayout;
@@ -76,15 +78,15 @@ public class MapActivity extends Activity implements OnClickListener,
 	private TextView positionTxt;
 
 	private String addressName;
-	
+
 	private AMap aMap;
 	private MapView mapView;
 	private OnLocationChangedListener mListener;
 	private AMapLocationClient mlocationClient;
 	private AMapLocationClientOption mLocationOption;
-	private RadioGroup mGPSModeGroup;
 	private GeocodeSearch geocoderSearch;
 	private LatLonPoint latLonPoint;
+	private Marker geoMarker;
 	private Marker regeoMarker;
 	// private LocationManagerProxy mAMapLocationManager;
 
@@ -100,6 +102,8 @@ public class MapActivity extends Activity implements OnClickListener,
 	private PoiSearch poiSearch;// POI搜索
 
 	private int position;
+
+	private boolean isCleanEdit = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +148,7 @@ public class MapActivity extends Activity implements OnClickListener,
 		backLayout.setOnClickListener(this);
 		searButton.setOnClickListener(this);
 		confirmtTxt.setOnClickListener(this);
+		searchText.setOnClickListener(this);
 		// layoutLayout.setOnLongClickListener(new OnLongClickListener() {
 		//
 		// @Override
@@ -162,19 +167,30 @@ public class MapActivity extends Activity implements OnClickListener,
 			break;
 
 		case R.id.searchButton:
+			
+			isCleanEdit = true;
 			searchButton();
 			break;
+			
 		case R.id.txt_mapactivity_confirm:
 			System.out.println(positionTxt.getText().toString().trim());
-			if(!positionTxt.getText().toString().trim().equals("")){
+			if (!positionTxt.getText().toString().trim().equals("")) {
 				Intent intent = new Intent();
-				intent.putExtra("address", positionTxt.getText().toString().trim());
+				intent.putExtra("address", positionTxt.getText().toString()
+						.trim());
 				intent.putExtra("position", position);
 				setResult(2, intent);
 				finish();
 			}
 			break;
 
+		case R.id.keyWord:
+			if(isCleanEdit){
+				searchText.setText("");
+				isCleanEdit = false;
+			}
+			break;
+			
 		default:
 			break;
 		}
@@ -187,14 +203,16 @@ public class MapActivity extends Activity implements OnClickListener,
 		mapView = (MapView) findViewById(R.id.map);
 		if (aMap == null) {
 			aMap = mapView.getMap();
+			aMap.getUiSettings().setCompassEnabled(true);
 			aMap.getUiSettings().setZoomControlsEnabled(false);
 			regeoMarker = aMap.addMarker(new MarkerOptions().anchor(0.5f, 0.5f)
 					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+							.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+			geoMarker = aMap.addMarker(new MarkerOptions().anchor(0.5f, 0.5f)
+					.icon(BitmapDescriptorFactory
+							.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 			setUpMap();
 		}
-		mGPSModeGroup = (RadioGroup) findViewById(R.id.gps_radio_group);
-		mGPSModeGroup.setOnCheckedChangeListener(this);
 		mLocationErrText = (TextView) findViewById(R.id.location_errInfo_text);
 		mLocationErrText.setVisibility(View.GONE);
 		aMap.setOnMarkerClickListener(this);// 添加点击marker监听事件
@@ -203,7 +221,7 @@ public class MapActivity extends Activity implements OnClickListener,
 		geocoderSearch = new GeocodeSearch(this);
 		geocoderSearch.setOnGeocodeSearchListener(this);
 		progDialog = new ProgressDialog(this);
-		
+
 		position = getIntent().getIntExtra("position", -1);
 	}
 
@@ -216,25 +234,6 @@ public class MapActivity extends Activity implements OnClickListener,
 		aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
 		// 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
 		aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-	}
-
-	@Override
-	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		switch (checkedId) {
-		case R.id.gps_locate_button:
-			// 设置定位的类型为定位模式
-			aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-			break;
-		case R.id.gps_follow_button:
-			// 设置定位的类型为 跟随模式
-			aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_FOLLOW);
-			break;
-		case R.id.gps_rotate_button:
-			// 设置定位的类型为根据地图面向方向旋转
-			aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
-			break;
-		}
-
 	}
 
 	/**
@@ -366,10 +365,11 @@ public class MapActivity extends Activity implements OnClickListener,
 	public void searchButton() {
 		keyWord = AMapUtil.checkEditText(searchText);
 		if ("".equals(keyWord)) {
-			new SystemUtil().makeToast(MapActivity.this, "请输入搜索关键字");
+			new SystemUtil().makeToast(MapActivity.this, "请输入地址");
 			return;
 		} else {
-			doSearchQuery();
+			showProgressDialog();
+			geocoderSearch();
 		}
 	}
 
@@ -396,18 +396,14 @@ public class MapActivity extends Activity implements OnClickListener,
 	}
 
 	/**
-	 * 开始进行poi搜索
+	 * 开始进行地理编码搜索
 	 */
-	protected void doSearchQuery() {
-		showProgressDialog();// 显示进度框
-		currentPage = 0;
-		query = new PoiSearch.Query(keyWord, "", "");// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
-		query.setPageSize(10);// 设置每页最多返回多少条poiitem
-		query.setPageNum(currentPage);// 设置查第一页
-
-		poiSearch = new PoiSearch(this, query);
-		poiSearch.setOnPoiSearchListener(this);
-		poiSearch.searchPOIAsyn();
+	private void geocoderSearch() {
+		geocoderSearch = new GeocodeSearch(this);
+		geocoderSearch.setOnGeocodeSearchListener(this);
+		// name表示地址，第二个参数表示查询城市，中文或者中文全拼，citycode、adcode
+		GeocodeQuery query = new GeocodeQuery(keyWord, null);
+		geocoderSearch.getFromLocationNameAsyn(query);
 	}
 
 	@Override
@@ -515,7 +511,7 @@ public class MapActivity extends Activity implements OnClickListener,
 					+ cities.get(i).getCityCode() + "城市编码:"
 					+ cities.get(i).getAdCode() + "\n";
 		}
-		new SystemUtil().makeToast(MapActivity.this, infomation);
+		new SystemUtil().makeToast(MapActivity.this, infomation + "infomation");
 
 	}
 
@@ -585,22 +581,22 @@ public class MapActivity extends Activity implements OnClickListener,
 						showSuggestCity(suggestionCities);
 					} else {
 						new SystemUtil().makeToast(MapActivity.this,
-								R.string.no_result + "");
+								R.string.no_result + "no_result");
 					}
 				}
 			} else {
 				new SystemUtil().makeToast(MapActivity.this, R.string.no_result
-						+ "");
+						+ "no_result");
 			}
 		} else if (rCode == 27) {
 			new SystemUtil().makeToast(MapActivity.this, R.string.error_network
-					+ "");
+					+ "error_network");
 		} else if (rCode == 32) {
 			new SystemUtil().makeToast(MapActivity.this, R.string.error_key
-					+ "");
+					+ "error_key");
 		} else {
 			new SystemUtil().makeToast(MapActivity.this,
-					getString(R.string.error_other) + rCode);
+					getString(R.string.error_other) + rCode + "rCode");
 		}
 
 	}
@@ -630,7 +626,7 @@ public class MapActivity extends Activity implements OnClickListener,
 		progDialog.setMessage("正在获取地址");
 		progDialog.show();
 	}
-	
+
 	/**
 	 * 隐藏进度条对话框
 	 */
@@ -656,21 +652,71 @@ public class MapActivity extends Activity implements OnClickListener,
 				regeoMarker.setPosition(AMapUtil.convertToLatLng(latLonPoint));
 				positionTxt.setText(addressName);
 			} else {
-				new SystemUtil().makeToast(MapActivity.this, R.string.no_result+"");
+				new SystemUtil().makeToast(MapActivity.this, R.string.no_result
+						+ "no_result");
 			}
 		} else if (rCode == 27) {
-			new SystemUtil().makeToast(MapActivity.this, R.string.error_network+"");
+			new SystemUtil().makeToast(MapActivity.this, R.string.error_network
+					+ "error_network");
 		} else if (rCode == 32) {
-			new SystemUtil().makeToast(MapActivity.this, R.string.error_key+"");
+			new SystemUtil().makeToast(MapActivity.this, R.string.error_key
+					+ "error_key");
 		} else {
 			new SystemUtil().makeToast(MapActivity.this,
-					getString(R.string.error_other) + rCode);
+					getString(R.string.error_other) + rCode + "rCode");
+		}
+	}
+
+	/**
+	 * 地理编码回调
+	 */
+	@Override
+	public void onGeocodeSearched(GeocodeResult result, int rCode) {
+		dismissDialog();
+		if (rCode == 0) {
+			if (result != null && result.getGeocodeAddressList() != null
+					&& result.getGeocodeAddressList().size() > 0) {
+
+				GeocodeAddress address = result.getGeocodeAddressList().get(0);
+				addressName = "经纬度值:" + address.getLatLonPoint() + "\n位置描述:"
+						+ address.getFormatAddress();
+
+				new SystemUtil().makeToast(MapActivity.this, addressName);
+
+				aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+						AMapUtil.convertToLatLng(address.getLatLonPoint()), 15));
+				geoMarker.setPosition(AMapUtil.convertToLatLng(address
+						.getLatLonPoint()));
+				positionTxt.setText(address.getFormatAddress());
+			} else {
+				new SystemUtil().makeToast(MapActivity.this, "对不起，没有搜索到相关地点!");
+			}
+		} else if (rCode == 27) {
+			new SystemUtil().makeToast(MapActivity.this, "搜索失败,请检查网络连接！");
+		} else if (rCode == 32) {
+			new SystemUtil().makeToast(MapActivity.this, "key验证无效！");
+		} else {
+			new SystemUtil().makeToast(MapActivity.this,
+					"未知错误，请稍后重试!错误码为 "+ rCode + "rCode");
 		}
 	}
 
 	@Override
-	public void onGeocodeSearched(GeocodeResult arg0, int arg1) {
-		
+	public void onPoiItemSearched(PoiItem arg0, int arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * 菜单、返回键响应
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			dismissDialog();
+			finish();
+		}
+		return false;
 	}
 
 }

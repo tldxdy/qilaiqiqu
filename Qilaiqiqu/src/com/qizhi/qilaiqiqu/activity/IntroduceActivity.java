@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 public class IntroduceActivity extends Activity implements OnClickListener {
 
@@ -50,11 +49,11 @@ public class IntroduceActivity extends Activity implements OnClickListener {
 		super.onResume();
 		MobclickAgent.onResume(this);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
 	}
-	
+
 }

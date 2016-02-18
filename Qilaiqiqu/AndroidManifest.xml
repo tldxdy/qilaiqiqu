@@ -55,7 +55,7 @@
         <!-- 高德地图 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="71b8d21d7d6438a6574a397e7b0d8d15" />
+            android:value="8b9bd793e1c99d9c7b0a2adc4ddde60b" />
         <!-- 友盟 -->
         <meta-data
             android:name="UMENG_APPKEY"
@@ -328,7 +328,7 @@
         <!-- adjustResize : 设置虚拟键盘顶起整个布局 -->
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MapActivity"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" >
+            android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.FriendActivity" >
         </activity>
