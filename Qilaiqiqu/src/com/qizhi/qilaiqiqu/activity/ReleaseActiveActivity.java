@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +19,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -41,16 +47,17 @@ import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
-
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
+
+@SuppressLint("SimpleDateFormat")
 public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 	private TextView timeTxt;
@@ -72,7 +79,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 	// private GridView pictureGrid;
 
-	XUtilsUtil xUtilsUtil;
+	private XUtilsUtil xUtilsUtil;
 
 	SharedPreferences preferences;
 
@@ -81,12 +88,79 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 	private ImageView addImg;
 
 	private ArrayList<String> photoList;
+	private ArrayList<Bitmap> bitList;
+	
 	private boolean isFirst = false;
 
 	private String data;
 	private String duration;
 
 	int num = 0;
+	
+	private int days;
+	private int hours;
+	
+	
+	
+	private boolean falg = true;
+	
+	private int uploadingNum = 0;
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 1:
+				photoList.add((String) msg.obj);
+				uploadingNum = uploadingNum + 1;
+				try {
+					if(uploadingNum == bitList.size()){
+						StringBuffer s = new StringBuffer();
+						for(int i = 0; i < photoList.size(); i++){
+							s.append(photoList.get(i).split("@")[0]);
+							if(photoList.size() - 1 != i){
+								s.append(",");
+							}
+						}
+						System.out.println("-----------aa----------");
+						System.out.println(s.toString());
+						System.out.println("-----------aa----------");
+						postAll(s.toString());
+						break;
+					}
+					new SystemUtil().httpClient(new SystemUtil().saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
+				} catch (IOException e) {
+					e.printStackTrace();
+				};
+				break;
+			case 2:
+				uploadingNum = uploadingNum + 1;
+				try {
+					if(uploadingNum == bitList.size()){
+						StringBuffer s = new StringBuffer();
+						for(int i = 0; i < photoList.size(); i++){
+							s.append(photoList.get(i).split("@")[0]);
+							if(photoList.size() - 1 != i){
+								s.append(",");
+							}
+						}
+						postAll(s.toString());
+						break;
+					}
+					new SystemUtil().httpClient(new SystemUtil().saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
+				} catch (IOException e) {
+					e.printStackTrace();
+				};	
+				break;
+
+			default:
+				break;
+			}
+		}
+		
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +194,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		addImg = (ImageView) findViewById(R.id.img_releaseActiveActivity_add);
 
 		photoList = new ArrayList<String>();
+		bitList = new ArrayList<Bitmap>();
+		xUtilsUtil = new XUtilsUtil();
 		// isFirst = getIntent().getBooleanExtra("isFirst", false);
 		// if (isFirst) {
 		// photoList = getIntent().getStringArrayListExtra("photoList");
@@ -196,7 +272,26 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 					|| signatureEdt.getText() == null) {
 				new SystemUtil().makeToast(this, "必填项不能为空");
 			} else {
-				releasePictue();
+				if(!falg){
+					Toasts.show(this, "正在发布，请稍候", 0);
+					//new SystemUtil().makeToast(this, "正在发布，请稍候");
+					break;
+				}
+				falg = false;
+				Toasts.show(this, "正在发布，请稍候", 0);
+				//new SystemUtil().makeToast(this, "正在发布，请稍候");
+				if(bitList.size() != 0){
+					photoList = new ArrayList<String>();
+					uploadingNum = 0;
+					try {
+						new SystemUtil().httpClient(new SystemUtil().saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					//releasePictue();
+				}else{
+					postAll("");
+				}
 			}
 			break;
 
@@ -213,16 +308,13 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			 * startActivity(new Intent(ReleaseActiveActivity.this,
 			 * SelectImagesActivity.class));
 			 */
-			if (num >= 3) {
-				addImg.setVisibility(View.GONE);
-				break;
-			}
 
 			Intent i = new Intent(
 					Intent.ACTION_PICK,
 					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);// 调用android的图库
 			i.setType("image/*");
 			startActivityForResult(i, 1);
+			
 			break;
 
 		case R.id.layout_releaseActiveActivity_back:
@@ -234,7 +326,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	private void setAddView(String uri, Bitmap photo) {
+	private void setAddView(final Bitmap photo, final int number) {
 		LinearLayout linearLayout = pictureLayout;
 		final FrameLayout frameLayout = new FrameLayout(this);
 		LinearLayout.LayoutParams fp = new LinearLayout.LayoutParams(dp2px(
@@ -249,8 +341,9 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 				LinearLayout.LayoutParams.MATCH_PARENT));
 		picture.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-		Toast.makeText(this, uri + "", 0).show();
+		//Toast.makeText(this, uri + "", 0).show();
 		picture.setImageBitmap(photo);
+		bitList.add(photo);
 
 		ImageView delete = new ImageView(this);
 		FrameLayout.LayoutParams deleteParams = new FrameLayout.LayoutParams(
@@ -264,7 +357,9 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onClick(View arg0) {
+				bitList.remove(photo);
 				frameLayout.setVisibility(View.GONE);
+				
 				num--;
 				if (num != 3) {
 					addImg.setVisibility(View.VISIBLE);
@@ -280,7 +375,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 	/**
 	 * 上传图片
-	 */
+	 *//*
 	private void releasePictue() {
 		RequestParams params = new RequestParams();
 
@@ -308,7 +403,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 				});
 
 	}
-
+*/
 	/**
 	 * 上传所有信息
 	 */
@@ -320,7 +415,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 				.toString());
 		params.addBodyParameter("startDate", dateTxt.getText().toString()
 				+ ":00");
-		params.addBodyParameter("duration", timeTxt.getText().toString());
+		params.addBodyParameter("duration", (days*24 + hours)*60 +"");
 		params.addBodyParameter("lanInfo", "");
 		params.addBodyParameter("lanName", "");
 		params.addBodyParameter("mileage", "");
@@ -332,18 +427,33 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		params.addBodyParameter("outlay", moneyTxt.getText().toString());
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
-
+		
 		xUtilsUtil.httpPost("mobile/activity/publishActivity.html", params,
 				new CallBackPost() {
 
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
-
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(s);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						falg = true;
+						if (jsonObject.optBoolean("result")) {
+							Toasts.show(getApplicationContext(), "发布成功", 0);
+							//new SystemUtil().makeToast(ReleaseActiveActivity.this, "发布成功");
+							ReleaseActiveActivity.this.finish();
+						}else{
+							Toasts.show(getApplicationContext(), jsonObject.optString("message"), 0);
+						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-
+						falg = true;
+						Toasts.show(getApplicationContext(), msg, 0);
 					}
 				});
 	}
@@ -364,14 +474,13 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 				if (data != null) {
 					Bundle extras = data.getExtras();
 					if (extras != null) {
-						try {
 							Bitmap photo = extras.getParcelable("data");
-							setAddView(new SystemUtil().saveMyBitmap(photo),
-									photo);
+							setAddView(photo,num);
 							num++;
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+							if (num == 3) {
+								addImg.setVisibility(View.GONE);
+								break;
+							}
 					}
 				}
 				break;
@@ -469,7 +578,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 						SimpleDateFormat format = new SimpleDateFormat(
 								"yyyy-MM-dd");
 						datas = format.format(calendar.getTime()) + " ";
-
+						
 						try {
 							Date now = df.parse(nowDate());
 							Date date = df.parse(format.format(calendar
@@ -528,16 +637,27 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onClick(View arg0) {
+				
+				
 				if (datas == null) {
-					datas = String.valueOf(datePicker.getYear()) + "-"
+					SimpleDateFormat format = new SimpleDateFormat(
+							"yyyy-MM-dd");
+					datas = format.format(new Date()) + " ";
+					/*datas = String.valueOf(datePicker.getYear()) + "-"
 							+ (String.valueOf(datePicker.getMonth()) + 1) + "-"
-							+ String.valueOf(datePicker.getDayOfMonth()) + " ";
+							+ String.valueOf(datePicker.getDayOfMonth()) + " ";*/
 				}
 				if (time == null) {
-					time = String.valueOf(timePicker.getCurrentHour()) + ":"
-							+ String.valueOf(timePicker.getCurrentMinute());
+					SimpleDateFormat format = new SimpleDateFormat(
+							"HH:mm");
+					time = format.format(new Date().getTime());
+					
+					/*time = String.valueOf(timePicker.getCurrentHour()) + ":"
+							+ String.valueOf(timePicker.getCurrentMinute());*/
 				}
 				data = datas + time;
+				
+				
 				dateTxt.setText(data);
 				popupWindow.dismiss();
 			}
@@ -579,6 +699,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onValueChange(NumberPicker arg0, int oldVal, int newVal) {
+				days = newVal;
 				day = newVal + "天";
 			}
 		});
@@ -587,6 +708,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onValueChange(NumberPicker arg0, int oldVal, int newVal) {
+				hours = newVal;
 				hour = newVal + "小时";
 			}
 		});
@@ -612,9 +734,11 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			@Override
 			public void onClick(View arg0) {
 				if (day == null) {
+					days = 0;
 					day = "0天  ";
 				}
 				if (hour == null) {
+					hours = 0;
 					hour = "0小时";
 				}
 				duration = day + hour;

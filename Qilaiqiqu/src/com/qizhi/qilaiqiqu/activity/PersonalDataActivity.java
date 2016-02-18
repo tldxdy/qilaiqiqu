@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +36,7 @@ import android.widget.TextView;
 
 import com.easemob.chat.EMChatManager;
 import com.google.gson.Gson;
+import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -45,6 +44,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ArrayWheelAdapter;
 import com.qizhi.qilaiqiqu.model.CertainUserModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.qizhi.qilaiqiqu.widget.OnWheelChangedListener;
@@ -98,7 +98,7 @@ public class PersonalDataActivity extends BaseActivity implements
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int IMAGE_REQUEST_CODE = 2;
 	private static final int RESULT_REQUEST_CODE = 3;
-	private static final int BING_PHONE = 4;
+	//private static final int BING_PHONE = 4;
 
 	private XUtilsUtil xUtilsUtil;
 
@@ -110,6 +110,8 @@ public class PersonalDataActivity extends BaseActivity implements
 
 	private CertainUserModel certainUserModel;
 	
+	private boolean path = true;
+
 	private boolean falg = true;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -122,6 +124,13 @@ public class PersonalDataActivity extends BaseActivity implements
 				String[] ss = s.split("@");
 				certainUserModel.setUserImage(ss[0]);
 				img_path = null;
+				informationUpdate();
+				break;
+			case 2:
+				img_path = null;
+				// finish();
+				path = false;
+				falg = true;
 				informationUpdate();
 				break;
 
@@ -147,7 +156,6 @@ public class PersonalDataActivity extends BaseActivity implements
 		// 将输入法隐藏
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(signatureEdt.getWindowToken(), 0);
-
 	}
 
 	private void initView() {
@@ -234,27 +242,28 @@ public class PersonalDataActivity extends BaseActivity implements
 					FriendActivity.class).putExtra("friendFlag", 0));
 			break;
 		case R.id.layout_personalDataActivity_bindphone:
-			Intent intent = new Intent(PersonalDataActivity.this,
-					BindPhoneActivity.class);
-			intent.putExtra("userId", preferences.getInt("userId", -1));
-			intent.putExtra("uniqueKey",
-					preferences.getString("uniqueKey", null));
-			startActivityForResult(intent, BING_PHONE);
+			/*
+			 * Intent intent = new Intent(PersonalDataActivity.this,
+			 * BindPhoneActivity.class); intent.putExtra("userId",
+			 * preferences.getInt("userId", -1)); intent.putExtra("uniqueKey",
+			 * preferences.getString("uniqueKey", null));
+			 * startActivityForResult(intent, BING_PHONE);
+			 */
 			break;
-			
+
 		default:
 			break;
 		}
 	}
 
 	private void setViewData() {
-		if(!falg){
+		if (!falg) {
 			return;
 		}
-		
+		falg = false;
 		if (img_path != null) {
 			new SystemUtil().httpClient(img_path, preferences, handler, "USER");
-			// photoUploading();
+			//photoUploading();
 		} else {
 			informationUpdate();
 		}
@@ -505,8 +514,8 @@ public class PersonalDataActivity extends BaseActivity implements
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);
 		// outputX outputY 是裁剪图片宽高
-		 intent.putExtra("outputX", 300);
-		 intent.putExtra("outputY", 300);
+		intent.putExtra("outputX", 300);
+		intent.putExtra("outputY", 300);
 		intent.putExtra("return-data", true);
 		startActivityForResult(intent, RESULT_REQUEST_CODE);
 	}
@@ -521,47 +530,67 @@ public class PersonalDataActivity extends BaseActivity implements
 		Bundle extras = data.getExtras();
 		if (extras != null) {
 			Bitmap photo = extras.getParcelable("data");
-			//Drawable drawable = new BitmapDrawable(photo);
+			// Drawable drawable = new BitmapDrawable(photo);
 			try {
 				img_path = new SystemUtil().saveMyBitmap(photo);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//photoImg.setImageDrawable(drawable);
-			photoImg.setImageBitmap(photo);
+			// photoImg.setImageDrawable(drawable);
+			BitmapUtils bitmapUtils = new BitmapUtils(this);
+			bitmapUtils.display(photoImg, img_path);
+			// photoImg.setImageBitmap(photo);
 		}
 	}
 
 	/**
 	 * 图片上传
 	 */
-	/*
-	 * private void photoUploading() { System.out.println(img_path); final File
-	 * file = new File(img_path); RequestParams params = new RequestParams();
-	 * params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey",
-	 * null)); params.addBodyParameter("type", "USER");
-	 * params.addBodyParameter("files", file);
-	 * 
-	 * xUtilsUtil.httpPost("common/uploadImage.html", params, new CallBackPost()
-	 * {
-	 * 
-	 * @Override public void onMySuccess(ResponseInfo<String> responseInfo) {
-	 * try { JSONObject jsonObject = new JSONObject( responseInfo.result); if
-	 * (jsonObject.getBoolean("result")) { JSONArray jsonArray = jsonObject
-	 * .getJSONArray("dataList"); String s = jsonArray.getString(0); String[] ss
-	 * = s.split("@"); certainUserModel.setUserImage(ss[0]); img_path = null;
-	 * file.delete(); informationUpdate(); }
-	 * 
-	 * } catch (JSONException e) { e.printStackTrace(); }
-	 * 
-	 * }
-	 * 
-	 * @Override public void onMyFailure(HttpException error, String msg) { new
-	 * SystemUtil().makeToast(PersonalDataActivity.this, "请求失败" + error + ":" +
-	 * msg); } }); }
-	 */
+
+	// private void photoUploading() {
+	// System.out.println(img_path);
+	// final File file = new File(img_path);
+	// RequestParams params = new RequestParams();
+	// params.addBodyParameter("uniqueKey",
+	// preferences.getString("uniqueKey", null));
+	// params.addBodyParameter("type", "USER");
+	// params.addBodyParameter("files", file);
+	//
+	// xUtilsUtil.httpPost("common/uploadImage.html", params,
+	// new CallBackPost() {
+	//
+	// @Override
+	// public void onMySuccess(ResponseInfo<String> responseInfo) {
+	// try {
+	// JSONObject jsonObject = new JSONObject(
+	// responseInfo.result);
+	// System.out.println(jsonObject);
+	// if (jsonObject.getBoolean("result")) {
+	// JSONArray jsonArray = jsonObject
+	// .getJSONArray("dataList");
+	// String s = jsonArray.getString(0);
+	// String[] ss = s.split("@");
+	// certainUserModel.setUserImage(ss[0]);
+	// img_path = null;
+	// file.delete();
+	// informationUpdate();
+	// }
+	//
+	// } catch (JSONException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// }
+	//
+	// @Override
+	// public void onMyFailure(HttpException error, String msg) {
+	// new SystemUtil().makeToast(PersonalDataActivity.this,
+	// "请求失败" + error + ":" + msg);
+	// }
+	// });
+	// }
+
 	private void informationUpdate() {
-		falg = false;
 		if (!"".equals(nickEdt.getText().toString().trim())
 				&& !"".equals(usernameTxt.getText().toString().trim())
 				&& !"".equals(certainUserModel.getUserImage())) {
@@ -591,8 +620,16 @@ public class PersonalDataActivity extends BaseActivity implements
 						@Override
 						public void onMySuccess(
 								ResponseInfo<String> responseInfo) {
-							new SystemUtil().makeToast(
-									PersonalDataActivity.this, "修改成功");
+							if(path){
+								Toasts.show(PersonalDataActivity.this, "修改成功", 0);
+							}else{
+								Toasts.show(PersonalDataActivity.this, "用户头像修改失败", 0);
+								path = true;
+							}
+							/*
+							 * new SystemUtil().makeToast(
+							 * PersonalDataActivity.this, "修改成功");
+							 */
 							falg = true;
 							// 更新环信用户昵称
 							EMChatManager.getInstance().updateCurrentUserNick(
@@ -602,9 +639,14 @@ public class PersonalDataActivity extends BaseActivity implements
 
 						@Override
 						public void onMyFailure(HttpException error, String msg) {
-							new SystemUtil().makeToast(
-									PersonalDataActivity.this, "请求失败" + error
-											+ ":" + msg);
+							Toasts.show(PersonalDataActivity.this, "请求失败"
+									+ error + ":" + msg, 0);
+							/*
+							 * new SystemUtil().makeToast(
+							 * PersonalDataActivity.this, "请求失败" + error + ":" +
+							 * msg);
+							 */
+							falg = true;
 						}
 					});
 		}

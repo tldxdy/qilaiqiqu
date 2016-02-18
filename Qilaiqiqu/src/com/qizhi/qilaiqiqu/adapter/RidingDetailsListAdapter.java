@@ -130,6 +130,7 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 						.findViewById(R.id.layout_ridingDatilsList_ridingTitle);
 				oneholder.locationLayout = (LinearLayout) view
 						.findViewById(R.id.layout_ridingDatilsList_location);
+				oneholder.view = view.findViewById(R.id.v_ridingDatilsList_location);
 				
 				view.setTag(oneholder);
 				
@@ -194,9 +195,11 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 			oneholder.ridingContentLayout.setVisibility(View.GONE);
 			oneholder.locationLayout.setVisibility(View.GONE);
 			oneholder.cornerImg.setVisibility(View.GONE);
+			oneholder.view.setVisibility(View.GONE);
 			
 			if(!list.get(position - 1).getArticleDetailList().get(position - 1).getMemo().equals("")){
 				oneholder.ridingTitleLayout.setVisibility(View.VISIBLE);
+				oneholder.view.setVisibility(View.VISIBLE);
 				oneholder.ridingTitleTxt.setText(" \u3000" + list.get(position - 1).getArticleDetailList().get(position - 1).getMemo());
 			}
 			if(!list.get(position - 1).getArticleDetailList().get(position - 1).getAddress().equals("")){
@@ -206,7 +209,7 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 			}
 			if(!list.get(position - 1).getArticleDetailList().get(position - 1).getImageMemo().equals("")){
 				oneholder.ridingContentLayout.setVisibility(View.VISIBLE);
-				oneholder.ridingContentTxt.setText(" \u3000" + list.get(position - 1).getArticleDetailList().get(position - 1).getImageMemo());
+				oneholder.ridingContentTxt.setText(list.get(position - 1).getArticleDetailList().get(position - 1).getImageMemo());
 			}
 
 			SystemUtil.Imagexutils(
@@ -257,6 +260,9 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 		private LinearLayout ridingTitleLayout;
 		private LinearLayout locationLayout;
 		private LinearLayout ridingContentLayout;
+		
+		private View view;
+		
 	}
 	
 	public class TwoViewHolder{

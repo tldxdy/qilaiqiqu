@@ -22,6 +22,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.qizhi.qilaiqiqu.service.PhotoUploadingService;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 
 import android.content.Context;
@@ -85,9 +86,9 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 
 	@Override
 	protected void onProgressUpdate(Integer... progress) {
-		/*System.out.println("-----------------------------");
+		System.out.println("-----------------------------");
 		System.out.println((int) (progress[0]));
-		System.out.println("-----------------------------");*/
+		System.out.println("-----------------------------");
 			//pd.setProgress((int) (progress[0]));
 	}
 
@@ -102,6 +103,9 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 			handler.handleMessage(msg);
 		}else{
 			Toast.makeText(context, "图片上传失败", Toast.LENGTH_SHORT).show();
+			Message msg = new Message();
+			msg.what = 2;
+			handler.handleMessage(msg);
 		}
 		
 	}
@@ -121,7 +125,7 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 				CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		// 设置连接超时时间
 		httpClient.getParams().setParameter(
-				CoreConnectionPNames.CONNECTION_TIMEOUT, 1000*60*5);
+				CoreConnectionPNames.CONNECTION_TIMEOUT, 1000*60);
 		HttpPost httpPost = new HttpPost(url);
 		httpPost.setEntity(entity);
 		try {

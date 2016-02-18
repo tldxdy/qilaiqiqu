@@ -93,7 +93,9 @@
         <ListView
             android:id="@+id/list_ridingDetailsActivity_riding"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:divider="#ffffff"
+			android:dividerHeight="15dp" >
         </ListView>
 
         <LinearLayout

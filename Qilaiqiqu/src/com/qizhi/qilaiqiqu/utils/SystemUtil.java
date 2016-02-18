@@ -170,6 +170,13 @@ public class SystemUtil {
 		fos.flush();
 		fos.close();
 		
+		if(mBitmap != null && !mBitmap.isRecycled()){  
+		    // 回收并且置为null  
+			mBitmap.recycle();  
+			mBitmap = null;  
+		}  
+		System.gc();
+		
 		return s;
 	}
 	
@@ -183,7 +190,7 @@ public class SystemUtil {
 	public static Bitmap compressImage(Bitmap image , Integer imageSize) {  
 		  
         ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中  
+        image.compress(Bitmap.CompressFormat.JPEG, 90, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中  
         int options = 100; 
 
         while ( baos.toByteArray().length / 1024 > imageSize) {  
@@ -209,6 +216,9 @@ public class SystemUtil {
 				MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 				//builder.setCharset(Charset.forName("uft-8"));//设置请求的编码格式
 				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);//设置浏览器兼容模式
+				System.out.println("=============================");
+				System.out.println(img_path);
+				System.out.println("=============================");
 				File file = new File(img_path);
 				FileBody fileBody = new FileBody(file);//把文件转换成流对象FileBody
 				builder.addPart("files", fileBody);
@@ -223,6 +233,7 @@ public class SystemUtil {
 					if (response.getStatusLine().getStatusCode()==200) {
 						String strResult = EntityUtils.toString(response.getEntity());
 						JSONObject jo = new JSONObject(strResult);
+						System.out.println(jo.toString());
 						if(jo.optBoolean("result")){
 							JSONArray jsonArray = jo
 									.getJSONArray("dataList");
@@ -230,7 +241,13 @@ public class SystemUtil {
 							Message msg = new Message();
 							msg.what = 1;
 							msg.obj = s;
-							//file.delete();
+							file.delete();
+							handler.handleMessage(msg);
+						}else{
+							Message msg = new Message();
+							msg.what = 2;
+							msg.obj = jo.opt("message");
+							file.delete();
 							handler.handleMessage(msg);
 						}
 					}
