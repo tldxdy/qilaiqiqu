@@ -51,7 +51,6 @@ import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.service.PhotoUploadingService;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
@@ -333,8 +332,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				startActivity(intent);
 			} else {
 				if(PhotoUploadingService.isStart){
-					Toasts.show(this, "你有游记正在发布，请稍后再发布", 0);
-					//new SystemUtil().makeToast(this, "你有游记正在发布，请稍后再发布");
+					new SystemUtil().makeToast(this, "你有游记正在发布，请稍后再发布");
 					break;
 				}
 				
@@ -852,6 +850,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 							adapter = new RidingDetailsListAdapter(
 									RidingDetailsActivity.this, list,recommendList);
 							ridingList.setAdapter(adapter);
+							ridingList.setDividerHeight(0);
 							ridingList.setOnItemClickListener(RidingDetailsActivity.this);
 
 						}

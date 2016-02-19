@@ -14,13 +14,15 @@ import org.json.JSONObject;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
+import com.qizhi.qilaiqiqu.activity.ReleaseActivity;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.progress.FileUploadAsyncTask;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -72,6 +74,9 @@ public class PhotoUploadingService extends Service {
 					try {
 						String f = sUtil.saveMyBitmap(SystemUtil.compressImageFromFile(list.get(num).getArticleImage(), screenWidth));
 						File file = new File(f);
+						
+						
+						
 						new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
 						.execute(file);
 					} catch (IOException e) {
@@ -82,20 +87,7 @@ public class PhotoUploadingService extends Service {
 				}
 				break;
 			case 2:
-				list.remove(num);
-				if (list.size() - 1 != num) {
-					num = num + 1;
-					try {
-						String f = sUtil.saveMyBitmap(SystemUtil.compressImageFromFile(list.get(num).getArticleImage(), screenWidth));
-						File file = new File(f);
-						new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
-						.execute(file);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				} else {
-					publishTravels();
-				}
+				
 				break;
 			 
 
@@ -136,15 +128,13 @@ public class PhotoUploadingService extends Service {
 			 screenWidth = intent.getIntExtra("screenWidth",1200);
 			 falg = intent.getBooleanExtra("falg", false);
 			 imgListUrl = new ArrayList<String>();
-			 Toasts.show(getApplicationContext(), "正在发布，请稍候", 0);
-			 /*new SystemUtil().makeToast(getApplicationContext(),
-						"正在发布，请稍候");*/
 			 if(!falg){
 				 num = 0;
 				 String f;
 				try {
 					f = sUtil.saveMyBitmap(SystemUtil.compressImageFromFile(list.get(num).getArticleImage(), screenWidth));
 					File file = new File(f);
+					
 					new FileUploadAsyncTask(getApplicationContext(), preferences, "QYJ", handler)
 					.execute(file);
 				} catch (IOException e) {
@@ -183,6 +173,9 @@ public class PhotoUploadingService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		
+		new SystemUtil().makeToast(getApplicationContext(),
+				"正在发布，请稍候");
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -256,19 +249,16 @@ public class PhotoUploadingService extends Service {
 					}
 					if (jsonObject.optBoolean("result")) {
 						if (!falg) {
-							Toasts.show(getApplicationContext(), "发表成功", 0);
-							/*new SystemUtil().makeToast(getApplicationContext(),
-									"发表成功");*/
+							new SystemUtil().makeToast(getApplicationContext(),
+									"发表成功");
 						} else {
-							Toasts.show(getApplicationContext(), "修改成功", 0);
-							/*new SystemUtil().makeToast(getApplicationContext(),
-									"修改成功");*/
+							new SystemUtil().makeToast(getApplicationContext(),
+									"修改成功");
 						}
 					} else {
-						//System.out.println(jsonObject.optString("message"));
-						Toasts.show(getApplicationContext(), jsonObject.optString("message"), 0);
-						/*new SystemUtil().makeToast(getApplicationContext(),
-								jsonObject.optString("message"));*/
+						System.out.println(jsonObject.optString("message"));
+						new SystemUtil().makeToast(getApplicationContext(),
+								jsonObject.optString("message"));
 					}
 					isStart = false;
 					onDestroy();
