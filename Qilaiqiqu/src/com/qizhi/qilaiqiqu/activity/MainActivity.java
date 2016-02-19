@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,6 +38,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -90,9 +93,10 @@ import com.umeng.analytics.MobclickAgent;
  * @author leiqian
  * 
  */
+@SuppressLint("HandlerLeak")
 public class MainActivity extends FragmentActivity implements OnClickListener,
 		OnOpenListener, OnCloseListener, OnItemClickListener, CallBackPost,
-		OnRefreshListener, TextWatcher {
+		OnRefreshListener, TextWatcher,OnScrollListener {
 
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
@@ -993,6 +997,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 												startActivity(intent);
 											}
 										});
+								searchList.setOnScrollListener(MainActivity.this);
 
 								// 更新UI
 								adapter.notifyDataSetChanged();
@@ -1114,5 +1119,44 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	}
 
+	
+	
+	
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		switch (scrollState){  
+		  
+        	case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://停止滚动  
+        	{  
+        		//设置为停止滚动  
+        		adapter.setScrollState(false);  
+        		//当前屏幕中listview的子项的个数  
+        		int count = view.getChildCount();  
+        		System.out.println("MainActivity屏幕显示的item个数" + count);
+        		
+        		break;  
+        	}  
+        	case AbsListView.OnScrollListener.SCROLL_STATE_FLING://滚动做出了抛的动作  
+        	{  
+        		//设置为正在滚动  
+        		adapter.setScrollState(true);  
+            	break;  
+        	}  
+
+        	case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL://正在滚动  
+        	{  
+        		//设置为正在滚动  
+        		adapter.setScrollState(true);  
+        		break;  
+        	}  
+		}
+	}
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
+		
+	}
 
 }

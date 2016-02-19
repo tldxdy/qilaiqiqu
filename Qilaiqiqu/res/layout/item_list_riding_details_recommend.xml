@@ -5,15 +5,34 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/write" >
-
+    
+    
+<LinearLayout 
+    		android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_marginTop="50dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <View 
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="40dp"
+                android:background="#6dbfed"
+                android:layout_weight="1"/>
         <TextView
             android:id="@+id/txt_riding_details_activity_recommend"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
             android:textColor="#6dbfed"
-            android:layout_marginTop="100dp"
-            android:layout_marginBottom="20dp"
             android:textSize="18sp" />
-
+        <View 
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="40dp"
+                android:background="#6dbfed"
+                android:layout_weight="1"/>
+	</LinearLayout>
 </LinearLayout>

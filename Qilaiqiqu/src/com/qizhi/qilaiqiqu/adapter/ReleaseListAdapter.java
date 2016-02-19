@@ -55,6 +55,7 @@ public class ReleaseListAdapter extends BaseAdapter {
 	private boolean falg;
 	private Handler handler;
 	private int updateListSum;
+	//private int screenWidth;
 
 	public ReleaseListAdapter(Context context,
 			List<TravelsinformationModel> list,
@@ -67,6 +68,10 @@ public class ReleaseListAdapter extends BaseAdapter {
 		this.falg = falg;
 		this.handler = handler;
 		this.updateListSum = updateListSum;
+		//screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth();
+		
+	
+	
 	}
 
 	@Override
@@ -121,18 +126,27 @@ public class ReleaseListAdapter extends BaseAdapter {
 		holder.locationTxt.setText(list.get(position).getAddress());
 		
 		if (!falg) {
-			//Picasso.with(context).load(new File(list.get(position).getArticleImage())).into(holder.photoImg);
-			bitmapUtils.display(holder.photoImg, list.get(position)
-					.getArticleImage());
+			//holder.photoImg.setImageBitmap(SystemUtil.compressImageFromFile(list.get(position).getArticleImage(), screenWidth));
+			Picasso.with(context).load(new File(list.get(position).getArticleImage()))
+			.resize(800, 400).centerInside()
+			.placeholder(R.drawable.bitmap_homepage)
+			.error(R.drawable.bitmap_homepage)
+			.into(holder.photoImg);
+			/*bitmapUtils.display(holder.photoImg, list.get(position)
+					.getArticleImage());*/
 		} else {
 			if(position < updateListSum){
 				SystemUtil.Imagexutils(list.get(position).getArticleImage(), holder.photoImg, context);
 
 			}else{
 				
-				//Picasso.with(context).load(new File(list.get(position).getArticleImage())).into(holder.photoImg);
-				bitmapUtils.display(holder.photoImg, list.get(position)
-						.getArticleImage());
+				Picasso.with(context).load(new File(list.get(position).getArticleImage()))
+				.resize(800, 400).centerInside()
+				.placeholder(R.drawable.bitmap_homepage)
+				.error(R.drawable.bitmap_homepage)
+				.into(holder.photoImg);
+				/*bitmapUtils.display(holder.photoImg, list.get(position)
+						.getArticleImage());*/
 			}
 		}
 		

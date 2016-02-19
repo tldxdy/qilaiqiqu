@@ -47,6 +47,13 @@ public class SlideShowListAdapter extends BaseAdapter {
 
 	private List<ArticleModel> list;
 	private Context context;
+	
+	
+	private  boolean scrollState=false;  
+	  
+	public void setScrollState(boolean scrollState) {  
+	        this.scrollState = scrollState;  
+	    }
 
 	// private boolean falg = false;
 
@@ -175,8 +182,13 @@ public class SlideShowListAdapter extends BaseAdapter {
 		holder.likeTxt.setText((list.get(position - 1).getPraiseNum() + list
 				.get(position - 1).getVirtualPraise()) + "");
 
-		SystemUtil.loadImagexutils(list.get(position - 1).getUserImage(),
-				holder.photoImg, context);
+		if(!scrollState){
+			SystemUtil.loadImagexutils(list.get(position - 1).getUserImage(),
+					holder.photoImg, context);
+		}else{
+			holder.photoImg.setImageResource(R.drawable.homepage_picture);
+		}
+		
 		holder.likeImg.setImageResource(R.drawable.like_unpress);
 		// holder.likeImg.setTag(position);
 		// holder.photoImg.setImageResource(R.drawable.lena);
@@ -187,8 +199,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 		 */
 
 		// holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
-		if (list.get(position - 1).getDefaultShowImage() != null) {
-
+		if (list.get(position - 1).getDefaultShowImage() != null && !scrollState) {
 			/*
 			 * String internetUrl =
 			 * "http://weride.oss-cn-hangzhou.aliyuncs.com/" + list.get(position
@@ -202,6 +213,8 @@ public class SlideShowListAdapter extends BaseAdapter {
 			 * Picasso.with(context).load(internetUrl).resize(800, 480)
 			 * .centerInside().into(holder.backgroundImg);
 			 */
+		}else{
+			holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
 		}
 
 		// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
@@ -392,5 +405,4 @@ public class SlideShowListAdapter extends BaseAdapter {
 			super.onPostExecute(result);
 		}
 	}
-
 }
