@@ -132,6 +132,13 @@ public class PhotoUploadingService extends Service {
 	public void onStart(Intent intent, int startId) {
 		 if (intent != null) {  
 			 list = (List<TravelsinformationModel>) intent.getSerializableExtra("list");
+			 
+			 System.out.println("------------------");
+			 System.out.println(list.size());
+			 System.out.println("------------------");
+			 
+			 
+			 
 			 title = intent.getStringExtra("title");
 			 screenWidth = intent.getIntExtra("screenWidth",1200);
 			 falg = intent.getBooleanExtra("falg", false);

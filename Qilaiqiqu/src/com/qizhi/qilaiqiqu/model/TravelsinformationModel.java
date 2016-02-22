@@ -12,11 +12,21 @@ public class TravelsinformationModel implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String time;
 	private String title;
 	private String memo;		//内容
 	private String articleImage;	//图片
 	private String imageMemo;		//图片描述
 	private String address;		//所在位置
+	
+	
+	
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
 	public String getMemo() {
 		return memo;
 	}
@@ -49,9 +59,9 @@ public class TravelsinformationModel implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "TravelsinformationModel [title=" + title + ", memo=" + memo
-				+ ", articleImage=" + articleImage + ", imageMemo=" + imageMemo
-				+ ", address=" + address + "]";
+		return "TravelsinformationModel [time=" + time + ", title=" + title
+				+ ", memo=" + memo + ", articleImage=" + articleImage
+				+ ", imageMemo=" + imageMemo + ", address=" + address + "]";
 	}
 	
 }
