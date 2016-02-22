@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -22,7 +21,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -43,10 +44,9 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.NaviPara;
-import com.amap.api.maps.overlay.PoiOverlay;
+import com.amap.api.maps.model.Polyline;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.geocoder.GeocodeAddress;
 import com.amap.api.services.geocoder.GeocodeQuery;
@@ -58,27 +58,35 @@ import com.amap.api.services.geocoder.RegeocodeResult;
 import com.amap.api.services.help.Inputtips;
 import com.amap.api.services.help.Inputtips.InputtipsListener;
 import com.amap.api.services.help.Tip;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch;
-import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
+import com.amap.api.services.route.BusRouteResult;
+import com.amap.api.services.route.DriveRouteResult;
+import com.amap.api.services.route.RouteSearch;
+import com.amap.api.services.route.RouteSearch.FromAndTo;
+import com.amap.api.services.route.RouteSearch.OnRouteSearchListener;
+import com.amap.api.services.route.RouteSearch.WalkRouteQuery;
+import com.amap.api.services.route.WalkPath;
+import com.amap.api.services.route.WalkRouteResult;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.adapter.RouteOverlayAdapter;
 import com.qizhi.qilaiqiqu.utils.AMapUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.WalkRouteOverlayUtil;
 import com.umeng.analytics.MobclickAgent;
 
-public class MapActivity extends Activity implements OnClickListener,
+public class RouteOverlayActivity extends Activity implements OnClickListener,
 		TextWatcher, LocationSource, AMapLocationListener,
-		OnMarkerClickListener, InfoWindowAdapter, OnPoiSearchListener,
-		OnMapLongClickListener, OnGeocodeSearchListener {
+		OnMarkerClickListener, InfoWindowAdapter, OnMapLongClickListener,
+		OnGeocodeSearchListener, OnRouteSearchListener {
 
 	private TextView searButton;
 	private LinearLayout backLayout;
 	private LinearLayout layoutLayout;
 	private TextView positionTxt;
-
+	
 	private String addressName;
 
 	private AMap aMap;
+	private List<Marker> mapScreenMarkers;
 	private MapView mapView;
 	private OnLocationChangedListener mListener;
 	private AMapLocationClient mlocationClient;
@@ -87,33 +95,48 @@ public class MapActivity extends Activity implements OnClickListener,
 	private LatLonPoint latLonPoint;
 	private Marker geoMarker;
 	private Marker regeoMarker;
+
+//	public List<Polyline> paths = new ArrayList<Polyline>();
+	
+	private LatLonPoint startPoint = null;
+	private LatLonPoint endPoint = null;
+	FromAndTo fromAndTo;// 起始点和终点的经纬度
+	RouteSearch routeSearch;
+	private WalkRouteResult walkRouteResult;// 步行模式查询结果
 	// private LocationManagerProxy mAMapLocationManager;
 
+	private List<String> list;
+	private List<Marker> markerList;
+
+	private ListView routeOverlayList;
+	private RouteOverlayAdapter adapter;
+
 	private TextView mLocationErrText;
-	private TextView confirmtTxt;
+	private TextView confirmTxt;
+	private TextView cancleTxt;
+
+	private LinearLayout infoLayout;
 
 	private EditText searchText;// 输入搜索关键字
 	private String keyWord = "";// 要输入的poi搜索关键字
 	private ProgressDialog progDialog = null;// 搜索时进度条
-	private PoiResult poiResult; // poi返回的结果
-	private int currentPage = 0;// 当前页面，从0开始计数
-	private PoiSearch.Query query;// Poi查询条件类
-	private PoiSearch poiSearch;// POI搜索
 
 	private int position;
 
+	private boolean isSelectOk = true;
+
 	private boolean isCleanEdit = false;
+	private String adress;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// 不显示程序的标题栏
-		setContentView(R.layout.activity_map);
-		init();
+		setContentView(R.layout.activity_route_overlay);
+		initMap();
 		mapView.onCreate(savedInstanceState);// 此方法必须重写
 		initView();
 		initEvent();
-
 	}
 
 	// public boolean onTouchEvent(MotionEvent event) {
@@ -133,21 +156,30 @@ public class MapActivity extends Activity implements OnClickListener,
 	// }
 
 	private void initView() {
-		layoutLayout = (LinearLayout) findViewById(R.id.layout_mapActivity_layout);
-		positionTxt = (TextView) findViewById(R.id.txt_mapActivity_position);
-		backLayout = (LinearLayout) findViewById(R.id.layout_mapActivity_back);
-		searButton = (TextView) findViewById(R.id.txt_mapActivity_searchButton);
-		searchText = (EditText) findViewById(R.id.edt_mapActivity_keyWord);
-		confirmtTxt = (TextView) findViewById(R.id.txt_mapactivity_confirm);
+		layoutLayout = (LinearLayout) findViewById(R.id.layout_routeOverlayActivity_layout);
+		positionTxt = (TextView) findViewById(R.id.txt_routeOverlayActivity_position);
+		backLayout = (LinearLayout) findViewById(R.id.layout_routeOverlayActivity_back);
+		searButton = (TextView) findViewById(R.id.txt_routeOverlayActivity_searchButton);
+		searchText = (EditText) findViewById(R.id.edt_routeOverlayActivity_keyWord);
+		confirmTxt = (TextView) findViewById(R.id.txt_routeOverlayActivity_confirm);
+		cancleTxt = (TextView) findViewById(R.id.txt_routeOverlayActivity_cancel);
+		infoLayout = (LinearLayout) findViewById(R.id.layout_routeOverlayActivity_info);
+		routeOverlayList = (ListView) findViewById(R.id.routeOverlayActivity_list);
+		list = new ArrayList<String>();
+		adapter = new RouteOverlayAdapter(RouteOverlayActivity.this, list, aMap);
+
 		searchText.addTextChangedListener(this);// 添加文本输入框监听事件
 		position = getIntent().getIntExtra("position", -1);
+
 	}
 
 	private void initEvent() {
+		cancleTxt.setOnClickListener(this);
 		backLayout.setOnClickListener(this);
 		searButton.setOnClickListener(this);
-		confirmtTxt.setOnClickListener(this);
+		confirmTxt.setOnClickListener(this);
 		searchText.setOnClickListener(this);
+		routeOverlayList.setAdapter(adapter);
 		// layoutLayout.setOnLongClickListener(new OnLongClickListener() {
 		//
 		// @Override
@@ -160,30 +192,36 @@ public class MapActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onClick(View v) {
+		mapScreenMarkers = aMap.getMapScreenMarkers();
+		
 		switch (v.getId()) {
-		case R.id.layout_mapActivity_back:
+		case R.id.layout_routeOverlayActivity_back:
 			finish();
 			break;
 
-		case R.id.txt_mapActivity_searchButton:
+		case R.id.txt_routeOverlayActivity_searchButton:
 
 			isCleanEdit = true;
 			searchButton();
 			break;
 
-		case R.id.txt_mapactivity_confirm:
-			System.out.println(positionTxt.getText().toString().trim());
-			if (!positionTxt.getText().toString().trim().equals("")) {
-				Intent intent = new Intent();
-				intent.putExtra("address", positionTxt.getText().toString()
-						.trim());
-				intent.putExtra("position", position);
-				setResult(2, intent);
-				finish();
-			}
+		case R.id.txt_routeOverlayActivity_confirm:
+			isSelectOk = true;
+			addMarker();
+			mRouteOverlay();
+			infoLayout.setVisibility(View.GONE);
 			break;
 
-		case R.id.edt_mapActivity_keyWord:
+		case R.id.txt_routeOverlayActivity_cancel:
+			isSelectOk = true;
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					mapScreenMarkers.size() + "cancel");
+			mapScreenMarkers.get(mapScreenMarkers.size() - 1).remove();
+			infoLayout.setVisibility(View.GONE);
+
+			break;
+
+		case R.id.edt_routeOverlayActivity_keyWord:
 			if (isCleanEdit) {
 				searchText.setText("");
 				isCleanEdit = false;
@@ -195,11 +233,42 @@ public class MapActivity extends Activity implements OnClickListener,
 		}
 	}
 
+	private void mRouteOverlay() {
+		if (mapScreenMarkers.size() > 1) {
+
+			startPoint = AMapUtil.convertToLatLonPoint(mapScreenMarkers.get(
+					mapScreenMarkers.size() - 2).getPosition());
+			endPoint = AMapUtil.convertToLatLonPoint(mapScreenMarkers.get(
+					mapScreenMarkers.size() - 1).getPosition());
+
+			fromAndTo = new FromAndTo(startPoint, endPoint);// 实例化FromAndTo，字面意思,哪到哪
+			WalkRouteQuery walkRouteQuery = new WalkRouteQuery(fromAndTo,
+					RouteSearch.WalkDefault);
+			routeSearch.calculateWalkRouteAsyn(walkRouteQuery);
+		}
+	}
+
+	private void addMarker() {
+		Toast.makeText(RouteOverlayActivity.this, adress, 0).show();
+		list.add(adress);
+		adapter.notifyDataSetChanged();
+	}
+
+	private void setMarker(LatLonPoint llp) {
+
+		aMap.addMarker(
+				new MarkerOptions()
+						.anchor(0.1f, 0.1f)
+						.icon(BitmapDescriptorFactory
+								.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
+				.setPosition(AMapUtil.convertToLatLng(llp));
+	}
+
 	/**
 	 * 初始化
 	 */
-	private void init() {
-		mapView = (MapView) findViewById(R.id.mapActivity_map);
+	private void initMap() {
+		mapView = (MapView) findViewById(R.id.routeOverlayActivity_map);
 		if (aMap == null) {
 			aMap = mapView.getMap();
 			aMap.getUiSettings().setCompassEnabled(true);
@@ -210,9 +279,12 @@ public class MapActivity extends Activity implements OnClickListener,
 			geoMarker = aMap.addMarker(new MarkerOptions().anchor(0.5f, 0.5f)
 					.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+			routeSearch = new RouteSearch(this);
+			routeSearch.setRouteSearchListener(this);
 			setUpMap();
+
 		}
-		mLocationErrText = (TextView) findViewById(R.id.mapActivity_location_errInfo_text);
+		mLocationErrText = (TextView) findViewById(R.id.routeOverlayActivity_location_errInfo_text);
 		mLocationErrText.setVisibility(View.GONE);
 		aMap.setOnMarkerClickListener(this);// 添加点击marker监听事件
 		aMap.setInfoWindowAdapter(this);// 添加显示infowindow监听事件
@@ -349,7 +421,7 @@ public class MapActivity extends Activity implements OnClickListener,
 		aMap.setMyLocationStyle(myLocationStyle);
 		// 构造 LocationManagerProxy 对象
 		// mAMapLocationManager = LocationManagerProxy
-		// .getInstance(MapActivity.this);
+		// .getInstance(RouteOverlayActivity.this);
 		// 设置定位资源。如果不设置此定位资源则定位按钮不可点击。
 		aMap.setLocationSource(this);
 		// 设置默认定位按钮是否显示
@@ -364,7 +436,7 @@ public class MapActivity extends Activity implements OnClickListener,
 	public void searchButton() {
 		keyWord = AMapUtil.checkEditText(searchText);
 		if ("".equals(keyWord)) {
-			new SystemUtil().makeToast(MapActivity.this, "请输入地址");
+			new SystemUtil().makeToast(RouteOverlayActivity.this, "请输入地址");
 			return;
 		} else {
 			showProgressDialog();
@@ -510,7 +582,8 @@ public class MapActivity extends Activity implements OnClickListener,
 					+ cities.get(i).getCityCode() + "城市编码:"
 					+ cities.get(i).getAdCode() + "\n";
 		}
-		new SystemUtil().makeToast(MapActivity.this, infomation + "infomation");
+		new SystemUtil().makeToast(RouteOverlayActivity.this, infomation
+				+ "infomation");
 
 	}
 
@@ -528,7 +601,7 @@ public class MapActivity extends Activity implements OnClickListener,
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		String newText = s.toString().trim();
-		Inputtips inputTips = new Inputtips(MapActivity.this,
+		Inputtips inputTips = new Inputtips(RouteOverlayActivity.this,
 				new InputtipsListener() {
 
 					@Override
@@ -554,56 +627,13 @@ public class MapActivity extends Activity implements OnClickListener,
 		}
 	}
 
-	/**
-	 * POI信息查询回调方法
-	 */
-	@Override
-	public void onPoiSearched(PoiResult result, int rCode) {
-		dissmissProgressDialog();// 隐藏对话框
-		if (rCode == 0) {
-			if (result != null && result.getQuery() != null) {// 搜索poi的结果
-				if (result.getQuery().equals(query)) {// 是否是同一条
-					poiResult = result;
-					// 取得搜索到的poiitems有多少页
-					List<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-					List<SuggestionCity> suggestionCities = poiResult
-							.getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
-
-					if (poiItems != null && poiItems.size() > 0) {
-						aMap.clear();// 清理之前的图标
-						PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
-						poiOverlay.removeFromMap();
-						poiOverlay.addToMap();
-						poiOverlay.zoomToSpan();
-					} else if (suggestionCities != null
-							&& suggestionCities.size() > 0) {
-						showSuggestCity(suggestionCities);
-					} else {
-						new SystemUtil().makeToast(MapActivity.this,
-								R.string.no_result + "no_result");
-					}
-				}
-			} else {
-				new SystemUtil().makeToast(MapActivity.this, R.string.no_result
-						+ "no_result");
-			}
-		} else if (rCode == 27) {
-			new SystemUtil().makeToast(MapActivity.this, R.string.error_network
-					+ "error_network");
-		} else if (rCode == 32) {
-			new SystemUtil().makeToast(MapActivity.this, R.string.error_key
-					+ "error_key");
-		} else {
-			new SystemUtil().makeToast(MapActivity.this,
-					getString(R.string.error_other) + rCode + "rCode");
-		}
-
-	}
-
 	@Override
 	public void onMapLongClick(LatLng l) {
-		latLonPoint = new LatLonPoint(l.latitude, l.longitude);
-		getAddress(latLonPoint);
+		if (isSelectOk) {
+			isSelectOk = false;
+			latLonPoint = new LatLonPoint(l.latitude, l.longitude);
+			getAddress(latLonPoint);
+		}
 	}
 
 	/**
@@ -646,22 +676,28 @@ public class MapActivity extends Activity implements OnClickListener,
 					&& result.getRegeocodeAddress().getFormatAddress() != null) {
 				addressName = result.getRegeocodeAddress().getFormatAddress()
 						+ "附近";
+
+				adress = result.getRegeocodeAddress().getFormatAddress();
+
 				aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
 						AMapUtil.convertToLatLng(latLonPoint), 15));
-				regeoMarker.setPosition(AMapUtil.convertToLatLng(latLonPoint));
+				infoLayout.setVisibility(View.VISIBLE);
+				setMarker(latLonPoint);
+
+				// regeoMarker.setPosition(AMapUtil.convertToLatLng(latLonPoint));
 				positionTxt.setText(addressName);
 			} else {
-				new SystemUtil().makeToast(MapActivity.this, R.string.no_result
-						+ "no_result");
+				new SystemUtil().makeToast(RouteOverlayActivity.this,
+						R.string.no_result + "no_result");
 			}
 		} else if (rCode == 27) {
-			new SystemUtil().makeToast(MapActivity.this, R.string.error_network
-					+ "error_network");
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					R.string.error_network + "error_network");
 		} else if (rCode == 32) {
-			new SystemUtil().makeToast(MapActivity.this, R.string.error_key
-					+ "error_key");
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					R.string.error_key + "error_key");
 		} else {
-			new SystemUtil().makeToast(MapActivity.this,
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
 					getString(R.string.error_other) + rCode + "rCode");
 		}
 	}
@@ -679,31 +715,31 @@ public class MapActivity extends Activity implements OnClickListener,
 				GeocodeAddress address = result.getGeocodeAddressList().get(0);
 				addressName = "经纬度值:" + address.getLatLonPoint() + "\n位置描述:"
 						+ address.getFormatAddress();
-
-				new SystemUtil().makeToast(MapActivity.this, addressName);
-
+				adress = address.getFormatAddress();
+				new SystemUtil().makeToast(RouteOverlayActivity.this,
+						addressName);
+				infoLayout.setVisibility(View.VISIBLE);
 				aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
 						AMapUtil.convertToLatLng(address.getLatLonPoint()), 15));
-				geoMarker.setPosition(AMapUtil.convertToLatLng(address
-						.getLatLonPoint()));
+
+				setMarker(address.getLatLonPoint());
+
+				// geoMarker.setPosition(AMapUtil.convertToLatLng(address
+				// .getLatLonPoint()));
 				positionTxt.setText(address.getFormatAddress());
 			} else {
-				new SystemUtil().makeToast(MapActivity.this, "对不起，没有搜索到相关地点!");
+				new SystemUtil().makeToast(RouteOverlayActivity.this,
+						"对不起，没有搜索到相关地点!");
 			}
 		} else if (rCode == 27) {
-			new SystemUtil().makeToast(MapActivity.this, "搜索失败,请检查网络连接！");
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					"搜索失败,请检查网络连接！");
 		} else if (rCode == 32) {
-			new SystemUtil().makeToast(MapActivity.this, "key验证无效！");
+			new SystemUtil().makeToast(RouteOverlayActivity.this, "key验证无效！");
 		} else {
-			new SystemUtil().makeToast(MapActivity.this, "未知错误，请稍后重试!错误码为 "
-					+ rCode + "rCode");
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					"未知错误，请稍后重试!错误码为 " + rCode + "rCode");
 		}
-	}
-
-	@Override
-	public void onPoiItemSearched(PoiItem arg0, int arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -716,6 +752,50 @@ public class MapActivity extends Activity implements OnClickListener,
 			finish();
 		}
 		return false;
+	}
+
+	@Override
+	public void onBusRouteSearched(BusRouteResult arg0, int arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onDriveRouteSearched(DriveRouteResult arg0, int arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * 步行路线结果回调
+	 */
+	@Override
+	public void onWalkRouteSearched(WalkRouteResult result, int rCode) {
+		if (rCode == 0) {
+			if (result != null && result.getPaths() != null
+					&& result.getPaths().size() > 0) {
+				walkRouteResult = result;
+				WalkPath walkPath = walkRouteResult.getPaths().get(0);
+				// aMap.clear();// 清理地图上的所有覆盖物
+				WalkRouteOverlayUtil walkRouteOverlay = new WalkRouteOverlayUtil(
+						this, aMap, walkPath, walkRouteResult.getStartPos(),
+						walkRouteResult.getTargetPos());
+				walkRouteOverlay.addToMap();
+			} else {
+				new SystemUtil().makeToast(RouteOverlayActivity.this,
+						R.string.no_result + "no_result");
+			}
+		} else if (rCode == 27) {
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					R.string.error_network + "error_network");
+		} else if (rCode == 32) {
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					R.string.error_key + "error_key");
+		} else {
+			new SystemUtil().makeToast(RouteOverlayActivity.this,
+					getString(R.string.error_other) + rCode + "rCode");
+		}
+
 	}
 
 }

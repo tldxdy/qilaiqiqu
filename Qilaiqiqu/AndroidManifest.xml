@@ -340,15 +340,19 @@
             android:name="com.qizhi.qilaiqiqu.activity.ReleaseActiveActivity"
             android:windowSoftInputMode="adjustPan" >
         </activity>
-        <activity android:name="com.qizhi.qilaiqiqu.activity.SelectImagesActivity" >
-        </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.ActionCenterActivity"
             android:label="@string/title_activity_action_center" >
         </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.SelectImagesActivity" >
+        </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.MessageCenterActivity" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.AppendActivity" >
+        </activity>
+        <activity
+            android:name="com.qizhi.qilaiqiqu.activity.RouteOverlayActivity"
+            android:windowSoftInputMode="adjustResize|adjustPan" >
         </activity>
 
         <receiver android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" >

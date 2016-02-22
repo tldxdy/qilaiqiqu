@@ -158,6 +158,7 @@ public class ReleaseListAdapter extends BaseAdapter {
 
 				Intent intent = new Intent(context, MapActivity.class);
 				intent.putExtra("position", position);
+				intent.putExtra("isFrom", "travels");
 				((Activity) context).startActivityForResult(intent, 2);
 			}
 

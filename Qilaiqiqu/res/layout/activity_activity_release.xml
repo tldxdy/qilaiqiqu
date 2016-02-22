@@ -199,6 +199,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_releaseActiveActivity_routeOverlay"
                 android:layout_width="fill_parent"
                 android:layout_height="44dp"
                 android:gravity="center_vertical"

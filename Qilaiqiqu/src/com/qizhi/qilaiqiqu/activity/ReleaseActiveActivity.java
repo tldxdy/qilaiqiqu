@@ -74,8 +74,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 	private LinearLayout dateLayout;
 	private LinearLayout timeLayout;
 	private LinearLayout backLayout;
-
 	private LinearLayout pictureLayout;
+	private LinearLayout routeOverlayLayout; 
 
 	// private GridView pictureGrid;
 
@@ -186,7 +186,9 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		dateLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_date);
 		timeLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_time);
 		pictureLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_picture);
-
+		
+		routeOverlayLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_routeOverlay);
+		
 		backLayout = (LinearLayout) findViewById(R.id.layout_releaseActiveActivity_back);
 
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
@@ -218,6 +220,9 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		backLayout.setOnClickListener(this);
 
 		releaseTxt.setOnClickListener(this);
+		
+		routeOverlayLayout.setOnClickListener(this);
+		
 		themeEdt.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -319,6 +324,11 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 		case R.id.layout_releaseActiveActivity_back:
 			finish();
+			break;
+
+			
+		case R.id.layout_releaseActiveActivity_routeOverlay:
+			startActivity(new Intent(ReleaseActiveActivity.this, RouteOverlayActivity.class).putExtra("isFrom", "activity"));
 			break;
 
 		default:
