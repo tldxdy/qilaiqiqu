@@ -85,6 +85,17 @@
                 android:divider="#ffffffff"
                 android:dividerHeight="20dp" >
             </ListView>
+            <ProgressBar
+                android:id="@+id/pro_releaseactivity_loading"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:indeterminate="true"
+                android:layout_gravity="center"
+            	android:orientation="vertical"
+            	android:visibility="gone"
+                android:indeterminateDrawable="@drawable/indeterminate_drawable"
+                android:indeterminateDuration="1000" />
+            
             </FrameLayout>
         </LinearLayout>
 

@@ -23,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.qizhi.qilaiqiqu.service.PhotoUploadingService;
-import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 
 import android.content.Context;
@@ -103,8 +102,7 @@ public class FileUploadAsyncTask extends AsyncTask<File, Integer, String> {
 			msg.obj = result;
 			handler.handleMessage(msg);
 		}else{
-			Toasts.show(context, "图片上传失败", 0);
-			//Toast.makeText(context, "图片上传失败", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "图片上传失败", Toast.LENGTH_SHORT).show();
 			Message msg = new Message();
 			msg.what = 2;
 			handler.handleMessage(msg);

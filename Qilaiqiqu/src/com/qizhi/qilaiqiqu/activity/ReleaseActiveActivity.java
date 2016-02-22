@@ -34,7 +34,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
@@ -278,9 +277,6 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 					|| signatureEdt.getText() == null) {
 				new SystemUtil().makeToast(this, "必填项不能为空");
 			} else {
-				String s = dateTxt.getText().toString()+ ":00";
-				
-				
 				if(!falg){
 					Toasts.show(this, "正在发布，请稍候", 0);
 					//new SystemUtil().makeToast(this, "正在发布，请稍候");
@@ -305,20 +301,10 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 			break;
 
 		case R.id.layout_releaseActiveActivity_date:
-			View view = getWindow().peekDecorView();
-	        if (view != null) {
-	            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-	            inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
-	        }
 			showPopupWindowData(v);
 			break;
 
 		case R.id.layout_releaseActiveActivity_time:
-			View view2 = getWindow().peekDecorView();
-	        if (view2 != null) {
-	            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-	            inputmanger.hideSoftInputFromWindow(view2.getWindowToken(), 0);
-	        }
 			showPopupWindowTime(v);
 			break;
 

@@ -1,74 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#66666666"
-    android:gravity="center|bottom"
-    android:id="@+id/quxiao"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="20dp"
-        android:orientation="vertical" >
-
-        <LinearLayout
+            <Button
+                android:id="@+id/btn_personaldataactivity_phone"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_height="44dp"
+                android:background="#efefef"
+                android:layout_gravity="center"
+                android:text="从手机选择"
+                android:textColor="@color/mainActivity_title" />
+            <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/corners_popup_top"
-            android:orientation="vertical" >
-
-
-            <Button
-				android:id="@+id/btn_personaldataactivity_phone"
-                android:layout_width="fill_parent"
-                android:layout_height="44dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/corners_popup_baocun_top_child"
-                android:gravity="center"
-                android:text="从手机选择"
-                android:textColor="@color/mainActivity_title"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#A8A8A8" />
-
+            android:layout_marginTop="1dp"
+            android:orientation="horizontal" />
             <Button
                 android:id="@+id/btn_personaldataactivity_photograph"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/corners_popup_baocun_bottom_child"
-                android:gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#efefef"
+                android:layout_gravity="center"
                 android:text="拍照"
-                android:textColor="@color/mainActivity_title"
-                android:textSize="16sp" />
-            
-        </LinearLayout>
-
-        <LinearLayout
+                android:textColor="@color/mainActivity_title" />
+            <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/corners_popup_bottom"
-            android:orientation="horizontal" >
-
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal" />
             <Button
                 android:id="@+id/btn_personaldataactivity_cancel"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:layout_weight="1"
-                android:background="@drawable/corners_popup_baocun_bottom"
-                android:gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#efefef"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
                 android:text="取消"
                 android:textColor="@color/mainActivity_title" />
-        </LinearLayout>
-    </LinearLayout>
 
 </LinearLayout>

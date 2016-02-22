@@ -291,8 +291,6 @@ public class PersonalDataActivity extends BaseActivity implements
 				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, true);
 
 		popupWindow.setTouchable(true);
-		
-		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
@@ -408,14 +406,11 @@ public class PersonalDataActivity extends BaseActivity implements
 				.findViewById(R.id.btn_personaldataactivity_photograph);
 		phoneBtn = (Button) mview
 				.findViewById(R.id.btn_personaldataactivity_phone);
-		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
 
 		final PopupWindow popupWindow = new PopupWindow(mview,
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, true);
 
 		popupWindow.setTouchable(true);
-		
-		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
@@ -456,20 +451,12 @@ public class PersonalDataActivity extends BaseActivity implements
 				popupWindow.dismiss();
 			}
 		});
-		
-		quxiao.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				popupWindow.dismiss();
-			}
-		});
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.corners_layout));
+				R.color.f8f8));
 		// 设置好参数之后再show
-		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
 
 	}
 
@@ -497,8 +484,6 @@ public class PersonalDataActivity extends BaseActivity implements
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-	
-	
 
 	/**
 	 * 裁剪图片方法实现
@@ -520,10 +505,11 @@ public class PersonalDataActivity extends BaseActivity implements
 		 * actualimagecursor.getString(actual_image_column_index);
 		 */
 		// System.out.println(img_path);
-		
-		Intent intent = new Intent("com.android.camera.action.CROP")
-		.setDataAndType(uri, "image/*").putExtra("crop", "true")
-		.putExtra("return-data", true);
+
+		Intent intent = new Intent("com.android.camera.action.CROP");
+		intent.setDataAndType(uri, "image/*");
+		// 设置裁剪
+		intent.putExtra("crop", "true");
 		// aspectX aspectY 是宽高的比例
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);

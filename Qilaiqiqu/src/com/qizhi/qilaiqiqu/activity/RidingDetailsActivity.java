@@ -129,8 +129,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private String jpushFlag;
 
 	private int num = 0;
-	
-	private int _id = 0;
 
 	private List<String> imgListUrl;
 	
@@ -223,8 +221,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		isMe = getIntent().getBooleanExtra("isMe", false);
 		ReleaseActivityfalg = getIntent().getBooleanExtra(
 				"ReleaseActivityfalg", false);
-		
-		_id = getIntent().getIntExtra("_id", 0);
 		if (isMe) {
 			cllectionImg.setVisibility(View.GONE);
 			layout_isShow.setVisibility(View.GONE);
@@ -353,14 +349,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
 					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
 					startService(intent);
-					
-					
-					
-					Intent intent2 = new Intent();
-					intent.putExtra("_id", _id);
-					setResult(100,intent2);
-					finish();
-					
 					//loadingLayout.setVisibility(View.VISIBLE);
 				/*if (previewList.size() != 0) {
 					File file = new File(previewList.get(num).getArticleImage());
@@ -546,8 +534,6 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 
 		popupWindow.setTouchable(true);
-		
-		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 

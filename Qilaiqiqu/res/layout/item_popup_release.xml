@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="#66666666"
-    android:gravity="center|bottom"
-    android:id="@+id/quxiao"
+    android:background="#00ffffff"
     android:orientation="vertical" >
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="312dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_gravity="center"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -22,43 +18,43 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/baocun"
                 android:layout_width="fill_parent"
                 android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/corners_popup_baocun_top_child"
+                android:background="@drawable/corners_popup_top_child"
                 android:gravity="center"
                 android:text="请选择发布内容"
                 android:textColor="#959595"
                 android:textSize="12sp" />
 
-            <View
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
-                android:background="#A8A8A8" />
+                android:background="#A8A8A8" >
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txt_releasePopup_youji"
                 android:layout_width="fill_parent"
                 android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
-                android:background="#ffffff"
+                android:background="#99F9F9F9"
                 android:gravity="center"
                 android:text="发布骑游记"
                 android:textColor="@color/mainActivity_title"
                 android:textSize="16sp" />
 
-            <View
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
-                android:background="#A8A8A8" />
-
-            <TextView
+                android:background="#A8A8A8" >
+            </LinearLayout>
+            <TextView
                 android:id="@+id/txt_releasePopup_active"
                 android:layout_width="fill_parent"
                 android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/corners_popup_baocun_bottom_child"
+                android:background="@drawable/corners_popup_bottom_child"
                 android:gravity="center"
                 android:text="发布活动"
                 android:textColor="@color/mainActivity_title"
@@ -77,9 +73,9 @@
                 android:layout_width="0dp"
                 android:layout_height="44dp"
                 android:layout_weight="1"
-                android:background="@drawable/corners_popup_baocun_bottom"
+                android:background="@drawable/corners_popup_bottom"
                 android:gravity="center"
-                android:text="取消"
+                android:text="退出"
                 android:textColor="@color/mainActivity_title" />
         </LinearLayout>
     </LinearLayout>

@@ -1,6 +1,5 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +28,8 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.RidingListAdapter;
 import com.qizhi.qilaiqiqu.model.CollectModel;
-import com.qizhi.qilaiqiqu.model.RidingDraftModel;
 import com.qizhi.qilaiqiqu.model.RidingModel;
 import com.qizhi.qilaiqiqu.model.RidingModelList;
-import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
-import com.qizhi.qilaiqiqu.sqlite.DBManager;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView;
 import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -59,15 +55,12 @@ public class RidingActivity extends Activity implements OnClickListener,
 	private PullFreshListView ridingList;
 
 	private List<RidingModelList> list;
-	private List<RidingDraftModel> rDraftModels;
 	private XUtilsUtil xUtilsUtil;
 	private RidingModel ridingModel;
 	private SharedPreferences preferences;
 	
 	private int pageIndex = 1;
 	private boolean isFirst = true;
-	
-	private DBManager dbManager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +74,6 @@ public class RidingActivity extends Activity implements OnClickListener,
 	}
 
 	private void initView() {
-		dbManager = new DBManager(this);
 		ridingModel = new RidingModel();
 		list = new ArrayList<RidingModelList>();
 		xUtilsUtil = new XUtilsUtil();
@@ -89,8 +81,6 @@ public class RidingActivity extends Activity implements OnClickListener,
 		
 		layoutBtn = (LinearLayout) findViewById(R.id.layout_ridingActivity_back);
 		ridingList = (PullFreshListView) findViewById(R.id.list_ridingActivity_riding);
-		
-		
 		
 	}
 
@@ -102,26 +92,11 @@ public class RidingActivity extends Activity implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View view, int position,
 			long arg3) {
-		if(position <= rDraftModels.size()){
-			System.out.println();
-			Intent intent = new Intent(this, ReleaseActivity.class);
-			Gson gson = new Gson();
-			Type type = new TypeToken<List<TravelsinformationModel>>(){}.getType();
-			List<TravelsinformationModel> trList = gson.fromJson(rDraftModels.get(position - 1).getJsonString(), type);
-			System.out.println(rDraftModels.size()  + "-----------" + position);
-			
-			intent.putExtra("_id", rDraftModels.get(position - 1).get_id());
-			intent.putExtra("list", (Serializable) trList);
-			startActivity(intent);
-			return;
-		}else{
-			Intent intent = new Intent(RidingActivity.this,
-					RidingDetailsActivity.class);
-			intent.putExtra("isMe", true);
-			intent.putExtra("articleId",list.get(position - rDraftModels.size() - 1).getArticleId() );
-			startActivity(intent);
-		}
-		
+		Intent intent = new Intent(RidingActivity.this,
+				RidingDetailsActivity.class);
+		intent.putExtra("isMe", true);
+		intent.putExtra("articleId",list.get(position-1).getArticleId() );
+		startActivity(intent);
 	}
 
 	@Override
@@ -142,8 +117,8 @@ public class RidingActivity extends Activity implements OnClickListener,
 	
 	@Override
 	protected void onStart() {
-		rDraftModels = dbManager.queryAll();
 		httpRiding();
+		
 		super.onStart();
 	}
 
@@ -174,7 +149,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 			ridingModel = gson.fromJson(jsonObject.toString(), type);
 			if(isFirst){
 				list = ridingModel.getDataList();
-				adapter = new RidingListAdapter(this, list , rDraftModels);
+				adapter = new RidingListAdapter(this, list);
 				ridingList.setAdapter(adapter);
 				ridingList.setDividerHeight(0);
 				ridingList.setOnItemClickListener(this);
