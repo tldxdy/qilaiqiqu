@@ -1043,11 +1043,15 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				.findViewById(R.id.txt_releasePopup_active);
 		TextView cancelTxt = (TextView) mview
 				.findViewById(R.id.txt_releasePopup_cancel);
+		
+		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
 
 		final PopupWindow popupWindow = new PopupWindow(mview,
-				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, true);
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
+		
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
@@ -1059,6 +1063,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				return false;
 				// 这里如果返回true的话，touch事件将被拦截
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+		
+		quxiao.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
 			}
 		});
 
