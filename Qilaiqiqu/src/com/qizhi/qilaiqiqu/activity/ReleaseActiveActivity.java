@@ -123,7 +123,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 					if(uploadingNum == bitList.size()){
 						StringBuffer s = new StringBuffer();
 						for(int i = 0; i < photoList.size(); i++){
-							s.append(photoList.get(i).split("@")[0]);
+							s.append(photoList.get(i));
 							if(photoList.size() - 1 != i){
 								s.append(",");
 							}

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -34,9 +35,10 @@ import com.qizhi.qilaiqiqu.model.RidingModel;
 import com.qizhi.qilaiqiqu.model.RidingModelList;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.sqlite.DBManager;
-import com.qizhi.qilaiqiqu.ui.PullFreshListView;
-import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
@@ -48,7 +50,8 @@ import com.umeng.analytics.MobclickAgent;
  */
 
 public class RidingActivity extends Activity implements OnClickListener,
-		OnItemClickListener, CallBackPost,OnRefreshListener {
+		OnItemClickListener, CallBackPost,OnRefreshListener,
+		OnLoadListener {
 
 	public static RidingActivity ridingActivity;
 
@@ -56,13 +59,16 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 	private LinearLayout layoutBtn;
 
-	private PullFreshListView ridingList;
+	private ListView ridingList;
 
 	private List<RidingModelList> list;
 	private List<RidingDraftModel> rDraftModels;
 	private XUtilsUtil xUtilsUtil;
 	private RidingModel ridingModel;
 	private SharedPreferences preferences;
+	
+	private RefreshLayout swipeLayout;
+	private View header;
 	
 	private int pageIndex = 1;
 	private boolean isFirst = true;
@@ -88,8 +94,15 @@ public class RidingActivity extends Activity implements OnClickListener,
 		preferences = getSharedPreferences("userLogin",Context.MODE_PRIVATE);
 		
 		layoutBtn = (LinearLayout) findViewById(R.id.layout_ridingActivity_back);
-		ridingList = (PullFreshListView) findViewById(R.id.list_ridingActivity_riding);
-		
+		ridingList = (ListView) findViewById(R.id.list_ridingActivity_riding);
+		header = getLayoutInflater().inflate(R.layout.header, null);
+		swipeLayout = (RefreshLayout) findViewById(R.id.swipe_container);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
+				android.R.color.holo_green_light,
+				android.R.color.holo_orange_light,
+				android.R.color.holo_red_light);
+		ridingList.addHeaderView(header);
 		
 		
 	}
@@ -97,8 +110,9 @@ public class RidingActivity extends Activity implements OnClickListener,
 	private void initEvent() {
 		layoutBtn.setOnClickListener(this);
 		ridingList.setOnItemClickListener(this);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);
 	}
-
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View view, int position,
 			long arg3) {
@@ -178,24 +192,25 @@ public class RidingActivity extends Activity implements OnClickListener,
 				ridingList.setAdapter(adapter);
 				ridingList.setDividerHeight(0);
 				ridingList.setOnItemClickListener(this);
-				ridingList.setOnRefreshListener(this);
+				//ridingList.setOnRefreshListener(this);
+				swipeLayout.setRefreshing(false);
 			}else{
 				list.addAll(ridingModel.getDataList());
+				swipeLayout.setLoading(false);
 			}
 			adapter.notifyDataSetChanged();
-			ridingList.finishRefreshing();
+			//ridingList.finishRefreshing();
 			if(ridingModel.getDataList().size() == 0){
 				new SystemUtil().makeToast(this,
 						"已显示全部内容");
 			}
-			
 			
 		}
 	}
 
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-
+		swipeLayout.setRefreshing(false);
 	}
 
 	@Override
@@ -212,6 +227,33 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onRefresh() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				pageIndex = 1;
+				isFirst = true;
+				httpRiding();
+			}
+		}, 1500);
+
+	}
+
+	@Override
+	public void onLoad() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				pageIndex = pageIndex + 1;
+				isFirst = false;
+				httpRiding();
+			}
+		}, 1500);
+	}
+
+/*	@Override
+	public void onRefresh() {
 		pageIndex = 1;
 		isFirst = true;
 		httpRiding();
@@ -223,5 +265,5 @@ public class RidingActivity extends Activity implements OnClickListener,
 		isFirst = false;
 		httpRiding();
 	}
-
+*/
 }

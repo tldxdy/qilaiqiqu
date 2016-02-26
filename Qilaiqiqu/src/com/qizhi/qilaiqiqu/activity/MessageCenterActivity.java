@@ -37,7 +37,7 @@ public class MessageCenterActivity extends FragmentActivity implements OnClickLi
 		historyTxt = (TextView) findViewById(R.id.txt_actioncenteractivity_history);
 		backLayout = (LinearLayout) findViewById(R.id.layout_actioncenteractivity_back);
 		titleTxt.setText("消息中心");
-		manageTxt.setText("聊天");
+		manageTxt.setText("聊天记录");
 		historyTxt.setText("系统消息");
 		MessageCenterFragmentPagerAdapter adapter=new MessageCenterFragmentPagerAdapter(
 				getSupportFragmentManager());//需要继承FragmentActivity

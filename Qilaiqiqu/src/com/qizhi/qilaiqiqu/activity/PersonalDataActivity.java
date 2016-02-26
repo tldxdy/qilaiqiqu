@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.File;
 import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,12 +12,14 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -472,6 +475,29 @@ public class PersonalDataActivity extends BaseActivity implements
 		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
 
 	}
+	
+	/** 指定拍摄图片文件位置避免获取到缩略图 */
+	File outFile;
+
+	/** 打开相机 */
+	private void openCamera() {
+		String state = Environment.getExternalStorageState();
+		if (state.equals(Environment.MEDIA_MOUNTED)) {
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			File outDir = Environment
+					.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+			if (!outDir.exists()) {
+				outDir.mkdirs();
+			}
+			outFile = new File(outDir, System.currentTimeMillis() + ".jpg");
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outFile));
+			intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+			startActivityForResult(intent, CAMERA_REQUEST_CODE);
+		} else {
+			Log.e("CAMERA", "请确认已经插入SD卡");
+		}
+	}
+	
 
 	/**
 	 * 回调

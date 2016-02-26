@@ -167,6 +167,14 @@
     <string name="text_appendActivity_title">已报名查看</string>
 
     <string name="text_groupActivity_title">群成员</string>    
+    <string name="text_releaseactivity_save">保存草稿</string>
+    <string name="text_mainactivity_traves">骑游记</string>
+    <string name="text_mainactivity_active">活动</string>
+        <string name="basic_action_1">删除</string>
+    <string name="basic_action_2">Action_2</string>
+    <string name="str_orange">#fe7b27</string>
+    <string name="news_content">消息内容</string>
+    <string name="name_chat">聊天名称</string>    
     <string name="text_releaseactivity_save">保存草稿</string>    
     <string name="text_ChatActivity_title">聊天</string>
     </resources>

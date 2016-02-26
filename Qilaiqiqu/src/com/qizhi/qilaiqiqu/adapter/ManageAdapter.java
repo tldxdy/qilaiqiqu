@@ -88,7 +88,7 @@ public class ManageAdapter extends BaseAdapter {
 			if(list.get(position).isInvolved()){
 				holder.applyTxt.setText("已报名");
 			}else{
-				holder.applyTxt.setText("为报名");
+				holder.applyTxt.setText("未报名");
 			}
 		}
 		holder.photoImg.setImageResource(R.drawable.bitmap_homepage);

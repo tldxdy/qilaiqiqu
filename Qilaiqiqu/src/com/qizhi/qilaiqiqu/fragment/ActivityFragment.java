@@ -1,6 +1,5 @@
 package com.qizhi.qilaiqiqu.fragment;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +16,12 @@ import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,9 +35,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class ManageFragment extends Fragment  implements OnItemClickListener,CallBackPost,OnRefreshListener,
+public class ActivityFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,
 OnLoadListener{
-
+	
 	private ListView manageList;
 	private View view;
 	private List<StartAndParticipantActivityModel> dataList;
@@ -48,6 +48,9 @@ OnLoadListener{
 	private int pageIndex = 1;
 	private RefreshLayout swipeLayout;
 	private View header;
+	
+	@SuppressLint("InlinedApi")
+	@SuppressWarnings("deprecation")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -59,7 +62,6 @@ OnLoadListener{
 		dataList = new ArrayList<StartAndParticipantActivityModel>();
 		header = View.inflate(getActivity(),R.layout.header, null);
 		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
-		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
@@ -68,11 +70,11 @@ OnLoadListener{
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setOnLoadListener(this);
 		
+		data();
 		return view;
 	}
 	@Override
 	public void onResume() {
-		data();
 		super.onResume();
 	}
 	private void data() {
@@ -82,9 +84,8 @@ OnLoadListener{
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize",  "10");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/activity/queryUserRelevantActivityStateUnderwayList.html", params, this);
+		xUtilsUtil.httpPost("common/queryHotActivity.html", params, this);
 	}
-	
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
 		String s = responseInfo.result;
@@ -109,29 +110,23 @@ OnLoadListener{
 	public void onMyFailure(HttpException error, String msg) {
 		
 	}
-	
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
-		intent.putExtra("activityId", dataList.get(position - 1).getActivityId());
-		getActivity().startActivity(intent);
-	}
-
-
 /*	@Override
 	public void onRefresh() {
 		pageIndex = 1;
 		dataJ();
-		
 	}
-
-
 	@Override
 	public void onLoadingMore() {
 		pageIndex = pageIndex + 1;
 		dataJ();
 	}*/
-	
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+		//Toasts.show(context, "点击" + position, 0);
+		Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
+		intent.putExtra("activityId", dataList.get(position - 1).getActivityId());
+		getActivity().startActivity(intent);
+	}
 	
 	private void dataJ() {
 		RequestParams params = new RequestParams();
@@ -139,7 +134,7 @@ OnLoadListener{
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize",  "10");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/activity/queryUserRelevantActivityStateUnderwayList.html", params, new CallBackPost() {
+		xUtilsUtil.httpPost("common/queryHotActivity.html", params, new CallBackPost() {
 			
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {
@@ -159,14 +154,14 @@ OnLoadListener{
 					
 					if(pageIndex == 1){
 						dataList = lists;
-						new SystemUtil().makeToast(getActivity(), "刷新成功");
+						Toasts.show(getActivity(), "刷新成功", 0);
 					}else if(1 < pageIndex && pageIndex <= pageCount){
 						dataList.addAll(lists);
-						new SystemUtil().makeToast(getActivity(), "加载成功");
+						Toasts.show(getActivity(), "加载成功", 0);
 					}
 					
 				}else{
-					new SystemUtil().makeToast(getActivity(),	jsonObject.optString("message") );
+					Toasts.show(getActivity(), jsonObject.optString("message"), 0);
 				}
 				// 更新UI
 				adapter.notifyDataSetChanged();
@@ -215,7 +210,9 @@ OnLoadListener{
 				// 更新完后调用该方法结束刷新
 				pageIndex = pageIndex + 1;
 				dataJ();
+				
 			}
 		}, 1000);
 	}
+
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" 
+        android:gravity="center_vertical">
+
+    <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
+            android:id="@+id/img_chatrecordframent_portrait"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            app:border_width="0dp" 
+            app:border_color="@color/light"
+            android:src="@drawable/homepage_picture"/>
+ 	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/txt_chatrecordframent_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="#6dbfed"
+            android:text="@string/name_chat" />
+        <TextView
+            android:id="@+id/txt_chatrecordframent_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="@string/news_content" />
+        </LinearLayout>
+        
+    </LinearLayout>
+
+</LinearLayout>

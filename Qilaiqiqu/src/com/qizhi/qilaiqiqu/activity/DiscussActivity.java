@@ -14,16 +14,18 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.DiscussListAdapter;
 import com.qizhi.qilaiqiqu.model.CommentPaginationListModel;
 import com.qizhi.qilaiqiqu.model.RidingCommentModel;
-import com.qizhi.qilaiqiqu.ui.PullFreshListView;
-import com.qizhi.qilaiqiqu.ui.PullFreshListView.OnRefreshListener;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,11 +45,12 @@ import android.widget.ListView;
  * 
  */
 public class DiscussActivity extends Activity implements OnClickListener,
-		OnItemClickListener, OnTouchListener, OnRefreshListener{
+		OnItemClickListener, OnTouchListener,OnRefreshListener,
+		OnLoadListener{
 
 	private LinearLayout backLayout;
 
-	private PullFreshListView discussList;
+	private ListView discussList;
 
 	private EditText contentEdit;
 
@@ -70,6 +73,9 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	
 	
 	private int pageIndex = 1;
+	
+	private RefreshLayout swipeLayout;
+	private View header;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +101,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 		contentEdit = (EditText) findViewById(R.id.edt__discussactivity_content);
 
-		discussList = (PullFreshListView) findViewById(R.id.list_discussactivity_discuss);
+		discussList = (ListView) findViewById(R.id.list_discussactivity_discuss);
 		superId =getIntent().getIntExtra("commentId", -1);
 		if(superId != -1){
 			//contentEdit.setHint("回复" + list.get(position).getUserName() + ":");
@@ -103,6 +109,15 @@ public class DiscussActivity extends Activity implements OnClickListener,
 			imm.showSoftInputFromInputMethod(contentEdit.getWindowToken(), 0);
 			imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 		}
+		header = View.inflate(this,R.layout.header, null);
+		swipeLayout = (RefreshLayout) findViewById(R.id.swipe_container);
+		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
+				android.R.color.holo_green_light,
+				android.R.color.holo_orange_light,
+				android.R.color.holo_red_light);
+		discussList.addHeaderView(header);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);
 	}
 
 	private void initEvent() {
@@ -153,17 +168,23 @@ public class DiscussActivity extends Activity implements OnClickListener,
 							contentEdit.setText("");
 							contentEdit.setHint("说几句吧");
 							if(flag){
-								new SystemUtil().makeToast(DiscussActivity.this,
-										"评论成功");
+								Toasts.show(DiscussActivity.this,
+										"评论成功", 0);
+								/*new SystemUtil().makeToast(DiscussActivity.this,
+										"评论成功");*/
 							}else{
-								new SystemUtil().makeToast(DiscussActivity.this,
-										"回复成功");
+								Toasts.show(DiscussActivity.this,
+										"回复成功", 0);
+								/*new SystemUtil().makeToast(DiscussActivity.this,
+										"回复成功");*/
 							}
 							discussBtn.setText("评论");
 							
 							imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
 						}else{
-							new SystemUtil().makeToast(DiscussActivity.this,jsonObject.optString("message"));
+							Toasts.show(DiscussActivity.this,
+									jsonObject.optString("message"), 0);
+							//new SystemUtil().makeToast(DiscussActivity.this,jsonObject.optString("message"));
 						}
 						flag = true;
 						pageIndex = 1;
@@ -188,10 +209,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
 						String s = responseInfo.result;
-						System.out.println("------------------------------------------");
-						System.out.println(s);
-						System.out.println("------------------------------------------");
-						
 						JSONObject jsonObject = null;
 						try {
 							jsonObject = new JSONObject(s);
@@ -206,28 +223,24 @@ public class DiscussActivity extends Activity implements OnClickListener,
 									jsonObject.toString(), type);
 
 							list = commentPaginationListModel.getDataList();
-							System.out.println("------------------------------------------");
-							System.out.println(list.size());
-							System.out.println("------------------------------------------");
 							adapter = new DiscussListAdapter(
 									DiscussActivity.this, list);
 							discussList.setAdapter(adapter);
 							discussList.setOnTouchListener(DiscussActivity.this);
 							
 							discussList.setOnItemClickListener(DiscussActivity.this);
-							discussList.setOnRefreshListener(DiscussActivity.this);
+						//	discussList.setOnRefreshListener(DiscussActivity.this);
 							
 						}else{
-							new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
-							System.out.println("------------------------------------------");
-							System.out.println(jsonObject.optString("message"));
-							System.out.println("------------------------------------------");
+							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
+							//new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil().makeToast(DiscussActivity.this, msg);
+						Toasts.show(DiscussActivity.this, msg, 0);
+						//new SystemUtil().makeToast(DiscussActivity.this, msg);
 					}
 				});
 	}
@@ -296,7 +309,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		return super.onTouchEvent(event);
 	}
 
-	@Override
+/*	@Override
 	public void onRefresh() {
 		pageIndex = 1;
 		dataJ();
@@ -306,7 +319,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	public void onLoadingMore() {
 		pageIndex = pageIndex + 1;
 		dataJ();
-	}
+	}*/
 
 	private void dataJ() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -340,22 +353,62 @@ public class DiscussActivity extends Activity implements OnClickListener,
 								list.addAll(lists);
 							}
 						adapter.notifyDataSetChanged();
-						discussList.finishRefreshing();
+						//discussList.finishRefreshing();
 						
 							
 						}else{
-							new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
+							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
+							//new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
 							System.out.println("------------------------------------------");
 							System.out.println(jsonObject.optString("message"));
 							System.out.println("------------------------------------------");
 							
 						}
+						if(pageIndex == 1){
+							swipeLayout.setRefreshing(false);
+						}else{
+							swipeLayout.setLoading(false);
+						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-
+						if(pageIndex == 1){
+							swipeLayout.setRefreshing(false);
+						}else{
+							swipeLayout.setLoading(false);
+						}
 					}
 				});
+	}
+
+	@Override
+	public void onRefresh() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				pageIndex = 1;
+				dataJ();
+				// 更新数据
+				// 更新完后调用该方法结束刷新
+				
+			}
+		}, 1000);
+
+	}
+
+	@Override
+	public void onLoad() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				// 更新数据
+				// 更新完后调用该方法结束刷新
+				pageIndex = pageIndex + 1;
+				dataJ();
+			}
+		}, 1000);
 	}
 }

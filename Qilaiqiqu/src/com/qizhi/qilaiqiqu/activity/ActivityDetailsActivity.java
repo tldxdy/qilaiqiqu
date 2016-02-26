@@ -514,7 +514,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 					.load(R.drawable.bitmap_homepage).into(userImageImg);
 		} else {
 			Picasso.with(ActivityDetailsActivity.this)
-					.load(imageUrl + activity.getUserImage())
+					.load(imageUrl + activity.getUserImage().split("@")[0])
 					.into(userImageImg);
 		}
 
@@ -523,7 +523,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				|| "".equals(activity.getActivityImage())) {
 			IClist.add(new ImageCycleViewUtil.ImageInfo(
 					"http://weride.oss-cn-hangzhou.aliyuncs.com/"
-							+ activity.getDefaultImage(), null, null, null));
+							+ activity.getDefaultImage().split("@")[0], null, null, null));
 		} else {
 
 			String[] split = activity.getActivityImage().split(",");

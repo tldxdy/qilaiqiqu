@@ -99,7 +99,7 @@ public class SystemUtil {
 			int hh = Integer.parseInt(h);
 			//System.out.println(ss.split("h")[0] + ss.split("h")[1]);
 			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+s[0])
-			.resize(screenWidth/2, hh * screenWidth / ww/2).centerInside()
+			.resize(screenWidth, hh * screenWidth / ww).centerInside()
 			.placeholder(R.drawable.bitmap_homepage)
 			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);

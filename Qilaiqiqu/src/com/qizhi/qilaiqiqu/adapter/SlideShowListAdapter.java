@@ -57,18 +57,17 @@ public class SlideShowListAdapter extends BaseAdapter {
 
 	// private boolean falg = false;
 
-	private ImageCycleViewUtil mImageCycleView;
+	//private ImageCycleViewUtil mImageCycleView;
 
 	private XUtilsUtil xUtilsUtil;
 	private SharedPreferences preferences;
 
-	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
+	//List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
-	public SlideShowListAdapter(Context context, List<ArticleModel> list,
-			List<ImageCycleViewUtil.ImageInfo> IClist) {
+	public SlideShowListAdapter(Context context, List<ArticleModel> list) {
 		this.context = context;
 		this.list = list;
-		this.IClist = IClist;
+		//this.IClist = IClist;
 		inflater = LayoutInflater.from(context);
 		preferences = context.getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
@@ -77,7 +76,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return list.size() + 1;
+		return list.size();
 	}
 
 	@Override
@@ -93,7 +92,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public View getView(final int position, View view, ViewGroup arg2) {
-		if (position == 0) {
+/*		if (position == 0) {
 			view = inflater.inflate(R.layout.item_list_mainactivity_header,
 					null);
 			mImageCycleView = (ImageCycleViewUtil) view
@@ -148,7 +147,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 						}
 					});
 			return view;
-		}
+		}*/
 
 		if (view == null || view.getTag() == null) {
 			holder = new ViewHolder();
@@ -174,16 +173,16 @@ public class SlideShowListAdapter extends BaseAdapter {
 			holder = (ViewHolder) view.getTag();
 		}
 
-		holder.timeTxt.setText(list.get(position - 1).getCreateDate()
+		holder.timeTxt.setText(list.get(position).getCreateDate()
 				.substring(0, 10));
-		holder.titleTxt.setText(list.get(position - 1).getTitle());
-		holder.byBrowseTxt.setText(list.get(position - 1).getScanNum()
-				+ list.get(position - 1).getVirtualScan() + "次浏览");
-		holder.likeTxt.setText((list.get(position - 1).getPraiseNum() + list
-				.get(position - 1).getVirtualPraise()) + "");
+		holder.titleTxt.setText(list.get(position).getTitle());
+		holder.byBrowseTxt.setText(list.get(position).getScanNum()
+				+ list.get(position).getVirtualScan() + "次浏览");
+		holder.likeTxt.setText((list.get(position).getPraiseNum() + list
+				.get(position).getVirtualPraise()) + "");
 
 		if(!scrollState){
-			SystemUtil.loadImagexutils(list.get(position - 1).getUserImage(),
+			SystemUtil.loadImagexutils(list.get(position).getUserImage(),
 					holder.photoImg, context);
 		}else{
 			holder.photoImg.setImageResource(R.drawable.homepage_picture);
@@ -199,7 +198,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 		 */
 
 		// holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
-		if (list.get(position - 1).getDefaultShowImage() != null && !scrollState) {
+		if (list.get(position).getDefaultShowImage() != null && !scrollState) {
 			/*
 			 * String internetUrl =
 			 * "http://weride.oss-cn-hangzhou.aliyuncs.com/" + list.get(position
@@ -207,7 +206,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 			 */
 
 			SystemUtil.Imagexutils(
-					list.get(position - 1).getDefaultShowImage(),
+					list.get(position).getDefaultShowImage(),
 					holder.backgroundImg, context);
 			/*
 			 * Picasso.with(context).load(internetUrl).resize(800, 480)
@@ -224,12 +223,12 @@ public class SlideShowListAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				System.out.println(position);
 				Intent intent = new Intent(context, PersonActivity.class);
-				intent.putExtra("userId", list.get(position - 1).getUserId());
+				intent.putExtra("userId", list.get(position).getUserId());
 				context.startActivity(intent);
 
 			}
 		});
-		if (list.get(position - 1).isPraised()) {
+		if (list.get(position).isPraised()) {
 			holder.likeImg.setImageResource(R.drawable.like_press);
 			holder.likeTxt.setTextColor(0xffffffff);
 
@@ -243,11 +242,11 @@ public class SlideShowListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				if (list.get(position - 1).isPraised()) {
+				if (list.get(position).isPraised()) {
 					RequestParams params = new RequestParams();
 					params.addBodyParameter("userId",
 							preferences.getInt("userId", -1) + "");
-					params.addBodyParameter("articleId", list.get(position - 1)
+					params.addBodyParameter("articleId", list.get(position)
 							.getArticleId() + "");
 					params.addBodyParameter("uniqueKey",
 							preferences.getString("uniqueKey", null));
@@ -266,10 +265,10 @@ public class SlideShowListAdapter extends BaseAdapter {
 										e.printStackTrace();
 									}
 									if (jsonObject.optBoolean("result")) {
-										list.get(position - 1)
+										list.get(position)
 												.setPraised(false);
-										list.get(position - 1).setPraiseNum(
-												list.get(position - 1)
+										list.get(position).setPraiseNum(
+												list.get(position)
 														.getPraiseNum() - 1);
 										notifyDataSetChanged();
 									}
@@ -285,7 +284,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 					RequestParams params = new RequestParams();
 					params.addBodyParameter("userId",
 							preferences.getInt("userId", -1) + "");
-					params.addBodyParameter("articleId", list.get(position - 1)
+					params.addBodyParameter("articleId", list.get(position)
 							.getArticleId() + "");
 					params.addBodyParameter("uniqueKey",
 							preferences.getString("uniqueKey", null));
@@ -305,12 +304,12 @@ public class SlideShowListAdapter extends BaseAdapter {
 											e.printStackTrace();
 										}
 										if (jsonObject.optBoolean("result")) {
-											list.get(position - 1).setPraised(
+											list.get(position).setPraised(
 													true);
-											list.get(position - 1)
+											list.get(position)
 													.setPraiseNum(
 															list.get(
-																	position - 1)
+																	position)
 																	.getPraiseNum() + 1);
 											notifyDataSetChanged();
 										}

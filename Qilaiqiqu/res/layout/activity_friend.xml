@@ -56,6 +56,7 @@
             android:layout_weight="1"
             android:background="@drawable/corners_fragment_unpress_left"
             android:gravity="center"
+            android:textColor="#6dbfed"
             android:text="你的粉丝" />
 
         <TextView
@@ -66,6 +67,7 @@
             android:layout_weight="1"
             android:background="@drawable/corners_fragment_unpress_right"
             android:gravity="center"
+            android:textColor="#6dbfed"
             android:text="你关注的" />
     </LinearLayout>
 
