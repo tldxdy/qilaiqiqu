@@ -24,6 +24,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -34,9 +35,9 @@ import com.qizhi.qilaiqiqu.model.ActivityModel;
 import com.qizhi.qilaiqiqu.model.ActivityModel.Activitys;
 import com.qizhi.qilaiqiqu.utils.CircleImageViewUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
-import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
@@ -149,7 +150,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		mImageCycleView = (ImageCycleViewUtil) findViewById(R.id.icc_activityDetails);
 
 		isSignTxt1 = (TextView) findViewById(R.id.txt_activityDetails_txt1);
-		isSignTxt2 = (TextView) findViewById(R.id.txt_activityDetails_txt2);
+		isSignTxt2 = (TextView) findViewById(R.id.txt_activityDetails_chat);
 		isSignTxt3 = (TextView) findViewById(R.id.txt_activityDetails_txt3);
 		isMelayout1 = (LinearLayout) findViewById(R.id.layout_activityDetails_button1);
 		isMelayout2 = (LinearLayout) findViewById(R.id.layout_activityDetails_button2);
@@ -181,28 +182,31 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		case R.id.txt_activityDetails_txt1:
 			if (isMe == 1) {
 				Toasts.show(this, "我发起的", 0);
-				//new SystemUtil().makeToast(this, "我发起的");
+				// new SystemUtil().makeToast(this, "我发起的");
 			} else if (isMe == 2) {
 				Toasts.show(this, "已报名", 0);
-				//new SystemUtil().makeToast(this, "已报名");
+				// new SystemUtil().makeToast(this, "已报名");
 			}
 			break;
 
-		case R.id.txt_activityDetails_txt2:
-			if (isMe == 3) {
-				Toasts.show(this, "点击聊天isMe == 3", 0);
-				//new SystemUtil().makeToast(this, "去聊天isMe == 3");
-			} else if (isMe == 1) {
-				Toasts.show(this, "点击聊天isMe == 1", 0);
-				//new SystemUtil().makeToast(this, "去聊天isMe == 1");
-
-			}
+		case R.id.txt_activityDetails_chat:
+			
+			startActivity(new Intent(ActivityDetailsActivity.this,
+					ChatActivity.class).putExtra("Group", "Group").putExtra(
+					"username", activity.getImGroupId()));
+			Toasts.show(this, activity.getImGroupId(), 0);
+			
+			// if (isMe == 3) {
+			// Toasts.show(this, "点击聊天isMe == 3", 0);
+			// } else if (isMe == 1) {
+			// Toasts.show(this, "点击聊天isMe == 1", 0);
+			// }
 			break;
 
 		case R.id.txt_activityDetails_txt3:
 			if (sharedPreferences.getInt("userId", -1) == -1) {
 				Toasts.show(this, "请登录", 0);
-				//new SystemUtil().makeToast(this, "请登录");
+				// new SystemUtil().makeToast(this, "请登录");
 				Intent intent = new Intent(this, LoginActivity.class);
 				startActivity(intent);
 				break;
@@ -230,15 +234,23 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 										isSignTxt1.setText("已报名");
 										isSignTxt2.setText("去聊天");
 										isMelayout2.setVisibility(View.GONE);
-										Toasts.show(ActivityDetailsActivity.this, "已成功报名", 0);
-										/*new SystemUtil().makeToast(
+										Toasts.show(
 												ActivityDetailsActivity.this,
-												"已成功报名");*/
+												"已成功报名", 0);
+										/*
+										 * new SystemUtil().makeToast(
+										 * ActivityDetailsActivity.this,
+										 * "已成功报名");
+										 */
 									} else {
-										Toasts.show(ActivityDetailsActivity.this, object.getString("message"), 0);
-										/*new SystemUtil().makeToast(
+										Toasts.show(
 												ActivityDetailsActivity.this,
-												object.getString("message"));*/
+												object.getString("message"), 0);
+										/*
+										 * new SystemUtil().makeToast(
+										 * ActivityDetailsActivity.this,
+										 * object.getString("message"));
+										 */
 									}
 								} catch (JSONException e) {
 									e.printStackTrace();
@@ -505,20 +517,21 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 					.load(imageUrl + activity.getUserImage())
 					.into(userImageImg);
 		}
-		
-		
-		if(activity.getActivityImage() == null || "null".equals(activity.getActivityImage()) || "".equals(activity.getActivityImage())){
+
+		if (activity.getActivityImage() == null
+				|| "null".equals(activity.getActivityImage())
+				|| "".equals(activity.getActivityImage())) {
 			IClist.add(new ImageCycleViewUtil.ImageInfo(
-					"http://weride.oss-cn-hangzhou.aliyuncs.com/" + activity.getDefaultImage(),
-					null, null, null));
-		}else{
-			
+					"http://weride.oss-cn-hangzhou.aliyuncs.com/"
+							+ activity.getDefaultImage(), null, null, null));
+		} else {
+
 			String[] split = activity.getActivityImage().split(",");
-			
+
 			for (int i = 0; i < split.length; i++) {
 				IClist.add(new ImageCycleViewUtil.ImageInfo(
-						"http://weride.oss-cn-hangzhou.aliyuncs.com/" + split[i],
-						null, null, null));
+						"http://weride.oss-cn-hangzhou.aliyuncs.com/"
+								+ split[i], null, null, null));
 			}
 		}
 		if (activity.isUserPraised()) {

@@ -354,6 +354,8 @@
             android:name="com.qizhi.qilaiqiqu.activity.RouteOverlayActivity"
             android:windowSoftInputMode="adjustResize|adjustPan" >
         </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.ChatActivity" >
+        </activity>
 
         <receiver android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" >
             <intent-filter>

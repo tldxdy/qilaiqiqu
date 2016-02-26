@@ -257,6 +257,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
 						String s = responseInfo.result;
+						System.out.println(s);
 						JSONObject jsonObject = null;
 						String message = null;
 						boolean falg = false;
@@ -286,14 +287,18 @@ public class LoginActivity extends Activity implements OnClickListener {
 								editor.putInt("userId", userLogin.getUserId());
 								editor.putString("uniqueKey",
 										userLogin.getUniqueKey());
-								editor.putString("imUserName",
-										userLogin.getImUserName());
+								editor.putString("userName",
+										userLogin.getUserName());
 								editor.putString("imPassword",
 										userLogin.getImPassword());
 								editor.putString("mobilePhone",
 										userLogin.getMobilePhone());
 								editor.putString("riderId",
 										userLogin.getRiderId());
+								editor.putString("imUserName",
+										userLogin.getImUserName());
+								editor.putString("userImage",
+										userLogin.getUserImage());
 								editor.putInt("loginFlag", 1);
 								editor.commit();
 
@@ -334,7 +339,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d("TAG", "-->onActivityResult " + requestCode + " resultCode="
 				+ resultCode);
-		
+
 		mTencent.onActivityResultData(requestCode, resultCode, data,
 				loginListener);
 

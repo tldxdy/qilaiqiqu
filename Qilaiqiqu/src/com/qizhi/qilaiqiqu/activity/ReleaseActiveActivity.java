@@ -48,6 +48,9 @@ import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.easemob.chat.EMGroupManager;
+import com.easemob.exceptions.EaseMobException;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -435,8 +438,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("activityTitle", themeEdt.getText().toString());
-		params.addBodyParameter("activityMemo", signatureEdt.getText()
-				.toString());
+		params.addBodyParameter("activityMemo", signatureEdt.getText().toString());
 		params.addBodyParameter("startDate", dateTxt.getText().toString()
 				+ ":00");
 		params.addBodyParameter("duration", (days*24 + hours)*60 +"");
@@ -467,6 +469,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 						falg = true;
 						if (jsonObject.optBoolean("result")) {
 							Toasts.show(getApplicationContext(), "发布成功", 0);
+							
 							//new SystemUtil().makeToast(ReleaseActiveActivity.this, "发布成功");
 							ReleaseActiveActivity.this.finish();
 						}else{

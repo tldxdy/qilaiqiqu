@@ -250,11 +250,12 @@ public class SetActivity extends Activity implements OnClickListener {
 						 */
 
 						editor.putInt("userId", -1);
-						editor.putString("uniqueKey", null);
-						editor.putString("imUserName", null);
-						editor.putString("imPassword", null);
-						editor.putString("mobilePhone", null);
 						editor.putString("riderId", null);
+						editor.putString("userImage", null);
+						editor.putString("uniqueKey", null);
+						editor.putString("imPassword", null);
+						editor.putString("imUserName", null);
+						editor.putString("mobilePhone", null);
 						editor.commit();
 						SetActivity.this.finish();
 						startActivity(new Intent(SetActivity.this,
