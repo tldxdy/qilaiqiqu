@@ -43,7 +43,7 @@
     <string name="text_personactivity_message">消息中心</string>
     <string name="text_personactivity_riding">骑游记</string>
     <string name="text_personactivity_collect">收藏</string>
-        <string name="text_personactivity_activity_center">活动中心</string>
+    <string name="text_personactivity_activity_center">活动中心</string>
     <string name="text_personactivity_set">设置</string>
     <string name="text_collectactivity_title">我的收藏</string>
     <string name="text_collectList_title">骑游记标题</string>
@@ -131,53 +131,44 @@
     <string name="text_fragment_num">99</string>
     <string name="txt__releaseactivity_title_num">0/10</string>
     <string name="text_dialog_box_title">确定要删除这个故事吗？</string>
-    <string name="text_quxiao">取消</string>
-    <string name="text_introduce_title">软件介绍</string>
+    <string name="text_quxiao">取消</string>
+    <string name="text_introduce_title">软件介绍</string>
     <string name="copyright">Copyright 2015-2016 Cycing intel. All Right Reserved</string>
-
     <string name="versionCode">10</string>
-    <string name="versionName">2.0.0</string>	
-    <string name="txt_nativeactivity_num">0个已选择</string> 	
-    <string name="text_friendActivity_title">好友</string>   
+    <string name="versionName">2.0.0</string>
+    <string name="txt_nativeactivity_num">0个已选择</string>
+    <string name="text_friendActivity_title">好友</string>
     <string name="title_activity_bind_phone">BindPhoneActivity</string>
     <string name="text_bindphoneactivity_title">绑定手机</string>
-
-    <string name="diqu">地区</string>
-
+    <string name="diqu">地区</string>
     <string name="text_personactivity_signature">这个人很懒，什么也没留下!</string>
-
-
-    <string name="text_personactivity_introduction">个人介绍</string> 
-
-
-    <string name="search_qyj">搜索骑游记</string> 
-
-
+    <string name="text_personactivity_introduction">个人介绍</string>
+    <string name="search_qyj">搜索骑游记</string>
     <string name="cancel">取消</string>
- 
-
-
-    <string name="text_activitydetailsactivity_title">活动详情</string>    
-    
-    <string name="title_activity_action_center">ActionCenterActivity</string>  
-    <string name="text_actioncenteractivity_title">活动中心</string> 
+    <string name="location_recv">[%1$s的位置]</string>
+    <string name="location_prefix">[我的位置]</string>
+    <string name="voice_call">[语音通话]</string>
+    <string name="voice">[语音]</string>
+    <string name="picture">[图片]</string>
+    <string name="video">[视频]</string>
+    <string name="file">[文件]</string>
+    <string name="text_activitydetailsactivity_title">活动详情</string>
+    <string name="title_activity_action_center">ActionCenterActivity</string>
+    <string name="text_actioncenteractivity_title">活动中心</string>
     <string name="title_activity_activity_apply">ActivityApplyActivity</string>
     <string name="title_activityactivity_title">群成员查看</string>
-    <string name="text_activityactivity_cancel">取消报名</string>
+    <string name="text_activityactivity_cancel">取消报名</string>
     <string name="text_appendActivity_title">已报名查看</string>
-
-    <string name="text_groupActivity_title">群成员</string>    
+    <string name="text_groupActivity_title">群成员</string>
     <string name="text_releaseactivity_save">保存草稿</string>
     <string name="text_mainactivity_traves">骑游记</string>
     <string name="text_mainactivity_active">活动</string>
-        <string name="basic_action_1">删除</string>
+    <string name="basic_action_1">删除</string>
     <string name="basic_action_2">Action_2</string>
     <string name="str_orange">#fe7b27</string>
     <string name="news_content">消息内容</string>
-    <string name="name_chat">聊天名称</string>    
-    <string name="text_releaseactivity_save">保存草稿</string>    
+    <string name="name_chat">聊天名称</string>
+    <string name="text_releaseactivity_save">保存草稿</string>
     <string name="text_ChatActivity_title">聊天</string>
-    </resources>
-      
 
-
+</resources>
