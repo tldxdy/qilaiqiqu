@@ -5,7 +5,6 @@ import java.util.List;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.squareup.picasso.Picasso;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -79,16 +78,18 @@ public class ManageAdapter extends BaseAdapter {
 		
 		holder.yearsTxt.setText(list.get(position).getStartDate().subSequence(0, 10));
 		holder.titleTxt.setText(list.get(position).getActivityTitle());
-		
+		holder.applyTxt.setTextColor(0xff000000);
 		if(userId == list.get(position).getUserId()){
 			holder.applyImg.setImageResource(R.drawable.activity_irelease);
 			holder.applyTxt.setText("我发起");
 		}else{
-			holder.applyImg.setImageResource(R.drawable.activity_apply);
+			holder.applyImg.setImageResource(R.drawable.take_part_in);
 			if(list.get(position).isInvolved()){
 				holder.applyTxt.setText("已报名");
+				holder.applyTxt.setTextColor(0xff6dbfed);
 			}else{
-				holder.applyTxt.setText("未报名");
+				holder.applyImg.setImageResource(R.drawable.take_part_out);
+				holder.applyTxt.setText("立即报名");
 			}
 		}
 		holder.photoImg.setImageResource(R.drawable.bitmap_homepage);

@@ -65,6 +65,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	private TextView articleMemoTxt2;
 	private TextView activityTitleTxt;
 	private TextView participantCountTxt;
+	private TextView moneyTxt;
 
 	private TextView dianTxt;
 
@@ -86,7 +87,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 	private LinearLayout participantLayout;
 
-	private String imageUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/";
+	private String imageUrl = SystemUtil.IMGPHTH;
 
 	private ImageCycleViewUtil mImageCycleView;
 
@@ -140,7 +141,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		activityMemoTxt = (TextView) findViewById(R.id.txt_activityDetails_activityMemo);
 		activityTitleTxt = (TextView) findViewById(R.id.txt_activityDetails_activityTitle);
 		participantCountTxt = (TextView) findViewById(R.id.txt_activityDetails_participantCount);
-
+		moneyTxt = (TextView) findViewById(R.id.txt_activityDetails_money);
+		
 		likeImg = (ImageView) findViewById(R.id.img_activityDetails_like);
 		cllectionImg = (ImageView) findViewById(R.id.img_activityDetails_cllection);
 
@@ -281,7 +283,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			break;
 		case R.id.img_activityDetails_cllection:
 			if (sharedPreferences.getInt("userId", -1) == -1) {
-				new SystemUtil().makeToast(this, "请登录");
+				Toasts.show(this, "请登录", 0);
+				//new SystemUtil().makeToast(this, "请登录");
 				Intent intent2 = new Intent(this, LoginActivity.class);
 				startActivity(intent2);
 				break;
@@ -522,16 +525,15 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				|| "null".equals(activity.getActivityImage())
 				|| "".equals(activity.getActivityImage())) {
 			IClist.add(new ImageCycleViewUtil.ImageInfo(
-					"http://weride.oss-cn-hangzhou.aliyuncs.com/"
-							+ activity.getDefaultImage().split("@")[0], null, null, null));
+					SystemUtil.IMGPHTH
+							+ activity.getDefaultImage(), null, null, null));
 		} else {
 
 			String[] split = activity.getActivityImage().split(",");
 
 			for (int i = 0; i < split.length; i++) {
 				IClist.add(new ImageCycleViewUtil.ImageInfo(
-						"http://weride.oss-cn-hangzhou.aliyuncs.com/"
-								+ split[i], null, null, null));
+						SystemUtil.IMGPHTH + split[i].split("@")[0], null, null, null));
 			}
 		}
 		if (activity.isUserPraised()) {
@@ -562,6 +564,13 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		} else {
 			durationTxt.setText(hour + "小时");
 		}
+		if(activity.getOutlay() == null || "".equals(activity.getOutlay()) || "免费".equals(activity.getOutlay())){
+			moneyTxt.setText("免费");
+		}else{
+			moneyTxt.setText(activity.getOutlay() + "元");
+		}
+		
+		
 		startDateTxt.setText(activity.getStartDate().substring(0,
 				activity.getStartDate().length() - 3));
 		activityMemoTxt.setText(activity.getActivityMemo());

@@ -49,12 +49,12 @@ public class SlideShowListAdapter extends BaseAdapter {
 	private Context context;
 	
 	
-	private  boolean scrollState=false;  
+/*	private  boolean scrollState=false;  
 	  
 	public void setScrollState(boolean scrollState) {  
 	        this.scrollState = scrollState;  
 	    }
-
+*/
 	// private boolean falg = false;
 
 	//private ImageCycleViewUtil mImageCycleView;
@@ -181,12 +181,9 @@ public class SlideShowListAdapter extends BaseAdapter {
 		holder.likeTxt.setText((list.get(position).getPraiseNum() + list
 				.get(position).getVirtualPraise()) + "");
 
-		if(!scrollState){
 			SystemUtil.loadImagexutils(list.get(position).getUserImage(),
 					holder.photoImg, context);
-		}else{
-			holder.photoImg.setImageResource(R.drawable.homepage_picture);
-		}
+			//holder.photoImg.setImageResource(R.drawable.homepage_picture);
 		
 		holder.likeImg.setImageResource(R.drawable.like_unpress);
 		// holder.likeImg.setTag(position);
@@ -198,7 +195,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 		 */
 
 		// holder.backgroundImg.setImageResource(R.drawable.bitmap_homepage);
-		if (list.get(position).getDefaultShowImage() != null && !scrollState) {
+		if (list.get(position).getDefaultShowImage() != null) {
 			/*
 			 * String internetUrl =
 			 * "http://weride.oss-cn-hangzhou.aliyuncs.com/" + list.get(position
@@ -234,7 +231,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 
 		} else {
 			holder.likeImg.setImageResource(R.drawable.like_unpress);
-			holder.likeTxt.setTextColor(0xffff0000);
+			holder.likeTxt.setTextColor(0xffffffff);
 
 		}
 

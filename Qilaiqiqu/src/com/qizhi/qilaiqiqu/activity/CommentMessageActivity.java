@@ -43,7 +43,7 @@ public class CommentMessageActivity extends Activity implements OnClickListener,
 	private TextView returnTitleTxt;	//回复标题
 	private TextView returnContentTxt;	//回复内容
 	private TextView ReturnNumTxt;	//回复字数
-	
+	private TextView ReturnReturnTxt;	
 	private EditText myReturnEdt; //我的回复
 	private Button affirmBtn;	//确定回复
 	private CommentModel commentModel;
@@ -73,6 +73,7 @@ public class CommentMessageActivity extends Activity implements OnClickListener,
 		nameTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_name);
 		stateTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_state);
 		myReturnEdt = (EditText) findViewById(R.id.edt_commentmessageactivity_my_return);
+		ReturnReturnTxt = (TextView) findViewById(R.id.txt_commentmessageactivity_return_return);
 		affirmBtn = (Button) findViewById(R.id.btn_commentmessageactivity_affirm);
 		
 		xUtilsUtil = new XUtilsUtil();
@@ -83,7 +84,9 @@ public class CommentMessageActivity extends Activity implements OnClickListener,
 		if(isComment == 1){
 			stateTxt.setText("评论了你的骑游记");
 		}else if(isComment == 2){
-			stateTxt.setText("回复了你的骑游记");
+			stateTxt.setText("回复了你的");
+			ReturnReturnTxt.setVisibility(View.VISIBLE);
+			ReturnReturnTxt.setText("游记评论");
 		}
 		
 		

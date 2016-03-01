@@ -154,6 +154,9 @@ OnLoadListener{
 					
 					if(pageIndex == 1){
 						dataList = lists;
+						adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
+						manageList.setAdapter(adapter);
+						//manageList.setOnItemClickListener(ActivityFragment.this);
 						Toasts.show(getActivity(), "刷新成功", 0);
 					}else if(1 < pageIndex && pageIndex <= pageCount){
 						dataList.addAll(lists);

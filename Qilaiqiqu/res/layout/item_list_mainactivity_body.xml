@@ -15,9 +15,10 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:background="@drawable/background_shade"
         android:paddingLeft="12dp"
         android:paddingTop="12dp" >
 
@@ -27,13 +28,15 @@
             android:layout_height="35dp"
             android:src="@drawable/persional_picture"
             app:border_color="@color/light"
+            android:layout_gravity="top"
             app1:border_width="0dp" />
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_weight="1"
+            android:layout_gravity="top"
             android:orientation="vertical" >
 
             <TextView
@@ -69,6 +72,8 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="12dp"
             android:layout_marginRight="20dp" >
 
             <ImageView

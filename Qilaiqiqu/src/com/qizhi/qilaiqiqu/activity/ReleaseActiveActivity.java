@@ -1,5 +1,7 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,12 +15,14 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -49,8 +53,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.easemob.chat.EMGroupManager;
-import com.easemob.exceptions.EaseMobException;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -103,6 +105,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 	
 	private int days;
 	private int hours;
+	private ProgressDialog pDialog;
 	
 	
 	
@@ -134,18 +137,19 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 						postAll(s.toString());
 						break;
 					}
-					new SystemUtil().httpClient(new SystemUtil().saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
+					new SystemUtil().httpClient(saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
 				} catch (IOException e) {
 					e.printStackTrace();
 				};
 				break;
 			case 2:
+				//Toasts.show(ReleaseActiveActivity.this, "图片发布出现问题", 0);
 				uploadingNum = uploadingNum + 1;
 				try {
 					if(uploadingNum == bitList.size()){
 						StringBuffer s = new StringBuffer();
 						for(int i = 0; i < photoList.size(); i++){
-							s.append(photoList.get(i).split("@")[0]);
+							s.append(photoList.get(i));
 							if(photoList.size() - 1 != i){
 								s.append(",");
 							}
@@ -153,7 +157,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 						postAll(s.toString());
 						break;
 					}
-					new SystemUtil().httpClient(new SystemUtil().saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
+					new SystemUtil().httpClient(saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
 				} catch (IOException e) {
 					e.printStackTrace();
 				};	
@@ -165,7 +169,30 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		}
 		
 	};
-
+	@SuppressLint("NewApi")
+	public String saveMyBitmap(Bitmap mBitmap) throws IOException {
+		File outDir = null;
+		String state = Environment.getExternalStorageState();
+		if (state.equals(Environment.MEDIA_MOUNTED)) {
+			// 这个路径，在手机内存下创建一个pictures的文件夹，把图片存在其中。
+			outDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+			if (!outDir.exists()) {
+				outDir.mkdirs();
+			}
+			outDir = new File(outDir, System.currentTimeMillis() + ".jpg");
+			String s = outDir.toString();
+			
+			FileOutputStream fos = new FileOutputStream(outDir);
+			mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);  
+			fos.flush();
+			fos.close();
+			return s;
+		}else{
+			Toasts.show(this, "请确认已经插入SD卡", 0);
+		}
+		return null;
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -202,16 +229,6 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		photoList = new ArrayList<String>();
 		bitList = new ArrayList<Bitmap>();
 		xUtilsUtil = new XUtilsUtil();
-		// isFirst = getIntent().getBooleanExtra("isFirst", false);
-		// if (isFirst) {
-		// photoList = getIntent().getStringArrayListExtra("photoList");
-		// }
-
-		// pictureGrid = (GridView)
-		// findViewById(R.id.grid_releaseActiveActivity_picture);
-		// adapter = new ReleaseActiveGridAdapter(photoList, this);
-		// pictureGrid.setAdapter(adapter);
-		// Toast.makeText(this, "list.size()" + photoList.size(), 0).show();
 	}
 
 	private void initEvent() {
@@ -290,13 +307,14 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 					break;
 				}
 				falg = false;
-				Toasts.show(this, "正在发布，请稍候", 0);
+				pDialog = ProgressDialog.show(this, "请稍等", "正在发布");
+				//Toasts.show(this, "正在发布，请稍候", 0);
 				//new SystemUtil().makeToast(this, "正在发布，请稍候");
 				if(bitList.size() != 0){
 					photoList = new ArrayList<String>();
 					uploadingNum = 0;
 					try {
-						new SystemUtil().httpClient(new SystemUtil().saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
+						new SystemUtil().httpClient(saveMyBitmap(bitList.get(uploadingNum)), preferences, handler, "HD");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -467,6 +485,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 							e.printStackTrace();
 						}
 						falg = true;
+						pDialog.dismiss();
 						if (jsonObject.optBoolean("result")) {
 							Toasts.show(getApplicationContext(), "发布成功", 0);
 							
@@ -479,6 +498,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
+						pDialog.dismiss();
 						falg = true;
 						Toasts.show(getApplicationContext(), msg, 0);
 					}

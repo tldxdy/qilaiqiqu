@@ -229,7 +229,7 @@ OnLoadListener{
 						new SystemUtil().makeToast(getActivity(), "加载成功");
 					}else if(pageIndex > pageCount){
 						list.addAll(dataList);
-						new SystemUtil().makeToast(getActivity(), "以显示全部内容");
+						//new SystemUtil().makeToast(getActivity(), "已显示全部内容");
 					}
 					// 更新UI
 					adapter.notifyDataSetChanged();

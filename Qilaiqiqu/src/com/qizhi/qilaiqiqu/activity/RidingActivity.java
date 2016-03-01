@@ -200,10 +200,6 @@ public class RidingActivity extends Activity implements OnClickListener,
 			}
 			adapter.notifyDataSetChanged();
 			//ridingList.finishRefreshing();
-			if(ridingModel.getDataList().size() == 0){
-				new SystemUtil().makeToast(this,
-						"已显示全部内容");
-			}
 			
 		}
 	}

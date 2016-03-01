@@ -71,6 +71,12 @@
             android:text="《》"
             android:textColor="#6dbfed"
             android:textSize="16sp" />
+            <TextView
+            android:id="@+id/txt_commentmessageactivity_return_return"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:textSize="16sp" />
 
     </LinearLayout>
 

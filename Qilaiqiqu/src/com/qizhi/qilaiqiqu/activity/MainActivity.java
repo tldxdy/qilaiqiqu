@@ -207,7 +207,8 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		photoImg = (ImageView) findViewById(R.id.img_mainActivity_photo);
 		searchImg = (RelativeLayout) findViewById(R.id.img_mainActivity_search_photo);
 		addImg = (RelativeLayout) findViewById(R.id.img_mainActivity_add_photo);
-
+		addImg.setAlpha(204); // 透明度
+		searchImg.setAlpha(204); // 透明度
 		//slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
 		dotView = findViewById(R.id.view_dot);
 
@@ -223,10 +224,10 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		RidingAndActivityFragmentPagerAdapter adapter2=new RidingAndActivityFragmentPagerAdapter(
 				getSupportFragmentManager());//需要继承FragmentActivity
 		viewPager.setAdapter(adapter2);
-		ridingTxt.setTextColor(0xff6dbfed);
-		activityTxt.setTextColor(0xffffffff);
-		ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
-		activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
+		activityTxt.setTextColor(0xff6dbfed);
+		ridingTxt.setTextColor(0xffffffff);
+		activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
+		ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
 		fragmentNum = 0;
 		viewPager.setCurrentItem(fragmentNum);
 	}
@@ -240,18 +241,18 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 				switch (arg0) {
 				case 0:
 					fragmentNum = arg0;
-					ridingTxt.setTextColor(0xff6dbfed);
-					activityTxt.setTextColor(0xffffffff);
-					ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
-					activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
-					menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-					break;
-				case 1:
-					fragmentNum = arg0;
 					activityTxt.setTextColor(0xff6dbfed);
 					ridingTxt.setTextColor(0xffffffff);
 					activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
 					ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
+					menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+					break;
+				case 1:
+					fragmentNum = arg0;
+					ridingTxt.setTextColor(0xff6dbfed);
+					activityTxt.setTextColor(0xffffffff);
+					ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
+					activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
 					menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 					break;
 					
@@ -327,19 +328,19 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		switch (v.getId()) {
 		case R.id.textView1:
 			fragmentNum = 0;
-			ridingTxt.setTextColor(0xff6dbfed);
-			ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
-			activityTxt.setTextColor(0xffffffff);
-			activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
+			activityTxt.setTextColor(0xff6dbfed);
+			activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
+			ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
+			ridingTxt.setTextColor(0xffffffff);
 			viewPager.setCurrentItem(fragmentNum);
 			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 			break;
 		case R.id.textView2:
 			fragmentNum = 1;
-			activityTxt.setTextColor(0xff6dbfed);
-			activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
-			ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
-			ridingTxt.setTextColor(0xffffffff);
+			ridingTxt.setTextColor(0xff6dbfed);
+			ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
+			activityTxt.setTextColor(0xffffffff);
+			activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
 			viewPager.setCurrentItem(fragmentNum);
 			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 			break;
@@ -387,7 +388,8 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 				@Override
 				public void onAnimationEnd(Animation arg0) {
 					searchList.setVisibility(View.GONE);
-					
+					addImg.setVisibility(View.VISIBLE);
+					searchImg.setVisibility(View.VISIBLE);
 					//searchString = null;
 					inputEdt.setText("");
 					//viewPager.setCurrentItem(fragmentNum);
@@ -503,7 +505,8 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					intent.putExtra("falg", false);
 					startActivity(intent);
 				} else {
-					new SystemUtil().makeToast(MainActivity.this, "请登录");
+					Toasts.show(MainActivity.this, "请登录", 0);
+					//new SystemUtil().makeToast(MainActivity.this, "请登录");
 					Intent intent = new Intent(MainActivity.this,
 							LoginActivity.class);
 					startActivity(intent);
@@ -522,7 +525,8 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 							ReleaseActiveActivity.class);
 					startActivity(intent);
 				} else {
-					new SystemUtil().makeToast(MainActivity.this, "请登录");
+					Toasts.show(MainActivity.this, "请登录", 0);
+					//new SystemUtil().makeToast(MainActivity.this, "请登录");
 					Intent intent = new Intent(MainActivity.this,
 							LoginActivity.class);
 					startActivity(intent);
@@ -565,6 +569,8 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 	class donghua implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
+			addImg.setVisibility(View.GONE);
+			searchImg.setVisibility(View.GONE);
 			titleY = titleLayout.getY();
 			searchY = searchLayout.getY();
 
@@ -715,8 +721,9 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 									}
 								}
 								if (d.size() == 0) {
-									new SystemUtil().makeToast(
-											MainActivity.this, "没有搜索到任何结果哦!");
+									Toasts.show(MainActivity.this, "没有搜索到任何结果哦!", 0);
+									/*new SystemUtil().makeToast(
+											MainActivity.this, "没有搜索到任何结果哦!");*/
 								}
 								adapterSearch = new SearchResultAdapter(
 										MainActivity.this, d);
@@ -746,8 +753,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 
 						@Override
 						public void onMyFailure(HttpException error, String msg) {
-							new SystemUtil().makeToast(MainActivity.this,
-									"网络请求失败，请检查网络" + msg);
+							Toasts.show(MainActivity.this, "网络请求失败，请检查网络", 0);
 						}
 					});
 		}
@@ -1014,7 +1020,15 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 	 * 头像
 	 */
 	private void headPortrait() {
-		RequestParams params = new RequestParams("UTF-8");
+		if(preferences.getInt("userId", -1) != -1){
+			Picasso.with(MainActivity.this)
+			.load(SystemUtil.IMGPHTH
+					+ preferences.getString("userImage",null))
+			.into(photoImg);
+		}else {
+			photoImg.setImageResource(R.drawable.homepage_picture);
+		}
+		/*RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		xUtilsUtil.httpPost("common/queryCertainUser.html", params,
 				new CallBackPost() {
@@ -1031,14 +1045,14 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 						if (jsonObject.optBoolean("result")) {
 							JSONObject json = jsonObject.optJSONObject("data");
 							Picasso.with(MainActivity.this)
-									.load("http://weride.oss-cn-hangzhou.aliyuncs.com/"
+									.load(SystemUtil.IMGPHTH
 											+ json.optString("userImage"))
 									.into(photoImg);
-							/*
+							
 							 * SystemUtil.loadImagexutils(
 							 * json.optString("userImage"), photoImg,
 							 * MainActivity.this);
-							 */
+							 
 						} else {
 							photoImg.setImageResource(R.drawable.homepage_picture);
 						}
@@ -1048,7 +1062,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					public void onMyFailure(HttpException error, String msg) {
 
 					}
-				});
+				});*/
 	}
 	/**
 	 * 菜单、返回键响应

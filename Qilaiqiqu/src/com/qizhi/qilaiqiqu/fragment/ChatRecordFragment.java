@@ -1,16 +1,14 @@
 package com.qizhi.qilaiqiqu.fragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMMessage;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ChatRecordAdapter;
-import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
-import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,11 +30,11 @@ OnLoadListener{
 	private ChatRecordAdapter adapter;
 	private Context context;
 	private SharedPreferences preferences;
-	private XUtilsUtil xUtilsUtil;
 	private int pageIndex = 1;
 	
 	private RefreshLayout swipeLayout;
 	private View header;
+	private EMConversation conversation;
 	
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
@@ -47,7 +45,6 @@ OnLoadListener{
 		chatList = (ListView) view.findViewById(R.id.list_fragment_chat_record);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
-		xUtilsUtil = new XUtilsUtil();
 		header = View.inflate(getActivity(),R.layout.header, null);
 		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
@@ -57,6 +54,23 @@ OnLoadListener{
 		chatList.addHeaderView(header);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setOnLoadListener(this);
+		conversation = EMChatManager.getInstance().getConversation(preferences.getString("imUserName", null));
+		if(conversation != null){
+			
+			//获取此会话的所有消息
+			List<EMMessage> messages = conversation.getAllMessages();
+			System.out.println("-------------------------------");
+			
+			System.out.println(messages);
+			System.out.println("-------------------------------");
+		}
+		
+		
+		//sdk初始化加载的聊天记录为20条，到顶时需要去db里获取更多
+	/*	//获取startMsgId之前的pagesize条消息，此方法获取的messages sdk会自动存入到此会话中，app中无需再次把获取到的messages添加到会话中
+		List<EMMessage> messages = conversation.loadMoreMsgFromDB(startMsgId, pagesize);
+		//如果是群聊，调用下面此方法
+		List<EMMessage> messages = conversation.loadMoreGroupMsgFromDB(startMsgId, pagesize);*/
 		data();
 		return view;
 	}

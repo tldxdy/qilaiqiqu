@@ -303,8 +303,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 								editor.commit();
 
 								LoginActivity.this.finish();
-								startActivity(new Intent(LoginActivity.this,
-										MainActivity.class));
+								/*startActivity(new Intent(LoginActivity.this,
+										MainActivity.class));*/
 
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -364,17 +364,17 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-
-	/**
+/*
+	*//**
 	 * 菜单、返回键响应
-	 */
+	 *//*
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			exitBy2Click(); // 调用双击退出函数
 		}
 		return false;
-	}
+	}*/
 
 	/**
 	 * 双击退出函数
@@ -382,7 +382,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	private static Boolean isExit = false;
 	private Tencent mTencent;
 
-	private void exitBy2Click() {
+/*	private void exitBy2Click() {
 		Timer tExit = null;
 		if (isExit == false) {
 			isExit = true; // 准备退出
@@ -399,6 +399,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 			finish();
 			System.exit(0);
 		}
-	}
+	}*/
 
 }

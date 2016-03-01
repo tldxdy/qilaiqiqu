@@ -1,15 +1,20 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,7 +24,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,13 +43,15 @@ import android.widget.TextView;
 
 import com.easemob.chat.EMChatManager;
 import com.google.gson.Gson;
-import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ArrayWheelAdapter;
 import com.qizhi.qilaiqiqu.model.CertainUserModel;
+import com.qizhi.qilaiqiqu.ui.ActionSheetDialog;
+import com.qizhi.qilaiqiqu.ui.ActionSheetDialog.OnSheetItemClickListener;
+import com.qizhi.qilaiqiqu.ui.ActionSheetDialog.SheetItemColor;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -69,9 +75,6 @@ public class PersonalDataActivity extends BaseActivity implements
 	private WheelView mViewDistrict;
 
 	private Button mBtnConfirm;
-	private Button cancelBtn;
-	private Button photographBtn;
-	private Button phoneBtn;
 
 	private TextView confirmTxt;
 	private TextView provinceTxt;
@@ -116,6 +119,7 @@ public class PersonalDataActivity extends BaseActivity implements
 	private boolean path = true;
 
 	private boolean falg = true;
+	private ProgressDialog pDialog;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 
@@ -124,8 +128,7 @@ public class PersonalDataActivity extends BaseActivity implements
 			switch (msg.what) {
 			case 1:
 				String s = (String) msg.obj;
-				String[] ss = s.split("@");
-				certainUserModel.setUserImage(ss[0]);
+				certainUserModel.setUserImage(s);
 				img_path = null;
 				informationUpdate();
 				break;
@@ -232,7 +235,8 @@ public class PersonalDataActivity extends BaseActivity implements
 			break;
 
 		case R.id.layout_personalDataActivity_photo:
-			showPopupWindow2(v);
+			popCheck();
+			//showPopupWindow2(v);
 			break;
 
 		case R.id.layout_personalDataActivity_care:
@@ -259,7 +263,62 @@ public class PersonalDataActivity extends BaseActivity implements
 		}
 	}
 
+	public void popCheck() {
+
+		new ActionSheetDialog(this).builder().setCancelable(false).setCanceledOnTouchOutside(false)
+				.addSheetItem("拍照", SheetItemColor.Blue, new OnSheetItemClickListener() {
+					@Override
+					public void onClick(int which) {
+						openCamera();
+						
+					}
+				}).addSheetItem("打开相册", SheetItemColor.Blue, new OnSheetItemClickListener() {
+					@Override
+					public void onClick(int which) {
+						
+						skipPic();
+
+					}
+				}).show();
+	}
+	
+
+	/** 打开相册 */
+	private void skipPic() {
+		Intent pickIntent = new Intent(Intent.ACTION_PICK, null);
+		pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				"image/*");
+		startActivityForResult(pickIntent, IMAGE_REQUEST_CODE);
+	}
+
+	/** 指定拍摄图片文件位置避免获取到缩略图 */
+	File outFile;
+
+	/** 打开相机 */
+	private void openCamera() {
+		String state = Environment.getExternalStorageState();
+		if (state.equals(Environment.MEDIA_MOUNTED)) {
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			File outDir = Environment
+					.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+			if (!outDir.exists()) {
+				outDir.mkdirs();
+			}
+			outFile = new File(outDir, System.currentTimeMillis() + ".jpg");
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outFile));
+			intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+			startActivityForResult(intent, CAMERA_REQUEST_CODE);
+		} else {
+			Toasts.show(this, "请确认已经插入SD卡", 0);
+		}
+	}
+	
+	
+	
+	
+
 	private void setViewData() {
+		pDialog = ProgressDialog.show(this, "请稍等", "正在修改");
 		if (!falg) {
 			return;
 		}
@@ -398,107 +457,6 @@ public class PersonalDataActivity extends BaseActivity implements
 	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
 
 	}
-
-	private void showPopupWindow2(View view) {
-
-		// 一个自定义的布局，作为显示的内容
-		View mview = LayoutInflater.from(this).inflate(
-				R.layout.popup_personaldataactivity, null);
-
-		cancelBtn = (Button) mview
-				.findViewById(R.id.btn_personaldataactivity_cancel);
-		photographBtn = (Button) mview
-				.findViewById(R.id.btn_personaldataactivity_photograph);
-		phoneBtn = (Button) mview
-				.findViewById(R.id.btn_personaldataactivity_phone);
-		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
-
-		final PopupWindow popupWindow = new PopupWindow(mview,
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
-
-		popupWindow.setTouchable(true);
-		
-		popupWindow.setAnimationStyle(R.style.PopupAnimation);
-
-		popupWindow.setTouchInterceptor(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-
-				return false;
-				// 这里如果返回true的话，touch事件将被拦截
-				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
-			}
-		});
-		phoneBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);// 调用android的图库
-				i.setType("image/*");
-				startActivityForResult(i, IMAGE_REQUEST_CODE);
-				popupWindow.dismiss();
-			}
-		});
-		photographBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);// 调用android自带的照相机
-				startActivityForResult(intent, CAMERA_REQUEST_CODE);
-				popupWindow.dismiss();
-			}
-		});
-		cancelBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-				popupWindow.dismiss();
-			}
-		});
-		
-		quxiao.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				popupWindow.dismiss();
-			}
-		});
-
-		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		popupWindow.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.corners_layout));
-		// 设置好参数之后再show
-		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
-
-	}
-	
-	/** 指定拍摄图片文件位置避免获取到缩略图 */
-	File outFile;
-
-	/** 打开相机 */
-	private void openCamera() {
-		String state = Environment.getExternalStorageState();
-		if (state.equals(Environment.MEDIA_MOUNTED)) {
-			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			File outDir = Environment
-					.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-			if (!outDir.exists()) {
-				outDir.mkdirs();
-			}
-			outFile = new File(outDir, System.currentTimeMillis() + ".jpg");
-			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outFile));
-			intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-			startActivityForResult(intent, CAMERA_REQUEST_CODE);
-		} else {
-			Log.e("CAMERA", "请确认已经插入SD卡");
-		}
-	}
-	
-
 	/**
 	 * 回调
 	 */
@@ -507,9 +465,7 @@ public class PersonalDataActivity extends BaseActivity implements
 		if (resultCode != RESULT_CANCELED) {
 			switch (requestCode) {
 			case CAMERA_REQUEST_CODE:
-				if (null != data) {
-					startPhotoZoom(data.getData());
-				}
+				startPhotoZoom(Uri.fromFile(outFile));
 				break;
 			case IMAGE_REQUEST_CODE:
 				startPhotoZoom(data.getData());
@@ -532,21 +488,6 @@ public class PersonalDataActivity extends BaseActivity implements
 	 * @param uri
 	 */
 	public void startPhotoZoom(Uri uri) {
-		if (uri == null) {
-			return;
-		}
-		/*
-		 * String[] proj = { MediaStore.Images.Media.DATA };
-		 * 
-		 * @SuppressWarnings("deprecation") Cursor actualimagecursor =
-		 * managedQuery(uri, proj, null, null, null); int
-		 * actual_image_column_index = actualimagecursor
-		 * .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-		 * actualimagecursor.moveToFirst(); img_path =
-		 * actualimagecursor.getString(actual_image_column_index);
-		 */
-		// System.out.println(img_path);
-		
 		Intent intent = new Intent("com.android.camera.action.CROP")
 		.setDataAndType(uri, "image/*").putExtra("crop", "true")
 		.putExtra("return-data", true);
@@ -566,70 +507,47 @@ public class PersonalDataActivity extends BaseActivity implements
 	 * @param picdata
 	 */
 	private void setImageToView(Intent data) {
-
 		Bundle extras = data.getExtras();
 		if (extras != null) {
 			Bitmap photo = extras.getParcelable("data");
-			// Drawable drawable = new BitmapDrawable(photo);
+			Drawable drawable = new BitmapDrawable(getResources(), photo);
+			photoImg.setImageDrawable(drawable);
 			try {
-				img_path = new SystemUtil().saveMyBitmap(photo);
+				img_path = saveMyBitmap(photo);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			// photoImg.setImageDrawable(drawable);
-			BitmapUtils bitmapUtils = new BitmapUtils(this);
-			bitmapUtils.display(photoImg, img_path);
+			/*BitmapUtils bitmapUtils = new BitmapUtils(this);
+			bitmapUtils.display(photoImg, img_path);*/
 			// photoImg.setImageBitmap(photo);
 		}
 	}
-
-	/**
-	 * 图片上传
-	 */
-
-	// private void photoUploading() {
-	// System.out.println(img_path);
-	// final File file = new File(img_path);
-	// RequestParams params = new RequestParams();
-	// params.addBodyParameter("uniqueKey",
-	// preferences.getString("uniqueKey", null));
-	// params.addBodyParameter("type", "USER");
-	// params.addBodyParameter("files", file);
-	//
-	// xUtilsUtil.httpPost("common/uploadImage.html", params,
-	// new CallBackPost() {
-	//
-	// @Override
-	// public void onMySuccess(ResponseInfo<String> responseInfo) {
-	// try {
-	// JSONObject jsonObject = new JSONObject(
-	// responseInfo.result);
-	// System.out.println(jsonObject);
-	// if (jsonObject.getBoolean("result")) {
-	// JSONArray jsonArray = jsonObject
-	// .getJSONArray("dataList");
-	// String s = jsonArray.getString(0);
-	// String[] ss = s.split("@");
-	// certainUserModel.setUserImage(ss[0]);
-	// img_path = null;
-	// file.delete();
-	// informationUpdate();
-	// }
-	//
-	// } catch (JSONException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// }
-	//
-	// @Override
-	// public void onMyFailure(HttpException error, String msg) {
-	// new SystemUtil().makeToast(PersonalDataActivity.this,
-	// "请求失败" + error + ":" + msg);
-	// }
-	// });
-	// }
-
+	
+	
+	@SuppressLint("NewApi")
+	public String saveMyBitmap(Bitmap mBitmap) throws IOException {
+		File outDir = null;
+		String state = Environment.getExternalStorageState();
+		if (state.equals(Environment.MEDIA_MOUNTED)) {
+			// 这个路径，在手机内存下创建一个pictures的文件夹，把图片存在其中。
+			outDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+			if (!outDir.exists()) {
+				outDir.mkdirs();
+			}
+			outDir = new File(outDir, System.currentTimeMillis() + ".jpg");
+			String s = outDir.toString();
+			
+			FileOutputStream fos = new FileOutputStream(outDir);
+			mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);  
+			fos.flush();
+			fos.close();
+			return s;
+		}else{
+			Toasts.show(this, "请确认已经插入SD卡", 0);
+		}
+		return null;
+	}
 	private void informationUpdate() {
 		if (!"".equals(nickEdt.getText().toString().trim())
 				&& !"".equals(usernameTxt.getText().toString().trim())
@@ -660,7 +578,11 @@ public class PersonalDataActivity extends BaseActivity implements
 						@Override
 						public void onMySuccess(
 								ResponseInfo<String> responseInfo) {
+							pDialog.dismiss();
 							if(path){
+								final Editor editor = preferences.edit();// 获取编辑器
+								editor.putString("userImage", certainUserModel.getUserImage());
+								editor.commit();
 								Toasts.show(PersonalDataActivity.this, "修改成功", 0);
 							}else{
 								Toasts.show(PersonalDataActivity.this, "用户头像修改失败", 0);
@@ -679,6 +601,7 @@ public class PersonalDataActivity extends BaseActivity implements
 
 						@Override
 						public void onMyFailure(HttpException error, String msg) {
+							pDialog.dismiss();
 							Toasts.show(PersonalDataActivity.this, "请求失败"
 									+ error + ":" + msg, 0);
 							/*
@@ -776,4 +699,82 @@ public class PersonalDataActivity extends BaseActivity implements
 	public void onMyFailure(HttpException error, String msg) {
 
 	}
+/*
+	private void showPopupWindow2(View view) {
+
+		// 一个自定义的布局，作为显示的内容
+		View mview = LayoutInflater.from(this).inflate(
+				R.layout.popup_personaldataactivity, null);
+
+		cancelBtn = (Button) mview
+				.findViewById(R.id.btn_personaldataactivity_cancel);
+		photographBtn = (Button) mview
+				.findViewById(R.id.btn_personaldataactivity_photograph);
+		phoneBtn = (Button) mview
+				.findViewById(R.id.btn_personaldataactivity_phone);
+		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
+
+		final PopupWindow popupWindow = new PopupWindow(mview,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+
+		popupWindow.setTouchable(true);
+		
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+		phoneBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
+				Intent i = new Intent(
+						Intent.ACTION_PICK,
+						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);// 调用android的图库
+				i.setType("image/*");
+				startActivityForResult(i, IMAGE_REQUEST_CODE);
+			}
+		});
+		photographBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
+				//openCamera();
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);// 调用android自带的照相机
+					startActivityForResult(intent, CAMERA_REQUEST_CODE);
+			}
+		});
+		cancelBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				popupWindow.dismiss();
+			}
+		});
+		
+		quxiao.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
+
+	}*/
 }

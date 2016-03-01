@@ -45,6 +45,8 @@ import android.widget.Toast;
  */
 public class SystemUtil {
 
+	
+	public final static String IMGPHTH = "http://img.weride.com.cn/";
 	/**
 	 * @param 提示封装方法
 	 * @param context
@@ -77,7 +79,7 @@ public class SystemUtil {
 	 */
 	public static void loadImagexutils(String url, ImageView sellersmallimg,Context context) {
 		BitmapUtils bitmapUtils = new BitmapUtils(context);
-		bitmapUtils.display(sellersmallimg, "http://weride.oss-cn-hangzhou.aliyuncs.com/"+url);
+		bitmapUtils.display(sellersmallimg, IMGPHTH + url);
 	}
 	
 	/**
@@ -98,13 +100,13 @@ public class SystemUtil {
 			int ww = Integer.parseInt(w);
 			int hh = Integer.parseInt(h);
 			//System.out.println(ss.split("h")[0] + ss.split("h")[1]);
-			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+s[0])
+			Picasso.with(context).load(IMGPHTH + s[0])
 			.resize(screenWidth, hh * screenWidth / ww).centerInside()
 			.placeholder(R.drawable.bitmap_homepage)
 			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);
 		}else{
-			Picasso.with(context).load("http://weride.oss-cn-hangzhou.aliyuncs.com/"+url)
+			Picasso.with(context).load(IMGPHTH + url)
 			.placeholder(R.drawable.bitmap_homepage)
 			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);
@@ -145,7 +147,27 @@ public class SystemUtil {
 		
         return bitmap;  
     }
-
+	public static String UrlSize(String url){
+//		USER_201602261033021750_160_160_11.jpg
+		String[] ss = url.split("_");
+		if(ss.length == 5){
+			int w = Integer.parseInt(ss[2]);
+			int h = Integer.parseInt(ss[3]);
+			int size = Integer.parseInt(ss[4].split(".")[0]);
+			if(w > 1024 || h > 1024){
+				if(w > h){
+					h = (int) (h * 1.0 / w / 1024);
+					w = 1024;
+				}else{
+					w = (int) (w * 1.0 / h / 1024);
+					h = 1024;
+				}
+				return url + "@" + w + "w_" + h + "h"; 
+			}
+		}
+		return url;
+		
+	}
 
 	
 	@SuppressLint("NewApi")
@@ -259,5 +281,5 @@ public class SystemUtil {
 			}
 		}).start();
 	}
-	
+
 }

@@ -24,6 +24,7 @@ import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
@@ -183,7 +184,7 @@ OnLoadListener{
 							IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 							for (int i = 0; i < c.size(); i++) {
 								IClist.add(new ImageCycleViewUtil.ImageInfo(
-										"http://weride.oss-cn-hangzhou.aliyuncs.com/"
+										SystemUtil.IMGPHTH
 												+ c.get(i).getImageAdd(), c
 												.get(i).getValue(), c.get(i)
 												.getOpenType(), c.get(i)
@@ -313,7 +314,11 @@ OnLoadListener{
 							jsonArray.toString(), type);
 					pageIndex = jsonObject.optInt("pageIndex");
 					if(pageIndex == 1){
+						
 						Articlelist = lists;
+						adapter = new SlideShowListAdapter(context, Articlelist);
+						manageList.setAdapter(adapter);
+						//manageList.setOnItemClickListener(RidingFragment.this);
 						Toasts.show(context, "刷新成功", 0);
 						swipeLayout.setRefreshing(false);
 						//new SystemUtil().makeToast(getActivity(), "刷新成功");

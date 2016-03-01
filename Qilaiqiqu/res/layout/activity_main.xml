@@ -111,7 +111,6 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="204"
                     android:src="@drawable/homepage_buttton_left" />
 
                 <ImageView
@@ -135,7 +134,6 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="204"
                     android:src="@drawable/homepage_button_right" />
 
                 <ImageView

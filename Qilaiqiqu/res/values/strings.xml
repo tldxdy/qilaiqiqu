@@ -170,5 +170,7 @@
     <string name="name_chat">聊天名称</string>
     <string name="text_releaseactivity_save">保存草稿</string>
     <string name="text_ChatActivity_title">聊天</string>
+    <string name="text_personactivity_signature">写几句介绍自己</string>
+    
 
 </resources>
