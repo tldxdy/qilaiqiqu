@@ -58,6 +58,7 @@ public class HistoryAdapter extends BaseAdapter {
 			
 			holder.photoImg = (ImageView) convertView.findViewById(R.id.img_managefragment_photo);
 			holder.applyImg = (ImageView) convertView.findViewById(R.id.img_managefragment_apply);
+			holder.moneyTxt = (TextView) convertView.findViewById(R.id.txt_managefragment_money);
 			convertView.setTag(holder);
 		}else {
 			holder = (ViewHolder) convertView.getTag();
@@ -86,6 +87,11 @@ public class HistoryAdapter extends BaseAdapter {
 		if(!"".equals(list.get(position).getDefaultImage()) && list.get(position).getDefaultImage() != null){
 			SystemUtil.Imagexutils(list.get(position).getDefaultImage(), holder.photoImg, context);
 		}
+		if(list.get(position).getOutlay() == null || "免费".equals(list.get(position).getOutlay()) || "null".equals(list.get(position).getOutlay()) || "0".equals(list.get(position).getOutlay())){
+			holder.moneyTxt.setText("免费");
+		}else{
+			holder.moneyTxt.setText("收费");
+		}
 		
 		
 		return convertView;
@@ -96,6 +102,7 @@ public class HistoryAdapter extends BaseAdapter {
 		private TextView yearsTxt;
 		private TextView timeTxt;
 		private TextView applyTxt;
+		private TextView moneyTxt;
 		private ImageView photoImg;
 		private ImageView applyImg;
 	}

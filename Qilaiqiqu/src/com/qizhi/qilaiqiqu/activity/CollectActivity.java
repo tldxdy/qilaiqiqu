@@ -111,10 +111,21 @@ OnLoadListener{
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-		Intent intent = new Intent(this, RidingDetailsActivity.class);
-		intent.putExtra("isMe", false);
-		intent.putExtra("articleId",list.get(position-1).getQuoteId() );
-		startActivity(intent);
+		if("HD".equals(list.get(position - 1).getIsType())){
+			Intent intent = new Intent(this, ActivityDetailsActivity.class);
+			intent.putExtra("activityId",list.get(position-1).getQuoteId() );
+			startActivity(intent);
+		}
+		
+		if("QYJ".equals(list.get(position - 1).getIsType())){
+			Intent intent = new Intent(this, RidingDetailsActivity.class);
+			intent.putExtra("isMe", false);
+			intent.putExtra("articleId",list.get(position-1).getQuoteId() );
+			startActivity(intent);
+		}
+		
+		
+		
 	}
 
 	
@@ -134,7 +145,7 @@ OnLoadListener{
 	}
 	
 	private void data() {
-		String url = "mobile/collect/queryCollectForArticleMemoList.html";
+		String url = "mobile/collect/queryCollectForList.html";
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("pageIndex", pageIndex + "");
@@ -171,7 +182,7 @@ OnLoadListener{
 	}
 
 	private void httpCollect() {
-		String url = "mobile/collect/queryCollectForArticleMemoList.html";
+		String url = "mobile/collect/queryCollectForList.html";
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("pageIndex", pageIndex + "");

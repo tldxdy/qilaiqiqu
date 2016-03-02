@@ -21,7 +21,7 @@
                 android:layout_height="40dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:src="@drawable/homepage_picture"
+                android:src="@drawable/user_default"
                 app:border_color="@color/light"
                 app1:border_width="0dp" />
 

@@ -1017,9 +1017,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 		textView.setText("你确定要删除这篇游记吗？");
 		final PopupWindow popupWindow = new PopupWindow(mview,
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
@@ -1050,7 +1051,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		});
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		// popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
 

@@ -67,8 +67,8 @@ public class SearchResultAdapter extends BaseAdapter {
 			holder = new ViewHolder();
 			v = inflater.inflate(R.layout.item_list_mainactivity_body, null);
 			holder.timeTxt = (TextView) v.findViewById(R.id.txt_mainList_time);
-			holder.likeTxt = (TextView) v.findViewById(R.id.txt_mainList_like);
-			holder.likeImg = (ImageView) v.findViewById(R.id.img_mainList_like);
+			holder.likeTxt = (TextView) v.findViewById(R.id.txt_ridinglist_like);
+			holder.likeImg = (ImageView) v.findViewById(R.id.img_ridinglist_like);
 			holder.titleTxt = (TextView) v
 					.findViewById(R.id.txt_mainList_title);
 			holder.photoImg = (ImageView) v

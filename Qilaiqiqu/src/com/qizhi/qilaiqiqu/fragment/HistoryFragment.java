@@ -120,7 +120,7 @@ OnLoadListener{
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		new SystemUtil().makeToast(getActivity(), position - 1 +"");
+		//new SystemUtil().makeToast(getActivity(), position - 1 +"");
 		Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
 		intent.putExtra("activityId", dataList.get(position - 1).getActivityId());
 		getActivity().startActivity(intent);

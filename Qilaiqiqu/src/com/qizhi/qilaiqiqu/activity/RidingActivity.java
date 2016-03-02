@@ -8,6 +8,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +30,6 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.RidingListAdapter;
-import com.qizhi.qilaiqiqu.model.CollectModel;
 import com.qizhi.qilaiqiqu.model.RidingDraftModel;
 import com.qizhi.qilaiqiqu.model.RidingModel;
 import com.qizhi.qilaiqiqu.model.RidingModelList;
@@ -37,8 +37,6 @@ import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.sqlite.DBManager;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
@@ -86,6 +84,8 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 	}
 
+	@SuppressLint("InlinedApi")
+	@SuppressWarnings("deprecation")
 	private void initView() {
 		dbManager = new DBManager(this);
 		ridingModel = new RidingModel();

@@ -30,6 +30,7 @@ import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
@@ -92,62 +93,6 @@ public class SlideShowListAdapter extends BaseAdapter {
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public View getView(final int position, View view, ViewGroup arg2) {
-/*		if (position == 0) {
-			view = inflater.inflate(R.layout.item_list_mainactivity_header,
-					null);
-			mImageCycleView = (ImageCycleViewUtil) view
-					.findViewById(R.id.icv_topView);
-			mImageCycleView.setCycleDelayed(3000);
-
-			mImageCycleView
-					.setOnPageClickListener(new ImageCycleViewUtil.OnPageClickListener() {
-
-						@Override
-						public void onClick(View imageView, ImageInfo imageInfo) {
-							if (imageInfo.type.toString().equals("URL")) {
-								Uri uri = Uri.parse(imageInfo.value.toString());
-								Intent intent = new Intent(Intent.ACTION_VIEW,
-										uri);
-								context.startActivity(intent);
-							} else if (imageInfo.type.toString().equals("APP")) {
-								if (imageInfo.bannerType.toString().equals(
-										"QYJ")) {
-
-									context.startActivity(new Intent(context,
-											RidingDetailsActivity.class)
-											.putExtra("articleId", Integer
-													.parseInt(imageInfo.value
-															.toString())));
-								} else if (imageInfo.bannerType.toString()
-										.equals("PQS")) {
-
-								} else if (imageInfo.bannerType.toString()
-										.equals("HD")) {
-
-								}
-							}
-						}
-					});
-
-			mImageCycleView.loadData(IClist,
-					new ImageCycleViewUtil.LoadImageCallBack() {
-						@Override
-						public ImageView loadAndDisplay(
-								ImageCycleViewUtil.ImageInfo imageInfo) {
-
-							ImageView imageView = new ImageView(context);
-
-							Picasso.with(context)
-									.load(imageInfo.image.toString())
-									.into(imageView);
-							// imageView.setImageResource(R.drawable.demo);
-
-							return imageView;
-
-						}
-					});
-			return view;
-		}*/
 
 		if (view == null || view.getTag() == null) {
 			holder = new ViewHolder();
@@ -159,9 +104,9 @@ public class SlideShowListAdapter extends BaseAdapter {
 			holder.byBrowseTxt = (TextView) view
 					.findViewById(R.id.txt_mainList_byBrowse);
 			holder.likeTxt = (TextView) view
-					.findViewById(R.id.txt_mainList_like);
+					.findViewById(R.id.txt_ridinglist_like);
 			holder.likeImg = (ImageView) view
-					.findViewById(R.id.img_mainList_like);
+					.findViewById(R.id.img_ridinglist_like);
 			holder.photoImg = (ImageView) view
 					.findViewById(R.id.img_mainList_photo);
 			holder.backgroundImg = (ImageView) view
@@ -239,6 +184,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
+				Toasts.show(context, "点赞", 0);
 				if (list.get(position).isPraised()) {
 					RequestParams params = new RequestParams();
 					params.addBodyParameter("userId",
@@ -372,9 +318,9 @@ public class SlideShowListAdapter extends BaseAdapter {
 		private TextView titleTxt;
 		private TextView timeTxt;
 		private TextView byBrowseTxt;
-		private ImageView likeImg;
 		private ImageView photoImg;
 		private ImageView backgroundImg;
+		private ImageView likeImg;
 		private TextView likeTxt;
 
 	}

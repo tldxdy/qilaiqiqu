@@ -246,16 +246,18 @@ public class ReleaseListAdapter extends BaseAdapter {
 		cancelBtn = (Button) mview.findViewById(R.id.btn_dialog_box_cancel);
 
 		final PopupWindow popupWindow = new PopupWindow(mview,
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
+		
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 
-				return true;
+				return false;
 				// 这里如果返回true的话，touch事件将被拦截
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
 			}
@@ -282,7 +284,7 @@ public class ReleaseListAdapter extends BaseAdapter {
 		});
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		// popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		popupWindow.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
 

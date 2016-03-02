@@ -2,12 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center"
+    android:gravity="center"
+    android:background="#66666666"
     android:orientation="vertical" >
+    <LinearLayout 
+        android:layout_width="match_parent"
+   		android:layout_height="wrap_content"
+    	android:layout_gravity="center_horizontal"
+    	android:gravity="center_horizontal"
+    	android:orientation="vertical" >
 
         <TextView
             android:id="@+id/txt_dialog_box_cancel"
-            android:layout_width="240dp"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:layout_height="50dp"
             android:textSize="18sp"
             android:layout_gravity="center"
@@ -19,14 +28,17 @@
             android:layout_height="1dp"
             android:background="#00ffffff"/>
 		<LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal" >
 
 			<Button
 			    android:id="@+id/btn_dialog_box_cancel"
-			    android:layout_width="119.5dp"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
 			    android:layout_height="wrap_content"
 			    android:background="@drawable/corners_rounded_button_left_lower"
 			    android:textColor="#6dbfed"
@@ -37,12 +49,14 @@
             android:background="#00ffffff"/>
 			<Button
 			    android:id="@+id/btn_dialog_box_confirm"
-			    android:layout_width="119.5dp"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
 			    android:layout_height="wrap_content"
 			    android:background="@drawable/corners_rounded_button_right_lower"
 			    android:textColor="#6dbfed"
 			    android:text="@string/text_personaldataactivity_confirm" />
 
+        </LinearLayout>
         </LinearLayout>
 
 </LinearLayout>

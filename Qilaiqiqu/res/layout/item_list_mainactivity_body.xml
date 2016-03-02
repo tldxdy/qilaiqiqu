@@ -70,26 +70,26 @@
         </LinearLayout>
 
         <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="12dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="top"
             android:layout_marginRight="20dp" >
 
             <ImageView
-                android:id="@+id/img_mainList_like"
+                android:id="@+id/img_ridinglist_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:src="@drawable/like_press" />
 
             <TextView
-                android:id="@+id/txt_mainList_like"
+                android:id="@+id/txt_ridinglist_like"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="0"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 

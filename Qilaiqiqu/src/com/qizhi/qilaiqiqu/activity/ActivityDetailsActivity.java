@@ -16,13 +16,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -97,6 +104,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 	private SharedPreferences sharedPreferences;
 	private int activityId;
+	private  int activity_userId;
+	private String activity_state;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -161,6 +170,10 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		backLayout = (LinearLayout) findViewById(R.id.layout_activityDetailsActivity_back);
 
 		activityId = getIntent().getIntExtra("activityId", -1);
+		activity_userId = getIntent().getIntExtra("userId", -1);
+		if(activity_userId != -1){
+			activity_state = getIntent().getStringExtra("state");
+		}
 	}
 
 	private void initEvent() {
@@ -182,6 +195,10 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			finish();
 			break;
 		case R.id.txt_activityDetails_txt1:
+			if(activity.getState().equals("ACTEND")){
+				Toasts.show(this, "打分", 0);
+				break;
+			}
 			if (isMe == 1) {
 				Toasts.show(this, "我发起的", 0);
 				// new SystemUtil().makeToast(this, "我发起的");
@@ -192,6 +209,11 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			break;
 
 		case R.id.txt_activityDetails_chat:
+			if(activity.getState().equals("ACTEND")){
+				Toasts.show(this, "评论", 0);
+				break;
+			}
+			
 			
 			startActivity(new Intent(ActivityDetailsActivity.this,
 					ChatActivity.class).putExtra("Group", "Group").putExtra(
@@ -213,61 +235,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				startActivity(intent);
 				break;
 			}
-			if (isMe == 2) {
-
-				RequestParams params = new RequestParams("UTF-8");
-				params.addQueryStringParameter("activityId", activityId + "");
-				params.addQueryStringParameter("userId",
-						sharedPreferences.getInt("userId", -1) + "");
-				params.addQueryStringParameter("uniqueKey",
-						sharedPreferences.getString("uniqueKey", null));
-				new XUtilsUtil().httpPost(
-						"mobile/participant/appendActivityParticipant.html",
-						params, new CallBackPost() {
-
-							@Override
-							public void onMySuccess(
-									ResponseInfo<String> responseInfo) {
-								String result = responseInfo.result;
-								JSONObject object;
-								try {
-									object = new JSONObject(result);
-									if (object.getBoolean("result")) {
-										isSignTxt1.setText("已报名");
-										isSignTxt2.setText("去聊天");
-										isMelayout2.setVisibility(View.GONE);
-										Toasts.show(
-												ActivityDetailsActivity.this,
-												"已成功报名", 0);
-										/*
-										 * new SystemUtil().makeToast(
-										 * ActivityDetailsActivity.this,
-										 * "已成功报名");
-										 */
-									} else {
-										Toasts.show(
-												ActivityDetailsActivity.this,
-												object.getString("message"), 0);
-										/*
-										 * new SystemUtil().makeToast(
-										 * ActivityDetailsActivity.this,
-										 * object.getString("message"));
-										 */
-									}
-								} catch (JSONException e) {
-									e.printStackTrace();
-
-								}
-							}
-
-							@Override
-							public void onMyFailure(HttpException error,
-									String msg) {
-								new SystemUtil().makeToast(
-										ActivityDetailsActivity.this, msg);
-							}
-						});
-			}
+			
+			showPopupWindow2(v);
 			break;
 
 		case R.id.layout_activityDetails_button1:
@@ -465,6 +434,122 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		}
 	}
 
+	private void isApply() {
+		if (isMe == 2) {
+
+			RequestParams params = new RequestParams("UTF-8");
+			params.addQueryStringParameter("activityId", activityId + "");
+			params.addQueryStringParameter("userId",
+					sharedPreferences.getInt("userId", -1) + "");
+			params.addQueryStringParameter("uniqueKey",
+					sharedPreferences.getString("uniqueKey", null));
+			new XUtilsUtil().httpPost(
+					"mobile/participant/appendActivityParticipant.html",
+					params, new CallBackPost() {
+
+						@Override
+						public void onMySuccess(
+								ResponseInfo<String> responseInfo) {
+							String result = responseInfo.result;
+							JSONObject object;
+							try {
+								object = new JSONObject(result);
+								if (object.getBoolean("result")) {
+									isSignTxt1.setText("已报名");
+									isSignTxt2.setText("去聊天");
+									isMelayout2.setVisibility(View.GONE);
+									Toasts.show(
+											ActivityDetailsActivity.this,
+											"已成功报名", 0);
+									/*
+									 * new SystemUtil().makeToast(
+									 * ActivityDetailsActivity.this,
+									 * "已成功报名");
+									 */
+								} else {
+									Toasts.show(
+											ActivityDetailsActivity.this,
+											object.getString("message"), 0);
+									/*
+									 * new SystemUtil().makeToast(
+									 * ActivityDetailsActivity.this,
+									 * object.getString("message"));
+									 */
+								}
+							} catch (JSONException e) {
+								e.printStackTrace();
+
+							}
+						}
+
+						@Override
+						public void onMyFailure(HttpException error,
+								String msg) {
+							new SystemUtil().makeToast(
+									ActivityDetailsActivity.this, msg);
+						}
+					});
+		}
+	}
+
+	private void showPopupWindow2(View view) {
+
+		// 一个自定义的布局，作为显示的内容
+		View mview = LayoutInflater.from(this).inflate(
+				R.layout.popup_delete_releaseactivity, null);
+
+		TextView textView = (TextView) mview
+				.findViewById(R.id.txt_dialog_box_cancel);
+		Button confirmBtn = (Button) mview
+				.findViewById(R.id.btn_dialog_box_confirm);
+		Button cancelBtn = (Button) mview
+				.findViewById(R.id.btn_dialog_box_cancel);
+
+		textView.setText("你确定报名，您将自动加入活动群组？");
+		final PopupWindow popupWindow = new PopupWindow(mview,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+
+		popupWindow.setTouchable(true);
+		
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		confirmBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				isApply();
+				popupWindow.dismiss();
+			}
+		});
+
+		cancelBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		 popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
+
+	}
+	
+	
+
 	private void getActivityData() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addQueryStringParameter("activityId", activityId + "");
@@ -611,26 +696,45 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 					.into(imageView);
 		}
 
-		if (activity.isInvolved()) {
-			isMe = 3;
-			isSignTxt1.setText("已报名");
-			isSignTxt2.setText("去聊天");
-			isMelayout2.setVisibility(View.GONE);
-		}
-
 		if (sharedPreferences.getInt("userId", -1) == activity.getUserId()) {
 			isMe = 1;
-		}
-		if (isMe == 1) {
 			isSignTxt1.setText("我发起的");
 			isSignTxt2.setText("去聊天");
 			isMelayout2.setVisibility(View.GONE);
-		} else if (isMe == 2) {
-			isMelayout2.setVisibility(View.VISIBLE);
-		} else if (isMe == 3) {
-			isSignTxt1.setText("已报名");
-			isSignTxt2.setText("去聊天");
-			isMelayout2.setVisibility(View.GONE);
+		}else{
+			if (activity.isInvolved()) {
+				isMe = 3;
+				isSignTxt1.setText("已报名");
+				isSignTxt2.setText("去聊天");
+				isMelayout2.setVisibility(View.GONE);
+			}else{
+				isMelayout2.setVisibility(View.VISIBLE);
+			}
+		}
+		
+		
+		if (sharedPreferences.getInt("userId", -1) == activity.getUserId()) {
+			if("ACTEND".equals(activity.getState())){
+				isMelayout2.setVisibility(View.VISIBLE);
+				isSignTxt3.setText("活动已结束");
+			}
+		}else{
+			if (!activity.isInvolved()) {
+				if("ACTEND".equals(activity.getState())){
+					isMelayout2.setVisibility(View.VISIBLE);
+					isSignTxt3.setText("活动已结束");
+				}else if(!"ACTIN".equals(activity.getState())){
+					isMelayout2.setVisibility(View.VISIBLE);
+					isSignTxt3.setText("活动正在进行中");
+				}
+			}else{
+				if("ACTEND".equals(activity.getState())){
+						isMe = 3;
+						isSignTxt1.setText("打分");
+						isSignTxt2.setText("评论");
+						isMelayout2.setVisibility(View.GONE);
+				}
+			}
 		}
 	}
 

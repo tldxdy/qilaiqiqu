@@ -2,11 +2,11 @@ package com.qizhi.qilaiqiqu.model;
 
 /**
  * 
- * @author 个人收藏
+ * @author 个人收藏的骑游记和活动
  * 
  */
 public class CollectModel {
-	private String duration;
+	private Integer duration;
 	private String startDate;
 	private String activityTitle;
 	private Integer userId;
@@ -25,12 +25,22 @@ public class CollectModel {
 	private String state;
 	private String title;
 	private String userName;
+	private boolean involved;
+    private Integer virtualPraise;
+	private Integer virtualScan;
+	private boolean isPraised;
+    private String isType;
+	
+	
+	
+	
 
-	public String getDuration() {
+
+	public Integer getDuration() {
 		return duration;
 	}
 
-	public void setDuration(String duration) {
+	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 
@@ -178,4 +188,46 @@ public class CollectModel {
 		this.userName = userName;
 	}
 
+	public boolean isInvolved() {
+		return involved;
+	}
+
+	public void setInvolved(boolean involved) {
+		this.involved = involved;
+	}
+
+	public Integer getVirtualPraise() {
+		return virtualPraise;
+	}
+
+	public void setVirtualPraise(Integer virtualPraise) {
+		this.virtualPraise = virtualPraise;
+	}
+
+	public Integer getVirtualScan() {
+		return virtualScan;
+	}
+
+	public void setVirtualScan(Integer virtualScan) {
+		this.virtualScan = virtualScan;
+	}
+
+	public boolean isPraised() {
+		return isPraised;
+	}
+
+	public void setPraised(boolean isPraised) {
+		this.isPraised = isPraised;
+	}
+
+	public String getIsType() {
+		return isType;
+	}
+
+	public void setIsType(String isType) {
+		this.isType = isType;
+	}
+	
+	
+	
 }

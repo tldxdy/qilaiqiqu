@@ -550,7 +550,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.corners_layout));
 		// 设置好参数之后再show
-		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 63);
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
 
 	}
 	
@@ -857,13 +857,14 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		
 		
 		
-		isNews();
+		
 		super.onResume();
 		MobclickAgent.onResume(this);
 
 	}
 	private void isNews() {
-		// if (preferences.getInt("userId", -1) != -1) {
+		
+		//if (preferences.getInt("userId", -1) != -1) {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
@@ -1020,13 +1021,16 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 	 * 头像
 	 */
 	private void headPortrait() {
+		isNews();
 		if(preferences.getInt("userId", -1) != -1){
 			Picasso.with(MainActivity.this)
 			.load(SystemUtil.IMGPHTH
 					+ preferences.getString("userImage",null))
 			.into(photoImg);
+			//dotView.setVisibility(View.VISIBLE);
 		}else {
-			photoImg.setImageResource(R.drawable.homepage_picture);
+			photoImg.setImageResource(R.drawable.user_default);
+			dotView.setVisibility(View.GONE);
 		}
 		/*RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
