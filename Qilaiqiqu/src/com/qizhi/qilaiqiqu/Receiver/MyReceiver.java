@@ -26,7 +26,7 @@ public class MyReceiver extends BroadcastReceiver {
 	private static final String TAG = "JPush";
 	private String key;
 	private String value;
-
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Bundle bundle = intent.getExtras();

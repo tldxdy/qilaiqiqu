@@ -85,509 +85,511 @@
             android:visibility="gone" />
     </RelativeLayout>
 
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/scrollView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:layout_height="fill_parent" >
 
             <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="44dp"
-                android:baselineAligned="false"
-                android:background="#66ffffff"
-                android:orientation="horizontal" >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="44dp"
+                    android:background="#66ffffff"
+                    android:baselineAligned="false"
                     android:orientation="horizontal" >
 
-                    <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
-                        android:id="@+id/img_activityDetails_photo"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_marginLeft="5dp"
-                        android:src="@drawable/persional_picture"
-                        app1:border_width="0dp" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/txt_activityDetails_userName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
+                        <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
+                            android:id="@+id/img_activityDetails_photo"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_marginLeft="5dp"
+                            android:src="@drawable/persional_picture"
+                            app1:border_width="0dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:text="发起"
-                        android:textColor="@color/mapblue"
-                        android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/txt_activityDetails_userName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/txt_activityDetails_scanNum"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:text="发起"
+                            android:textColor="@color/mapblue"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/txt_activityDetails_scanNum"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:textColor="@color/mapblue"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="fill_parent"
+                        android:background="#E6E6E6"
+                        android:gravity="center"
+                        android:orientation="vertical" >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ask" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="咨询一下"
+                            android:textColor="#009FE8"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil
+                    android:id="@+id/icc_activityDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp" >
+                </com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/txt_activityDetails_activityTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="74dp"
+                        android:layout_height="fill_parent"
+                        android:gravity="right|center_vertical"
+                        android:orientation="horizontal" >
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:layout_marginRight="20dp" >
+
+                            <ImageView
+                                android:id="@+id/img_activityDetails_like"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/like_press" />
+
+                            <TextView
+                                android:id="@+id/txt_activityDetails_like"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:background="#00ffffff"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textColor="#ffffff"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txt_activityDetails_animation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:text="+1"
+                                android:textColor="#000000"
+                                android:textSize="18sp"
+                                android:visibility="gone" />
+                        </FrameLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="10dp"
+                    android:background="#EEEEEF" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:textColor="@color/mapblue"
-                        android:textSize="12sp" />
+                        android:layout_height="fill_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="出发时间"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/txt_activityDetails_startDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
-                    android:layout_height="fill_parent"
-                    android:background="#E6E6E6"
-                    android:gravity="center"
-                    android:orientation="vertical" >
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#EEEEEF" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="估计时长"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/txt_activityDetails_duration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#EEEEEF" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="收费金额"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/txt_activityDetails_money"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#EEEEEF" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="骑行路线"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/txt_activityDetails_mileage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ask" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="咨询一下"
-                        android:textColor="#009FE8"
-                        android:textSize="12sp" />
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/little_return" />
                 </LinearLayout>
-            </LinearLayout>
-
-            <com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil
-                android:id="@+id/icc_activityDetails"
-                android:layout_width="match_parent"
-                android:layout_height="170dp" >
-            </com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="44dp"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:id="@+id/txt_activityDetails_activityTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="74dp"
-                    android:layout_height="fill_parent"
-                    android:gravity="right|center_vertical"
-                    android:orientation="horizontal" >
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:layout_marginRight="20dp" >
-
-                        <ImageView
-                            android:id="@+id/img_activityDetails_like"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/like_press" />
-
-                        <TextView
-                            android:id="@+id/txt_activityDetails_like"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:background="#00ffffff"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textColor="#ffffff"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/txt_activityDetails_animation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:text="+1"
-                            android:textColor="#000000"
-                            android:textSize="18sp"
-                            android:visibility="gone" />
-                    </FrameLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="10dp"
-                android:background="#EEEEEF" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="44dp"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="出发时间"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_marginLeft="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:id="@+id/txt_activityDetails_startDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEF" >
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="44dp"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="估计时长"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_marginLeft="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:id="@+id/txt_activityDetails_duration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEF" >
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="44dp"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="收费金额"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_marginLeft="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:id="@+id/txt_activityDetails_money"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEF" >
-            </LinearLayout>
-            
-            
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="44dp"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="骑行路线"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-                
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_marginLeft="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:id="@+id/txt_activityDetails_mileage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:textColor="@color/dark"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="10dp"
-                    android:src="@drawable/little_return" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEF" >
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/txt_activityDetails_activityMemo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="20dp"
-                    android:textColor="@color/dark"
-                    android:textSize="16sp" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal" >
+                    android:layout_height="1dp"
+                    android:background="#EEEEEF" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
 
                     <TextView
+                        android:id="@+id/txt_activityDetails_activityMemo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="报名人数:" />
-
-                    <TextView
-                        android:id="@+id/txt_activityDetails_participantCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                         />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_activityDetails_append"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal" >
-
-                    <LinearLayout
-                        android:id="@+id/layout_activityDetails_participant"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingLeft="15dp" >
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/txt_activityDetails_dian"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:layout_marginLeft="15dp"
-                        android:text="......"
-                        android:textSize="20sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="270dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginTop="30dp"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="fill_parent"
-                        android:background="@drawable/corners_bg_ao_half"
-                        android:gravity="center"
-                        android:text="强烈推荐"
-                        android:textColor="@color/white"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="20dp"
+                        android:textColor="@color/dark"
                         android:textSize="16sp" />
 
                     <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:background="#f7f7f7"
-                        android:orientation="vertical" >
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal" >
 
                         <TextView
-                            android:id="@+id/txt_activityDetails_articleMemo1"
-                            android:layout_width="fill_parent"
-                            android:layout_height="0dp"
-                            android:layout_marginLeft="20dp"
-                            android:layout_weight="1"
-                            android:gravity="bottom"
-                            android:text="大青海骑游"
-                            android:textColor="#009fe8"
-                            android:textSize="14sp" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="报名人数:" />
 
                         <TextView
-                            android:id="@+id/txt_activityDetails_articleMemo2"
+                            android:id="@+id/txt_activityDetails_participantCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layout_activityDetails_append"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal" >
+
+                        <LinearLayout
+                            android:id="@+id/layout_activityDetails_participant"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="15dp" >
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/txt_activityDetails_dian"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_marginLeft="15dp"
+                            android:text="......"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="270dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="64dp"
+                        android:layout_marginTop="30dp"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="fill_parent"
+                            android:background="@drawable/corners_bg_ao_half"
+                            android:gravity="center"
+                            android:text="强烈推荐"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+
+                        <LinearLayout
                             android:layout_width="fill_parent"
-                            android:layout_height="0dp"
-                            android:layout_marginLeft="20dp"
-                            android:layout_weight="1"
-                            android:gravity="top"
-                            android:text="美丽的春天里——骑游"
-                            android:textColor="#009fe8"
-                            android:textSize="14sp" />
+                            android:layout_height="fill_parent"
+                            android:background="#f7f7f7"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/txt_activityDetails_articleMemo1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="0dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_weight="1"
+                                android:gravity="bottom"
+                                android:text="大青海骑游"
+                                android:textColor="#009fe8"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/txt_activityDetails_articleMemo2"
+                                android:layout_width="fill_parent"
+                                android:layout_height="0dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_weight="1"
+                                android:gravity="top"
+                                android:text="美丽的春天里——骑游"
+                                android:textColor="#009fe8"
+                                android:textSize="14sp" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+        </ScrollView>
 
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="44dp" >
-
-        <LinearLayout
-            android:id="@+id/layout_activityDetails_button1"
+        <FrameLayout
             android:layout_width="fill_parent"
             android:layout_height="44dp"
-            android:orientation="horizontal" >
+            android:layout_alignParentBottom="true" >
 
-            <TextView
-                android:id="@+id/txt_activityDetails_txt1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/corners_bg_ao2"
-                android:gravity="center"
-                android:text="已报名"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:layout_width="2dp"
-                android:layout_height="fill_parent" />
-
-            <TextView
-                android:id="@+id/txt_activityDetails_chat"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/corners_bg_ao"
-                android:gravity="center"
-                android:text="去聊天"
-                android:textColor="@color/white" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_activityDetails_button2"
-            android:layout_width="fill_parent"
-            android:layout_height="44dp"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/txt_activityDetails_txt3"
+            <LinearLayout
+                android:id="@+id/layout_activityDetails_button1"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@drawable/corners_bg_ao"
-                android:gravity="center"
-                android:text="立即报名"
-                android:textColor="@color/white" />
-        </LinearLayout>
-    </FrameLayout>
+                android:layout_height="44dp"
+                android:background="#00000000"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/txt_activityDetails_txt1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/corners_bg_ao2"
+                    android:gravity="center"
+                    android:text="已报名"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/txt_activityDetails_chat"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="1dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/corners_bg_ao"
+                    android:gravity="center"
+                    android:text="去聊天"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_activityDetails_button2"
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:orientation="horizontal"
+                android:visibility="gone" >
+
+                <TextView
+                    android:id="@+id/txt_activityDetails_txt3"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="@drawable/corners_bg_ao"
+                    android:gravity="center"
+                    android:text="立即报名"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+        </FrameLayout>
+    </RelativeLayout>
 
 </LinearLayout>

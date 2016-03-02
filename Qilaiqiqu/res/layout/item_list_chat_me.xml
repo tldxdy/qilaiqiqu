@@ -16,21 +16,6 @@
         android:layout_marginLeft="5dip"
         android:scaleType="centerCrop" />
 
-    <!--
-          <TextView
-        android:id="@+id/chatlist_text_me"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/chatlist_image_me"
-        android:layout_toLeftOf="@id/chatlist_image_me"
-        android:background="@drawable/corners_chat"
-        android:paddingBottom="18dip"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="13dip"
-        android:text="会忽悠了gyughiulhlluihui过sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss" />
-    -->
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,7 +35,8 @@
         <ImageView
             android:id="@+id/chatlist_img_me"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true" />
     </RelativeLayout>
 
 </RelativeLayout>

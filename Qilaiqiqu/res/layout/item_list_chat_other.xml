@@ -13,7 +13,7 @@
         android:layout_width="40dip"
         android:layout_height="40dip"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dip"
+        android:layout_marginRight="5dp"
         android:scaleType="centerCrop" />
 
     <TextView
@@ -26,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/chatlist_text_username"
-        android:layout_marginTop="3dp"
         android:layout_toRightOf="@+id/chatlist_image_other"
         android:background="@drawable/corners_chat"
         android:paddingBottom="18dip"
@@ -42,7 +41,8 @@
         <ImageView
             android:id="@+id/chatlist_img_other"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true" />
     </RelativeLayout>
 
 </RelativeLayout>

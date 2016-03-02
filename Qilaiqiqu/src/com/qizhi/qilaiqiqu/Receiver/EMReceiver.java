@@ -24,7 +24,7 @@ public class EMReceiver extends BroadcastReceiver {
 		// 更方便的方法是通过msgId直接获取整个message
 		EMMessage message = EMChatManager.getInstance().getMessage(msgId);
 		Log.d("main", "MESSAGE:" + message);
-
+		
 		System.out.println("EMReceiver-----MESSAGE:" + message);
 	}
 

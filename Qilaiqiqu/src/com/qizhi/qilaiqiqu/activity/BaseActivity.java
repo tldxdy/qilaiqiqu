@@ -14,6 +14,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 
 import com.easemob.chat.EMMessage;
@@ -28,10 +29,8 @@ import com.qizhi.qilaiqiqu.utils.CommonUtils;
 /**
  * @author leiqian 地图基类
  */
-public class BaseActivity extends Activity {
+public class BaseActivity extends FragmentActivity {
 
-	private static final int notifiId = 11;
-	protected NotificationManager notificationManager;
 	/**
 	 * ����ʡ
 	 */
@@ -71,6 +70,8 @@ public class BaseActivity extends Activity {
 	/**
 	 * ����ʡ������XML����
 	 */
+	private static final int notifiId = 11;
+	protected NotificationManager notificationManager;
 
 	protected void initProvinceDatas(AssetManager asset) {
 		List<ProvinceModel> provinceList = null;
@@ -171,5 +172,4 @@ public class BaseActivity extends Activity {
         notificationManager.notify(notifiId, notification);
         notificationManager.cancel(notifiId);
     }
-
 }
