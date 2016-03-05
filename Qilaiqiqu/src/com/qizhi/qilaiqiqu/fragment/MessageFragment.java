@@ -13,14 +13,17 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.ActivityDiscussActivity;
 import com.qizhi.qilaiqiqu.activity.CommentMessageActivity;
 import com.qizhi.qilaiqiqu.adapter.MyMessageAdapter;
 import com.qizhi.qilaiqiqu.model.CommentModel;
 import com.qizhi.qilaiqiqu.model.SystemMessageModel;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
+import com.qizhi.qilaiqiqu.ui.FooterListView;
+import com.qizhi.qilaiqiqu.ui.Refresh;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -34,20 +37,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
-public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,
-OnLoadListener{
+public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener, OnfreshListener{
 	private View view;
 	private Context context;
 	
-	private ListView myMessageList;		//系统消息的集合
+	private FooterListView myMessageList;		//系统消息的集合
 	private MyMessageAdapter adapter;
 	private XUtilsUtil xUtilsUtil;
 	private Integer pageIndex = 1;
 	private SharedPreferences preferences;
 	private List<SystemMessageModel> list;
-	private RefreshLayout swipeLayout;
+	private Refresh swipeLayout;
 	private View header;
 	
 	
@@ -57,13 +58,13 @@ OnLoadListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_message,null);
-		myMessageList = (ListView) view.findViewById(R.id.list_fragment_message);
+		myMessageList = (FooterListView) view.findViewById(R.id.list_fragment_message);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		list = new ArrayList<SystemMessageModel>();
 		xUtilsUtil = new XUtilsUtil();
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
+		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
@@ -71,7 +72,7 @@ OnLoadListener{
 				android.R.color.holo_red_light);
 		myMessageList.addHeaderView(header);
 		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setOnLoadListener(this);
+		//swipeLayout.setOnLoadListener(this);
 		
 		return view;
 	}
@@ -94,8 +95,12 @@ OnLoadListener{
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+		if(position > list.size()){
+			return;
+		}
 		
 		int systemMessageId = list.get(position - 1).getSystemMessageId();
+		
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("systemMessageId", systemMessageId + "");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
@@ -112,9 +117,8 @@ OnLoadListener{
 				}
 				if (jsonObject.optBoolean("result")) {
 					try {
-						SystemMessageModel smm = new Gson().fromJson(jsonObject.getJSONObject("data").toString(), SystemMessageModel.class);
+						SystemMessageModel smm = new Gson().fromJson(jsonObject.getJSONObject("data").optString("tempSystemMessage").toString(), SystemMessageModel.class);
 						JSONObject jo = new JSONObject(smm.getContentJson());
-						
 						if("QYJPL".equals(smm.getMessageType())){
 							CommentModel commentModel = new Gson().fromJson(jo.toString(), CommentModel.class);
 							//骑游记评论
@@ -130,13 +134,53 @@ OnLoadListener{
 							intent.putExtra("isComment", 2);
 							startActivity(intent);
 						}else if("HDBM".equals(smm.getMessageType())){
-							//活动报名
+							int activityId = jo.optInt("activityId");
+							Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
+							//intent.putExtra("superId",jo.optInt("commentId"));
+							intent.putExtra("activityId", activityId);
+							startActivity(intent);
+						}else if("HDYQDS".equals(smm.getMessageType())){
+							int activityId = jo.optInt("activityId");
+							Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
+							//intent.putExtra("superId",jo.optInt("commentId"));
+							intent.putExtra("activityId", activityId);
+							startActivity(intent);
+						}else if("HDHF".equals(smm.getMessageType())){
+							int activityId = jo.optInt("activityId");
+							Intent intent = new Intent(getActivity(), ActivityDiscussActivity.class);
+							//intent.putExtra("superId",jo.optInt("commentId"));
+							intent.putExtra("activityId", activityId);
+							startActivity(intent);
+						}else if("HDDSJG".equals(smm.getMessageType())){
+							//活动报名{"activityId":169}
+							int activityId = jo.optInt("activityId");
+							
+							Intent intent;
+							if("".equals(jo.optString("memo"))){
+								intent = new Intent(getActivity(), ActivityDetailsActivity.class);
+								intent.putExtra("integral", jo.optInt("integral"));
+								intent.putExtra("sumIntegral", jo.optInt("sumIntegral"));
+								intent.putExtra("userName", jo.optString("userName"));
+								intent.putExtra("activityId", activityId);
+								startActivity(intent);
+							}else{
+								intent = new Intent(getActivity(), ActivityDiscussActivity.class);
+								//intent.putExtra("superId",jo.optInt("commentId"));
+								intent.putExtra("activityId", activityId);
+								startActivity(intent);
+							}
+							
+							
 							
 						}else if("HDYQDS".equals(smm.getMessageType())){
 							//活动详情打赏
-						}else if("HDBM".equals(smm.getMessageType())){
+							int activityId = jo.optInt("activityId");
+							Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
+							intent.putExtra("activityId", activityId);
+							getActivity().startActivity(intent);
 							
-						}else if("HDBM".equals(smm.getMessageType())){
+						}else if("PQS".equals(smm.getMessageType())){
+							//陪骑士
 							
 						}
 						
@@ -170,6 +214,7 @@ OnLoadListener{
 			adapter = new MyMessageAdapter(context, list);
 			myMessageList.setAdapter(adapter);
 			myMessageList.setOnItemClickListener(this);
+			myMessageList.setOnfreshListener(this);
 			//myMessageList.setOnRefreshListener(this);
 			
 			//myMessageList.finishRefreshing();
@@ -236,20 +281,24 @@ OnLoadListener{
 				//	myMessageList.finishRefreshing();
 					
 				}
-				if(pageIndex == 1){
+				swipeLayout.setRefreshing(false);
+				myMessageList.completeRefresh();
+				
+				/*if(pageIndex == 1){
 					swipeLayout.setRefreshing(false);
 				}else{
 					swipeLayout.setLoading(false);
-				}
+				}*/
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				if(pageIndex == 1){
+				swipeLayout.setRefreshing(false);
+				/*if(pageIndex == 1){
 					swipeLayout.setRefreshing(false);
 				}else{
 					swipeLayout.setLoading(false);
-				}
+				}*/
 			}
 		});
 	}
@@ -267,11 +316,26 @@ OnLoadListener{
 				// 更新完后调用该方法结束刷新
 				
 			}
-		}, 1000);
+		}, 2000);
 
 	}
 
+
 	@Override
+	public void onLoadingMore() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				// 更新数据
+				// 更新完后调用该方法结束刷新
+				pageIndex = pageIndex + 1;
+				dataJ();
+			}
+		}, 2000);
+	}
+
+/*	@Override
 	public void onLoad() {
 		swipeLayout.postDelayed(new Runnable() {
 
@@ -283,6 +347,6 @@ OnLoadListener{
 				dataJ();
 			}
 		}, 1000);
-	}
+	}*/
 }
 	

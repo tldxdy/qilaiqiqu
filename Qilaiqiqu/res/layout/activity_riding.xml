@@ -41,19 +41,18 @@
             android:textSize="18sp" />
 
     </RelativeLayout>
-
-    <com.qizhi.qilaiqiqu.utils.RefreshLayout
+   <com.qizhi.qilaiqiqu.ui.Refresh
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
     
-    <ListView
+	<com.qizhi.qilaiqiqu.ui.FooterListView
         android:id="@+id/list_ridingActivity_riding"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >
-    </ListView>
-    </com.qizhi.qilaiqiqu.utils.RefreshLayout>
+    </com.qizhi.qilaiqiqu.ui.FooterListView>
+    </com.qizhi.qilaiqiqu.ui.Refresh>
 
 </LinearLayout>

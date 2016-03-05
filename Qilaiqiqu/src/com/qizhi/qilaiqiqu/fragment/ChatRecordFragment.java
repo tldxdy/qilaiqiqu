@@ -7,6 +7,9 @@ import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ChatRecordAdapter;
+import com.qizhi.qilaiqiqu.ui.FooterListView;
+import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
+import com.qizhi.qilaiqiqu.ui.Refresh;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import android.annotation.SuppressLint;
@@ -22,9 +25,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class ChatRecordFragment extends Fragment implements OnItemClickListener,OnRefreshListener,
-OnLoadListener{
-	private ListView chatList;
+public class ChatRecordFragment extends Fragment implements OnItemClickListener,OnRefreshListener,OnfreshListener{
+	private FooterListView chatList;
 	private View view;
 	private List<?> list;
 	private ChatRecordAdapter adapter;
@@ -32,7 +34,7 @@ OnLoadListener{
 	private SharedPreferences preferences;
 	private int pageIndex = 1;
 	
-	private RefreshLayout swipeLayout;
+	private Refresh swipeLayout;
 	private View header;
 	private EMConversation conversation;
 	
@@ -42,18 +44,16 @@ OnLoadListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_chat_record,null);
-		chatList = (ListView) view.findViewById(R.id.list_fragment_chat_record);
+		chatList = (FooterListView) view.findViewById(R.id.list_fragment_chat_record);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
+		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		chatList.addHeaderView(header);
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setOnLoadListener(this);
 		conversation = EMChatManager.getInstance().getConversation(preferences.getString("imUserName", null));
 		if(conversation != null){
 			
@@ -78,6 +78,8 @@ OnLoadListener{
 	private void data() {
 		adapter = new ChatRecordAdapter(context, list);
 		chatList.setAdapter(adapter);
+		swipeLayout.setOnRefreshListener(this);
+		chatList.setOnfreshListener(this);
 	}
 
 	@Override
@@ -98,7 +100,12 @@ OnLoadListener{
 	}
 
 	@Override
-	public void onLoad() {
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+		
+	}
+
+	@Override
+	public void onLoadingMore() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
@@ -107,13 +114,8 @@ OnLoadListener{
 				// 更新完后调用该方法结束刷新
 				pageIndex = pageIndex + 1;
 				//dataJ();
-				swipeLayout.setLoading(false);
+				chatList.completeRefresh();
 			}
 		}, 1000);
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		
 	}
 }

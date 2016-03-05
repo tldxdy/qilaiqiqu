@@ -3,7 +3,7 @@
     android:fromDegrees="0"
     android:pivotX="50%"
     android:pivotY="50%"
-    android:drawable="@drawable/loading"
+    android:drawable="@drawable/loading_small_icon"
     android:toDegrees="360">
     
 

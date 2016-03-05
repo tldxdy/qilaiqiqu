@@ -15,8 +15,12 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.HistoryAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
+import com.qizhi.qilaiqiqu.ui.FooterListView;
+import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
+import com.qizhi.qilaiqiqu.ui.Refresh;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -35,9 +39,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class HistoryFragment extends Fragment implements OnItemClickListener,OnRefreshListener,
-OnLoadListener{
-	private ListView historyList;
+public class HistoryFragment extends Fragment implements OnItemClickListener,OnRefreshListener,OnfreshListener{
+	private FooterListView historyList;
 	private View view;
 	private List<StartAndParticipantActivityModel> dataList;
 	private HistoryAdapter adapter;
@@ -45,7 +48,7 @@ OnLoadListener{
 	private SharedPreferences preferences;
 	private XUtilsUtil xUtilsUtil;
 	private int pageIndex = 1;
-	private RefreshLayout swipeLayout;
+	private Refresh swipeLayout;
 	private View header;
 	
 	@SuppressLint("InlinedApi")
@@ -54,21 +57,20 @@ OnLoadListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_history,null);
-		historyList = (ListView) view.findViewById(R.id.list_fragment_manage);
+		historyList = (FooterListView) view.findViewById(R.id.list_fragment_manage);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		dataList = new ArrayList<StartAndParticipantActivityModel>();
 		xUtilsUtil = new XUtilsUtil();
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
-		swipeLayout.setOnRefreshListener(this);
+		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		historyList.addHeaderView(header);
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setOnLoadListener(this);
+		/*swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);*/
 		
 		return view;
 	}
@@ -76,6 +78,7 @@ OnLoadListener{
 
 	@Override
 	public void onResume() {
+		pageIndex = 1;
 		data();
 		super.onResume();
 	}
@@ -104,7 +107,8 @@ OnLoadListener{
 					adapter = new HistoryAdapter(context, dataList, preferences.getInt("userId", -1));
 					historyList.setAdapter(adapter);
 					historyList.setOnItemClickListener(HistoryFragment.this);
-					//historyList.setOnRefreshListener(HistoryFragment.this);
+					swipeLayout.setOnRefreshListener(HistoryFragment.this);
+					historyList.setOnfreshListener(HistoryFragment.this);
 				}
 				
 				
@@ -120,6 +124,9 @@ OnLoadListener{
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+		if(position > dataList.size()){
+			return;
+		}
 		//new SystemUtil().makeToast(getActivity(), position - 1 +"");
 		Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
 		intent.putExtra("activityId", dataList.get(position - 1).getActivityId());
@@ -166,30 +173,25 @@ OnLoadListener{
 					ArrayList<StartAndParticipantActivityModel> lists = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), new TypeToken<ArrayList<StartAndParticipantActivityModel>>(){}.getType());
 					if(pageIndex == 1){
 						dataList = lists;
-						new SystemUtil().makeToast(getActivity(), "刷新成功");
-					}else if(1 < pageIndex && pageIndex < pageCount){
+						Toasts.show(getActivity(), "刷新成功", 0);
+					}else if(1 < pageIndex && pageIndex <= pageCount){
 						dataList.addAll(lists);
-						new SystemUtil().makeToast(getActivity(), "加载成功");
+						Toasts.show(getActivity(), "加载成功",0);
+						
 					}
 					// 更新UI
 					adapter.notifyDataSetChanged();
 				}else{
-					new SystemUtil().makeToast(getActivity(),	jsonObject.optString("message") );
+					Toasts.show(getActivity(),	jsonObject.optString("message"), 0 );
 				}
-				if(pageIndex == 1){
 					swipeLayout.setRefreshing(false);
-				}else{
-					swipeLayout.setLoading(false);
-				}
+					historyList.completeRefresh();
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				if(pageIndex == 1){
 					swipeLayout.setRefreshing(false);
-				}else{
-					swipeLayout.setLoading(false);
-				}
+					historyList.completeRefresh();
 			}
 		});
 	}
@@ -206,12 +208,14 @@ OnLoadListener{
 				// 更新完后调用该方法结束刷新
 				
 			}
-		}, 1000);
+		}, 1500);
 
 	}
 
+
+
 	@Override
-	public void onLoad() {
+	public void onLoadingMore() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
@@ -221,7 +225,7 @@ OnLoadListener{
 				pageIndex = pageIndex + 1;
 				dataJ();
 			}
-		}, 1000);
+		}, 1500);
 	}
 	
 }

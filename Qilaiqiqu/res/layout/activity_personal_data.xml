@@ -366,7 +366,7 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:gravity="top"
-                    android:hint="@string/text_personactivity_signature"
+                    android:hint="@string/text_personactivity_my"
                     android:maxLength="50"
                     android:textSize="16sp" />
 

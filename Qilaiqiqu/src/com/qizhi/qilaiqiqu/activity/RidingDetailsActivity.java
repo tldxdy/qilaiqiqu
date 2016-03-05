@@ -312,6 +312,12 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				Intent intent = new Intent(this, DiscussActivity.class);
 				intent.putExtra("articleId", articleId);
 				startActivity(intent);
+			}else {
+				new SystemUtil().makeToast(
+						RidingDetailsActivity.this, "请登录");
+				startActivity(new Intent(
+						RidingDetailsActivity.this,
+						LoginActivity.class));
 			}
 			break;
 		case R.id.img_ridingDetailsActivity_revamp:
@@ -942,10 +948,13 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				null);
 		markPointTxt = (TextView) v.findViewById(R.id.txt_JpushPopup_message);
 		popup_cancel = (TextView) v.findViewById(R.id.txt_JpushPopup_cancel);
+		LinearLayout quxiao = (LinearLayout) v.findViewById(R.id.quxiao);
 		final PopupWindow popupWindow = new PopupWindow(v,
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
+		
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		if (jf.equals("JPushDZ")) {
 			praiseNum = getIntent().getStringExtra("praiseNum");
@@ -980,6 +989,15 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				return false;
 				// 这里如果返回true的话，touch事件将被拦截
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+		
+		quxiao.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
+				jpushFlag = "";
 			}
 		});
 

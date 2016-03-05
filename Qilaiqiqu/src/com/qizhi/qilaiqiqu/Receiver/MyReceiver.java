@@ -13,6 +13,7 @@ import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
 
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.ActivityDiscussActivity;
 import com.qizhi.qilaiqiqu.activity.DiscussActivity;
 import com.qizhi.qilaiqiqu.activity.FriendActivity;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
@@ -32,6 +33,9 @@ public class MyReceiver extends BroadcastReceiver {
 		Bundle bundle = intent.getExtras();
 		Log.d(TAG, "[MyReceiver] onReceive - " + intent.getAction()
 				+ ", extras: " + printBundle(bundle));
+		
+		
+		
 
 		if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
 			String regId = bundle
@@ -66,6 +70,7 @@ public class MyReceiver extends BroadcastReceiver {
 				JSONObject jsonObject = new JSONObject(EXTRA);
 				key = jsonObject.getString("pushType");
 				JSONObject pushValue = null;
+				
 				if (!key.equals("YHGZ")) {
 					pushValue = new JSONObject(
 							jsonObject.getString("pushValue"));
@@ -136,13 +141,68 @@ public class MyReceiver extends BroadcastReceiver {
 					i.putExtra("articleId", Integer.parseInt(value));
 					context.startActivity(i);
 				} else if (key.equals("FQHD")) {
-					value = pushValue.getString("articleId");
+					int activityId = pushValue.optInt("activityId");
 					Intent i = new Intent(context,
 							ActivityDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					i.putExtra("activityId", Integer.parseInt(value));
+					i.putExtra("activityId", activityId);
 					context.startActivity(i);
+				}else if("HDBM".equals(key)){
+					int activityId = pushValue.optInt("activityId");
+					Intent i = new Intent(context, ActivityDiscussActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("activityId", activityId);
+					
+					context.startActivity(intent);
+				}else if("HDDS".equals(key)){
+					int activityId = pushValue.optInt("activityId");
+					Intent i = new Intent(context, ActivityDetailsActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("integral", pushValue.optInt("integral"));
+					i.putExtra("activityId", activityId);
+					i.putExtra("sumIntegral", pushValue.optInt("sumIntegral"));
+					i.putExtra("userName", pushValue.optString("userName"));
+						context.startActivity(i);
+				}else if("HDPL".equals(key) || "HDYQDS".equals(key)){
+					int activityId = pushValue.optInt("activityId");
+					Intent i = new Intent(context, ActivityDiscussActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						//i.putExtra("superId",jo.optInt("commentId"));
+						i.putExtra("activityId", activityId);
+						context.startActivity(i);
+				}else if("HDHF".equals(key) || "HDYQDS".equals(key)){
+					int activityId = pushValue.optInt("activityId");
+					Intent i = new Intent(context, ActivityDiscussActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						//i.putExtra("superId",jo.optInt("commentId"));
+						i.putExtra("activityId", activityId);
+						context.startActivity(i);
+				}else if("HDDSJG".equals(key)){
+					int activityId = pushValue.optInt("activityId");
+					Intent i;
+					if("".equals(pushValue.optString("memo"))){
+						i = new Intent(context, ActivityDetailsActivity.class);
+						i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+								| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						i.putExtra("integral", pushValue.optInt("integral"));
+						i.putExtra("activityId", activityId);
+						i.putExtra("sumIntegral", pushValue.optInt("sumIntegral"));
+						i.putExtra("userName", pushValue.optString("userName"));
+						context.startActivity(i);
+
+					}else{
+						i = new Intent(context, ActivityDiscussActivity.class);
+						i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+								| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						//i.putExtra("superId",jo.optInt("commentId"));
+						i.putExtra("activityId", activityId);
+						context.startActivity(i);
+					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

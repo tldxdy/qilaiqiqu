@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -104,8 +105,24 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 	private SharedPreferences sharedPreferences;
 	private int activityId;
-	private int activity_userId;
-	private String activity_state;
+	private int integral;
+	
+	private int markPointInt;
+	private ImageView popup_mark0;
+	private ImageView popup_mark1;
+	private ImageView popup_mark2;
+	private ImageView popup_mark3;
+	private ImageView popup_mark4;
+	private ImageView popup_mark5;
+	private ImageView popup_mark6;
+	private ImageView popup_mark7;
+	private ImageView popup_mark8;
+	private ImageView popup_mark9;
+	private TextView popup_ok;
+	private TextView markPointTxt;
+	private TextView popup_cancel;
+	
+	private XUtilsUtil xUtilsUtil;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -124,14 +141,14 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_activity_details);
 		initView();
-		getActivityData();
 		initEvent();
+		getActivityData();
 	}
 
 	private void initView() {
 		sharedPreferences = getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
-
+		xUtilsUtil = new XUtilsUtil();
 		userImageImg = (CircleImageViewUtil) findViewById(R.id.img_activityDetails_photo);
 
 		participantLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_participant);
@@ -151,7 +168,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		activityTitleTxt = (TextView) findViewById(R.id.txt_activityDetails_activityTitle);
 		participantCountTxt = (TextView) findViewById(R.id.txt_activityDetails_participantCount);
 		moneyTxt = (TextView) findViewById(R.id.txt_activityDetails_money);
-
+		
 		likeImg = (ImageView) findViewById(R.id.img_activityDetails_like);
 		cllectionImg = (ImageView) findViewById(R.id.img_activityDetails_cllection);
 
@@ -170,12 +187,87 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		backLayout = (LinearLayout) findViewById(R.id.layout_activityDetailsActivity_back);
 
 		activityId = getIntent().getIntExtra("activityId", -1);
-		activity_userId = getIntent().getIntExtra("userId", -1);
-		if (activity_userId != -1) {
-			activity_state = getIntent().getStringExtra("state");
+		integral = getIntent().getIntExtra("integral", -1);
+			
+		
+	}
+	
+
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			if(integral != -1){
+				showJPush(integral);
+			}
 		}
 	}
+	
+	/**
+	 * 弹窗
+	 * 
+	 * @param view
+	 *            popup所依附的布局
+	 */
+	private void showJPush(int i) {
 
+		// 一个自定义的布局，作为显示的内容
+		View v = LayoutInflater.from(this).inflate(R.layout.item_popup_jpush,
+				null);
+		markPointTxt = (TextView) v.findViewById(R.id.txt_JpushPopup_message);
+		popup_cancel = (TextView) v.findViewById(R.id.txt_JpushPopup_cancel);
+		LinearLayout quxiao = (LinearLayout) v.findViewById(R.id.quxiao);
+		final PopupWindow popupWindow = new PopupWindow(v,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+
+		popupWindow.setTouchable(true);
+		
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+		
+		String userName = getIntent().getStringExtra("userName");
+		int praiseNum = getIntent().getIntExtra("sumIntegral", -1);
+		markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
+				+ userName + "</font>" + " 觉得您的活动写得不错哟!给您打赏了" + "<font color='#ff0000'>" + integral
+				+ "</font>"
+				+ ",你现在的总积分是"
+				+ "<font color='#ff0000'>"
+				+ praiseNum
+				+ "</font>" + "分"));
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				integral = -1;
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+		
+		quxiao.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
+				integral = -1;
+			}
+		});
+
+		popup_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+				integral = -1;
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+				popupWindow.setBackgroundDrawable(getResources().getDrawable(
+						R.drawable.corners_layout));
+				// 设置好参数之后再show
+				popupWindow.showAtLocation(ActivityDetailsActivity.this.findViewById(R.id.layout_ActivityDetailsActivity), Gravity.CENTER, 0, Gravity.CENTER);
+	}
 	private void initEvent() {
 		likeImg.setOnClickListener(this);
 		isSignTxt1.setOnClickListener(this);
@@ -195,26 +287,36 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			finish();
 			break;
 		case R.id.txt_activityDetails_txt1:
-			if (activity.getState().equals("ACTEND")) {
-				Toasts.show(this, "打分", 0);
+			if(activity.getState().equals("ACTEND")){
+				showPopupWindow(v);
 				break;
 			}
 			if (isMe == 1) {
 				Toasts.show(this, "我发起的", 0);
-				// new SystemUtil().makeToast(this, "我发起的");
 			} else if (isMe == 2) {
 				Toasts.show(this, "已报名", 0);
-				// new SystemUtil().makeToast(this, "已报名");
 			}
 			break;
 
 		case R.id.txt_activityDetails_chat:
+			if(activity.getState().equals("ACTEND")){
+				Intent intent = new Intent(this, ActivityDiscussActivity.class);
+				intent.putExtra("activityId", activityId);
+				startActivity(intent);
+				break;
+			}
+			
+			
 			startActivity(new Intent(ActivityDetailsActivity.this,
 					ChatActivity.class).putExtra("Group", "Group")
 					.putExtra("username", activity.getImGroupId())
 					.putExtra("activityId", activityId)
 					.putExtra("groupName", activity.getActivityTitle()));
-
+			// if (isMe == 3) {
+			// Toasts.show(this, "点击聊天isMe == 3", 0);
+			// } else if (isMe == 1) {
+			// Toasts.show(this, "点击聊天isMe == 1", 0);
+			// }
 			break;
 
 		case R.id.txt_activityDetails_txt3:
@@ -225,7 +327,11 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				startActivity(intent);
 				break;
 			}
-
+			
+			if("ACTEND".equals(activity.getState())){
+				break;
+			}
+			
 			showPopupWindow2(v);
 			break;
 
@@ -243,7 +349,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		case R.id.img_activityDetails_cllection:
 			if (sharedPreferences.getInt("userId", -1) == -1) {
 				Toasts.show(this, "请登录", 0);
-				// new SystemUtil().makeToast(this, "请登录");
+				//new SystemUtil().makeToast(this, "请登录");
 				Intent intent2 = new Intent(this, LoginActivity.class);
 				startActivity(intent2);
 				break;
@@ -395,11 +501,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 										likeImg.setImageResource(R.drawable.admire_chose);
 										likeTxt.setText(object.getInt("data")
 												+ "");
-										System.out.println(activity
-												.isUserPraised());
 										activity.setUserPraised(true);
-										System.out.println(activity
-												.isUserPraised());
 									}
 								} catch (JSONException e) {
 									e.printStackTrace();
@@ -448,14 +550,17 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 									isSignTxt1.setText("已报名");
 									isSignTxt2.setText("去聊天");
 									isMelayout2.setVisibility(View.GONE);
-									Toasts.show(ActivityDetailsActivity.this,
+									Toasts.show(
+											ActivityDetailsActivity.this,
 											"已成功报名", 0);
 									/*
 									 * new SystemUtil().makeToast(
-									 * ActivityDetailsActivity.this, "已成功报名");
+									 * ActivityDetailsActivity.this,
+									 * "已成功报名");
 									 */
 								} else {
-									Toasts.show(ActivityDetailsActivity.this,
+									Toasts.show(
+											ActivityDetailsActivity.this,
 											object.getString("message"), 0);
 									/*
 									 * new SystemUtil().makeToast(
@@ -470,7 +575,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 						}
 
 						@Override
-						public void onMyFailure(HttpException error, String msg) {
+						public void onMyFailure(HttpException error,
+								String msg) {
 							new SystemUtil().makeToast(
 									ActivityDetailsActivity.this, msg);
 						}
@@ -496,7 +602,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
-
+		
 		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
@@ -528,12 +634,13 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		});
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		popupWindow.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.corners_layout));
+		 popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
 
 	}
+	
+	
 
 	private void getActivityData() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -549,7 +656,6 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
 		String result = responseInfo.result.toString();
-		System.out.println(result);
 		try {
 			JSONObject jsonObject = new JSONObject(result);
 			if (jsonObject.getBoolean("result")) {
@@ -587,22 +693,24 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 					.load(R.drawable.bitmap_homepage).into(userImageImg);
 		} else {
 			Picasso.with(ActivityDetailsActivity.this)
-					.load(imageUrl + activity.getUserImage().split("@")[0])
+					.load(imageUrl + SystemUtil.UrlSize(activity.getUserImage().split("@")[0]))
 					.into(userImageImg);
 		}
 
 		if (activity.getActivityImage() == null
 				|| "null".equals(activity.getActivityImage())
 				|| "".equals(activity.getActivityImage())) {
-			IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.IMGPHTH
-					+ activity.getDefaultImage(), null, null, null));
+			IClist.add(new ImageCycleViewUtil.ImageInfo(
+					SystemUtil.IMGPHTH
+							+ SystemUtil.UrlSize(activity.getDefaultImage()), null, null, null));
 		} else {
 
 			String[] split = activity.getActivityImage().split(",");
 
 			for (int i = 0; i < split.length; i++) {
-				IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.IMGPHTH
-						+ split[i].split("@")[0], null, null, null));
+				IClist.add(new ImageCycleViewUtil.ImageInfo(
+						SystemUtil.IMGPHTH + SystemUtil.UrlSize(split[i].split("@")[0]), null, null, null));
+			
 			}
 		}
 		if (activity.isUserPraised()) {
@@ -633,13 +741,13 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		} else {
 			durationTxt.setText(hour + "小时");
 		}
-		if (activity.getOutlay() == null || "".equals(activity.getOutlay())
-				|| "免费".equals(activity.getOutlay())) {
+		if(activity.getOutlay() == null || "".equals(activity.getOutlay()) || "免费".equals(activity.getOutlay())){
 			moneyTxt.setText("免费");
-		} else {
+		}else{
 			moneyTxt.setText(activity.getOutlay() + "元");
 		}
-
+		
+		
 		startDateTxt.setText(activity.getStartDate().substring(0,
 				activity.getStartDate().length() - 3));
 		activityMemoTxt.setText(activity.getActivityMemo());
@@ -685,37 +793,38 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			isSignTxt1.setText("我发起的");
 			isSignTxt2.setText("去聊天");
 			isMelayout2.setVisibility(View.GONE);
-		} else {
+		}else{
 			if (activity.isInvolved()) {
 				isMe = 3;
 				isSignTxt1.setText("已报名");
 				isSignTxt2.setText("去聊天");
 				isMelayout2.setVisibility(View.GONE);
-			} else {
+			}else{
 				isMelayout2.setVisibility(View.VISIBLE);
 			}
 		}
-
+		
+		
 		if (sharedPreferences.getInt("userId", -1) == activity.getUserId()) {
-			if ("ACTEND".equals(activity.getState())) {
+			if("ACTEND".equals(activity.getState())){
 				isMelayout2.setVisibility(View.VISIBLE);
 				isSignTxt3.setText("活动已结束");
 			}
-		} else {
+		}else{
 			if (!activity.isInvolved()) {
-				if ("ACTEND".equals(activity.getState())) {
+				if("ACTEND".equals(activity.getState())){
 					isMelayout2.setVisibility(View.VISIBLE);
 					isSignTxt3.setText("活动已结束");
-				} else if (!"ACTIN".equals(activity.getState())) {
+				}else if(!"ACTIN".equals(activity.getState())){
 					isMelayout2.setVisibility(View.VISIBLE);
 					isSignTxt3.setText("活动正在进行中");
 				}
-			} else {
-				if ("ACTEND".equals(activity.getState())) {
-					isMe = 3;
-					isSignTxt1.setText("打分");
-					isSignTxt2.setText("评论");
-					isMelayout2.setVisibility(View.GONE);
+			}else{
+				if("ACTEND".equals(activity.getState())){
+						isMe = 3;
+						isSignTxt1.setText("打分");
+						isSignTxt2.setText("评论");
+						isMelayout2.setVisibility(View.GONE);
 				}
 			}
 		}
@@ -770,10 +879,299 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	public void onMyFailure(HttpException error, String msg) {
 
 	}
+	
+	/**
+	 * 弹窗
+	 * 
+	 * @param view
+	 *            popup所依附的布局
+	 */
+	private void showPopupWindow(View view) {
+
+		// 一个自定义的布局，作为显示的内容
+		View contentView = LayoutInflater.from(this).inflate(
+				R.layout.item_popup_grade, null);
+
+		popup_mark0 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark0);
+		popup_mark1 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark1);
+		popup_mark2 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark2);
+		popup_mark3 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark3);
+		popup_mark4 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark4);
+		popup_mark5 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark5);
+		popup_mark6 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark6);
+		popup_mark7 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark7);
+		popup_mark8 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark8);
+		popup_mark9 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark9);
+		popup_ok = (TextView) contentView.findViewById(R.id.txt_gradePopup_ok);
+		markPointTxt = (TextView) contentView
+				.findViewById(R.id.txt_gradePopup_markPoint);
+		popup_cancel = (TextView) contentView
+				.findViewById(R.id.txt_gradePopup_cancel);
+		selectMark();
+
+		final PopupWindow popupWindow = new PopupWindow(contentView,
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+
+		popupWindow.setTouchable(true);
+		
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		popup_mark0.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				markPointInt = 1;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark1.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				markPointInt = 2;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark2.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				markPointInt = 3;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark3.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				markPointInt = 4;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark4.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				markPointInt = 5;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark5.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				markPointInt = 6;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark6.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				markPointInt = 7;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark7.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				popup_mark7.setImageResource(R.drawable.award_yellow);
+				markPointInt = 8;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark8.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				popup_mark7.setImageResource(R.drawable.award_yellow);
+				popup_mark8.setImageResource(R.drawable.award_yellow);
+				markPointInt = 9;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark9.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				popup_mark7.setImageResource(R.drawable.award_yellow);
+				popup_mark8.setImageResource(R.drawable.award_yellow);
+				popup_mark9.setImageResource(R.drawable.award_yellow);
+				markPointInt = 10;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+
+		popup_ok.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				rewardIntegral(markPointInt);
+				popupWindow.dismiss();
+			}
+		});
+
+		popup_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				//Toasts.show(ActivityDetailsActivity.this, "您未打赏积分", 0);
+				popupWindow.dismiss();
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		// 我觉得这里是API的一个bug
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
+
+	}
+	/**
+	 * 设置所有评分图片暗色
+	 */
+	public void selectMark() {
+		popup_mark0.setImageResource(R.drawable.award_gray);
+		popup_mark1.setImageResource(R.drawable.award_gray);
+		popup_mark2.setImageResource(R.drawable.award_gray);
+		popup_mark3.setImageResource(R.drawable.award_gray);
+		popup_mark4.setImageResource(R.drawable.award_gray);
+		popup_mark5.setImageResource(R.drawable.award_gray);
+		popup_mark6.setImageResource(R.drawable.award_gray);
+		popup_mark7.setImageResource(R.drawable.award_gray);
+		popup_mark8.setImageResource(R.drawable.award_gray);
+		popup_mark9.setImageResource(R.drawable.award_gray);
+		markPointInt = 0;
+		markPointTxt.setText(markPointInt + "分");
+	}
+	public void rewardIntegral(final int markPointInt) {
+		if (sharedPreferences.getInt("userId", -1) != -1) {
+			RequestParams params = new RequestParams("UTF-8");
+			params.addBodyParameter("userId", sharedPreferences.getInt("userId", -1)
+					+ "");
+			params.addBodyParameter("activityId", activityId + "");
+			params.addBodyParameter("integral", markPointInt + "");
+			params.addBodyParameter("uniqueKey",
+					sharedPreferences.getString("uniqueKey", null));
+			xUtilsUtil.httpPost("mobile/activity/activityReward.html",
+					params, new CallBackPost() {
+
+						@Override
+						public void onMySuccess(
+								ResponseInfo<String> responseInfo) {
+							String s = responseInfo.result;
+							JSONObject jsonObject = null;
+							try {
+								jsonObject = new JSONObject(s);
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							if (jsonObject.optBoolean("result")) {
+								
+								Toasts.show(ActivityDetailsActivity.this, "您打赏了"
+												+ markPointInt + "分!", 0);
+							} else {
+								Toasts.show(ActivityDetailsActivity.this,jsonObject.optString("message"), 0);
+							}
+						}
+
+						@Override
+						public void onMyFailure(HttpException error, String msg) {
+
+						}
+					});
+		} else {
+			Toasts.show(this, "请登录", 0);
+			startActivity(new Intent(this, LoginActivity.class));
+		}
+
+	}
 
 	@Override
 	protected void onResume() {
-		getActivityData();
+
 		super.onResume();
 	}
 
@@ -790,3 +1188,4 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	}
 
 }
+

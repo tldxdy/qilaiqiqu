@@ -3,16 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-   <com.qizhi.qilaiqiqu.utils.RefreshLayout
+   <com.qizhi.qilaiqiqu.ui.Refresh
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-	<ListView 
+	<com.qizhi.qilaiqiqu.ui.FooterListView
 	    android:id="@+id/list_fragment_message"
 	    android:layout_height="fill_parent"
 	    android:layout_width="fill_parent"
-	    ></ListView>
-	</com.qizhi.qilaiqiqu.utils.RefreshLayout>
+	    ></com.qizhi.qilaiqiqu.ui.FooterListView>
+	</com.qizhi.qilaiqiqu.ui.Refresh>
 
 </LinearLayout>

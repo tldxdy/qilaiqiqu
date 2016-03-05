@@ -16,10 +16,12 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.ui.FooterListView;
+import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
+import com.qizhi.qilaiqiqu.ui.Refresh;
+import com.qizhi.qilaiqiqu.utils.PopupWindowUploading;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
 import android.annotation.SuppressLint;
@@ -27,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
@@ -34,12 +37,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
-public class ManageFragment extends Fragment  implements OnItemClickListener,CallBackPost,OnRefreshListener,
-OnLoadListener{
+public class ManageFragment extends Fragment  implements OnItemClickListener,CallBackPost,OnRefreshListener,OnfreshListener{
 
-	private ListView manageList;
+	private FooterListView manageList;
 	private View view;
 	private List<StartAndParticipantActivityModel> dataList;
 	private ManageAdapter adapter;
@@ -47,35 +48,43 @@ OnLoadListener{
 	private SharedPreferences preferences;
 	private XUtilsUtil xUtilsUtil;
 	private int pageIndex = 1;
-	private RefreshLayout swipeLayout;
+	private Refresh swipeLayout;
 	private View header;
+	private PopupWindowUploading pUploading;
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_manage,null);
-		manageList = (ListView) view.findViewById(R.id.list_fragment_manage);
+		manageList = (FooterListView) view.findViewById(R.id.list_fragment_manage);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 		dataList = new ArrayList<StartAndParticipantActivityModel>();
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
+		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		manageList.addHeaderView(header);
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setOnLoadListener(this);
-		
+		pUploading = new PopupWindowUploading(context);
+		pUploading.show(view);
 		return view;
 	}
+	private Handler handler = new Handler();
 	@Override
 	public void onResume() {
-		data();
+		//data();
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				data();
+			}
+		}, 500);
 		super.onResume();
 	}
 	private void data() {
@@ -105,16 +114,29 @@ OnLoadListener{
 			adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
 			manageList.setAdapter(adapter);
 			manageList.setOnItemClickListener(this);
+			swipeLayout.setOnRefreshListener(this);
+			manageList.setOnfreshListener(this);
+			handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				pUploading.dismiss();
+			}
+			}, 500);
+			//pUploading.dismiss();
 			//manageList.setOnRefreshListener(this);
 		}
 	}
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-		
+		pUploading.dismiss();
 	}
 	
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+		if(position > dataList.size()){
+			return;
+		}
 		Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
 		intent.putExtra("activityId", dataList.get(position - 1).getActivityId());
 		getActivity().startActivity(intent);
@@ -174,21 +196,16 @@ OnLoadListener{
 				// 更新UI
 				adapter.notifyDataSetChanged();
 				//manageList.finishRefreshing();
-				if(pageIndex == 1){
 					swipeLayout.setRefreshing(false);
-				}else{
-					swipeLayout.setLoading(false);
-				}
+					manageList.completeRefresh();
+					
 				
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				if(pageIndex == 1){
 					swipeLayout.setRefreshing(false);
-				}else{
-					swipeLayout.setLoading(false);
-				}
+					manageList.completeRefresh();
 			}
 		});
 	}
@@ -209,7 +226,7 @@ OnLoadListener{
 	}
 
 	@Override
-	public void onLoad() {
+	public void onLoadingMore() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override

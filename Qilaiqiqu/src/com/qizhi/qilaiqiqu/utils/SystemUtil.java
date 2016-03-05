@@ -106,7 +106,8 @@ public class SystemUtil {
 			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);
 		}else{
-			Picasso.with(context).load(IMGPHTH + url)
+			String uri = UrlSize(url);
+			Picasso.with(context).load(IMGPHTH + uri)
 			.placeholder(R.drawable.bitmap_homepage)
 			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);
@@ -153,13 +154,13 @@ public class SystemUtil {
 		if(ss.length == 5){
 			int w = Integer.parseInt(ss[2]);
 			int h = Integer.parseInt(ss[3]);
-			int size = Integer.parseInt(ss[4].split(".")[0]);
+			//int size = Integer.parseInt(ss[4].split(".")[0]);
 			if(w > 1024 || h > 1024){
 				if(w > h){
-					h = (int) (h * 1.0 / w / 1024);
+					h = (int) (h * 1.0 * 1024 / w);
 					w = 1024;
 				}else{
-					w = (int) (w * 1.0 / h / 1024);
+					w = (int) (w * 1.0 * 1024 / h);
 					h = 1024;
 				}
 				return url + "@" + w + "w_" + h + "h"; 

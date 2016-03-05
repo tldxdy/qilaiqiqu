@@ -84,9 +84,9 @@
             android:textSize="16sp"
             android:visibility="gone" />
     </RelativeLayout>
-
     <RelativeLayout
         android:layout_width="fill_parent"
+        android:id="@+id/layout_ActivityDetailsActivity"
         android:layout_height="0dp"
         android:layout_weight="1" >
 
@@ -171,7 +171,7 @@
                 <com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil
                     android:id="@+id/icc_activityDetails"
                     android:layout_width="match_parent"
-                    android:layout_height="170dp" >
+                    android:layout_height="210dp" >
                 </com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil>
 
                 <LinearLayout
@@ -591,5 +591,4 @@
             </LinearLayout>
         </FrameLayout>
     </RelativeLayout>
-
 </LinearLayout>

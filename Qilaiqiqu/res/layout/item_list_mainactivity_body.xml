@@ -70,8 +70,8 @@
         </LinearLayout>
 
         <FrameLayout
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="top"
             android:layout_marginRight="20dp" >
 
@@ -79,7 +79,8 @@
                 android:id="@+id/img_ridinglist_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
                 android:src="@drawable/like_press" />
 
             <TextView
@@ -87,7 +88,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:gravity="center"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="5dp"
                 android:text="0"
                 android:textColor="#ffffff"
                 android:textSize="12sp"
@@ -98,7 +100,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="5dp"
                 android:text="+1"
                 android:textColor="#000000"
                 android:textSize="18sp"

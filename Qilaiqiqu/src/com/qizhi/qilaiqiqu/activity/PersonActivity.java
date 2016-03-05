@@ -21,6 +21,7 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.CertainUserModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
@@ -49,6 +50,7 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 
 	private int careFlagInt = 1;
 	private TextView careTxt;// 关注按钮
+	private TextView personal_letterTxt;// 私信
 	
 	private int userId;
 	private XUtilsUtil xUtilsUtil;
@@ -80,6 +82,7 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 		districtTet = (TextView) findViewById(R.id.txt_personActivity_district);
 		introduceTxt = (TextView) findViewById(R.id.txt_personActivity_introduce);
 		careTxt = (TextView) findViewById(R.id.txt_personActivity_care);
+		personal_letterTxt = (TextView) findViewById(R.id.txt_personActivity_personal_letter);
 
 		sexImg = (ImageView) findViewById(R.id.img_personActivity_sex);
 		photoImg = (ImageView) findViewById(R.id.img_personActivity_photo);
@@ -93,6 +96,7 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 		nickTxt.setOnClickListener(this);
 		photoImg.setOnClickListener(this);
 		careTxt.setOnClickListener(this);
+		personal_letterTxt.setOnClickListener(this);
 	}
 
 	@Override
@@ -103,6 +107,12 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 			break;
 
 		case R.id.txt_personActivity_care:
+			if(preferences.getInt("userId", -1) == -1){
+				Toasts.show(this, "请登录", 0);
+				startActivity(new Intent(this, LoginActivity.class));
+				break;
+			}
+			
 			if (careFlagInt == 1) {
 				//添加关注
 				RequestParams params2 = new RequestParams();
@@ -119,6 +129,19 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 			}
 
 			break;
+		case R.id.txt_personActivity_personal_letter:
+			if(preferences.getInt("userId", -1) == -1){
+				Toasts.show(this, "请登录", 0);
+				startActivity(new Intent(this, LoginActivity.class));
+				break;
+			}
+			startActivity(new Intent(this,
+					ChatActivity.class).putExtra("Group", "Group").putExtra(
+					"username", certainUserModel.getImUserName()));
+			//Toasts.show(this, certainUserModel.getImUserName(), 0);
+			
+			break;
+			
 
 		default:
 			break;
@@ -182,7 +205,6 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 							careTxt.setText("已关注");
 						}
 						
-						
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -192,7 +214,7 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				
+				Toasts.show(PersonActivity.this, msg,0);
 			}
 		});
 		
@@ -221,19 +243,13 @@ public class PersonActivity extends Activity implements OnClickListener, CallBac
 				fansNumTxt.setText((--fansNum)+"");
 			}
 		}else{
-			if(preferences.getInt("userId", -1) != -1){
-				new SystemUtil().makeToast(this, jsonObject.optString("message"));
-			}else{
-				new SystemUtil().makeToast(this, "请登录");
-				startActivity(new Intent(this, LoginActivity.class));
-				finish();
-			}
+				Toasts.show(this, jsonObject.optString("message"),0);
 		}
 	}
 
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-		
+		Toasts.show(this, msg,0);
 	}
 
 }

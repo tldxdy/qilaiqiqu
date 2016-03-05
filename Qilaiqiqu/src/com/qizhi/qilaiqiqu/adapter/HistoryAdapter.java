@@ -88,7 +88,8 @@ public class HistoryAdapter extends BaseAdapter {
 			SystemUtil.Imagexutils(list.get(position).getDefaultImage(), holder.photoImg, context);
 		}
 		if(list.get(position).getOutlay() == null || "免费".equals(list.get(position).getOutlay()) || "null".equals(list.get(position).getOutlay()) || "0".equals(list.get(position).getOutlay())){
-			holder.moneyTxt.setText("免费");
+			//holder.moneyTxt.setText("免费");
+			holder.moneyTxt.setVisibility(View.GONE);
 		}else{
 			holder.moneyTxt.setText("收费");
 		}

@@ -143,6 +143,6 @@ public class CareFragment extends Fragment implements OnItemClickListener,OnRefr
 
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-		
+		careList.finishRefreshing();
 	}
 }

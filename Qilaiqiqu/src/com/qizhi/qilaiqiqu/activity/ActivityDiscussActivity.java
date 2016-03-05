@@ -3,26 +3,27 @@ package com.qizhi.qilaiqiqu.activity;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.adapter.DiscussListAdapter;
-import com.qizhi.qilaiqiqu.model.CommentPaginationListModel;
-import com.qizhi.qilaiqiqu.model.RidingCommentModel;
+import com.qizhi.qilaiqiqu.adapter.ActivityDiscussListAdapter;
+import com.qizhi.qilaiqiqu.model.ActivityCommentModel;
 import com.qizhi.qilaiqiqu.ui.FooterListView;
 import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
 import com.qizhi.qilaiqiqu.ui.Refresh;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -31,26 +32,24 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
-
 /**
  * 
  * @author hujianbo
+ * 活动评论
  * 
  */
-public class DiscussActivity extends Activity implements OnClickListener,
-		OnItemClickListener, OnTouchListener,OnRefreshListener,
-		OnfreshListener{
+public class ActivityDiscussActivity extends Activity implements OnClickListener,
+OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 
 	private LinearLayout backLayout;
 
@@ -62,14 +61,13 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	
 	private TextView titleTxt;
 
-	private DiscussListAdapter adapter;
+	private ActivityDiscussListAdapter adapter;
 
-	private int articleId;
+	private int activityId;
 	private XUtilsUtil xUtilsUtil;
 	private SharedPreferences preferences;
 
-	private CommentPaginationListModel commentPaginationListModel;
-	private List<RidingCommentModel> list;
+	private List<ActivityCommentModel> list;
 
 	private boolean flag = true;
 
@@ -97,10 +95,9 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	@SuppressWarnings("deprecation")
 	private void initView() {
 		imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-		articleId = getIntent().getIntExtra("articleId", -1);
+		activityId = getIntent().getIntExtra("activityId", -1);
 		xUtilsUtil = new XUtilsUtil();
-		commentPaginationListModel = new CommentPaginationListModel();
-		list = new ArrayList<RidingCommentModel>();
+		list = new ArrayList<ActivityCommentModel>();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_discussactivity_back);
@@ -111,7 +108,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 		discussList = (FooterListView) findViewById(R.id.list_discussactivity_discuss);
 		titleTxt = (TextView) findViewById(R.id.txt_discussactivity_title);
-		titleTxt.setText("游记评论");
+		titleTxt.setText("活动评论");
 		
 		superId =getIntent().getIntExtra("commentId", -1);
 		if(superId != -1){
@@ -127,7 +124,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		discussList.addHeaderView(header);
-		
 	}
 
 	private void initEvent() {
@@ -139,11 +135,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_discussactivity_discuss:
-			//if (!"".equals(contentEdit.getText().toString().trim())) {
 				commentRiding();
-		/*	}else{
-				
-			}*/
 			break;
 		case R.id.layout_discussactivity_back:
 			finish();
@@ -154,15 +146,18 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	private void commentRiding() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
-		params.addBodyParameter("articleId", articleId + "");
+		params.addBodyParameter("activityId", activityId + "");
 		if(superId != -1){
 			params.addBodyParameter("superId", superId + "");
 			params.addBodyParameter("parentId", superId + "");
+		}else{
+			params.addBodyParameter("superId","0");
+			params.addBodyParameter("parentId","0");
 		}
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
-		params.addBodyParameter("commentMemo", contentEdit.getText().toString());
-		xUtilsUtil.httpPost("mobile/comment/insertComment.html", params,
+		params.addBodyParameter("memo", contentEdit.getText().toString());
+		xUtilsUtil.httpPost("mobile/activityComment/appendActivityComment.html", params,
 				new CallBackPost() {
 
 					@Override
@@ -178,23 +173,18 @@ public class DiscussActivity extends Activity implements OnClickListener,
 							contentEdit.setText("");
 							contentEdit.setHint("说几句吧");
 							if(flag){
-								Toasts.show(DiscussActivity.this,
+								Toasts.show(ActivityDiscussActivity.this,
 										"评论成功", 0);
-								/*new SystemUtil().makeToast(DiscussActivity.this,
-										"评论成功");*/
 							}else{
-								Toasts.show(DiscussActivity.this,
+								Toasts.show(ActivityDiscussActivity.this,
 										"回复成功", 0);
-								/*new SystemUtil().makeToast(DiscussActivity.this,
-										"回复成功");*/
 							}
 							discussBtn.setText("评论");
 							
 							imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
 						}else{
-							Toasts.show(DiscussActivity.this,
+							Toasts.show(ActivityDiscussActivity.this,
 									jsonObject.optString("message"), 0);
-							//new SystemUtil().makeToast(DiscussActivity.this,jsonObject.optString("message"));
 						}
 						flag = true;
 						pageIndex = 1;
@@ -203,7 +193,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						
+						flag = true;
 					}
 				});
 	}
@@ -211,9 +201,8 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	private void queryCommentPaginationList() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("pageIndex", pageIndex + "");
-		params.addBodyParameter("articleId", articleId + "");
-		params.addBodyParameter("superId", "0");
-		xUtilsUtil.httpPost("common/queryCommentPaginationList.html", params,
+		params.addBodyParameter("activityId", activityId + "");
+		xUtilsUtil.httpPost("common/queryActivityComment.html", params,
 				new CallBackPost() {
 
 					@Override
@@ -226,32 +215,31 @@ public class DiscussActivity extends Activity implements OnClickListener,
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
+							JSONArray dataList = jsonObject.optJSONArray("dataList");
 							Gson gson = new Gson();
-							Type type = new TypeToken<CommentPaginationListModel>() {
+							Type type = new TypeToken<List<ActivityCommentModel>>() {
 							}.getType();
-							commentPaginationListModel = gson.fromJson(
-									jsonObject.toString(), type);
-
-							list = commentPaginationListModel.getDataList();
-							adapter = new DiscussListAdapter(
-									DiscussActivity.this, list);
+							list = gson.fromJson(
+									dataList.toString(), type);
+							adapter = new ActivityDiscussListAdapter(
+									ActivityDiscussActivity.this, list);
 							discussList.setAdapter(adapter);
-							discussList.setOnTouchListener(DiscussActivity.this);
+							discussList.setOnTouchListener(ActivityDiscussActivity.this);
 							
-							discussList.setOnItemClickListener(DiscussActivity.this);
-							swipeLayout.setOnRefreshListener(DiscussActivity.this);
-							discussList.setOnfreshListener(DiscussActivity.this);
+							discussList.setOnItemClickListener(ActivityDiscussActivity.this);
+							swipeLayout.setOnRefreshListener(ActivityDiscussActivity.this);
+							discussList.setOnfreshListener(ActivityDiscussActivity.this);
 						//	discussList.setOnRefreshListener(DiscussActivity.this);
 							
 						}else{
-							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
+							Toasts.show(ActivityDiscussActivity.this, jsonObject.optString("message"), 0);
 							//new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						Toasts.show(DiscussActivity.this, msg, 0);
+						Toasts.show(ActivityDiscussActivity.this, msg, 0);
 						//new SystemUtil().makeToast(DiscussActivity.this, msg);
 					}
 				});
@@ -321,24 +309,11 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		return super.onTouchEvent(event);
 	}
 
-/*	@Override
-	public void onRefresh() {
-		pageIndex = 1;
-		dataJ();
-	}
-
-	@Override
-	public void onLoadingMore() {
-		pageIndex = pageIndex + 1;
-		dataJ();
-	}*/
-
 	private void dataJ() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("pageIndex", pageIndex + "");
-		params.addBodyParameter("articleId", articleId + "");
-		params.addBodyParameter("superId", "0");
-		xUtilsUtil.httpPost("common/queryCommentPaginationList.html", params,
+		params.addBodyParameter("activityId", activityId + "");
+		xUtilsUtil.httpPost("common/queryActivityComment.html", params,
 				new CallBackPost() {
 
 					@Override
@@ -352,27 +327,26 @@ public class DiscussActivity extends Activity implements OnClickListener,
 						}
 						if (jsonObject.optBoolean("result")) {
 							pageIndex = jsonObject.optInt("pageIndex");
+							JSONArray dataList = jsonObject.optJSONArray("dataList");
 							Gson gson = new Gson();
-							Type type = new TypeToken<CommentPaginationListModel>() {
+							Type type = new TypeToken<List<ActivityCommentModel>>() {
 							}.getType();
-							commentPaginationListModel = gson.fromJson(
-									jsonObject.toString(), type);
 
-							List<RidingCommentModel> lists = commentPaginationListModel.getDataList();
+							List<ActivityCommentModel> lists = gson.fromJson(
+									dataList.toString(), type);
 							if(pageIndex == 1){
 								list = lists;
-								adapter = new DiscussListAdapter(
-										DiscussActivity.this, list);
+								adapter = new ActivityDiscussListAdapter(
+										ActivityDiscussActivity.this, list);
 								discussList.setAdapter(adapter);
 							}else{
 								list.addAll(lists);
 							}
 						adapter.notifyDataSetChanged();
-						//discussList.finishRefreshing();
 						
 							
 						}else{
-							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
+							Toasts.show(ActivityDiscussActivity.this, jsonObject.optString("message"), 0);
 							
 						}
 							swipeLayout.setRefreshing(false);
@@ -399,7 +373,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 				// 更新完后调用该方法结束刷新
 				
 			}
-		}, 1000);
+		}, 1500);
 
 	}
 
@@ -414,6 +388,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 				pageIndex = pageIndex + 1;
 				dataJ();
 			}
-		}, 1000);
+		}, 1500);
 	}
 }

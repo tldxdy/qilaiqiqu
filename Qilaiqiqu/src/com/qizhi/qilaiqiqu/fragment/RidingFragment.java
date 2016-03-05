@@ -22,6 +22,9 @@ import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
+import com.qizhi.qilaiqiqu.ui.FooterListView;
+import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
+import com.qizhi.qilaiqiqu.ui.Refresh;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -48,10 +51,9 @@ import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class RidingFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,
-OnLoadListener{
+public class RidingFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnfreshListener{
 	
-	private ListView manageList;
+	private FooterListView manageList;
 	private View view;
 	private List<ArticleModel> Articlelist;
 	private SlideShowListAdapter adapter;
@@ -61,7 +63,7 @@ OnLoadListener{
 	private int pageIndex = 1;
 	private List<CarouselModel> cmList;
 	List<ImageCycleViewUtil.ImageInfo> IClist;
-	private RefreshLayout swipeLayout;
+	private Refresh swipeLayout;
 	private View header;
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
@@ -69,20 +71,17 @@ OnLoadListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_riding,null);
-		manageList = (ListView) view.findViewById(R.id.list_mainActivity_slideShow);
+		manageList = (FooterListView) view.findViewById(R.id.list_mainActivity_slideShow);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 		Articlelist = new ArrayList<ArticleModel>();
-		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
-		swipeLayout.setOnRefreshListener(this);
+		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setOnLoadListener(this);
 		imageUrl();
 		return view;
 		
@@ -204,6 +203,10 @@ OnLoadListener{
 
 					@Override
 					public void onFailure(HttpException error, String msg) {
+						if (MainActivity.loginFlag == 1) {
+							MainActivity.splashView.splashAndDisappear();
+							MainActivity.loginFlag = 0;
+						}
 					}
 				});
 	}
@@ -245,6 +248,8 @@ OnLoadListener{
 			manageList.setAdapter(adapter);
 			manageList
 					.setOnItemClickListener(RidingFragment.this);
+			swipeLayout.setOnRefreshListener(this);
+			manageList.setOnfreshListener(this);
 			/*manageList
 					.setOnRefreshListener(RidingFragment.this);*/
 			if (MainActivity.loginFlag == 1) {
@@ -258,7 +263,10 @@ OnLoadListener{
 	}
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-		
+		if (MainActivity.loginFlag == 1) {
+			MainActivity.splashView.splashAndDisappear();
+			MainActivity.loginFlag = 0;
+		}
 	}
 /*	@Override
 	public void onRefresh() {
@@ -320,39 +328,29 @@ OnLoadListener{
 						manageList.setAdapter(adapter);
 						//manageList.setOnItemClickListener(RidingFragment.this);
 						Toasts.show(context, "刷新成功", 0);
-						swipeLayout.setRefreshing(false);
 						//new SystemUtil().makeToast(getActivity(), "刷新成功");
 					}else if(1 < pageIndex && pageIndex <= pageCount){
 						Articlelist.addAll(lists);
 						Toasts.show(context, "加载成功", 0);
-						swipeLayout.setLoading(false);
 						//new SystemUtil().makeToast(getActivity(), "加载成功");
 					}else{
 						pageIndex = jsonObject.optInt("pageIndex");
 						Toasts.show(context, "以显示全部内容", 0);
-						swipeLayout.setLoading(false);
 					}
 
 					// 更新UI
-					adapter.notifyDataSetChanged();
 
 					//manageList.finishRefreshing();
-				}else{
-					if(pageIndex == 1){
-						swipeLayout.setRefreshing(false);
-					}else{
-						swipeLayout.setLoading(false);
-					}
 				}
+				adapter.notifyDataSetChanged();
+				swipeLayout.setRefreshing(false);
+				manageList.completeRefresh();
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				if(pageIndex == 1){
 					swipeLayout.setRefreshing(false);
-				}else{
-					swipeLayout.setLoading(false);
-				}
+					manageList.completeRefresh();
 			}
 		});
 	}
@@ -368,12 +366,12 @@ OnLoadListener{
 				// 更新完后调用该方法结束刷新
 				
 			}
-		}, 1000);
+		}, 1500);
 
 	}
 
 	@Override
-	public void onLoad() {
+	public void onLoadingMore() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
@@ -383,6 +381,6 @@ OnLoadListener{
 				pageIndex = pageIndex + 1;
 				dataJ();
 			}
-		}, 1000);
+		}, 1500);
 	}
 }

@@ -50,6 +50,4 @@ public class SystemMessageModel {
 	public void setMessageType(String messageType) {
 		this.messageType = messageType;
 	}
-     
-     
 }

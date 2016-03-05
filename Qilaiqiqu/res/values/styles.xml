@@ -44,5 +44,11 @@
         <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
         <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
  	</style>
+ 	
+    <!-- 淡入淡出 -->
+    <style name="Popupfade_in_out" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+ 	</style>
 
 </resources>

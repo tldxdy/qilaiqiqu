@@ -358,7 +358,8 @@
         </activity>
  		<activity android:name="com.qizhi.qilaiqiqu.activity.GroupActivity" >
         </activity>
-        
+        <activity android:name="com.qizhi.qilaiqiqu.activity.ActivityDiscussActivity" >
+        </activity>
         
         <receiver android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" >
             <intent-filter>

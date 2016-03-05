@@ -34,6 +34,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/txt_discussactivity_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -50,18 +51,29 @@
         android:layout_weight="1"
         android:background="#ffffff" >
 
-        <com.qizhi.qilaiqiqu.utils.RefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipe_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-        <ListView
-            android:id="@+id/list_discussactivity_discuss"
+        <!-- <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null" >
-        </ListView>
-        </com.qizhi.qilaiqiqu.utils.RefreshLayout>
+            android:layout_height="match_parent" > -->
+
+            <com.qizhi.qilaiqiqu.ui.Refresh
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/swipe_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <com.qizhi.qilaiqiqu.ui.FooterListView
+                    android:id="@+id/list_discussactivity_discuss"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:divider="@null" >
+                </com.qizhi.qilaiqiqu.ui.FooterListView>
+            </com.qizhi.qilaiqiqu.ui.Refresh>
+            <!-- <ImageView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/letter_notice"
+                />
+        </FrameLayout> -->
     </RelativeLayout>
 
     <LinearLayout
@@ -88,10 +100,10 @@
         <Button
             android:id="@+id/btn_discussactivity_discuss"
             android:layout_width="0dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
             android:layout_height="35dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="2"
             android:background="@drawable/switch_rounded_discussactivity_button"
             android:text="@string/button_discussactivity_discuss"
