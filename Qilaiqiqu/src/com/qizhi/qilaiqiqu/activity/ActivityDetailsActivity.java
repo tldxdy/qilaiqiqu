@@ -104,7 +104,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 	private SharedPreferences sharedPreferences;
 	private int activityId;
-	private  int activity_userId;
+	private int activity_userId;
 	private String activity_state;
 
 	@SuppressLint("HandlerLeak")
@@ -151,7 +151,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		activityTitleTxt = (TextView) findViewById(R.id.txt_activityDetails_activityTitle);
 		participantCountTxt = (TextView) findViewById(R.id.txt_activityDetails_participantCount);
 		moneyTxt = (TextView) findViewById(R.id.txt_activityDetails_money);
-		
+
 		likeImg = (ImageView) findViewById(R.id.img_activityDetails_like);
 		cllectionImg = (ImageView) findViewById(R.id.img_activityDetails_cllection);
 
@@ -171,7 +171,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 		activityId = getIntent().getIntExtra("activityId", -1);
 		activity_userId = getIntent().getIntExtra("userId", -1);
-		if(activity_userId != -1){
+		if (activity_userId != -1) {
 			activity_state = getIntent().getStringExtra("state");
 		}
 	}
@@ -195,7 +195,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			finish();
 			break;
 		case R.id.txt_activityDetails_txt1:
-			if(activity.getState().equals("ACTEND")){
+			if (activity.getState().equals("ACTEND")) {
 				Toasts.show(this, "打分", 0);
 				break;
 			}
@@ -209,22 +209,12 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			break;
 
 		case R.id.txt_activityDetails_chat:
-			if(activity.getState().equals("ACTEND")){
-				Toasts.show(this, "评论", 0);
-				break;
-			}
-			
-			
 			startActivity(new Intent(ActivityDetailsActivity.this,
-					ChatActivity.class).putExtra("Group", "Group").putExtra(
-					"username", activity.getImGroupId()));
-			Toasts.show(this, activity.getImGroupId(), 0);
-			
-			// if (isMe == 3) {
-			// Toasts.show(this, "点击聊天isMe == 3", 0);
-			// } else if (isMe == 1) {
-			// Toasts.show(this, "点击聊天isMe == 1", 0);
-			// }
+					ChatActivity.class).putExtra("Group", "Group")
+					.putExtra("username", activity.getImGroupId())
+					.putExtra("activityId", activityId)
+					.putExtra("groupName", activity.getActivityTitle()));
+
 			break;
 
 		case R.id.txt_activityDetails_txt3:
@@ -235,7 +225,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				startActivity(intent);
 				break;
 			}
-			
+
 			showPopupWindow2(v);
 			break;
 
@@ -253,7 +243,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		case R.id.img_activityDetails_cllection:
 			if (sharedPreferences.getInt("userId", -1) == -1) {
 				Toasts.show(this, "请登录", 0);
-				//new SystemUtil().makeToast(this, "请登录");
+				// new SystemUtil().makeToast(this, "请登录");
 				Intent intent2 = new Intent(this, LoginActivity.class);
 				startActivity(intent2);
 				break;
@@ -458,17 +448,14 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 									isSignTxt1.setText("已报名");
 									isSignTxt2.setText("去聊天");
 									isMelayout2.setVisibility(View.GONE);
-									Toasts.show(
-											ActivityDetailsActivity.this,
+									Toasts.show(ActivityDetailsActivity.this,
 											"已成功报名", 0);
 									/*
 									 * new SystemUtil().makeToast(
-									 * ActivityDetailsActivity.this,
-									 * "已成功报名");
+									 * ActivityDetailsActivity.this, "已成功报名");
 									 */
 								} else {
-									Toasts.show(
-											ActivityDetailsActivity.this,
+									Toasts.show(ActivityDetailsActivity.this,
 											object.getString("message"), 0);
 									/*
 									 * new SystemUtil().makeToast(
@@ -483,8 +470,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 						}
 
 						@Override
-						public void onMyFailure(HttpException error,
-								String msg) {
+						public void onMyFailure(HttpException error, String msg) {
 							new SystemUtil().makeToast(
 									ActivityDetailsActivity.this, msg);
 						}
@@ -510,7 +496,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
-		
+
 		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
@@ -542,13 +528,12 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		});
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		 popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
 
 	}
-	
-	
 
 	private void getActivityData() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -609,16 +594,15 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		if (activity.getActivityImage() == null
 				|| "null".equals(activity.getActivityImage())
 				|| "".equals(activity.getActivityImage())) {
-			IClist.add(new ImageCycleViewUtil.ImageInfo(
-					SystemUtil.IMGPHTH
-							+ activity.getDefaultImage(), null, null, null));
+			IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.IMGPHTH
+					+ activity.getDefaultImage(), null, null, null));
 		} else {
 
 			String[] split = activity.getActivityImage().split(",");
 
 			for (int i = 0; i < split.length; i++) {
-				IClist.add(new ImageCycleViewUtil.ImageInfo(
-						SystemUtil.IMGPHTH + split[i].split("@")[0], null, null, null));
+				IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.IMGPHTH
+						+ split[i].split("@")[0], null, null, null));
 			}
 		}
 		if (activity.isUserPraised()) {
@@ -649,13 +633,13 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		} else {
 			durationTxt.setText(hour + "小时");
 		}
-		if(activity.getOutlay() == null || "".equals(activity.getOutlay()) || "免费".equals(activity.getOutlay())){
+		if (activity.getOutlay() == null || "".equals(activity.getOutlay())
+				|| "免费".equals(activity.getOutlay())) {
 			moneyTxt.setText("免费");
-		}else{
+		} else {
 			moneyTxt.setText(activity.getOutlay() + "元");
 		}
-		
-		
+
 		startDateTxt.setText(activity.getStartDate().substring(0,
 				activity.getStartDate().length() - 3));
 		activityMemoTxt.setText(activity.getActivityMemo());
@@ -701,38 +685,37 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			isSignTxt1.setText("我发起的");
 			isSignTxt2.setText("去聊天");
 			isMelayout2.setVisibility(View.GONE);
-		}else{
+		} else {
 			if (activity.isInvolved()) {
 				isMe = 3;
 				isSignTxt1.setText("已报名");
 				isSignTxt2.setText("去聊天");
 				isMelayout2.setVisibility(View.GONE);
-			}else{
+			} else {
 				isMelayout2.setVisibility(View.VISIBLE);
 			}
 		}
-		
-		
+
 		if (sharedPreferences.getInt("userId", -1) == activity.getUserId()) {
-			if("ACTEND".equals(activity.getState())){
+			if ("ACTEND".equals(activity.getState())) {
 				isMelayout2.setVisibility(View.VISIBLE);
 				isSignTxt3.setText("活动已结束");
 			}
-		}else{
+		} else {
 			if (!activity.isInvolved()) {
-				if("ACTEND".equals(activity.getState())){
+				if ("ACTEND".equals(activity.getState())) {
 					isMelayout2.setVisibility(View.VISIBLE);
 					isSignTxt3.setText("活动已结束");
-				}else if(!"ACTIN".equals(activity.getState())){
+				} else if (!"ACTIN".equals(activity.getState())) {
 					isMelayout2.setVisibility(View.VISIBLE);
 					isSignTxt3.setText("活动正在进行中");
 				}
-			}else{
-				if("ACTEND".equals(activity.getState())){
-						isMe = 3;
-						isSignTxt1.setText("打分");
-						isSignTxt2.setText("评论");
-						isMelayout2.setVisibility(View.GONE);
+			} else {
+				if ("ACTEND".equals(activity.getState())) {
+					isMe = 3;
+					isSignTxt1.setText("打分");
+					isSignTxt2.setText("评论");
+					isMelayout2.setVisibility(View.GONE);
 				}
 			}
 		}
@@ -790,7 +773,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 	@Override
 	protected void onResume() {
-
+		getActivityData();
 		super.onResume();
 	}
 

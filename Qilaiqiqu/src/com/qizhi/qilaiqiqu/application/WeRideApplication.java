@@ -93,14 +93,13 @@ public class WeRideApplication extends Application {
 	public void setNotify() {
 		// 获取到配置options对象
 		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
-		options.setNotifyBySoundAndVibrate(false);
 		// 设置自定义的文字提示
 		options.setNotifyText(new OnMessageNotifyListener() {
 
 			@Override
 			public String onNewMessageNotify(EMMessage message) {
 				// 可以根据message的类型提示不同文字，这里为一个简单的示例
-				return "你的好友" + message.getFrom() + "发来了一条消息哦";
+				return "你有新消息！";
 			}
 
 			@Override

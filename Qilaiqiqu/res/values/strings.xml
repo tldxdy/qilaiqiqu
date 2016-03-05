@@ -23,6 +23,9 @@
     <string name="button_loginactivity_visitor">游客身份浏览</string>
     <string name="back">返回</string>
     <string name="button_send">发送</string>
+    <string name="move_up_to_cancel">手指上滑，取消发送</string>
+    <string name="release_to_cancel">松开手指，取消发送</string>
+    <string name="recoding_fail">录音失败，请重试！</string>
     <string name="text_forgetactivity_title">忘记密码</string>
     <string name="edit_forgrtactivity_phone">请输入手机号码</string>
     <string name="edit_forgrtactivity_send">发送验证码</string>
@@ -163,7 +166,7 @@
     <string name="title_activityactivity_title">群成员查看</string>
     <string name="text_activityactivity_cancel">取消报名</string>
     <string name="text_appendActivity_title">已报名查看</string>
-    <string name="text_groupActivity_title">群成员</string>
+    <string name="text_groupActivity_title">成员</string>
     <string name="text_releaseactivity_save">保存草稿</string>
     <string name="text_mainactivity_traves">骑游记</string>
     <string name="text_mainactivity_active">活动</string>

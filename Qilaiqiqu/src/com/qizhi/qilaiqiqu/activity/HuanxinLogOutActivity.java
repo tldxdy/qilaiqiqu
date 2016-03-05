@@ -1,12 +1,13 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 
 import com.easemob.chat.EMMessage;
@@ -15,7 +16,7 @@ import com.easemob.util.EasyUtils;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.CommonUtils;
 
-public class HuanxinLogOutActivity extends Activity {
+public class HuanxinLogOutActivity extends FragmentActivity {
 	
 	private static final int notifiId = 11;
     protected NotificationManager notificationManager;
@@ -24,6 +25,7 @@ public class HuanxinLogOutActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		ActivityCollectorUtil.addActivity(this);
 	}
 
@@ -52,8 +54,9 @@ public class HuanxinLogOutActivity extends Activity {
         String ticker = CommonUtils.getMessageDigest(message, this);
         if (message.getType() == Type.TXT)
             ticker = ticker.replaceAll("\\[.{2,3}\\]", "[表情]");
+        String msg = message.getFrom() + ": " + ticker;
         // 设置状态栏提示
-        mBuilder.setTicker(message.getFrom() + ": " + ticker);
+        mBuilder.setTicker("你有新消息！");
 
         // 必须设置pendingintent，否则在2.3的机器上会有bug
         Intent intent = new Intent(this, MainActivity.class);

@@ -8,7 +8,7 @@
     android:paddingRight="8dip"
     android:paddingTop="10dip" >
 
-    <ImageView
+    <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
         android:id="@+id/chatlist_image_me"
         android:layout_width="40dip"
         android:layout_height="40dip"
@@ -37,6 +37,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true" />
+
+        <LinearLayout
+            android:id="@+id/chatlist_voice_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/chatlist_voiceLength_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="4" />
+
+            <ImageView
+                android:id="@+id/chatlist_voiceCoentent_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:src="@drawable/chatto_voice_playing" />
+            
+             <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
+                android:id="@+id/chatlist_unread_me"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:background="#EA2000"
+                android:layout_gravity="top"
+                android:layout_marginLeft="7dp" />
+        </LinearLayout>
     </RelativeLayout>
 
 </RelativeLayout>

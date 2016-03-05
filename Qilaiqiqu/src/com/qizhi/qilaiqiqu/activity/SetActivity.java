@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMChatOptions;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -131,6 +132,15 @@ public class SetActivity extends Activity implements OnClickListener {
 			@Override
 			public void onSwitchChange(PushSlideSwitchView switchView,
 					boolean isChecked) {
+				EMChatOptions options = EMChatManager.getInstance()
+						.getChatOptions();
+				options = EMChatManager.getInstance().getChatOptions();
+				if (isChecked) {
+					options.setNotifyBySoundAndVibrate(true);
+				} else {
+					options.setNotifyBySoundAndVibrate(false);
+				}
+
 				// new SystemUtil().makeToast(SetActivity.this, "滑动开关1:"
 				// + isChecked);
 			}

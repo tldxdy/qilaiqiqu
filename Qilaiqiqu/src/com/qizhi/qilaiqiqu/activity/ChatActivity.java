@@ -5,15 +5,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.PowerManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -25,18 +34,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easemob.EMCallBack;
-import com.easemob.EMEventListener;
-import com.easemob.EMNotifierEvent;
+import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
+import com.easemob.chat.VoiceMessageBody;
+import com.easemob.util.VoiceRecorder;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.CommonUtils;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.VoicePlayClickListener;
 import com.squareup.picasso.Picasso;
 
 public class ChatActivity extends HuanxinLogOutActivity {
@@ -44,25 +57,44 @@ public class ChatActivity extends HuanxinLogOutActivity {
 	ArrayList<HashMap<String, Object>> chatList = null;
 	String[] from = { "image", "text", "textImg" };
 	int[] to = { R.id.chatlist_image_me, R.id.chatlist_text_me,
-			R.id.chatlist_img_me, R.id.chatlist_image_other,
+			R.id.chatlist_img_me, R.id.chatlist_voice_me,
+			R.id.chatlist_voiceLength_me, R.id.chatlist_voiceCoentent_me,
+			R.id.chatlist_unread_me, R.id.chatlist_image_other,
 			R.id.chatlist_text_other, R.id.chatlist_img_other,
+			R.id.chatlist_voice_other, R.id.chatlist_voiceLength_other,
+			R.id.chatlist_voiceCoentent_other, R.id.chatlist_unread_other,
 			R.id.chatlist_text_username };
 	int[] layout = { R.layout.item_list_chat_me, R.layout.item_list_chat_other };
 	String userQQ = null;
 
 	public final static int OTHER = 1;
 	public final static int ME = 0;
-	
-	private static final boolean String = false;
+
+	public static final int CHATTYPE_SINGLE = 1;
+	public static final int CHATTYPE_GROUP = 2;
+
+	private View recordingContainer;
+	private ImageView micImage;
+	private TextView recordingHint;
+
+	private int chatType;
+	private VoiceRecorder voiceRecorder;
+
+	public String playMsgId;
+
+	String myUserNick = "";
+	String myUserAvatar = "";
 
 	protected ListView chatListView = null;
 	protected Button chatSendButton = null;
 	protected ImageView chatAddPicture = null;
-	protected EditText editText = null;
+	protected ImageView imgPartner = null;
+
+	protected EditText edtContent = null;
+	protected TextView txtVoice = null;
 
 	protected MyChatAdapter adapter = null;
 
-	private boolean isGroup = true;
 	private String username;
 
 	String chat;
@@ -70,14 +102,34 @@ public class ChatActivity extends HuanxinLogOutActivity {
 	EMMessage messageTXT;
 	EMMessage messageVOICE;
 	EMMessage messageIMAGE;
+
+	MediaPlayer mediaPlayer = null;
+
 	private EMConversation conversation;
 	private SharedPreferences preferences;
 	private ArrayList<String> stringArrayListExtra;
 
 	private LinearLayout backLayout;
-	
+
+	private TextView txtTitle;
+
+	private ImageView imgVoice;
+	boolean isText = true;
+
 	private NewMessageBroadcastReceiver receiver;
 
+	private Drawable[] micImages;
+
+	@SuppressLint("HandlerLeak")
+	private Handler micImageHandler = new Handler() {
+		@Override
+		public void handleMessage(android.os.Message msg) {
+			// 切换msg切换图片
+			micImage.setImageDrawable(micImages[msg.what]);
+		}
+	};
+
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -102,32 +154,105 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 		// 获取到与聊天人的会话对象。参数username为聊天人的userid或者groupid，后文中的username皆是如此
 		username = getIntent().getStringExtra("username");
-		System.out.println(username);
 		conversation = EMChatManager.getInstance().getConversation(username);
 
-		// IntentFilter deliveryAckMessageIntentFilter = new IntentFilter(
-		// EMChatManager.getInstance()
-		// .getDeliveryAckMessageBroadcastAction());
-		// deliveryAckMessageIntentFilter.setPriority(5);
-		// registerReceiver(deliveryAckMessageReceiver,
-		// deliveryAckMessageIntentFilter);
-
+		imgVoice = (ImageView) findViewById(R.id.img_chatActivity_voice);
 		backLayout = (LinearLayout) findViewById(R.id.layout_ChatActivity_back);
 		chatSendButton = (Button) findViewById(R.id.chat_bottom_sendbutton);
-		editText = (EditText) findViewById(R.id.chat_bottom_edittext);
+
+		recordingContainer = findViewById(R.id.recording_container);
+		micImage = (ImageView) findViewById(R.id.mic_image);
+		recordingHint = (TextView) findViewById(R.id.recording_hint);
+
+		voiceRecorder = new VoiceRecorder(micImageHandler);
+
+		wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE))
+				.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "demo");
+
+		// 判断单聊还是群聊
+		chatType = getIntent().getIntExtra("chatType", CHATTYPE_GROUP);
+		// type=getIntent().getIntExtra("type", 0);
+
+		if (chatType == CHATTYPE_SINGLE) { // 单聊
+			username = getIntent().getStringExtra("userId");
+			// String toChatUserNick = getIntent().getStringExtra("userNick");
+			// ((TextView) findViewById(R.id.name)).setText(toChatUserNick);
+		} else {
+			// findViewById(R.id.container_voice_call).setVisibility(View.GONE);
+			username = getIntent().getStringExtra("username");
+			// String groupName = getIntent().getStringExtra("groupName");
+			// ((TextView) findViewById(R.id.name)).setText(groupName);
+		}
+
+		// 动画资源文件,用于录制语音时
+		micImages = new Drawable[] {
+				getResources().getDrawable(R.drawable.record_animate_01),
+				getResources().getDrawable(R.drawable.record_animate_02),
+				getResources().getDrawable(R.drawable.record_animate_03),
+				getResources().getDrawable(R.drawable.record_animate_04),
+				getResources().getDrawable(R.drawable.record_animate_05),
+				getResources().getDrawable(R.drawable.record_animate_06),
+				getResources().getDrawable(R.drawable.record_animate_07),
+				getResources().getDrawable(R.drawable.record_animate_08),
+				getResources().getDrawable(R.drawable.record_animate_09),
+				getResources().getDrawable(R.drawable.record_animate_10),
+				getResources().getDrawable(R.drawable.record_animate_11),
+				getResources().getDrawable(R.drawable.record_animate_12),
+				getResources().getDrawable(R.drawable.record_animate_13),
+				getResources().getDrawable(R.drawable.record_animate_14), };
+
+		txtVoice = (TextView) findViewById(R.id.txt_chatActivity_voice);
+		edtContent = (EditText) findViewById(R.id.edt_chatActivity_content);
+
 		chatListView = (ListView) findViewById(R.id.list_chatActivity_chatList);
 		chatAddPicture = (ImageView) findViewById(R.id.img_chatActivity_picture);
 
+		txtTitle = (TextView) findViewById(R.id.txt_chatActivity_title);
+		imgPartner = (ImageView) findViewById(R.id.img_chatActivity_partner);
+
 		adapter = new MyChatAdapter(this, chatList, layout, from, to);
 
+		txtTitle.setText(getIntent().getStringExtra("groupName"));
+
+		imgVoice.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (isText) {
+					edtContent.setVisibility(View.GONE);
+					txtVoice.setVisibility(View.VISIBLE);
+					isText = false;
+				} else {
+					txtVoice.setVisibility(View.GONE);
+					edtContent.setVisibility(View.VISIBLE);
+					isText = true;
+				}
+			}
+		});
+
+		txtVoice.setOnTouchListener(new PressToSpeakListen());
+
+		imgPartner.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(ChatActivity.this, GroupActivity.class)
+						.putExtra("username", username)
+						.putExtra("groupName",
+								getIntent().getStringExtra("groupName"))
+						.putExtra("activityId",
+								getIntent().getIntExtra("activityId", -1)));
+			}
+		});
+
 		backLayout.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				finish();
 			}
 		});
-		
+
 		chatSendButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -139,11 +264,12 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				 * null，这时调用toString()会有异常！所以这里必须在后面加上一个""隐式转换成String实例
 				 * ，并且不能发送空消息。
 				 */
-				myWord = (editText.getText() + "").toString();
+				myWord = (edtContent.getText() + "").toString();
 				if (myWord.length() == 0)
 					return;
-				addTextToList(myWord, ME, "",
-						preferences.getString("userImage", null), "");
+				addTextToList("TXT", myWord, ME, "",
+						preferences.getString("userImage", null), "", "", "",
+						messageTXT);
 
 				updateList();
 
@@ -152,17 +278,23 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				// 如果是群聊，设置chattype,默认是单聊
 				messageTXT.setChatType(ChatType.GroupChat);
 				// 设置消息body
-				TextMessageBody txtBody = new TextMessageBody((editText
+				TextMessageBody txtBody = new TextMessageBody((edtContent
 						.getText() + "").toString());
 
 				messageTXT.setAttribute("IMUserIdentifierExpand", username);
 				messageTXT.setAttribute("IMUserNameExpand",
 						preferences.getString("userName", null));
-				messageTXT.setAttribute("IMUserImageExpand",
+				messageTXT.setAttribute("IMConversationUserImageExpand",
 						preferences.getString("userImage", null));
+				messageTXT.setAttribute("IMConversationUserNameExpand",
+						getIntent().getStringExtra("groupName"));
+				
+				
+				// IMConversationUserImageExpand
+				// IMConversationUserNameExpand 群组名称 私聊
 
 				// 清空输入框
-				editText.setText("");
+				edtContent.setText("");
 
 				messageTXT.addBody(txtBody);
 				// 设置接收人
@@ -206,7 +338,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 			}
 		});
 
-		editText.addTextChangedListener(new TextWatcher() {
+		edtContent.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence s, int arg1, int arg2,
@@ -264,7 +396,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		for (int i = 0; i < messageList.size(); i++) {
 			System.out.println(messageList + "!!!!" + messageList.size()
 					+ "!!!!!" + messageList.get(i).getType());
-
+			System.out.println(messageList.get(i).getStringAttribute(
+					"IMConversationUserImageExpand", null));
 			if (messageList.get(i).getFrom()
 					.equals(preferences.getString("imUserName", null))) {
 
@@ -272,8 +405,10 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					String na = messageList.get(i).getBody().toString()
 							.split(":")[1];
 					String substring = na.substring(1, na.length() - 1);
-					addTextToList(substring, ME, messageList.get(i).getFrom(),
-							preferences.getString("userImage", null), "");
+					addTextToList(messageList.get(i).getType().toString(),
+							substring, ME, messageList.get(i).getFrom(),
+							preferences.getString("userImage", null), "", "",
+							"", messageList.get(i));
 				} else if (messageList.get(i).getType().toString()
 						.equals("IMAGE")) {
 					ImageMessageBody imgBody = (ImageMessageBody) messageList
@@ -281,14 +416,27 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					String localPath = imgBody.getLocalUrl();
 
 					addTextToList(
+							messageList.get(i).getType().toString(),
 							"",
 							ME,
 							messageList.get(i).getStringAttribute(
 									"IMUserNameExpand", null),
 							messageList.get(i).getStringAttribute(
-									"IMUserImageExpand", null), localPath);
+									"IMConversationUserImageExpand", null), localPath, "",
+							"", messageList.get(i));
 				} else {
-
+					VoiceMessageBody vioceBody = (VoiceMessageBody) messageList
+							.get(i).getBody();
+					addTextToList(
+							messageList.get(i).getType().toString(),
+							"",
+							ME,
+							messageList.get(i).getStringAttribute(
+									"IMUserNameExpand", null),
+							messageList.get(i).getStringAttribute(
+									"IMConversationUserImageExpand", null), "",
+							vioceBody.getLocalUrl(),
+							vioceBody.getLength() + "", messageList.get(i));
 				}
 
 			} else {
@@ -297,12 +445,14 @@ public class ChatActivity extends HuanxinLogOutActivity {
 							.split(":")[1];
 					String substring = na.substring(1, na.length() - 1);
 					addTextToList(
+							messageList.get(i).getType().toString(),
 							substring,
 							OTHER,
 							messageList.get(i).getStringAttribute(
 									"IMUserNameExpand", null),
 							messageList.get(i).getStringAttribute(
-									"IMUserImageExpand", null), "");
+									"IMConversationUserImageExpand", null), "", "", "",
+							messageList.get(i));
 				} else if (messageList.get(i).getType().toString()
 						.equals("IMAGE")) {
 					ImageMessageBody imgBody = (ImageMessageBody) messageList
@@ -310,14 +460,28 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					String thumbRemoteUrl = imgBody.getThumbnailUrl();
 
 					addTextToList(
+							messageList.get(i).getType().toString(),
 							"",
 							OTHER,
 							messageList.get(i).getStringAttribute(
 									"IMUserNameExpand", null),
 							messageList.get(i).getStringAttribute(
-									"IMUserImageExpand", null), thumbRemoteUrl);
+									"IMConversationUserImageExpand", null), thumbRemoteUrl,
+							"", "", messageList.get(i));
 				} else {
 
+					VoiceMessageBody vioceBody = (VoiceMessageBody) messageList
+							.get(i).getBody();
+					addTextToList(
+							messageList.get(i).getType().toString(),
+							"",
+							OTHER,
+							messageList.get(i).getStringAttribute(
+									"IMUserNameExpand", null),
+							messageList.get(i).getStringAttribute(
+									"IMConversationUserImageExpand", null), "",
+							vioceBody.getLocalUrl(),
+							vioceBody.getLength() + "", messageList.get(i));
 				}
 
 			}
@@ -331,6 +495,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		// 如果是群聊，调用下面此方法
 		// List<EMMessage> messages =
 		// conversation.loadMoreGroupMsgFromDB(startMsgId, 1);
+
+		chatListView.setSelection(chatListView.getCount() - 1);
 	}
 
 	/**
@@ -344,56 +510,83 @@ public class ChatActivity extends HuanxinLogOutActivity {
 			// 记得把广播给终结掉
 			abortBroadcast();
 
-			String username = intent.getStringExtra("from");
-
+			String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
 
-			System.out.println(message);
-			
-			if (message.getType().toString().equals("TXT")) {
-				String na = message.getBody().toString().split(":")[1];
-				String substring = na.substring(1, na.length() - 1);
-				addTextToList(substring, OTHER,
-						message.getStringAttribute("IMUserNameExpand", null),
-						message.getStringAttribute("IMUserImageExpand", null),
-						"");
-			} else if (message.getType().toString().equals("IMAGE")) {
-				ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
-				String thumbRemoteUrl = imgBody.getThumbnailUrl();
+			if (message.getTo().toString().equals(username)) {
+				if (message.getType().toString().equals("TXT")) {
+					String na = message.getBody().toString().split(":")[1];
+					String substring = na.substring(1, na.length() - 1);
+					addTextToList(message.getType().toString(), substring,
+							OTHER, message.getStringAttribute(
+									"IMUserNameExpand", null),
+							message.getStringAttribute("IMConversationUserImageExpand",
+									null), "", "", "", message);
+				} else if (message.getType().toString().equals("IMAGE")) {
+					ImageMessageBody imgBody = (ImageMessageBody) message
+							.getBody();
+					String thumbRemoteUrl = imgBody.getThumbnailUrl();
 
-				addTextToList("", OTHER,
-						message.getStringAttribute("IMUserNameExpand", null),
-						message.getStringAttribute("IMUserImageExpand", null),
-						thumbRemoteUrl);
-			} else {
+					addTextToList(
+							message.getType().toString(),
+							"",
+							OTHER,
+							message.getStringAttribute("IMUserNameExpand", null),
+							message.getStringAttribute("IMConversationUserImageExpand",
+									null), thumbRemoteUrl, "", "", message);
+				} else {
+					VoiceMessageBody vioceBody = (VoiceMessageBody) message
+							.getBody();
+					addTextToList(
+							message.getType().toString(),
+							"",
+							OTHER,
+							message.getStringAttribute("IMUserNameExpand", null),
+							message.getStringAttribute("IMConversationUserImageExpand",
+									null), "", vioceBody.getLocalUrl(),
+							vioceBody.getLength() + "", message);
 
+				}
 			}
 
-			if (!username.equals(username)) {
+			System.out.println("ChatActivity:adapter.refresh();");
+			System.out.println("ChatActivity:Expand;"
+					+ message.getStringAttribute("IMUserNameExpand", null)
+					+ ","
+					+ message.getStringAttribute("IMConversationUserImageExpand", null));
+			System.out.println("ChatActivity:message-" + message);
+			System.out.println("ChatActivity:type"
+					+ message.getType().toString());
+
+			// 通知adapter有新消息，更新ui
+			adapter.refresh();
+			chatListView.setSelection(chatListView.getCount() - 1);
+
+			if (!from.equals(username)) {
 				// 消息不是发给当前会话，return
 				notifyNewMessage(message);
 				return;
 			}
 
-			// conversation =
-			// EMChatManager.getInstance().getConversation(toChatUsername);
-			// 通知adapter有新消息，更新ui
-			adapter.refresh();
-			chatListView.setSelection(chatListView.getCount() - 1);
-
 		}
 	}
 
-	protected void addTextToList(String text, int who, String name,
-			String imgPath, String textImgPath) {
+	protected void addTextToList(String type, String text, int who,
+			String name, String imgPath, String textImgPath, String voicePath,
+			String voiceLength, EMMessage message) {
 		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("type", type);
 		map.put("person", who);
 		map.put("image", who == ME ? SystemUtil.IMGPHTH + imgPath
 				: SystemUtil.IMGPHTH + imgPath);
 		map.put("text", text);
 		map.put("name", name);
 		map.put("textImg", textImgPath);
+		map.put("voicePath", voicePath);
+		map.put("voiceLength", voiceLength);
+		map.put("message", message);
+
 		chatList.add(map);
 	}
 
@@ -423,8 +616,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		}
 
 		@Override
-		public Object getItem(int arg0) {
-			return null;
+		public Object getItem(int position) {
+			return conversation.getMessage(position);
 		}
 
 		@Override
@@ -434,35 +627,62 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 		class ViewHolder {
 			public ImageView imageView = null;
-			public TextView textView = null;
 			public TextView nameView = null;
+			public TextView textView = null;
 			public ImageView textImgView = null;
+
+			public LinearLayout voiceLayout = null;
+			public TextView voicelength = null;
+			public ImageView voiceImg = null;
+			public ImageView isRead = null;
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
 			int who = (Integer) chatList.get(position).get("person");
 			holder = new ViewHolder();
 			convertView = LayoutInflater.from(context).inflate(
 					layout[who == ME ? 0 : 1], null);
 			holder.imageView = (ImageView) convertView
-					.findViewById(to[who * 3 + 0]);
+					.findViewById(to[who * 7 + 0]);
 			holder.textView = (TextView) convertView
-					.findViewById(to[who * 3 + 1]);
+					.findViewById(to[who * 7 + 1]);
 			holder.textImgView = (ImageView) convertView
-					.findViewById(to[who * 3 + 2]);
+					.findViewById(to[who * 7 + 2]);
+			holder.voiceLayout = (LinearLayout) convertView
+					.findViewById(to[who * 7 + 3]);
+			holder.voicelength = (TextView) convertView
+					.findViewById(to[who * 7 + 4]);
+			holder.voiceImg = (ImageView) convertView
+					.findViewById(to[who * 7 + 5]);
+			holder.isRead = (ImageView) convertView
+					.findViewById(to[who * 7 + 6]);
 			if (who == 1) {
-				holder.nameView = (TextView) convertView.findViewById(to[6]);
+				holder.nameView = (TextView) convertView.findViewById(to[14]);
 				holder.nameView.setText(chatList.get(position).get("name")
 						.toString()
 						+ ":");
 			}
+			convertView.setTag(holder);
 
 			Picasso.with(context)
 					.load((chatList.get(position).get(from[0])).toString())
 					.into(holder.imageView);
 
-			if (chatList.get(position).get(from[2]).toString().length() > 0) {
+			if (chatList.get(position).get("type").toString().equals("TXT")) {
+				holder.textView.setVisibility(View.VISIBLE);
+				holder.voiceLayout.setVisibility(View.GONE);
+				holder.textImgView.setVisibility(View.GONE);
+
+				holder.textView.setText(chatList.get(position).get(from[1])
+						.toString());
+
+			} else if (chatList.get(position).get("type").toString()
+					.equals("IMAGE")) {
+				holder.textView.setVisibility(View.GONE);
+				holder.voiceLayout.setVisibility(View.GONE);
+				holder.textImgView.setVisibility(View.VISIBLE);
 
 				if (who == OTHER) {
 					Picasso.with(context)
@@ -475,8 +695,26 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				}
 
 			} else {
-				holder.textView.setText(chatList.get(position).get(from[1])
-						.toString());
+				holder.textView.setVisibility(View.GONE);
+				holder.textImgView.setVisibility(View.GONE);
+				holder.voiceLayout.setVisibility(View.VISIBLE);
+				holder.isRead.setVisibility(View.GONE);
+
+				holder.voicelength.setText(chatList.get(position)
+						.get("voiceLength").toString()
+						+ "\"");
+
+				holder.voiceLayout.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						holder.isRead.setVisibility(View.GONE);
+						playVoice(chatList.get(position).get("voicePath")
+								.toString(), (EMMessage) chatList.get(position)
+								.get("message"), holder.voiceImg,
+								holder.isRead, position);
+					}
+				});
 			}
 
 			return convertView;
@@ -504,7 +742,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 				for (int i = 0; i < stringArrayListExtra.size(); i++) {
 
-					System.out.println(new File(stringArrayListExtra.get(i)));
+					// System.out.println(new
+					// File(stringArrayListExtra.get(i)));
 					// ImageMessageBody body = new ImageMessageBody(new
 					// File(stringArrayListExtra.get(i)));
 
@@ -519,11 +758,20 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					final ImageMessageBody body = new ImageMessageBody(
 							new File(stringArrayListExtra.get(i)));
 
-					messageIMAGE.setAttribute("IMUserIdentifierExpand", username);
+					messageIMAGE.setAttribute("IMUserIdentifierExpand",
+							username);
 					messageIMAGE.setAttribute("IMUserNameExpand",
 							preferences.getString("userName", null));
-					messageIMAGE.setAttribute("IMUserImageExpand",
+					messageIMAGE.setAttribute("IMConversationUserImageExpand",
 							preferences.getString("userImage", null));
+					messageIMAGE.setAttribute("IMConversationUserNameExpand",
+							getIntent().getStringExtra("groupName"));
+					messageIMAGE.setAttribute("IMConversationUserImageExpand",
+							"");
+
+					// ConversationOtherUserIdentifier
+					// conversationOtherUserImageExpand
+					// conversationOtherUserNameExpand
 
 					// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
 					// body.setSendOriginalImage(true);
@@ -551,9 +799,10 @@ public class ChatActivity extends HuanxinLogOutActivity {
 								public void onSuccess() {
 									System.out.println("图片发送成功");
 
-									addTextToList("", ME, "", preferences
-											.getString("userImage", null), body
-											.getLocalUrl());
+									addTextToList("IMAGE", "", ME, "",
+											preferences.getString("userImage",
+													null), body.getLocalUrl(),
+											"", "", messageIMAGE);
 									adapter.refresh();
 									chatListView.setSelection(chatListView
 											.getCount() - 1);
@@ -569,17 +818,282 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
+	private PowerManager.WakeLock wakeLock;
+
+	/**
+	 * 按住说话listener
+	 * 
+	 */
+	class PressToSpeakListen implements View.OnTouchListener {
+		@SuppressLint({ "ClickableViewAccessibility", "Wakelock" })
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				if (!CommonUtils.isExitsSdcard()) {
+					Toast.makeText(ChatActivity.this, "发送语音需要sdcard支持！",
+							Toast.LENGTH_SHORT).show();
+					return false;
+				}
+				try {
+					v.setPressed(true);
+					wakeLock.acquire();
+					if (VoicePlayClickListener.isPlaying)
+						VoicePlayClickListener.currentPlayListener
+								.stopPlayVoice();
+					recordingContainer.setVisibility(View.VISIBLE);
+					recordingHint
+							.setText(getString(R.string.move_up_to_cancel));
+					recordingHint.setBackgroundColor(Color.TRANSPARENT);
+					voiceRecorder.startRecording(null, username,
+							getApplicationContext());
+				} catch (Exception e) {
+					e.printStackTrace();
+					v.setPressed(false);
+					if (wakeLock.isHeld())
+						wakeLock.release();
+					if (voiceRecorder != null)
+						voiceRecorder.discardRecording();
+					recordingContainer.setVisibility(View.INVISIBLE);
+					Toast.makeText(ChatActivity.this, R.string.recoding_fail,
+							Toast.LENGTH_SHORT).show();
+					return false;
+				}
+
+				return true;
+			case MotionEvent.ACTION_MOVE: {
+				if (event.getY() < 0) {
+					recordingHint
+							.setText(getString(R.string.release_to_cancel));
+					recordingHint
+							.setBackgroundResource(R.drawable.recording_text_hint_bg);
+				} else {
+					recordingHint
+							.setText(getString(R.string.move_up_to_cancel));
+					recordingHint.setBackgroundColor(Color.TRANSPARENT);
+				}
+				return true;
+			}
+			case MotionEvent.ACTION_UP:
+				v.setPressed(false);
+				recordingContainer.setVisibility(View.INVISIBLE);
+				if (wakeLock.isHeld())
+					wakeLock.release();
+				if (event.getY() < 0) {
+					// discard the recorded audio.
+					voiceRecorder.discardRecording();
+
+				} else {
+					// stop recording and send voice file
+					try {
+						int length = voiceRecorder.stopRecoding();
+						if (length > 0) {
+							sendVoice(voiceRecorder.getVoiceFilePath(),
+									voiceRecorder.getVoiceFileName(username),
+									Integer.toString(length), false);
+						} else if (length == EMError.INVALID_FILE) {
+							Toast.makeText(getApplicationContext(), "无录音权限",
+									Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(getApplicationContext(), "录音时间太短",
+									Toast.LENGTH_SHORT).show();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接",
+								Toast.LENGTH_SHORT).show();
+					}
+
+				}
+				return true;
+			default:
+				recordingContainer.setVisibility(View.INVISIBLE);
+				if (voiceRecorder != null)
+					voiceRecorder.discardRecording();
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * 发送语音
+	 * 
+	 * @param filePath
+	 * @param fileName
+	 * @param length
+	 * @param isResend
+	 */
+	private void sendVoice(String filePath, String fileName, String length,
+			boolean isResend) {
+		if (!(new File(filePath).exists())) {
+			return;
+		}
+		try {
+			final EMMessage messageVOICE = EMMessage
+					.createSendMessage(EMMessage.Type.VOICE);
+
+			// 如果是群聊，设置chattype,默认是单聊
+			if (chatType == CHATTYPE_GROUP)
+				messageVOICE.setChatType(ChatType.GroupChat);
+			messageVOICE.setReceipt(username);
+
+			messageVOICE.setAttribute("IMUserIdentifierExpand", username);
+			messageVOICE.setAttribute("IMUserNameExpand",
+					preferences.getString("userName", null));
+			messageVOICE.setAttribute("IMConversationUserImageExpand",
+					preferences.getString("userImage", null));
+			messageVOICE.setAttribute("IMConversationUserNameExpand",
+					getIntent().getStringExtra("groupName"));
+			messageVOICE.setAttribute("IMConversationUserImageExpand", "");
+
+			int len = Integer.parseInt(length);
+			final VoiceMessageBody body = new VoiceMessageBody(new File(
+					filePath), len);
+			messageVOICE.addBody(body);
+
+			conversation.addMessage(messageVOICE);
+
+			EMChatManager.getInstance().sendMessage(messageVOICE,
+					new EMCallBack() {
+
+						@Override
+						public void onError(int arg0, String arg1) {
+							System.out.println("语音发送失败,code:" + arg0 + ",msg:"
+									+ arg1);
+						}
+
+						@Override
+						public void onProgress(int arg0, String arg1) {
+
+						}
+
+						@Override
+						public void onSuccess() {
+							System.out.println("语音发送成功,body:" + body);
+
+							addTextToList("VOICE", "", ME, "",
+									preferences.getString("userImage", null),
+									"", body.getLocalUrl(), body.getLength()
+											+ "", messageVOICE);
+
+							adapter.refresh();
+							chatListView.setSelection(chatListView.getCount() - 1);
+							setResult(RESULT_OK);
+						}
+					});
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 播放语音
+	 * 
+	 * @param filePath
+	 */
+	private ChatType msgType;
+	public static ChatActivity currentPlayListener = null;
+
+	public void playVoice(String filePath, final EMMessage message,
+			final ImageView v, ImageView isread, int position) {
+		if (!(new File(filePath).exists())) {
+			return;
+		}
+		playMsgId = message.getMsgId();
+		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+		mediaPlayer = new MediaPlayer();
+		if (EMChatManager.getInstance().getChatOptions().getUseSpeaker()) {
+			audioManager.setMode(AudioManager.MODE_NORMAL);
+			audioManager.setSpeakerphoneOn(true);
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+		} else {
+			audioManager.setSpeakerphoneOn(false);// 关闭扬声器
+			// 把声音设定成Earpiece（听筒）出来，设定为正在通话中
+			audioManager.setMode(AudioManager.MODE_IN_CALL);
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+		}
+		try {
+			mediaPlayer.setDataSource(filePath);
+			mediaPlayer.prepare();
+			mediaPlayer
+					.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+						@Override
+						public void onCompletion(MediaPlayer mp) {
+							mediaPlayer.release();
+							mediaPlayer = null;
+							stopPlayVoice(message, v); // stop animation
+						}
+
+					});
+			isPlaying = true;
+			currentPlayListener = this;
+			mediaPlayer.start();
+			showAnimation(message, v, position);
+
+			// 如果是接收的消息
+			if (message.direct == EMMessage.Direct.RECEIVE) {
+				try {
+					if (!message.isAcked) {
+						message.isAcked = true;
+						// 告知对方已读这条消息
+						msgType = message.getChatType();
+						if (msgType != ChatType.GroupChat)
+							EMChatManager.getInstance().ackMessageRead(
+									message.getFrom(), message.getMsgId());
+					}
+				} catch (Exception e) {
+					message.isAcked = false;
+				}
+				if (!message.isListened() && isread != null
+						&& isread.getVisibility() == View.VISIBLE) {
+					// 隐藏自己未播放这条语音消息的标志
+					isread.setVisibility(View.INVISIBLE);
+					EMChatManager.getInstance().setMessageListened(message);
+				}
+
+			}
+
+		} catch (Exception e) {
+		}
+	}
+
+	// show the voice playing animation
+	private void showAnimation(EMMessage message, ImageView v, int position) {
+		// play voice, and start animation
+		if ((Integer) chatList.get(position).get("person") == OTHER) {
+			v.setImageResource(R.anim.voice_from_icon);
+		} else {
+			v.setImageResource(R.anim.voice_to_icon);
+		}
+		voiceAnimation = (AnimationDrawable) v.getDrawable();
+		voiceAnimation.start();
+	}
+
+	private AnimationDrawable voiceAnimation = null;
+	public static boolean isPlaying = false;
+
+	public void stopPlayVoice(EMMessage message, ImageView v) {
+		voiceAnimation.stop();
+		if (message.direct == EMMessage.Direct.RECEIVE) {
+			v.setImageResource(R.drawable.chatfrom_voice_playing);
+		} else {
+			v.setImageResource(R.drawable.chatto_voice_playing);
+		}
+		// stop play voice
+		if (mediaPlayer != null) {
+			mediaPlayer.stop();
+			mediaPlayer.release();
+		}
+		isPlaying = false;
+		playMsgId = null;
+		adapter.notifyDataSetChanged();
+	}
+
 	@Override
 	protected void onPause() {
-
-		EMChatManager.getInstance().unregisterEventListener(
-				new EMEventListener() {
-
-					@Override
-					public void onEvent(EMNotifierEvent event) {
-						System.out.println("解除监听");
-					}
-				});
 
 		super.onPause();
 	}

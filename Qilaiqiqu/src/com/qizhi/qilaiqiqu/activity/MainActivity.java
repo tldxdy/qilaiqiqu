@@ -9,6 +9,47 @@ import java.util.TimerTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
@@ -44,52 +85,10 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
-import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-
 @SuppressLint("HandlerLeak")
-public class MainActivity extends FragmentActivity  implements OnClickListener,
-OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
+public class MainActivity extends HuanxinLogOutActivity implements
+		OnClickListener, OnOpenListener, OnCloseListener, CallBackPost,
+		TextWatcher {
 
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
@@ -112,17 +111,14 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 	private RelativeLayout searchImg;
 	private RelativeLayout addImg;
 
-
 	private SearchResultAdapter adapterSearch;
 
 	private SlidingMenu menu;
 
-
 	private XUtilsUtil xUtilsUtil;
 
-
 	public static boolean isForeground = false;
-	
+
 	public static String searchString;
 	private int fragmentNum;
 
@@ -137,12 +133,13 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 	boolean isdialog = true;
 
 	private ViewPager viewPager;
-	
+
 	private TextView ridingTxt;
 	private TextView activityTxt;
-	
+
 	private int pageIndex;
-	
+
+	private NewMessageBroadcastReceiver receiver;
 	
 	private Handler handler = new Handler() {
 
@@ -159,21 +156,17 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 			}
 		}
 
-
 	};
-	
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		//setContentView(R.layout.activity_main_travelsandactive);
+		// setContentView(R.layout.activity_main_travelsandactive);
 		ActivityCollectorUtil.addActivity(this);
-		
-		
-		View view = LayoutInflater.from(this).inflate(R.layout.activity_main_travelsandactive,
-				null);
+
+		View view = LayoutInflater.from(this).inflate(
+				R.layout.activity_main_travelsandactive, null);
 		frameLayout = new FrameLayout(this);
 		splashView = new SplashView(this);
 		loginFlag = getIntent().getIntExtra("loginFlag", -1);
@@ -185,15 +178,13 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 			frameLayout.addView(view);
 			setContentView(frameLayout);
 		}
-		
+
 		initView();
 		initLeft();
 		initEMSDK();
 		addListener();
 		initEvent();
 	}
-
-	
 
 	private void initView() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
@@ -209,33 +200,55 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		addImg = (RelativeLayout) findViewById(R.id.img_mainActivity_add_photo);
 		addImg.setAlpha(204); // 透明度
 		searchImg.setAlpha(204); // 透明度
-		//slideShowList = (PullFreshListView) findViewById(R.id.list_mainActivity_slideShow);
+		// slideShowList = (PullFreshListView)
+		// findViewById(R.id.list_mainActivity_slideShow);
 		dotView = findViewById(R.id.view_dot);
 
 		xUtilsUtil = new XUtilsUtil();
 		loginFlag = getIntent().getIntExtra("loginFlag", -1);
-		
-		
+
 		viewPager = (ViewPager) findViewById(R.id.viewPager_mianactivity_ridingandactivity);
 		ridingTxt = (TextView) findViewById(R.id.textView1);
-		
+
 		activityTxt = (TextView) findViewById(R.id.textView2);
-		
-		RidingAndActivityFragmentPagerAdapter adapter2=new RidingAndActivityFragmentPagerAdapter(
-				getSupportFragmentManager());//需要继承FragmentActivity
+
+		RidingAndActivityFragmentPagerAdapter adapter2 = new RidingAndActivityFragmentPagerAdapter(
+				getSupportFragmentManager());// 需要继承FragmentActivity
 		viewPager.setAdapter(adapter2);
-		activityTxt.setTextColor(0xff6dbfed);
-		ridingTxt.setTextColor(0xffffffff);
-		activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
-		ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
-		fragmentNum = 0;
-		viewPager.setCurrentItem(fragmentNum);
+		fragmentNum = getIntent().getIntExtra("fragmentNum", 0);
+		setCurrent(fragmentNum);
+
+		// 注册接收消息广播
+		receiver = new NewMessageBroadcastReceiver();
+		IntentFilter intentFilter = new IntentFilter(EMChatManager
+				.getInstance().getNewMessageBroadcastAction());
+		// 设置广播的优先级别大于Mainacitivity,这样如果消息来的时候正好在chat页面，直接显示消息，而不是提示消息未读
+		intentFilter.setPriority(3);
+		registerReceiver(receiver, intentFilter);
 	}
-	
-	
+
+	public void setCurrent(int fragmentNum) {
+		viewPager.setCurrentItem(fragmentNum);
+		if (fragmentNum == 0) {
+			activityTxt.setTextColor(0xff6dbfed);
+			ridingTxt.setTextColor(0xffffffff);
+			activityTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
+			ridingTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
+		} else if (fragmentNum == 1) {
+			ridingTxt.setTextColor(0xff6dbfed);
+			activityTxt.setTextColor(0xffffffff);
+			ridingTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
+			activityTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
+		}
+	}
+
 	private void addListener() {
-			viewPager.setOnPageChangeListener(new OnPageChangeListener() {
-			
+		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
+
 			@Override
 			public void onPageSelected(int arg0) {
 				switch (arg0) {
@@ -243,30 +256,34 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					fragmentNum = arg0;
 					activityTxt.setTextColor(0xff6dbfed);
 					ridingTxt.setTextColor(0xffffffff);
-					activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
-					ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
+					activityTxt
+							.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
+					ridingTxt
+							.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
 					menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 					break;
 				case 1:
 					fragmentNum = arg0;
 					ridingTxt.setTextColor(0xff6dbfed);
 					activityTxt.setTextColor(0xffffffff);
-					ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
-					activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
+					ridingTxt
+							.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
+					activityTxt
+							.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
 					menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 					break;
-					
+
 				}
 			}
-			
+
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				
+
 			}
-			
+
 			@Override
 			public void onPageScrollStateChanged(int arg0) {
-				
+
 			}
 		});
 	}
@@ -283,27 +300,28 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		inputEdt.addTextChangedListener(this);
 		inputEdt.setOnClickListener(this);
 	}
+
 	// 注册接收ack回执消息的BroadcastReceiver
-		private BroadcastReceiver ackMessageReceiver = new BroadcastReceiver() {
+	private BroadcastReceiver ackMessageReceiver = new BroadcastReceiver() {
 
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				abortBroadcast();
-				String msgid = intent.getStringExtra("msgid");
-				String from = intent.getStringExtra("from");
-				EMConversation conversation = EMChatManager.getInstance()
-						.getConversation(from);
-				if (conversation != null) {
-					// 把message设为已读
-					EMMessage msg = conversation.getMessage(msgid);
-					if (msg != null) {
-						msg.isAcked = true;
-					}
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			abortBroadcast();
+			String msgid = intent.getStringExtra("msgid");
+			String from = intent.getStringExtra("from");
+			EMConversation conversation = EMChatManager.getInstance()
+					.getConversation(from);
+			if (conversation != null) {
+				// 把message设为已读
+				EMMessage msg = conversation.getMessage(msgid);
+				if (msg != null) {
+					msg.isAcked = true;
 				}
-
 			}
-		};
-	
+
+		}
+	};
+
 	private void initEMSDK() {
 		// 只有注册了广播才能接收到新消息，目前离线消息，在线消息都是走接收消息的广播（离线消息目前无法监听，在登录以后，接收消息广播会执行一次拿到所有的离线消息）
 		EMReceiver msgReceiver = new EMReceiver();
@@ -319,18 +337,20 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 				.getInstance().getAckMessageBroadcastAction());
 		ackMessageIntentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
-		
+
 		EMChat.getInstance().setAppInited();
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.textView1:
 			fragmentNum = 0;
 			activityTxt.setTextColor(0xff6dbfed);
-			activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
-			ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
+			activityTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_right_down);
+			ridingTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_left_up);
 			ridingTxt.setTextColor(0xffffffff);
 			viewPager.setCurrentItem(fragmentNum);
 			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
@@ -338,9 +358,11 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		case R.id.textView2:
 			fragmentNum = 1;
 			ridingTxt.setTextColor(0xff6dbfed);
-			ridingTxt.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
+			ridingTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_left_down);
 			activityTxt.setTextColor(0xffffffff);
-			activityTxt.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
+			activityTxt
+					.setBackgroundResource(R.drawable.corners_mainactivity_right_up);
 			viewPager.setCurrentItem(fragmentNum);
 			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 			break;
@@ -390,19 +412,19 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					searchList.setVisibility(View.GONE);
 					addImg.setVisibility(View.VISIBLE);
 					searchImg.setVisibility(View.VISIBLE);
-					//searchString = null;
+					// searchString = null;
 					inputEdt.setText("");
-					//viewPager.setCurrentItem(fragmentNum);
+					// viewPager.setCurrentItem(fragmentNum);
 				}
 			});
 
 			break;
-			
 
 		default:
 			break;
 		}
 	}
+
 	/**
 	 * 左边侧拉
 	 */
@@ -412,9 +434,8 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		menu.setMode(SlidingMenu.LEFT);
 		// 设置触摸屏幕的模式
 		/**
-		 * SlidingMenu.TOUCHMODE_MARGIN 边缘拖拽 
-		 * SlidingMenu.TOUCHMODE_FULLSCREEN 全屏拖拽 
-		 * SlidingMenu.TOUCHMODE_NONE 无法拖拽
+		 * SlidingMenu.TOUCHMODE_MARGIN 边缘拖拽 SlidingMenu.TOUCHMODE_FULLSCREEN
+		 * 全屏拖拽 SlidingMenu.TOUCHMODE_NONE 无法拖拽
 		 */
 		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 		// 根据dimension资源文件的ID来设置阴影的宽度
@@ -434,7 +455,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.left_menu, leftFragment, "Left").commit();
 	}
-	
+
 	@Override
 	public void onOpen() {
 		dotView.setVisibility(View.GONE);
@@ -450,7 +471,6 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		}
 		photoImg.setVisibility(View.VISIBLE);
 	}
-	
 
 	private void showPopupWindow(View view) {
 
@@ -464,14 +484,14 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 				.findViewById(R.id.txt_releasePopup_active);
 		TextView cancelTxt = (TextView) mview
 				.findViewById(R.id.txt_releasePopup_cancel);
-		
+
 		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
 
 		final PopupWindow popupWindow = new PopupWindow(mview,
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
-		
+
 		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
@@ -486,9 +506,9 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
 			}
 		});
-		
+
 		quxiao.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				popupWindow.dismiss();
@@ -506,7 +526,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					startActivity(intent);
 				} else {
 					Toasts.show(MainActivity.this, "请登录", 0);
-					//new SystemUtil().makeToast(MainActivity.this, "请登录");
+					// new SystemUtil().makeToast(MainActivity.this, "请登录");
 					Intent intent = new Intent(MainActivity.this,
 							LoginActivity.class);
 					startActivity(intent);
@@ -526,7 +546,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					startActivity(intent);
 				} else {
 					Toasts.show(MainActivity.this, "请登录", 0);
-					//new SystemUtil().makeToast(MainActivity.this, "请登录");
+					// new SystemUtil().makeToast(MainActivity.this, "请登录");
 					Intent intent = new Intent(MainActivity.this,
 							LoginActivity.class);
 					startActivity(intent);
@@ -553,7 +573,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
 
 	}
-	
+
 	/**
 	 * dp转px
 	 * 
@@ -565,7 +585,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
 				dpVal, context.getResources().getDisplayMetrics());
 	}
-	
+
 	class donghua implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
@@ -597,15 +617,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	private void logoutService() {
 		/**
 		 * SharedPreferences清空用户Id和uniqueKey
@@ -667,20 +679,38 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 
 			}
 		});
-		
+
 	}
 
+	/**
+	 * 消息广播接收者
+	 * 
+	 */
+	private class NewMessageBroadcastReceiver extends BroadcastReceiver {
 
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// 记得把广播给终结掉
+			abortBroadcast();
 
+			String from = intent.getStringExtra("from");
+			String msgid = intent.getStringExtra("msgid");
+			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
+
+			// 消息不是发给当前会话，return
+			notifyNewMessage(message);
+			return;
+
+		}
+	}
 
 	@Override
 	public void afterTextChanged(Editable e) {
-		/*if (!e.toString().equals("")) {
-			searchString = e.toString();
-			viewPager.setCurrentItem(2);
-		}*/
-		
-		
+		/*
+		 * if (!e.toString().equals("")) { searchString = e.toString();
+		 * viewPager.setCurrentItem(2); }
+		 */
+
 		RequestParams params = new RequestParams("UTF-8");
 		if (!e.toString().equals("")) {
 			pageIndex = 1;
@@ -721,9 +751,12 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 									}
 								}
 								if (d.size() == 0) {
-									Toasts.show(MainActivity.this, "没有搜索到任何结果哦!", 0);
-									/*new SystemUtil().makeToast(
-											MainActivity.this, "没有搜索到任何结果哦!");*/
+									Toasts.show(MainActivity.this,
+											"没有搜索到任何结果哦!", 0);
+									/*
+									 * new SystemUtil().makeToast(
+									 * MainActivity.this, "没有搜索到任何结果哦!");
+									 */
 								}
 								adapterSearch = new SearchResultAdapter(
 										MainActivity.this, d);
@@ -762,14 +795,14 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count,
 			int after) {
-		
+
 	}
 
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		
+
 	}
-	
+
 	public static int loginFlag;
 
 	private void loginHuanXin() {
@@ -827,8 +860,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					}
 				});
 	}
-	
-	
+
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
 		System.out.println("主页向服务器提交CID成功!" + responseInfo.result);
@@ -840,6 +872,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		System.out.println("主页向服务器提交CID出错:" + msg + "!");
 		Log.i("qilaiqiqu", "主页向服务器提交CID出错:" + msg + "!");
 	}
+
 	@Override
 	protected void onResume() {
 		splashView.postDelayed(new Runnable() {
@@ -854,17 +887,15 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 				}
 			}
 		}, 1000);
-		
-		
-		
-		
+
 		super.onResume();
 		MobclickAgent.onResume(this);
 
 	}
+
 	private void isNews() {
-		
-		//if (preferences.getInt("userId", -1) != -1) {
+
+		// if (preferences.getInt("userId", -1) != -1) {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
@@ -906,7 +937,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 				});
 		// }
 	}
-	
+
 	// 实现ConnectionListener接口
 	private class MyConnectionListener implements EMConnectionListener {
 		@Override
@@ -923,13 +954,15 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 					if (error == EMError.USER_REMOVED) {
 						// 显示帐号已经被移除
 						Toasts.show(MainActivity.this, "帐号已经被移除", 0);
-						/*new SystemUtil()
-								.makeToast(adsd.this, "帐号已经被移除");*/
+						/*
+						 * new SystemUtil() .makeToast(adsd.this, "帐号已经被移除");
+						 */
 					} else if (error == EMError.CONNECTION_CONFLICT) {
 						// 显示帐号在其他设备登陆
 						Toasts.show(MainActivity.this, isdialog + "", 0);
-						/*new SystemUtil().makeToast(adsd.this, isdialog
-								+ "");*/
+						/*
+						 * new SystemUtil().makeToast(adsd.this, isdialog + "");
+						 */
 						if (isdialog) {
 
 							logOut();
@@ -939,20 +972,24 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 						if (NetUtils.hasNetwork(MainActivity.this)) {
 							// 连接不到聊天服务器
 							Toasts.show(MainActivity.this, "连接不到聊天服务器", 0);
-							/*new SystemUtil().makeToast(adsd.this,
-									"连接不到聊天服务器");*/
+							/*
+							 * new SystemUtil().makeToast(adsd.this,
+							 * "连接不到聊天服务器");
+							 */
 						} else {
 							// 当前网络不可用，请检查网络设置
 							Toasts.show(MainActivity.this, "当前网络不可用，请检查网络设置", 0);
-							/*new SystemUtil().makeToast(adsd.this,
-									"当前网络不可用，请检查网络设置");*/
+							/*
+							 * new SystemUtil().makeToast(adsd.this,
+							 * "当前网络不可用，请检查网络设置");
+							 */
 						}
 					}
 				}
 			});
 		}
 	}
-	
+
 	private void logOut() {
 		EMChatManager.getInstance().logout(new EMCallBack() {
 
@@ -983,7 +1020,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 			}
 		});
 	}
-	
+
 	@Override
 	protected void onStart() {
 		if (preferences.getInt("userId", -1) != -1) {
@@ -1003,7 +1040,6 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		}
 		super.onStop();
 	}
-	
 
 	@Override
 	protected void onPause() {
@@ -1017,57 +1053,47 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		handler.removeCallbacksAndMessages(null);
 		ActivityCollectorUtil.removeActivity(this);
 	}
+
 	/**
 	 * 头像
 	 */
 	private void headPortrait() {
 		isNews();
-		if(preferences.getInt("userId", -1) != -1){
+		if (preferences.getInt("userId", -1) != -1) {
 			Picasso.with(MainActivity.this)
-			.load(SystemUtil.IMGPHTH
-					+ preferences.getString("userImage",null))
-			.into(photoImg);
-			//dotView.setVisibility(View.VISIBLE);
-		}else {
+					.load(SystemUtil.IMGPHTH
+							+ preferences.getString("userImage", null))
+					.into(photoImg);
+			// dotView.setVisibility(View.VISIBLE);
+		} else {
 			photoImg.setImageResource(R.drawable.user_default);
 			dotView.setVisibility(View.GONE);
 		}
-		/*RequestParams params = new RequestParams("UTF-8");
-		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
-		xUtilsUtil.httpPost("common/queryCertainUser.html", params,
-				new CallBackPost() {
-
-					@Override
-					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						String s = responseInfo.result;
-						JSONObject jsonObject = null;
-						try {
-							jsonObject = new JSONObject(s);
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-						if (jsonObject.optBoolean("result")) {
-							JSONObject json = jsonObject.optJSONObject("data");
-							Picasso.with(MainActivity.this)
-									.load(SystemUtil.IMGPHTH
-											+ json.optString("userImage"))
-									.into(photoImg);
-							
-							 * SystemUtil.loadImagexutils(
-							 * json.optString("userImage"), photoImg,
-							 * MainActivity.this);
-							 
-						} else {
-							photoImg.setImageResource(R.drawable.homepage_picture);
-						}
-					}
-
-					@Override
-					public void onMyFailure(HttpException error, String msg) {
-
-					}
-				});*/
+		/*
+		 * RequestParams params = new RequestParams("UTF-8");
+		 * params.addBodyParameter("userId", preferences.getInt("userId", -1) +
+		 * ""); xUtilsUtil.httpPost("common/queryCertainUser.html", params, new
+		 * CallBackPost() {
+		 * 
+		 * @Override public void onMySuccess(ResponseInfo<String> responseInfo)
+		 * { String s = responseInfo.result; JSONObject jsonObject = null; try {
+		 * jsonObject = new JSONObject(s); } catch (JSONException e) {
+		 * e.printStackTrace(); } if (jsonObject.optBoolean("result")) {
+		 * JSONObject json = jsonObject.optJSONObject("data");
+		 * Picasso.with(MainActivity.this) .load(SystemUtil.IMGPHTH +
+		 * json.optString("userImage")) .into(photoImg);
+		 * 
+		 * SystemUtil.loadImagexutils( json.optString("userImage"), photoImg,
+		 * MainActivity.this);
+		 * 
+		 * } else { photoImg.setImageResource(R.drawable.homepage_picture); } }
+		 * 
+		 * @Override public void onMyFailure(HttpException error, String msg) {
+		 * 
+		 * } });
+		 */
 	}
+
 	/**
 	 * 菜单、返回键响应
 	 */
@@ -1089,7 +1115,7 @@ OnOpenListener, OnCloseListener, CallBackPost, TextWatcher {
 		if (isExit == false) {
 			isExit = true; // 准备退出
 			Toasts.show(this, "再按一次退出程序", 0);
-			//Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+			// Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
 			tExit = new Timer();
 			tExit.schedule(new TimerTask() {
 				@Override

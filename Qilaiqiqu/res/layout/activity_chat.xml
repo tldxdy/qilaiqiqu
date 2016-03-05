@@ -32,6 +32,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/txt_chatActivity_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -41,13 +42,15 @@
             android:textSize="18sp" />
 
         <ImageView
+            android:id="@+id/img_chatActivity_partner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp" />
+            android:layout_marginRight="15dp"
+            android:src="@drawable/partner" />
     </RelativeLayout>
-111
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
@@ -60,8 +63,7 @@
             android:background="#f0f0f0"
             android:divider="#aaaaaa"
             android:dividerHeight="0px"
-            android:fadingEdge="none"
-            android:stackFromBottom="true"
+            android:fadingEdge="vertical"
             android:transcriptMode="alwaysScroll" >
         </ListView>
 
@@ -106,14 +108,30 @@
             android:gravity="center"
             android:src="@drawable/speech" />
 
-        <EditText
-            android:id="@+id/chat_bottom_edittext"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="38dp"
             android:layout_gravity="bottom"
             android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:hint="" />
+            android:layout_weight="1" >
+
+            <EditText
+                android:id="@+id/edt_chatActivity_content"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:hint="" />
+
+            <TextView
+                android:id="@+id/txt_chatActivity_voice"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/corners_presstospeak"
+                android:gravity="center"
+                android:text="按住说话"
+                android:textColor="@color/mainActivity_title"
+                android:visibility="gone" />
+        </RelativeLayout>
 
         <FrameLayout
             android:layout_width="48dp"

@@ -80,7 +80,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
-                    android:text="获取记录位置信息" />
+                    android:text="聊天消息声音提醒" />
 
                 <com.qizhi.qilaiqiqu.utils.PushSlideSwitchView
                     android:id="@+id/push_set_warm_switchview1"

@@ -63,58 +63,6 @@ public class StartActivity extends Activity {
 		JPushInterface.setDebugMode(true);
 		JPushInterface.init(this);
 		JPushInterface.setLatestNotificationNumber(this, 3);
-		initEMmessage();
-	}
-
-	private void initEMmessage() {
-		// 获取到配置options对象
-		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
-		// 设置自定义的文字提示
-		options.setNotifyText(new OnMessageNotifyListener() {
-
-			@Override
-			public String onNewMessageNotify(EMMessage message) {
-				// 可以根据message的类型提示不同文字，这里为一个简单的示例
-				return "你的好基友" + message.getFrom() + "发来了一条消息哦";
-			}
-
-			@Override
-			public String onLatestMessageNotify(EMMessage message,
-					int fromUsersNum, int messageNum) {
-				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
-			}
-
-			@Override
-			public String onSetNotificationTitle(EMMessage arg0) {
-				return null;
-			}
-
-			@Override
-			public int onSetSmallIcon(EMMessage arg0) {
-				return 0;
-			}
-		});
-
-		options.setOnNotificationClickListener(new OnNotificationClickListener() {
-
-			@Override
-			public Intent onNotificationClick(EMMessage message) {
-				Intent intent = new Intent(getApplicationContext(),
-						ChatActivity.class);
-				ChatType chatType = message.getChatType();
-				if (chatType == ChatType.Chat) { // 单聊信息
-					intent.putExtra("userId", message.getFrom());
-					intent.putExtra("chatType", "SINGLE");
-					startActivity(intent);
-				} else { // 群聊信息
-							// message.getTo()为群聊id
-					intent.putExtra("groupId", message.getTo());
-					intent.putExtra("chatType", "GROUP");
-				}
-				return intent;
-			}
-		});
-
 	}
 
 	/**
