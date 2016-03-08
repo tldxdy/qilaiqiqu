@@ -1,8 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import java.lang.reflect.Type;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +13,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -143,7 +140,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 							@Override
 							public void onError(UiError arg0) {
-								// TODO Auto-generated method stub
 
 							}
 
@@ -152,11 +148,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 								JSONObject re = (JSONObject) response;
 								System.out.println("response="
 										+ String.valueOf(response));
+								sendTencentCode(response);
 							}
 
 							@Override
 							public void onCancel() {
-								// TODO Auto-generated method stub
 
 							}
 						});
@@ -233,6 +229,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 			break;
 		}
 	}
+	
+	private void sendTencentCode(Object response){
+		
+	}
+	
 
 	private void login() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -289,16 +290,18 @@ public class LoginActivity extends Activity implements OnClickListener {
 										userLogin.getUniqueKey());
 								editor.putString("userName",
 										userLogin.getUserName());
+								editor.putString("userImage",
+										userLogin.getUserImage());
+								editor.putString("imUserName",
+										userLogin.getImUserName());
 								editor.putString("imPassword",
 										userLogin.getImPassword());
 								editor.putString("mobilePhone",
 										userLogin.getMobilePhone());
 								editor.putString("riderId",
 										userLogin.getRiderId());
-								editor.putString("imUserName",
-										userLogin.getImUserName());
-								editor.putString("userImage",
-										userLogin.getUserImage());
+								
+								
 								editor.putInt("loginFlag", 1);
 								editor.commit();
 

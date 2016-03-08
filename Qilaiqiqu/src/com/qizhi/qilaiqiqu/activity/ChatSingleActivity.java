@@ -47,12 +47,13 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.util.VoiceRecorder;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.model.CertainUserModel;
 import com.qizhi.qilaiqiqu.utils.CommonUtils;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.VoicePlayClickListener;
 import com.squareup.picasso.Picasso;
 
-public class ChatActivity extends HuanxinLogOutActivity {
+public class ChatSingleActivity extends HuanxinLogOutActivity {
 
 	ArrayList<HashMap<String, Object>> chatList = null;
 	String[] from = { "image", "text", "textImg" };
@@ -88,12 +89,13 @@ public class ChatActivity extends HuanxinLogOutActivity {
 	protected ListView chatListView = null;
 	protected Button chatSendButton = null;
 	protected ImageView chatAddPicture = null;
-	protected ImageView imgPartner = null;
 
 	protected EditText edtContent = null;
 	protected TextView txtVoice = null;
 
 	protected MyChatAdapter adapter = null;
+
+	private CertainUserModel certainUserModel;
 
 	private String username;
 
@@ -134,7 +136,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_chat);
+		setContentView(R.layout.activity_chat_single);
 
 		// 注册接收消息广播
 		receiver = new NewMessageBroadcastReceiver();
@@ -152,8 +154,13 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		// isGroup = false;
 		// }
 
+		certainUserModel = (CertainUserModel) getIntent().getSerializableExtra(
+				"certainUserModel");
 		// 获取到与聊天人的会话对象。参数username为聊天人的userid或者groupid，后文中的username皆是如此
-		username = getIntent().getStringExtra("username");
+		username = certainUserModel.getImUserName();
+
+		new SystemUtil().makeToast(ChatSingleActivity.this, username);
+
 		conversation = EMChatManager.getInstance().getConversation(username);
 
 		imgVoice = (ImageView) findViewById(R.id.img_chatActivity_voice);
@@ -168,10 +175,6 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 		wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE))
 				.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "demo");
-
-		// 判断单聊还是群聊
-		chatType = getIntent().getIntExtra("chatType", CHATTYPE_SINGLE);
-		// type=getIntent().getIntExtra("type", 0);
 
 		// 动画资源文件,用于录制语音时
 		micImages = new Drawable[] {
@@ -197,11 +200,10 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		chatAddPicture = (ImageView) findViewById(R.id.img_chatActivity_picture);
 
 		txtTitle = (TextView) findViewById(R.id.txt_chatActivity_title);
-		imgPartner = (ImageView) findViewById(R.id.img_chatActivity_partner);
 
 		adapter = new MyChatAdapter(this, chatList, layout, from, to);
 
-		txtTitle.setText(getIntent().getStringExtra("groupName"));
+		txtTitle.setText(certainUserModel.getUserName());
 
 		imgVoice.setOnClickListener(new OnClickListener() {
 
@@ -220,19 +222,6 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		});
 
 		txtVoice.setOnTouchListener(new PressToSpeakListen());
-
-		imgPartner.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(ChatActivity.this, GroupActivity.class)
-						.putExtra("username", username)
-						.putExtra("groupName",
-								getIntent().getStringExtra("groupName"))
-						.putExtra("activityId",
-								getIntent().getIntExtra("activityId", -1)));
-			}
-		});
 
 		backLayout.setOnClickListener(new OnClickListener() {
 
@@ -264,19 +253,27 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 				// 创建一条文本消息
 				messageTXT = EMMessage.createSendMessage(EMMessage.Type.TXT);
-				// 如果是群聊，设置chattype,默认是单聊
-				messageTXT.setChatType(ChatType.GroupChat);
 				// 设置消息body
 				TextMessageBody txtBody = new TextMessageBody((edtContent
 						.getText() + "").toString());
-
-				messageTXT.setAttribute("IMUserIdentifierExpand", username);
+				// 拓展中的User ID 如果是群组,则为对应的群组ID
+				messageTXT.setAttribute("IMUserIdentifierExpand",
+						preferences.getString("userId", null));
+				// 拓展中的用户头像
+				messageTXT.setAttribute("IMUserImageExpand",
+						preferences.getString("userImage", null));
+				// 拓展中的用户名
 				messageTXT.setAttribute("IMUserNameExpand",
 						preferences.getString("userName", null));
-				messageTXT.setAttribute("IMConversationUserImageExpand",
-						preferences.getString("userImage", null));
-				messageTXT.setAttribute("IMConversationUserNameExpand",
-						getIntent().getStringExtra("groupName"));
+				// 拓展中的对方用户头像
+				messageTXT.setAttribute("conversationOtherUserNameExpand",
+						certainUserModel.getUserName());
+				// 拓展中的对方用户名
+				messageTXT.setAttribute("conversationOtherUserImageExpand",
+						certainUserModel.getUserImage());
+				// 拓展中的对方用户ID
+				messageTXT.setAttribute("ConversationOtherUserIdentifier",
+						certainUserModel.getUserId());
 
 				// IMConversationUserImageExpand
 				// IMConversationUserNameExpand 群组名称 私聊
@@ -320,7 +317,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				startActivityForResult(new Intent(ChatActivity.this,
+				startActivityForResult(new Intent(ChatSingleActivity.this,
 						NativeImagesActivity.class).putExtra("falg", true), 1);
 
 			}
@@ -382,10 +379,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 		// 20);
 
 		for (int i = 0; i < messageList.size(); i++) {
-			System.out.println(messageList + "!!!!" + messageList.size()
-					+ "!!!!!" + messageList.get(i).getType());
-			System.out.println(messageList.get(i).getStringAttribute(
-					"IMConversationUserImageExpand", null));
+
 			if (messageList.get(i).getFrom()
 					.equals(preferences.getString("imUserName", null))) {
 
@@ -430,8 +424,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 							messageList.get(i).getStringAttribute(
 									"IMUserNameExpand", null),
 							messageList.get(i).getStringAttribute(
-									"IMConversationUserImageExpand", null), "",
-							"", "", messageList.get(i));
+									"IMUserImageExpand", null), "", "", "",
+							messageList.get(i));
 				} else if (messageList.get(i).getType().toString()
 						.equals("IMAGE")) {
 					ImageMessageBody imgBody = (ImageMessageBody) messageList
@@ -445,8 +439,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 							messageList.get(i).getStringAttribute(
 									"IMUserNameExpand", null),
 							messageList.get(i).getStringAttribute(
-									"IMConversationUserImageExpand", null),
-							thumbRemoteUrl, "", "", messageList.get(i));
+									"IMUserImageExpand", null), thumbRemoteUrl,
+							"", "", messageList.get(i));
 				} else {
 
 					VoiceMessageBody vioceBody = (VoiceMessageBody) messageList
@@ -458,7 +452,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 							messageList.get(i).getStringAttribute(
 									"IMUserNameExpand", null),
 							messageList.get(i).getStringAttribute(
-									"IMConversationUserImageExpand", null), "",
+									"IMUserImageExpand", null), "",
 							vioceBody.getLocalUrl(),
 							vioceBody.getLength() + "", messageList.get(i));
 				}
@@ -493,16 +487,17 @@ public class ChatActivity extends HuanxinLogOutActivity {
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
 
-			if (message.getTo().toString().equals(username)) {
+			if (from.equals(username)) {
+
 				if (message.getType().toString().equals("TXT")) {
 					String na = message.getBody().toString().split(":")[1];
 					String substring = na.substring(1, na.length() - 1);
 					addTextToList(message.getType().toString(), substring,
 							OTHER, message.getStringAttribute(
 									"IMUserNameExpand", null),
-							message.getStringAttribute(
-									"IMConversationUserImageExpand", null), "",
-							"", "", message);
+							message.getStringAttribute("IMUserImageExpand",
+									null), "", "", "", message);
+
 				} else if (message.getType().toString().equals("IMAGE")) {
 					ImageMessageBody imgBody = (ImageMessageBody) message
 							.getBody();
@@ -513,9 +508,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 							"",
 							OTHER,
 							message.getStringAttribute("IMUserNameExpand", null),
-							message.getStringAttribute(
-									"IMConversationUserImageExpand", null),
-							thumbRemoteUrl, "", "", message);
+							message.getStringAttribute("IMUserImageExpand",
+									null), thumbRemoteUrl, "", "", message);
 				} else {
 					VoiceMessageBody vioceBody = (VoiceMessageBody) message
 							.getBody();
@@ -524,23 +518,12 @@ public class ChatActivity extends HuanxinLogOutActivity {
 							"",
 							OTHER,
 							message.getStringAttribute("IMUserNameExpand", null),
-							message.getStringAttribute(
-									"IMConversationUserImageExpand", null), "",
-							vioceBody.getLocalUrl(),
+							message.getStringAttribute("IMUserImageExpand",
+									null), "", vioceBody.getLocalUrl(),
 							vioceBody.getLength() + "", message);
 
 				}
 			}
-
-			System.out.println("ChatActivity:adapter.refresh();");
-			System.out.println("ChatActivity:Expand;"
-					+ message.getStringAttribute("IMUserNameExpand", null)
-					+ ","
-					+ message.getStringAttribute(
-							"IMConversationUserImageExpand", null));
-			System.out.println("ChatActivity:message-" + message);
-			System.out.println("ChatActivity:type"
-					+ message.getType().toString());
 
 			// 通知adapter有新消息，更新ui
 			adapter.refresh();
@@ -735,24 +718,30 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					messageIMAGE = EMMessage
 							.createSendMessage(EMMessage.Type.IMAGE);
 
-					// 如果是群聊，设置chattype,默认是单聊
-					messageIMAGE.setChatType(ChatType.GroupChat);
-
 					final ImageMessageBody body = new ImageMessageBody(
 							new File(stringArrayListExtra.get(i)));
 
+					// 拓展中的User ID 如果是群组,则为对应的群组ID
 					messageIMAGE.setAttribute("IMUserIdentifierExpand",
 							username);
+					// 拓展中的用户头像
+					messageIMAGE.setAttribute("IMUserImageExpand",
+							preferences.getString("userImage", null));
+					// 拓展中的用户名
 					messageIMAGE.setAttribute("IMUserNameExpand",
 							preferences.getString("userName", null));
-					messageIMAGE.setAttribute("IMConversationUserImageExpand",
-							preferences.getString("userImage", null));
-					messageIMAGE.setAttribute("IMConversationUserNameExpand",
-							getIntent().getStringExtra("groupName"));
-
-					// ConversationOtherUserIdentifier
-					// conversationOtherUserImageExpand
-					// conversationOtherUserNameExpand
+					// 拓展中的对方用户头像
+					messageIMAGE.setAttribute(
+							"conversationOtherUserNameExpand",
+							certainUserModel.getUserName());
+					// 拓展中的对方用户名
+					messageIMAGE.setAttribute(
+							"conversationOtherUserImageExpand",
+							certainUserModel.getUserImage());
+					// 拓展中的对方用户ID
+					messageIMAGE.setAttribute(
+							"ConversationOtherUserIdentifier",
+							certainUserModel.getUserId());
 
 					// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
 					// body.setSendOriginalImage(true);
@@ -812,7 +801,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				if (!CommonUtils.isExitsSdcard()) {
-					Toast.makeText(ChatActivity.this, "发送语音需要sdcard支持！",
+					Toast.makeText(ChatSingleActivity.this, "发送语音需要sdcard支持！",
 							Toast.LENGTH_SHORT).show();
 					return false;
 				}
@@ -836,8 +825,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					if (voiceRecorder != null)
 						voiceRecorder.discardRecording();
 					recordingContainer.setVisibility(View.INVISIBLE);
-					Toast.makeText(ChatActivity.this, R.string.recoding_fail,
-							Toast.LENGTH_SHORT).show();
+					Toast.makeText(ChatSingleActivity.this,
+							R.string.recoding_fail, Toast.LENGTH_SHORT).show();
 					return false;
 				}
 
@@ -881,8 +870,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接",
-								Toast.LENGTH_SHORT).show();
+						Toast.makeText(ChatSingleActivity.this,
+								"发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT).show();
 					}
 
 				}
@@ -915,16 +904,25 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 			// 如果是群聊，设置chattype,默认是单聊
 			if (chatType == CHATTYPE_GROUP)
-				messageVOICE.setChatType(ChatType.GroupChat);
-			messageVOICE.setReceipt(username);
+				messageVOICE.setReceipt(username);
 
+			// 拓展中的User ID 如果是群组,则为对应的群组ID
 			messageVOICE.setAttribute("IMUserIdentifierExpand", username);
+			// 拓展中的用户头像
+			messageVOICE.setAttribute("IMUserImageExpand",
+					preferences.getString("userImage", null));
+			// 拓展中的用户名
 			messageVOICE.setAttribute("IMUserNameExpand",
 					preferences.getString("userName", null));
-			messageVOICE.setAttribute("IMConversationUserImageExpand",
-					preferences.getString("userImage", null));
-			messageVOICE.setAttribute("IMConversationUserNameExpand",
-					getIntent().getStringExtra("groupName"));
+			// 拓展中的对方用户头像
+			messageVOICE.setAttribute("conversationOtherUserNameExpand",
+					certainUserModel.getUserName());
+			// 拓展中的对方用户名
+			messageVOICE.setAttribute("conversationOtherUserImageExpand",
+					certainUserModel.getUserImage());
+			// 拓展中的对方用户ID
+			messageVOICE.setAttribute("ConversationOtherUserIdentifier",
+					certainUserModel.getUserId());
 
 			int len = Integer.parseInt(length);
 			final VoiceMessageBody body = new VoiceMessageBody(new File(
@@ -973,7 +971,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 	 * @param filePath
 	 */
 	private ChatType msgType;
-	public static ChatActivity currentPlayListener = null;
+	public static ChatSingleActivity currentPlayListener = null;
 
 	public void playVoice(String filePath, final EMMessage message,
 			final ImageView v, ImageView isread, int position) {

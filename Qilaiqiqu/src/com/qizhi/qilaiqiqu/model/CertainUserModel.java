@@ -1,11 +1,18 @@
 package com.qizhi.qilaiqiqu.model;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author 其他用户信息
  * 
  */
-public class CertainUserModel {
+public class CertainUserModel implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Integer userId;
 	private String userImage; // 用户头像
 	private String userName; // 用户名
@@ -14,25 +21,37 @@ public class CertainUserModel {
 	private Integer integral; // 积分数
 	private Integer concernNum; // 用户关注数
 	private Integer fansNum; // 关注用户数
-	private String address;	//地址
+	private String address; // 地址
 	private Integer articleMemoNum;
 	private Integer activityNum;
 	private String state;
+	private Integer riderId;
 	private boolean attentionFlag;
 	private Integer participantNum;
 	private String imId;
 	private boolean attendRiderFlag;
 	private Integer concern;
 	private Long createDate;
-    private String loginName;
+	private String loginName;
 	private String idCard;
 	private String imUserName;
-    private Integer userFans;
-    private String mobilePhone;
-    private String email;
-    private String realName;
-	
-	
+	private Integer userFans;
+	private String mobilePhone;
+	private String email;
+	private String realName;
+
+	public Integer getRiderId() {
+		return riderId;
+	}
+
+	public void setRiderId(Integer riderId) {
+		this.riderId = riderId;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public String getUserImage() {
 		return userImage;
 	}
@@ -233,6 +252,4 @@ public class CertainUserModel {
 		this.realName = realName;
 	}
 
-	
-	
 }

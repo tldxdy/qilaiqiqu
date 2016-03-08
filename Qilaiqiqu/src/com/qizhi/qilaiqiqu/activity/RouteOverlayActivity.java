@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroupOverlay;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -23,7 +24,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -44,10 +44,8 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.NaviPara;
-import com.amap.api.maps.model.Polyline;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.geocoder.GeocodeAddress;
 import com.amap.api.services.geocoder.GeocodeQuery;
 import com.amap.api.services.geocoder.GeocodeResult;
@@ -82,7 +80,7 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 	private LinearLayout backLayout;
 	private LinearLayout layoutLayout;
 	private TextView positionTxt;
-	
+
 	private String addressName;
 
 	private AMap aMap;
@@ -96,8 +94,8 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 	private Marker geoMarker;
 	private Marker regeoMarker;
 
-//	public List<Polyline> paths = new ArrayList<Polyline>();
-	
+	// public List<Polyline> paths = new ArrayList<Polyline>();
+
 	private LatLonPoint startPoint = null;
 	private LatLonPoint endPoint = null;
 	FromAndTo fromAndTo;// 起始点和终点的经纬度
@@ -106,7 +104,7 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 	// private LocationManagerProxy mAMapLocationManager;
 
 	private List<String> list;
-	private List<Marker> markerList;
+	private List<Marker> markerList = null;
 
 	private ListView routeOverlayList;
 	private RouteOverlayAdapter adapter;
@@ -127,6 +125,7 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 
 	private boolean isCleanEdit = false;
 	private String adress;
+	public static WalkRouteOverlayUtil walkRouteOverlay = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -166,10 +165,11 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 		infoLayout = (LinearLayout) findViewById(R.id.layout_routeOverlayActivity_info);
 		routeOverlayList = (ListView) findViewById(R.id.routeOverlayActivity_list);
 		list = new ArrayList<String>();
-		adapter = new RouteOverlayAdapter(RouteOverlayActivity.this, list, aMap);
-
+		markerList = new ArrayList<Marker>();
 		searchText.addTextChangedListener(this);// 添加文本输入框监听事件
 		position = getIntent().getIntExtra("position", -1);
+		adapter = new RouteOverlayAdapter(RouteOverlayActivity.this, list,
+				aMap, markerList);
 
 	}
 
@@ -192,8 +192,6 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onClick(View v) {
-		mapScreenMarkers = aMap.getMapScreenMarkers();
-		
 		switch (v.getId()) {
 		case R.id.layout_routeOverlayActivity_back:
 			finish();
@@ -207,17 +205,19 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 
 		case R.id.txt_routeOverlayActivity_confirm:
 			isSelectOk = true;
-			addMarker();
+			addAddress();
 			mRouteOverlay();
 			infoLayout.setVisibility(View.GONE);
 			break;
 
 		case R.id.txt_routeOverlayActivity_cancel:
 			isSelectOk = true;
-			new SystemUtil().makeToast(RouteOverlayActivity.this,
-					mapScreenMarkers.size() + "cancel");
-			mapScreenMarkers.get(mapScreenMarkers.size() - 1).remove();
+
+			markerList.get(markerList.size() - 1).remove();
+			markerList.remove(markerList.size() - 1);
 			infoLayout.setVisibility(View.GONE);
+
+			walkRouteOverlay.removeLine();
 
 			break;
 
@@ -234,12 +234,12 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 	}
 
 	private void mRouteOverlay() {
-		if (mapScreenMarkers.size() > 1) {
+		if (markerList.size() > 1) {
 
-			startPoint = AMapUtil.convertToLatLonPoint(mapScreenMarkers.get(
-					mapScreenMarkers.size() - 2).getPosition());
-			endPoint = AMapUtil.convertToLatLonPoint(mapScreenMarkers.get(
-					mapScreenMarkers.size() - 1).getPosition());
+			startPoint = AMapUtil.convertToLatLonPoint(markerList.get(
+					markerList.size() - 2).getPosition());
+			endPoint = AMapUtil.convertToLatLonPoint(markerList.get(
+					markerList.size() - 1).getPosition());
 
 			fromAndTo = new FromAndTo(startPoint, endPoint);// 实例化FromAndTo，字面意思,哪到哪
 			WalkRouteQuery walkRouteQuery = new WalkRouteQuery(fromAndTo,
@@ -248,20 +248,29 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 		}
 	}
 
-	private void addMarker() {
-		Toast.makeText(RouteOverlayActivity.this, adress, 0).show();
+	private void addAddress() {
 		list.add(adress);
+		System.out.println(list);
 		adapter.notifyDataSetChanged();
 	}
 
 	private void setMarker(LatLonPoint llp) {
 
-		aMap.addMarker(
-				new MarkerOptions()
-						.anchor(0.1f, 0.1f)
-						.icon(BitmapDescriptorFactory
-								.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
-				.setPosition(AMapUtil.convertToLatLng(llp));
+		markerList.add(aMap.addMarker(new MarkerOptions().anchor(0.1f, 0.1f)
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
+
+		markerList.get(markerList.size() - 1).setPosition(
+				AMapUtil.convertToLatLng(llp));
+
+		// aMap.addMarker(
+		// new MarkerOptions()
+		// .anchor(0.1f, 0.1f)
+		// .icon(BitmapDescriptorFactory
+		// .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
+		// .setPosition(AMapUtil.convertToLatLng(llp));
+
+		adapter.notifyDataSetChanged();
 	}
 
 	/**
@@ -572,21 +581,6 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 		return applicationName;
 	}
 
-	/**
-	 * poi没有搜索到数据，返回一些推荐城市的信息
-	 */
-	private void showSuggestCity(List<SuggestionCity> cities) {
-		String infomation = "推荐城市\n";
-		for (int i = 0; i < cities.size(); i++) {
-			infomation += "城市名称:" + cities.get(i).getCityName() + "城市区号:"
-					+ cities.get(i).getCityCode() + "城市编码:"
-					+ cities.get(i).getAdCode() + "\n";
-		}
-		new SystemUtil().makeToast(RouteOverlayActivity.this, infomation
-				+ "infomation");
-
-	}
-
 	@Override
 	public void afterTextChanged(Editable s) {
 
@@ -632,6 +626,9 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 		if (isSelectOk) {
 			isSelectOk = false;
 			latLonPoint = new LatLonPoint(l.latitude, l.longitude);
+
+			System.out.println("latLonPoint:" + latLonPoint);
+
 			getAddress(latLonPoint);
 		}
 	}
@@ -677,15 +674,25 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 				addressName = result.getRegeocodeAddress().getFormatAddress()
 						+ "附近";
 
+				System.out.println("addressName:"
+						+ result.getRegeocodeAddress().getFormatAddress()
+						+ "附近");
+
 				adress = result.getRegeocodeAddress().getFormatAddress();
 
+				// aMap.animateCamera(CameraUpdateFactory.zoomBy(10));
+
 				aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-						AMapUtil.convertToLatLng(latLonPoint), 15));
+						AMapUtil.convertToLatLng(latLonPoint), 11));
+
+				System.out.println("onRegeocodeSearched----latLonPoint:"
+						+ latLonPoint);
+
 				infoLayout.setVisibility(View.VISIBLE);
+				positionTxt.setText(addressName);
 				setMarker(latLonPoint);
 
 				// regeoMarker.setPosition(AMapUtil.convertToLatLng(latLonPoint));
-				positionTxt.setText(addressName);
 			} else {
 				new SystemUtil().makeToast(RouteOverlayActivity.this,
 						R.string.no_result + "no_result");
@@ -720,7 +727,7 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 						addressName);
 				infoLayout.setVisibility(View.VISIBLE);
 				aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-						AMapUtil.convertToLatLng(address.getLatLonPoint()), 15));
+						AMapUtil.convertToLatLng(address.getLatLonPoint()), 11f));
 
 				setMarker(address.getLatLonPoint());
 
@@ -756,13 +763,11 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onBusRouteSearched(BusRouteResult arg0, int arg1) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void onDriveRouteSearched(DriveRouteResult arg0, int arg1) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -776,11 +781,17 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 					&& result.getPaths().size() > 0) {
 				walkRouteResult = result;
 				WalkPath walkPath = walkRouteResult.getPaths().get(0);
-				// aMap.clear();// 清理地图上的所有覆盖物
-				WalkRouteOverlayUtil walkRouteOverlay = new WalkRouteOverlayUtil(
-						this, aMap, walkPath, walkRouteResult.getStartPos(),
+
+				walkRouteOverlay = new WalkRouteOverlayUtil(this, aMap,
+						walkPath, walkRouteResult.getStartPos(),
 						walkRouteResult.getTargetPos());
 				walkRouteOverlay.addToMap();
+
+				RouteOverlayAdapter.walkRouteOverlay = walkRouteOverlay;
+				adapter.notifyDataSetChanged();
+				
+				ViewGroupOverlay overlay = mapView.getOverlay();
+
 			} else {
 				new SystemUtil().makeToast(RouteOverlayActivity.this,
 						R.string.no_result + "no_result");

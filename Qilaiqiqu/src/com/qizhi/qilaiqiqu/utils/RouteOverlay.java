@@ -3,6 +3,7 @@ package com.qizhi.qilaiqiqu.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
@@ -23,6 +24,13 @@ import com.amap.api.maps.model.Polyline;
 public class RouteOverlay {
 	protected List<Marker> stationMarkers = new ArrayList<Marker>();
 	protected List<Polyline> allPolyLines = new ArrayList<Polyline>();
+
+	List<HashMap<String, List<Polyline>>> linesMaps = new ArrayList<HashMap<String, List<Polyline>>>();
+
+	List<List<Polyline>> ll = new ArrayList<List<Polyline>>();
+
+	HashMap<String, List<Polyline>> hashMap = new HashMap<String, List<Polyline>>();
+
 	protected Marker startMarker;
 	protected Marker endMarker;
 	protected LatLng startPoint;
@@ -41,19 +49,37 @@ public class RouteOverlay {
 	 * 清除绘制
 	 */
 	public void removeFromMap() {
-		if (startMarker != null) {
-			startMarker.remove();
-
-		}
-		if (endMarker != null) {
-			endMarker.remove();
-		}
-		for (Marker marker : stationMarkers) {
-			marker.remove();
-		}
-		for (Polyline line : allPolyLines) {
+		// if (startMarker != null) {
+		// startMarker.remove();
+		//
+		// }
+		// if (endMarker != null) {
+		// endMarker.remove();
+		// }
+		// for (Marker marker : stationMarkers) {
+		// marker.remove();
+		// }
+		System.out.println("ll.size():" + ll.size());
+		for (Polyline line : ll.get(ll.size() - 1)) {
 			line.remove();
 		}
+		//
+		// // allPolyLines.get(allPolyLines.size()).remove();
+		// System.out.println("linesMaps.size():" + linesMaps.size());
+		//
+		// linesMaps.get(linesMaps.size() - 1).get("line")
+		// .removeAll(linesMaps.get(linesMaps.size() - 1).get("line"));
+
+		//
+		// if (stationMarkers.size() > 0) {
+		// stationMarkers.get(allPolyLines.size() - 1).remove();
+		// System.out.println("stationMarkers!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		// }
+		//
+		// if (allPolyLines.size() > 0) {
+		// allPolyLines.get(allPolyLines.size() - 1).remove();
+		// System.out.println("allPolyLines!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		// }
 		destroyBit();
 	}
 
@@ -115,16 +141,16 @@ public class RouteOverlay {
 		return BitmapDescriptorFactory.fromBitmap(bitmap);
 	}
 
-	protected void addStartAndEndMarker() {
-//		startMarker = mAMap.addMarker((new MarkerOptions())
-//				.position(startPoint));
-//		// startMarker.showInfoWindow();
-//
-//		endMarker = mAMap.addMarker((new MarkerOptions()).position(endPoint)
-//				);
-//		// mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPoint,
-//		// getShowRouteZoom()));
-	}
+	// protected void addStartAndEndMarker() {
+	// startMarker = mAMap.addMarker((new MarkerOptions())
+	// .position(startPoint));
+	// startMarker.showInfoWindow();
+	//
+	// endMarker = mAMap.addMarker((new
+	// MarkerOptions()).position(endPoint));
+	// mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPoint,
+	// getShowRouteZoom()));
+	// }
 
 	public void zoomToSpan() {
 		if (startPoint != null && startPoint != null) {
@@ -143,7 +169,7 @@ public class RouteOverlay {
 	}
 
 	protected int getWalkColor() {
-		return Color.parseColor("#cccccc");
+		return Color.parseColor("#ff0000");
 	}
 
 	protected int getBusColor() {

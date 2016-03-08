@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
@@ -15,6 +16,7 @@ import com.amap.api.services.route.WalkStep;
 
 public class WalkRouteOverlayUtil extends RouteOverlay {
 	private WalkPath walkPath;
+	private List<Polyline> paths;
 
 	public WalkRouteOverlayUtil(Context context, AMap amap, WalkPath path,
 			LatLonPoint start, LatLonPoint end) {
@@ -35,11 +37,11 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 				if (i == 0) {
 					Polyline startLine = mAMap
 							.addPolyline(new PolylineOptions()
-									.add(startPoint, latLng).color(getBusColor())
+									.add(startPoint, latLng)
+									.color(getWalkColor())
 									.width(getBuslineWidth()));// 把起始点和第�?��步行的起点连接起�?
-					startLine.setColor(getBusColor());
+					startLine.setColor(getWalkColor());
 					allPolyLines.add(startLine);
-
 				}
 				LatLng latLngEnd = AMapServicesUtil.convertToLatLng(walkStep
 						.getPolyline().get(walkStep.getPolyline().size() - 1));
@@ -48,7 +50,8 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 				if (!(latLngEnd.equals(latLngStart))) {
 					Polyline breakLine = mAMap
 							.addPolyline(new PolylineOptions()
-									.add(latLngEnd, latLngStart).color(getBusColor())
+									.add(latLngEnd, latLngStart)
+									.color(getWalkColor())
 									.width(getBuslineWidth()));// 把前�?��步行段的终点和后�?��步行段的起点连接起来
 					allPolyLines.add(breakLine);
 				}
@@ -56,9 +59,9 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 				LatLng latLng1 = AMapServicesUtil.convertToLatLng(walkStep
 						.getPolyline().get(walkStep.getPolyline().size() - 1));
 				Polyline endLine = mAMap.addPolyline(new PolylineOptions()
-						.add(latLng1, endPoint).color(getBusColor())
+						.add(latLng1, endPoint).color(getWalkColor())
 						.width(getBuslineWidth()));// 把最终点和最后一个步行的终点连接起来
-				endLine.setColor(getBusColor());
+				endLine.setColor(getWalkColor());
 				allPolyLines.add(endLine);
 			}
 
@@ -68,20 +71,36 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 			// + "\n\u9053\u8DEF:" + walkStep.getRoad())
 			// .snippet(walkStep.getInstruction()).anchor(0.5f, 0.5f));
 			// stationMarkers.add(walkMarker);
-			
-			List<Polyline> paths = new ArrayList<Polyline>();
-			
+
+			paths = new ArrayList<Polyline>();
+
 			Polyline walkLine = mAMap.addPolyline(new PolylineOptions()
 					.addAll(AMapServicesUtil.convertArrList(walkStep
-							.getPolyline())).color(getBusColor())
+							.getPolyline())).color(getWalkColor())
 					.width(getBuslineWidth()));
-			walkLine.setColor(getBusColor());
-			allPolyLines.add(walkLine);
+
+			walkLine.setColor(getWalkColor());
 			paths.add(walkLine);
-//			RouteOverlayActivity activity = new RouteOverlayActivity();
-//			activity.paths = paths;
+			allPolyLines.add(walkLine);
+			
+			ll.add(allPolyLines);
+			System.out.println("paths:"+paths.size());
+			System.out.println("allPolyLines:"+allPolyLines.size());
+			System.out.println(ll.size());
+			
+			
+			
+			hashMap.put("line", allPolyLines);
+			
+			linesMaps.add(hashMap);
 		}
-		addStartAndEndMarker();
+		// addStartAndEndMarker();
+	}
+
+	public void removeLine() {
+		// paths.remove(paths.size()-1);
+		// allPolyLines.remove(allPolyLines.size()-1);
+		removeFromMap();
 	}
 
 	protected float getBuslineWidth() {

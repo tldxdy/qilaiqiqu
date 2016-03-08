@@ -59,6 +59,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.NetUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -89,6 +90,8 @@ import com.umeng.analytics.MobclickAgent;
 public class MainActivity extends HuanxinLogOutActivity implements
 		OnClickListener, OnOpenListener, OnCloseListener, CallBackPost,
 		TextWatcher {
+
+	public static List<String> chatUserList;
 
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
@@ -140,7 +143,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private int pageIndex;
 
 	private NewMessageBroadcastReceiver receiver;
-	
+
 	private Handler handler = new Handler() {
 
 		@Override
@@ -225,6 +228,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		// 设置广播的优先级别大于Mainacitivity,这样如果消息来的时候正好在chat页面，直接显示消息，而不是提示消息未读
 		intentFilter.setPriority(3);
 		registerReceiver(receiver, intentFilter);
+		// 通知sdk，UI 已经初始化完毕，注册了相应的receiver和listener, 可以接受broadcast了
+		EMChat.getInstance().setAppInited();
 	}
 
 	public void setCurrent(int fragmentNum) {
@@ -697,8 +702,15 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
 
+			chatUserList.add(message.getFrom());
+
 			// 消息不是发给当前会话，return
 			notifyNewMessage(message);
+			try {
+				message.getStringAttribute("IMUserNameExpand");
+			} catch (EaseMobException e) {
+				e.printStackTrace();
+			}
 			return;
 
 		}

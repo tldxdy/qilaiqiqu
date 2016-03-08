@@ -82,6 +82,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
+		System.out.println("!!!!!!!!!!responseInfo.result"
+				+ responseInfo.result);
 		String result = responseInfo.result;
 		try {
 			JSONObject jsonObject = new JSONObject(result);
@@ -96,6 +98,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 				Editor editor = sharedPreferences.edit();// 获取编辑器
 				editor.putInt("userId", data.getInt("userId"));
 				editor.putString("uniqueKey", data.getString("uniqueKey"));
+				editor.putString("userName", data.getString("userName"));
+				editor.putString("userImage", data.getString("userImage"));
 				editor.putString("imUserName", data.getString("imUserName"));
 				editor.putString("imPassword", data.getString("imPassword"));
 				editor.putString("mobilePhone", data.getString("mobilePhone"));
@@ -103,7 +107,6 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 				editor.putInt("loginFlag", 1);
 				editor.commit();
 
-				System.out.println(result);
 				startActivity(new Intent(WXEntryActivity.this,
 						MainActivity.class));
 			}

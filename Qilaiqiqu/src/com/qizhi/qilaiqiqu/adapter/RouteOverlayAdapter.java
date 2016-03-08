@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.Polyline;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.WalkRouteOverlayUtil;
 
 public class RouteOverlayAdapter extends BaseAdapter {
 
@@ -25,15 +25,16 @@ public class RouteOverlayAdapter extends BaseAdapter {
 	private Context context;
 
 	private AMap aMap;
-	private List<Marker> mapScreenMarkers;
+	List<Marker> markerList;
 
-	// private List<Polyline> paths = new ArrayList<Polyline>();
-	private Polyline lastPolyline;
+	public static WalkRouteOverlayUtil walkRouteOverlay;
 
-	public RouteOverlayAdapter(Context context, List<String> list, AMap aMap) {
+	public RouteOverlayAdapter(Context context, List<String> list, AMap aMap,
+			List<Marker> markerList) {
 		this.list = list;
 		this.context = context;
 		this.aMap = aMap;
+		this.markerList = markerList;
 		inflater = LayoutInflater.from(context);
 		// this.paths = paths;
 		// if (paths.size() > 1) {
@@ -81,10 +82,16 @@ public class RouteOverlayAdapter extends BaseAdapter {
 
 				@Override
 				public void onClick(View arg0) {
+
 					list.remove(list.size() - 1);
+					markerList.get(markerList.size() - 1).remove();
+					markerList.remove(markerList.size() - 1);
+
+					walkRouteOverlay.removeLine();
+
+					System.out.println("walkRouteOverlay:" + walkRouteOverlay);
+
 					notifyDataSetChanged();
-					mapScreenMarkers = aMap.getMapScreenMarkers();
-					mapScreenMarkers.get(mapScreenMarkers.size() - 1).remove();
 					// lastPolyline.remove();
 					// aMap.clear();
 				}
