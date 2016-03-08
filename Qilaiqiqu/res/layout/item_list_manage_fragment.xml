@@ -12,12 +12,12 @@
         android:layout_height="wrap_content" >
     <ImageView
         android:id="@+id/img_managefragment_photo"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="125dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:src="@drawable/bitmap_homepage" />
 
     <com.qizhi.qilaiqiqu.utils.RotateTextView

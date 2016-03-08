@@ -187,6 +187,15 @@ public class SystemUtil {
 		}
 		outDir = new File(outDir, System.currentTimeMillis() + ".jpg");
 		String s = outDir.toString();
+		/*ByteArrayOutputStream baos = new ByteArrayOutputStream();  
+		mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中  
+		if(baos.toByteArray().length / 1024 > 400){
+			FileOutputStream fos = new FileOutputStream(outDir);
+			mBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);  
+		}else{
+			FileOutputStream fos = new FileOutputStream(outDir);
+			mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);  
+		}*/
 		
 		FileOutputStream fos = new FileOutputStream(outDir);
 		mBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);  

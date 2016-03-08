@@ -37,6 +37,12 @@ public class RidingListAdapter extends BaseAdapter{
 	private static final int TYPE_ONE = 1;
 	private int currentType;//当前item类型
 	
+	public RidingListAdapter(Context context, List<RidingModelList> list){
+		this.context = context;
+		this.list = list;
+		inflater = LayoutInflater.from(context);
+	}
+	
 	
 	public RidingListAdapter(Context context, List<RidingModelList> list ,List<RidingDraftModel> rDraftModels){
 		this.context = context;

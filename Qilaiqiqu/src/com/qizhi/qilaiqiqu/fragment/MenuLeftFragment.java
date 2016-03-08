@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -31,7 +32,9 @@ import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
 import com.qizhi.qilaiqiqu.activity.RidingActivity;
 import com.qizhi.qilaiqiqu.activity.SetActivity;
 import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
+import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
@@ -72,6 +75,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 	private SharedPreferences preferences;
 	
 	private XUtilsUtil xUtilsUtil;
+	
+	private int systemMessageNum;
 
 	public MenuLeftFragment(Context context, SlidingMenu menu,
 			SharedPreferences preferences) {
@@ -141,7 +146,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			intent.putExtra("PersonageUserInformationModel", puim);
 			startActivity(intent);
 			}else{
-				new SystemUtil().makeToast(getActivity(), "请登录");
+				Toasts.show(getActivity(), "请登录", 0);
+				//new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
 //				getActivity().finish();
@@ -152,7 +158,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			Intent intent2 = new Intent(context, MessageCenterActivity.class);
 			startActivity(intent2);
 			}else{
-				new SystemUtil().makeToast(getActivity(), "请登录");
+				Toasts.show(getActivity(), "请登录", 0);
+//				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
 //				getActivity().finish();
@@ -164,7 +171,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			Intent intent3 = new Intent(context, RidingActivity.class);
 			startActivity(intent3);
 			}else{
-				new SystemUtil().makeToast(getActivity(), "请登录");
+				Toasts.show(getActivity(), "请登录", 0);
+//				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
 //				getActivity().finish();
@@ -175,7 +183,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			Intent intent3 = new Intent(context, ActionCenterActivity.class);
 			startActivity(intent3);
 			}else{
-				new SystemUtil().makeToast(getActivity(), "请登录");
+				Toasts.show(getActivity(), "请登录", 0);
+//				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
 			}
@@ -186,7 +195,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			Intent intent4 = new Intent(context, CollectActivity.class);
 			startActivity(intent4);
 			}else{
-				new SystemUtil().makeToast(getActivity(), "请登录");
+				Toasts.show(getActivity(), "请登录", 0);
+//				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
 //				getActivity().finish();
@@ -220,7 +230,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		if(preferences.getInt("userId", -1) != -1){
 			xUtilsUtil = new XUtilsUtil();
 			personalData();
-			systemData();
+			//systemData();
 
 		} else {
 			userMemoTxt.setText("");
@@ -242,12 +252,16 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		layout_my_action_center.setOnClickListener(this);
 	}
 
-	private void systemData() {
+/*	private void systemData() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1)
 				+ "");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
+		String checkCode = preferences.getString("checkCode", null);
+		String defaultCode = preferences.getString("defaultCode", null);
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));
+
 		xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html", params, new CallBackPost() {
 			
 			@Override
@@ -264,6 +278,12 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 						//系统统计数
 						informationNumTxt.setVisibility(View.VISIBLE);
 						informationNumTxt.setText(num + "");
+						SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
+								"userLogin", Context.MODE_PRIVATE);
+						Editor editor = sharedPreferences.edit();// 获取编辑器
+						editor.putString("checkCode", jsonObject.optString("checkCode"));
+						editor.putString("defaultCode", jsonObject.optString("defaultCode"));
+						editor.commit();
 					}
 				}
 			}
@@ -273,7 +293,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				
 			}
 		});
-	}
+	}*/
 
 	private void personalData() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -281,6 +301,10 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				+ "");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
+		/*String checkCode = preferences.getString("checkCode", null);
+		String defaultCode = preferences.getString("defaultCode", null);
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));
+*/
 		xUtilsUtil.httpPost("mobile/user/querySingleUser.html", params, new CallBackPost() {
 			
 			@Override
@@ -290,6 +314,14 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 							responseInfo.result);
 					JSONObject data = jsonObject
 							.getJSONObject("data");
+					systemMessageNum = data.optInt("systemMessageNum");
+					if(systemMessageNum != 0){
+						//系统统计数
+						informationNumTxt.setVisibility(View.VISIBLE);
+						informationNumTxt.setText(systemMessageNum + "");
+					}
+					
+					
 					JSONObject user = data
 							.getJSONObject("user");
 					
@@ -333,6 +365,12 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 					puim.setUserName(user.getString("userName"));
 					puim.setFansNum(data.optInt("fansNum"));
 					puim.setConcernNum(data.optInt("concernNum"));
+					/*SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
+							"userLogin", Context.MODE_PRIVATE);
+					Editor editor = sharedPreferences.edit();// 获取编辑器
+					editor.putString("checkCode", jsonObject.optString("checkCode"));
+					editor.putString("defaultCode", jsonObject.optString("defaultCode"));
+					editor.commit();*/
 
 				} catch (JSONException e) {
 					e.printStackTrace();

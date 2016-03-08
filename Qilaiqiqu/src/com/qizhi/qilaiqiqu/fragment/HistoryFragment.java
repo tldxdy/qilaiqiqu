@@ -15,20 +15,19 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.HistoryAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
+import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.ui.FooterListView;
 import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
 import com.qizhi.qilaiqiqu.ui.Refresh;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -37,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 public class HistoryFragment extends Fragment implements OnItemClickListener,OnRefreshListener,OnfreshListener{
 	private FooterListView historyList;
@@ -88,6 +86,14 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize",  "10");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+		/*String checkCode = preferences.getString("checkCode", null);
+		String defaultCode = preferences.getString("defaultCode", null);
+		System.out.println("-------------------------------");
+		System.out.println(checkCode + "---" + defaultCode);
+		System.out.println("-------------------------------");
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));
+*/
+		
 		xUtilsUtil.httpPost("mobile/activity/queryUserRelevantActivityStateActendList.html", params, new CallBackPost() {
 			
 			@Override
@@ -100,6 +106,11 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 					e.printStackTrace();
 				}
 				if (jsonObject.optBoolean("result")) {
+					/*Editor editor = preferences.edit();// 获取编辑器
+					editor.putString("checkCode", jsonObject.optString("checkCode"));
+					editor.putString("defaultCode", jsonObject.optString("defaultCode"));
+					editor.commit();*/
+					
 					pageIndex = jsonObject.optInt("pageIndex");
 					Gson gson = new Gson();
 					dataList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), new TypeToken<ArrayList<StartAndParticipantActivityModel>>(){}.getType());
@@ -155,6 +166,9 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize",  "10");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+		/*String checkCode = preferences.getString("checkCode", null);
+		String defaultCode = preferences.getString("defaultCode", null);
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));*/
 		xUtilsUtil.httpPost("mobile/activity/queryUserRelevantActivityStateActendList.html", params, new CallBackPost() {
 			
 			@Override
@@ -167,6 +181,10 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 					e.printStackTrace();
 				}
 				if (jsonObject.optBoolean("result")) {
+					/*Editor editor = preferences.edit();// 获取编辑器
+					editor.putString("checkCode", jsonObject.optString("checkCode"));
+					editor.putString("defaultCode", jsonObject.optString("defaultCode"));
+					editor.commit();*/
 					pageIndex = jsonObject.optInt("pageIndex");
 					int pageCount = jsonObject.optInt("pageCount");
 					Gson gson = new Gson();

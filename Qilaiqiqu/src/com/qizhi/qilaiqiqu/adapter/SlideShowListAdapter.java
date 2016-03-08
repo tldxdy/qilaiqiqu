@@ -1,6 +1,5 @@
 package com.qizhi.qilaiqiqu.adapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
@@ -10,7 +9,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,15 +23,11 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.PersonActivity;
-import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
-import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
-import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
-import com.squareup.picasso.Picasso;
 
 /**
  * 
@@ -179,12 +173,11 @@ public class SlideShowListAdapter extends BaseAdapter {
 			holder.likeTxt.setTextColor(0xffffffff);
 
 		}
-
 		holder.likeImg.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				Toasts.show(context, "点赞", 0);
+				
 				if (list.get(position).isPraised()) {
 					RequestParams params = new RequestParams();
 					params.addBodyParameter("userId",
@@ -211,8 +204,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 										list.get(position)
 												.setPraised(false);
 										list.get(position).setPraiseNum(
-												list.get(position)
-														.getPraiseNum() - 1);
+												jsonObject.optInt("data"));
 										notifyDataSetChanged();
 									}
 								}
@@ -220,7 +212,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 								@Override
 								public void onMyFailure(HttpException error,
 										String msg) {
-
+									
 								}
 							});
 				} else {
@@ -249,11 +241,8 @@ public class SlideShowListAdapter extends BaseAdapter {
 										if (jsonObject.optBoolean("result")) {
 											list.get(position).setPraised(
 													true);
-											list.get(position)
-													.setPraiseNum(
-															list.get(
-																	position)
-																	.getPraiseNum() + 1);
+											list.get(position).setPraiseNum(
+													jsonObject.optInt("data"));
 											notifyDataSetChanged();
 										}
 									}

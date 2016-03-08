@@ -24,6 +24,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.utils.DataCleanManager;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView.OnSwitchChangedListener;
@@ -247,6 +248,9 @@ public class SetActivity extends Activity implements OnClickListener {
 				sharedPreferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
+//		String checkCode = sharedPreferences.getString("checkCode", null);
+//		String defaultCode = sharedPreferences.getString("defaultCode", null);
+//		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));
 		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
 
 			@Override
@@ -266,10 +270,12 @@ public class SetActivity extends Activity implements OnClickListener {
 						editor.putString("imPassword", null);
 						editor.putString("imUserName", null);
 						editor.putString("mobilePhone", null);
+						/*editor.putString("checkCode", jsonObject.optString("checkCode"));
+						editor.putString("defaultCode", jsonObject.optString("defaultCode"));*/
 						editor.commit();
 						SetActivity.this.finish();
-						startActivity(new Intent(SetActivity.this,
-								LoginActivity.class));
+						/*startActivity(new Intent(SetActivity.this,
+								LoginActivity.class));*/
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +38,8 @@ import com.qizhi.qilaiqiqu.sqlite.DBManager;
 import com.qizhi.qilaiqiqu.ui.FooterListView;
 import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
 import com.qizhi.qilaiqiqu.ui.Refresh;
+import com.qizhi.qilaiqiqu.utils.PopupWindowUploading;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
@@ -63,6 +66,8 @@ public class RidingActivity extends Activity implements OnClickListener,
 	private XUtilsUtil xUtilsUtil;
 	private RidingModel ridingModel;
 	private SharedPreferences preferences;
+	
+	private PopupWindowUploading pUploading;
 	
 	private Refresh swipeLayout;
 	private View header;
@@ -102,8 +107,19 @@ public class RidingActivity extends Activity implements OnClickListener,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		ridingList.addHeaderView(header);
+		pUploading = new PopupWindowUploading(this);
 		
 		
+	}
+	private boolean f = true;
+	private Handler handler = new Handler();
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if(f){
+			f = false; 
+			pUploading.show(this.findViewById(R.id.layout_riding_top));
+		}
 	}
 
 	private void initEvent() {
@@ -155,7 +171,13 @@ public class RidingActivity extends Activity implements OnClickListener,
 	protected void onStart() {
 		rDraftModels = dbManager.queryAll();
 		isFirst = true;
-		httpRiding();
+		handler.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				httpRiding();
+			}
+		}, 500);
 		super.onStart();
 	}
 
@@ -174,6 +196,10 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
+		pUploading.dismiss();
+					
+					
+					
 		JSONObject jsonObject = null;
 		try {
 			jsonObject = new JSONObject(responseInfo.result);
@@ -207,6 +233,9 @@ public class RidingActivity extends Activity implements OnClickListener,
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
 		swipeLayout.setRefreshing(false);
+		ridingList.completeRefresh();
+		Toasts.show(this, msg, 0);
+		pUploading.dismiss();
 	}
 
 	@Override

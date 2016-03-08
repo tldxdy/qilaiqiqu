@@ -33,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -76,6 +77,7 @@ import com.qizhi.qilaiqiqu.fragment.RidingAndActivityFragmentPagerAdapter;
 import com.qizhi.qilaiqiqu.model.SearchResultModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel.SearchDataList;
 import com.qizhi.qilaiqiqu.receiver.EMReceiver;
+import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.SplashView;
@@ -92,7 +94,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		TextWatcher {
 
 	public static List<String> chatUserList;
-
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
 
@@ -143,7 +144,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private int pageIndex;
 
 	private NewMessageBroadcastReceiver receiver;
-
+	
 	private Handler handler = new Handler() {
 
 		@Override
@@ -228,8 +229,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		// 设置广播的优先级别大于Mainacitivity,这样如果消息来的时候正好在chat页面，直接显示消息，而不是提示消息未读
 		intentFilter.setPriority(3);
 		registerReceiver(receiver, intentFilter);
-		// 通知sdk，UI 已经初始化完毕，注册了相应的receiver和listener, 可以接受broadcast了
-		EMChat.getInstance().setAppInited();
 	}
 
 	public void setCurrent(int fragmentNum) {
@@ -477,6 +476,11 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		photoImg.setVisibility(View.VISIBLE);
 	}
 
+	/**
+	 * 
+	 * @param view
+	 */
+	private PopupWindow popupWindow;
 	private void showPopupWindow(View view) {
 
 		// 一个自定义的布局，作为显示的内容
@@ -492,8 +496,9 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
 
-		final PopupWindow popupWindow = new PopupWindow(mview,
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+		popupWindow = new PopupWindow(mview,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, false);
+		
 
 		popupWindow.setTouchable(true);
 
@@ -517,6 +522,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			@Override
 			public void onClick(View v) {
 				popupWindow.dismiss();
+				addImg.setVisibility(View.VISIBLE);
+				searchImg.setVisibility(View.VISIBLE);
 			}
 		});
 
@@ -538,6 +545,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 					// finish();
 				}
 				popupWindow.dismiss();
+				addImg.setVisibility(View.VISIBLE);
+				searchImg.setVisibility(View.VISIBLE);
 			}
 		});
 
@@ -558,6 +567,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 					// finish();
 				}
 				popupWindow.dismiss();
+				addImg.setVisibility(View.VISIBLE);
+				searchImg.setVisibility(View.VISIBLE);
 			}
 		});
 
@@ -570,7 +581,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 				popupWindow.dismiss();
 			}
 		});
-
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
 		popupWindow.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.corners_layout));
@@ -638,6 +648,10 @@ public class MainActivity extends HuanxinLogOutActivity implements
 				sharedPreferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
+		
+	/*	String checkCode = sharedPreferences.getString("checkCode", null);
+		String defaultCode = sharedPreferences.getString("defaultCode", null);
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));*/
 
 		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
 
@@ -657,6 +671,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 						editor.putString("userName", null);
 						editor.putString("imUserName", null);
 						editor.putString("mobilePhone", null);
+						/*editor.putString("checkCode", jsonObject.optString("checkCode"));
+						editor.putString("defaultCode", jsonObject.optString("defaultCode"));*/
 						editor.commit();
 
 						// 实例化Intent
@@ -701,7 +717,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
-
 			chatUserList.add(message.getFrom());
 
 			// 消息不是发给当前会话，return
@@ -912,6 +927,15 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
+		/*String checkCode = preferences.getString("checkCode", null);
+		String defaultCode = preferences.getString("defaultCode", null);
+		System.out.println("-------------------------------");
+		System.out.println(checkCode + "---" + defaultCode);
+		System.out.println("-------------------------------");
+		
+		
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));*/
+
 		xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html",
 				params, new CallBackPost() {
 
@@ -924,6 +948,15 @@ public class MainActivity extends HuanxinLogOutActivity implements
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
+							/*SharedPreferences sharedPreferences = getSharedPreferences(
+									"userLogin", Context.MODE_PRIVATE);
+							Editor editor = sharedPreferences.edit();// 获取编辑器
+							editor.putString("checkCode", jsonObject.optString("checkCode"));
+							editor.putString("defaultCode", jsonObject.optString("defaultCode"));
+							editor.commit();*/
+							
+							
+							
 							int num = jsonObject.optInt("data");
 							if (num == 0) {
 								// 系统统计数
@@ -1081,29 +1114,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			photoImg.setImageResource(R.drawable.user_default);
 			dotView.setVisibility(View.GONE);
 		}
-		/*
-		 * RequestParams params = new RequestParams("UTF-8");
-		 * params.addBodyParameter("userId", preferences.getInt("userId", -1) +
-		 * ""); xUtilsUtil.httpPost("common/queryCertainUser.html", params, new
-		 * CallBackPost() {
-		 * 
-		 * @Override public void onMySuccess(ResponseInfo<String> responseInfo)
-		 * { String s = responseInfo.result; JSONObject jsonObject = null; try {
-		 * jsonObject = new JSONObject(s); } catch (JSONException e) {
-		 * e.printStackTrace(); } if (jsonObject.optBoolean("result")) {
-		 * JSONObject json = jsonObject.optJSONObject("data");
-		 * Picasso.with(MainActivity.this) .load(SystemUtil.IMGPHTH +
-		 * json.optString("userImage")) .into(photoImg);
-		 * 
-		 * SystemUtil.loadImagexutils( json.optString("userImage"), photoImg,
-		 * MainActivity.this);
-		 * 
-		 * } else { photoImg.setImageResource(R.drawable.homepage_picture); } }
-		 * 
-		 * @Override public void onMyFailure(HttpException error, String msg) {
-		 * 
-		 * } });
-		 */
+
 	}
 
 	/**
@@ -1112,6 +1123,18 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if(addImg.getVisibility() == 8){
+				addImg.setVisibility(View.VISIBLE);
+				searchImg.setVisibility(View.VISIBLE);
+			}
+			if(popupWindow != null){
+				popupWindow.dismiss();
+				popupWindow = null;
+				
+				return false;
+			}
+			
+			
 			exitBy2Click(); // 调用双击退出函数
 		}
 		return false;

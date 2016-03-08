@@ -8,6 +8,30 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest;
+import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.MainActivity;
+import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
+import com.qizhi.qilaiqiqu.model.ArticleModel;
+import com.qizhi.qilaiqiqu.model.CarouselModel;
+import com.qizhi.qilaiqiqu.ui.FooterListView;
+import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
+import com.qizhi.qilaiqiqu.ui.Refresh;
+import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.squareup.picasso.Picasso;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -20,33 +44,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
-import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.activity.MainActivity;
-import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
-import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
-import com.qizhi.qilaiqiqu.model.ArticleModel;
-import com.qizhi.qilaiqiqu.model.CarouselModel;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.Refresh;
-import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
-import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.Toasts;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
-import com.squareup.picasso.Picasso;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class RidingFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnfreshListener{
 	
@@ -78,10 +77,10 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
-		
+		swipeLayout.setOnRefreshListener(this);
+		manageList.setOnfreshListener(this);
 		imageUrl();
 		return view;
-		
 		
 	}
 	private void initViewHeader() {
@@ -192,7 +191,8 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-
+						swipeLayout.setRefreshing(false);
+						manageList.completeRefresh();
 					}
 
 					@Override
@@ -205,6 +205,8 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 							MainActivity.splashView.splashAndDisappear();
 							MainActivity.loginFlag = 0;
 						}
+						swipeLayout.setRefreshing(false);
+						manageList.completeRefresh();
 					}
 				});
 	}
@@ -256,6 +258,8 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 			}
 			// 更新UI
 			adapter.notifyDataSetChanged();
+			swipeLayout.setRefreshing(false);
+			manageList.completeRefresh();
 			//manageList.finishRefreshing();
 		}
 	}
@@ -265,6 +269,8 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 			MainActivity.splashView.splashAndDisappear();
 			MainActivity.loginFlag = 0;
 		}
+		swipeLayout.setRefreshing(false);
+		manageList.completeRefresh();
 	}
 /*	@Override
 	public void onRefresh() {
@@ -358,8 +364,13 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 
 			@Override
 			public void run() {
+				
 				pageIndex = 1;
-				dataJ();
+				if(IClist == null){
+					imageUrl();
+				}else{
+					dataJ();
+				}
 				// 更新数据
 				// 更新完后调用该方法结束刷新
 				

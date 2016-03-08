@@ -50,6 +50,7 @@ import com.qizhi.qilaiqiqu.model.ArticleMemoDetailModel;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.service.PhotoUploadingService;
+import com.qizhi.qilaiqiqu.utils.PopupWindowUploading;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -135,6 +136,8 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private List<String> imgListUrl;
 	
 	private List<ActivityListRecommendModel> recommendList;
+	
+	private PopupWindowUploading pUploading;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -178,12 +181,17 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		initEvent();
 
 	}
+	private boolean f = true;
 
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
 		if (hasFocus) {
 			if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
 				showJPush(jpushFlag);
+			}
+			if(f){
+				f = false; 
+				pUploading.show(this.findViewById(R.id.layout_riding_top));
 			}
 		}
 	}
@@ -194,6 +202,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		aDetailModel = new ArticleMemoDetailModel();
 		list = new ArrayList<ArticleModel>();
 		articleModel = new ArticleModel();
+		pUploading = new PopupWindowUploading(this);
 
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
@@ -443,8 +452,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 								}
 							}, 1000);
 							likeImg.setImageResource(R.drawable.like_chosen);
-							articleModel.setPraiseNum(articleModel
-									.getPraiseNum() + 1);
+							articleModel.setPraiseNum(jsonObject.optInt("data"));
 							likeTxt.setText(articleModel.getPraiseNum()
 									+ articleModel.getVirtualPraise() + "");
 						} else {
@@ -486,8 +494,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 						if (jsonObject.optBoolean("result")) {
 							cllectionLike = 1;
 							likeImg.setImageResource(R.drawable.like_unchosen);
-							articleModel.setPraiseNum(articleModel
-									.getPraiseNum() - 1);
+							articleModel.setPraiseNum(jsonObject.optInt("data"));
 							likeTxt.setText(articleModel.getPraiseNum()
 									+ articleModel.getVirtualPraise() + "");
 
@@ -818,7 +825,15 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onStart() {
 		if (!ReleaseActivityfalg) {
-			uoloadData();
+			handler.postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					uoloadData();
+				}
+			}, 500);
+		}else{
+			pUploading.dismiss();
 		}
 		super.onStart();
 	}
@@ -835,6 +850,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						pUploading.dismiss();
 						String s = responseInfo.result;
 						JSONObject jsonObject = null;
 						try {
@@ -879,7 +895,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-
+						pUploading.dismiss();
 					}
 				});
 	}

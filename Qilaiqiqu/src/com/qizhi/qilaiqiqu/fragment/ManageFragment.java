@@ -16,6 +16,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
+import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.ui.FooterListView;
 import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
 import com.qizhi.qilaiqiqu.ui.Refresh;
@@ -28,6 +29,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -94,6 +96,12 @@ public class ManageFragment extends Fragment  implements OnItemClickListener,Cal
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize",  "10");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+		/*String checkCode = preferences.getString("checkCode", null);
+		String defaultCode = preferences.getString("defaultCode", null);
+		System.out.println("-------------------------------");
+		System.out.println(checkCode + "---" + defaultCode);
+		System.out.println("-------------------------------");
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));*/
 		xUtilsUtil.httpPost("mobile/activity/queryUserRelevantActivityStateUnderwayList.html", params, this);
 	}
 	
@@ -107,6 +115,10 @@ public class ManageFragment extends Fragment  implements OnItemClickListener,Cal
 			e.printStackTrace();
 		}
 		if (jsonObject.optBoolean("result")) {
+			/*Editor editor = preferences.edit();// 获取编辑器
+			editor.putString("checkCode", jsonObject.optString("checkCode"));
+			editor.putString("defaultCode", jsonObject.optString("defaultCode"));
+			editor.commit();*/
 			pageIndex = jsonObject.optInt("pageIndex");
 			Gson gson = new Gson();
 			dataList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), new TypeToken<ArrayList<StartAndParticipantActivityModel>>(){}.getType());
@@ -164,6 +176,9 @@ public class ManageFragment extends Fragment  implements OnItemClickListener,Cal
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize",  "10");
 		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+		/*String checkCode = preferences.getString("checkCode", null);
+		String defaultCode = preferences.getString("defaultCode", null);
+		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));*/
 		xUtilsUtil.httpPost("mobile/activity/queryUserRelevantActivityStateUnderwayList.html", params, new CallBackPost() {
 			
 			@Override
@@ -176,6 +191,10 @@ public class ManageFragment extends Fragment  implements OnItemClickListener,Cal
 					e.printStackTrace();
 				}
 				if (jsonObject.optBoolean("result")) {
+					Editor editor = preferences.edit();// 获取编辑器
+					editor.putString("checkCode", jsonObject.optString("checkCode"));
+					editor.putString("defaultCode", jsonObject.optString("defaultCode"));
+					editor.commit();
 					pageIndex = jsonObject.optInt("pageIndex");
 					int pageCount = jsonObject.optInt("pageCount");
 					Gson gson = new Gson();

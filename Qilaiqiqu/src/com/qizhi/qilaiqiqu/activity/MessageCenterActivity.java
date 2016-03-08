@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -19,6 +20,7 @@ public class MessageCenterActivity extends FragmentActivity implements OnClickLi
 	private TextView titleTxt;
 	
 	private ViewPager viewPager;
+	private int several;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,8 @@ public class MessageCenterActivity extends FragmentActivity implements OnClickLi
 		manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
 		historyTxt.setTextColor(0xff6dbfed);
 		historyTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
-		viewPager.setCurrentItem(0);
+		several = 0;
+		viewPager.setCurrentItem(several);
 		
 		
 	}
@@ -57,12 +60,14 @@ public class MessageCenterActivity extends FragmentActivity implements OnClickLi
 			public void onPageSelected(int arg0) {
 				switch (arg0) {
 				case 0:
+					several = 0;
 					manageTxt.setTextColor(0xffffffff);
 					manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
 					historyTxt.setTextColor(0xff6dbfed);
 					historyTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
 					break;
 				case 1:
+					several = 1;
 					historyTxt.setTextColor(0xffffffff);
 					historyTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_press);
 					manageTxt.setTextColor(0xff6dbfed);
@@ -71,6 +76,7 @@ public class MessageCenterActivity extends FragmentActivity implements OnClickLi
 					
 				}
 			}
+			
 			
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -89,23 +95,57 @@ public class MessageCenterActivity extends FragmentActivity implements OnClickLi
 		historyTxt.setOnClickListener(this);
 		backLayout.setOnClickListener(this);
 	}
+	
+	
+	private float mDownX;
+	//private int mDownY;
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		if(several == 0){
+			return super.dispatchTouchEvent(ev);
+		}
+		switch (ev.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			mDownX =  ev.getX();
+			break;
+		case MotionEvent.ACTION_MOVE:
+			if((ev.getX() - mDownX) < 0){
+				return false;
+			}
+			
+			break;
+		case MotionEvent.ACTION_UP:
+		case MotionEvent.ACTION_CANCEL:
+
+			break;
+
+		default:
+			break;
+		}
+		
+		
+		
+		return super.dispatchTouchEvent(ev);
+	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.txt_actioncenteractivity_manage:
+			several = 0;
 			manageTxt.setTextColor(0xffffffff);
 			manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
 			historyTxt.setTextColor(0xff6dbfed);
 			historyTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_upspring);
-			viewPager.setCurrentItem(0);
+			viewPager.setCurrentItem(several);
 			break;
 		case R.id.txt_actioncenteractivity_history:
+			several = 1;
 			historyTxt.setTextColor(0xffffffff);
 			historyTxt.setBackgroundResource(R.drawable.corners_fragment_history_right_press);
 			manageTxt.setTextColor(0xff6dbfed);
 			manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_upspring);
-			viewPager.setCurrentItem(1);
+			viewPager.setCurrentItem(several);
 			break;
 		case R.id.layout_actioncenteractivity_back:
 			finish();

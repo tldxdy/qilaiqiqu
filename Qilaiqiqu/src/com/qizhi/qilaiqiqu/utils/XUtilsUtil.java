@@ -15,7 +15,7 @@ public class XUtilsUtil {
 			final CallBackPost back) {
 
 		HttpUtils http = new HttpUtils();
-		http.send(HttpRequest.HttpMethod.POST, URL + url, params,
+		http.send(HttpRequest.HttpMethod.POST, URL + url + "?authCode=admin", params,
 				new RequestCallBack<String>() {
 
 					@Override
@@ -49,7 +49,7 @@ public class XUtilsUtil {
 
 	public void httpGet(String url, final CallBackGet back) {
 		HttpUtils http = new HttpUtils();
-		http.send(HttpRequest.HttpMethod.GET, url,
+		http.send(HttpRequest.HttpMethod.GET, url + "?authCode=admin",
 				new RequestCallBack<String>() {
 					@Override
 					public void onStart() {

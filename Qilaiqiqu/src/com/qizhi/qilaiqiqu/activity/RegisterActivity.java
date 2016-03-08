@@ -351,14 +351,18 @@ public class RegisterActivity extends Activity implements OnClickListener,
 								editor.putInt("userId", userLogin.getUserId());
 								editor.putString("uniqueKey",
 										userLogin.getUniqueKey());
-								editor.putString("imUserName",
-										userLogin.getImUserName());
+								editor.putString("userName",
+										userLogin.getUserName());
 								editor.putString("imPassword",
 										userLogin.getImPassword());
 								editor.putString("mobilePhone",
 										userLogin.getMobilePhone());
 								editor.putString("riderId",
 										userLogin.getRiderId());
+								editor.putString("imUserName",
+										userLogin.getImUserName());
+								editor.putString("userImage",
+										userLogin.getUserImage());
 								editor.putInt("loginFlag", 1);
 								editor.commit();
 
