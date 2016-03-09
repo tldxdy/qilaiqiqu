@@ -5,7 +5,7 @@
     android:versionName="1.0.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="18"
         android:targetSdkVersion="22" />
 
     <uses-permission android:name="com.qizhi.qilaiqiqu.permission.JPUSH_MESSAGE" />
@@ -356,11 +356,13 @@
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.ChatActivity" >
         </activity>
- 		<activity android:name="com.qizhi.qilaiqiqu.activity.GroupActivity" >
+        <activity android:name="com.qizhi.qilaiqiqu.activity.GroupActivity" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.ActivityDiscussActivity" >
         </activity>
-        
+        <activity android:name="com.qizhi.qilaiqiqu.activity.ChatSingleActivity" >
+        </activity>
+
         <receiver android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" >
             <intent-filter>
                 <action android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" />
