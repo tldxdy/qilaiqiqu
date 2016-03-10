@@ -1,23 +1,51 @@
 package com.qizhi.qilaiqiqu.utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.WalkPath;
 import com.amap.api.services.route.WalkStep;
 
+/**
+ * 步行路线图层类。在高德地图API里，如果要显示步行路线规划，可以用此类来创建步行路线图层。如不满足需求，也可以自己创建自定义的步行路线图层。
+ * 
+ * @since V2.1.0
+ */
 public class WalkRouteOverlayUtil extends RouteOverlay {
 	private WalkPath walkPath;
-	private List<Polyline> paths;
 
+	/**
+	 * 通过此构造函数创建步行路线图层。
+	 * 
+	 * @param context
+	 *            当前activity。
+	 * @param amap
+	 *            地图对象。
+	 * @param path
+	 *            步行路线规划的一个方案。详见搜索服务模块的路径查询包（com.amap.api.services.route）中的类
+	 *            <strong><a href=
+	 *            "../../../../../../Search/com/amap/api/services/route/WalkStep.html"
+	 *            title="com.amap.api.services.route中的类">WalkStep</a></strong>。
+	 * @param start
+	 *            起点。详见搜索服务模块的核心基础包（com.amap.api.services.core）中的类<strong><a
+	 *            href=
+	 *            "../../../../../../Search/com/amap/api/services/core/LatLonPoint.html"
+	 *            title
+	 *            ="com.amap.api.services.core中的类">LatLonPoint</a></strong>。
+	 * @param end
+	 *            终点。详见搜索服务模块的核心基础包（com.amap.api.services.core）中的类<strong><a
+	 *            href=
+	 *            "../../../../../../Search/com/amap/api/services/core/LatLonPoint.html"
+	 *            title
+	 *            ="com.amap.api.services.core中的类">LatLonPoint</a></strong>。
+	 * @since V2.1.0
+	 */
 	public WalkRouteOverlayUtil(Context context, AMap amap, WalkPath path,
 			LatLonPoint start, LatLonPoint end) {
 		super(context);
@@ -25,86 +53,101 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 		this.walkPath = path;
 		startPoint = AMapServicesUtil.convertToLatLng(start);
 		endPoint = AMapServicesUtil.convertToLatLng(end);
+		System.out.println("WalkRouteOverlayUtil!!!!!!!!!!!!!!");
 	}
 
+	/**
+	 * 添加步行路线到地图中。
+	 * 
+	 * @since V2.1.0
+	 */
 	public void addToMap() {
-		List<WalkStep> walkPaths = walkPath.getSteps();
-		for (int i = 0; i < walkPaths.size(); i++) {
-			WalkStep walkStep = walkPaths.get(i);
-			LatLng latLng = AMapServicesUtil.convertToLatLng(walkStep
-					.getPolyline().get(0));
-			if (i < walkPaths.size() - 1) {
-				if (i == 0) {
-					Polyline startLine = mAMap
-							.addPolyline(new PolylineOptions()
-									.add(startPoint, latLng)
-									.color(getWalkColor())
-									.width(getBuslineWidth()));// 把起始点和第�?��步行的起点连接起�?
-					startLine.setColor(getWalkColor());
-					allPolyLines.add(startLine);
+		try {
+			List<WalkStep> walkPaths = walkPath.getSteps();
+			for (int i = 0; i < walkPaths.size(); i++) {
+				WalkStep walkStep = walkPaths.get(i);
+				LatLng latLng = AMapServicesUtil.convertToLatLng(walkStep
+						.getPolyline().get(0));
+				if (i < walkPaths.size() - 1) {
+					if (i == 0) {
+						addWalkPolyLine(startPoint, latLng);
+					}
+					checkDistanceToNextStep(walkStep, walkPaths.get(i + 1));
+				} else {
+					LatLng latLng1 = AMapServicesUtil
+							.convertToLatLng(getLastWalkPoint(walkStep));
+					addWalkPolyLine(latLng1, endPoint);
 				}
-				LatLng latLngEnd = AMapServicesUtil.convertToLatLng(walkStep
-						.getPolyline().get(walkStep.getPolyline().size() - 1));
-				LatLng latLngStart = AMapServicesUtil.convertToLatLng(walkPaths
-						.get(i + 1).getPolyline().get(0));
-				if (!(latLngEnd.equals(latLngStart))) {
-					Polyline breakLine = mAMap
-							.addPolyline(new PolylineOptions()
-									.add(latLngEnd, latLngStart)
-									.color(getWalkColor())
-									.width(getBuslineWidth()));// 把前�?��步行段的终点和后�?��步行段的起点连接起来
-					allPolyLines.add(breakLine);
-				}
-			} else {
-				LatLng latLng1 = AMapServicesUtil.convertToLatLng(walkStep
-						.getPolyline().get(walkStep.getPolyline().size() - 1));
-				Polyline endLine = mAMap.addPolyline(new PolylineOptions()
-						.add(latLng1, endPoint).color(getWalkColor())
-						.width(getBuslineWidth()));// 把最终点和最后一个步行的终点连接起来
-				endLine.setColor(getWalkColor());
-				allPolyLines.add(endLine);
+
+				// addWalkStationMarkers(walkStep, latLng);
+				addWalkPolyLines(walkStep);
+				System.out.println("addWalkPolyLines(walkStep)!!!!!!!!!!!!!!");
 			}
-
-			// Marker walkMarker = mAMap.addMarker(new MarkerOptions()
-			// .position(latLng)
-			// .title("\u65B9\u5411:" + walkStep.getAction()
-			// + "\n\u9053\u8DEF:" + walkStep.getRoad())
-			// .snippet(walkStep.getInstruction()).anchor(0.5f, 0.5f));
-			// stationMarkers.add(walkMarker);
-
-			paths = new ArrayList<Polyline>();
-
-			Polyline walkLine = mAMap.addPolyline(new PolylineOptions()
-					.addAll(AMapServicesUtil.convertArrList(walkStep
-							.getPolyline())).color(getWalkColor())
-					.width(getBuslineWidth()));
-
-			walkLine.setColor(getWalkColor());
-			paths.add(walkLine);
-			allPolyLines.add(walkLine);
-			
-			ll.add(allPolyLines);
-			System.out.println("paths:"+paths.size());
-			System.out.println("allPolyLines:"+allPolyLines.size());
-			System.out.println(ll.size());
-			
-			
-			
-			hashMap.put("line", allPolyLines);
-			
-			linesMaps.add(hashMap);
+			// addStartAndEndMarker();
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		// addStartAndEndMarker();
 	}
 
-	public void removeLine() {
-		// paths.remove(paths.size()-1);
-		// allPolyLines.remove(allPolyLines.size()-1);
-		removeFromMap();
+	/**
+	 * 检查这一步的最后一点和下一步的起始点之间是否存在空隙
+	 * 
+	 * @param driveStep
+	 * @param driveStep1
+	 */
+	private void checkDistanceToNextStep(WalkStep walkStep, WalkStep walkStep1) {
+		LatLonPoint lastPoint = getLastWalkPoint(walkStep);
+		LatLonPoint nextFirstPoint = getFirstWalkPoint(walkStep1);
+		if (!(lastPoint.equals(nextFirstPoint))) {
+			addWalkPolyLine(lastPoint, nextFirstPoint);
+		}
 	}
 
-	protected float getBuslineWidth() {
-		return 30;
+	/**
+	 * @param walkStep
+	 * @return
+	 */
+	private LatLonPoint getLastWalkPoint(WalkStep walkStep) {
+		return walkStep.getPolyline().get(walkStep.getPolyline().size() - 1);
 	}
 
+	/**
+	 * @param walkStep
+	 * @return
+	 */
+	private LatLonPoint getFirstWalkPoint(WalkStep walkStep) {
+		return walkStep.getPolyline().get(0);
+	}
+
+	private void addWalkPolyLine(LatLonPoint pointFrom, LatLonPoint pointTo) {
+		addWalkPolyLine(AMapServicesUtil.convertToLatLng(pointFrom),
+				AMapServicesUtil.convertToLatLng(pointTo));
+	}
+
+	private void addWalkPolyLine(LatLng latLngFrom, LatLng latLngTo) {
+		addPolyLine(new PolylineOptions().add(latLngFrom, latLngTo)
+				.color(getWalkColor()).width(getRouteWidth()));
+	}
+
+	/**
+	 * @param walkStep
+	 */
+	private void addWalkPolyLines(WalkStep walkStep) {
+		addPolyLine(new PolylineOptions()
+				.addAll(AMapServicesUtil.convertArrList(walkStep.getPolyline()))
+				.color(getWalkColor()).width(getRouteWidth()));
+	}
+
+	/**
+	 * @param walkStep
+	 * @param position
+	 */
+	private void addWalkStationMarkers(WalkStep walkStep, LatLng position) {
+		addStationMarker(new MarkerOptions()
+				.position(position)
+				.title("\u65B9\u5411:" + walkStep.getAction()
+						+ "\n\u9053\u8DEF:" + walkStep.getRoad())
+				.snippet(walkStep.getInstruction()).visible(nodeIconVisible)
+				.anchor(0.5f, 0.5f));
+	}
 }

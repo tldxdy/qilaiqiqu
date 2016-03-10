@@ -12,12 +12,6 @@ import android.os.Message;
 import android.view.Window;
 import cn.jpush.android.api.JPushInterface;
 
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMChatOptions;
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chat.OnMessageNotifyListener;
-import com.easemob.chat.OnNotificationClickListener;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -66,7 +60,7 @@ public class StartActivity extends Activity {
 	}
 
 	/**
-	 * @param 5秒启动handle
+	 * @param 3秒启动handle
 	 */
 	private void startTime() {
 		timer = new Timer();

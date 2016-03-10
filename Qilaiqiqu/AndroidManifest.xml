@@ -235,6 +235,7 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
         </activity>
         <activity
@@ -362,7 +363,8 @@
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.ChatSingleActivity" >
         </activity>
-
+ 		<activity android:name="com.qizhi.qilaiqiqu.activity.ShowLineActivity" >
+        </activity>
         <receiver android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" >
             <intent-filter>
                 <action android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" />

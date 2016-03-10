@@ -20,7 +20,7 @@
     <string name="button_loginactivity_login">登录</string>
     <string name="text_loginactivity_forget">忘记密码?</string>
     <string name="button_loginactivity_register">手机号注册</string>
-    <string name="button_loginactivity_visitor">游客身份浏览</string>
+    <string name="button_loginactivity_visitor">返回</string>
     <string name="back">返回</string>
     <string name="button_send">发送</string>
     <string name="move_up_to_cancel">手指上滑，取消发送</string>

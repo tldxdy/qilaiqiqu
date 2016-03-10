@@ -47,7 +47,6 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.util.VoiceRecorder;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.model.CertainUserModel;
 import com.qizhi.qilaiqiqu.utils.CommonUtils;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.VoicePlayClickListener;
@@ -95,8 +94,6 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 
 	protected MyChatAdapter adapter = null;
 
-	private CertainUserModel certainUserModel;
-
 	private String username;
 
 	String chat;
@@ -130,6 +127,9 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 			micImage.setImageDrawable(micImages[msg.what]);
 		}
 	};
+	private String otherUserName;
+	private String otherUserImage;
+	private Integer otherUserId;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -154,11 +154,14 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 		// isGroup = false;
 		// }
 
-		certainUserModel = (CertainUserModel) getIntent().getSerializableExtra(
-				"certainUserModel");
 		// 获取到与聊天人的会话对象。参数username为聊天人的userid或者groupid，后文中的username皆是如此
-		username = certainUserModel.getImUserName();
-
+		
+		username = getIntent().getStringExtra("username");
+		otherUserName = getIntent().getStringExtra("otherUserName");
+		otherUserImage = getIntent().getStringExtra("otherUserImage");
+		otherUserId = getIntent().getIntExtra("otherUserId", -1);
+		
+		
 		new SystemUtil().makeToast(ChatSingleActivity.this, username);
 
 		conversation = EMChatManager.getInstance().getConversation(username);
@@ -203,7 +206,7 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 
 		adapter = new MyChatAdapter(this, chatList, layout, from, to);
 
-		txtTitle.setText(certainUserModel.getUserName());
+		txtTitle.setText(otherUserName);
 
 		imgVoice.setOnClickListener(new OnClickListener() {
 
@@ -257,7 +260,7 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 				TextMessageBody txtBody = new TextMessageBody((edtContent
 						.getText() + "").toString());
 				// 拓展中的User ID 如果是群组,则为对应的群组ID
-				messageTXT.setAttribute("IMUserIdentifierExpand",
+				messageTXT.setAttribute("ConversationMyUserIdentifier",
 						preferences.getString("userId", null));
 				// 拓展中的用户头像
 				messageTXT.setAttribute("IMUserImageExpand",
@@ -267,13 +270,13 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 						preferences.getString("userName", null));
 				// 拓展中的对方用户头像
 				messageTXT.setAttribute("conversationOtherUserNameExpand",
-						certainUserModel.getUserName());
+						otherUserName);
 				// 拓展中的对方用户名
 				messageTXT.setAttribute("conversationOtherUserImageExpand",
-						certainUserModel.getUserImage());
+						otherUserImage);
 				// 拓展中的对方用户ID
 				messageTXT.setAttribute("ConversationOtherUserIdentifier",
-						certainUserModel.getUserId());
+						otherUserId);
 
 				// IMConversationUserImageExpand
 				// IMConversationUserNameExpand 群组名称 私聊
@@ -722,8 +725,8 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 							new File(stringArrayListExtra.get(i)));
 
 					// 拓展中的User ID 如果是群组,则为对应的群组ID
-					messageIMAGE.setAttribute("IMUserIdentifierExpand",
-							username);
+					messageIMAGE.setAttribute("ConversationMyUserIdentifier",
+							preferences.getString("userId", null));
 					// 拓展中的用户头像
 					messageIMAGE.setAttribute("IMUserImageExpand",
 							preferences.getString("userImage", null));
@@ -733,15 +736,15 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 					// 拓展中的对方用户头像
 					messageIMAGE.setAttribute(
 							"conversationOtherUserNameExpand",
-							certainUserModel.getUserName());
+							otherUserName);
 					// 拓展中的对方用户名
 					messageIMAGE.setAttribute(
 							"conversationOtherUserImageExpand",
-							certainUserModel.getUserImage());
+							otherUserImage);
 					// 拓展中的对方用户ID
 					messageIMAGE.setAttribute(
 							"ConversationOtherUserIdentifier",
-							certainUserModel.getUserId());
+							otherUserId);
 
 					// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
 					// body.setSendOriginalImage(true);
@@ -907,7 +910,7 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 				messageVOICE.setReceipt(username);
 
 			// 拓展中的User ID 如果是群组,则为对应的群组ID
-			messageVOICE.setAttribute("IMUserIdentifierExpand", username);
+			messageVOICE.setAttribute("ConversationMyUserIdentifier", preferences.getString("userId", null));
 			// 拓展中的用户头像
 			messageVOICE.setAttribute("IMUserImageExpand",
 					preferences.getString("userImage", null));
@@ -916,13 +919,13 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 					preferences.getString("userName", null));
 			// 拓展中的对方用户头像
 			messageVOICE.setAttribute("conversationOtherUserNameExpand",
-					certainUserModel.getUserName());
+					otherUserName);
 			// 拓展中的对方用户名
 			messageVOICE.setAttribute("conversationOtherUserImageExpand",
-					certainUserModel.getUserImage());
+					otherUserImage);
 			// 拓展中的对方用户ID
 			messageVOICE.setAttribute("ConversationOtherUserIdentifier",
-					certainUserModel.getUserId());
+					otherUserId);
 
 			int len = Integer.parseInt(length);
 			final VoiceMessageBody body = new VoiceMessageBody(new File(

@@ -142,8 +142,11 @@ public class PersonActivity extends Activity implements OnClickListener,
 				startActivity(new Intent(this, LoginActivity.class));
 				break;
 			}
-			startActivity(new Intent(this, ChatSingleActivity.class).putExtra(
-					"certainUserModel", certainUserModel));
+			startActivity(new Intent(this, ChatSingleActivity.class)
+					.putExtra("username", certainUserModel.getImUserName())
+					.putExtra("otherUserName", certainUserModel.getUserName())
+					.putExtra("otherUserImage", certainUserModel.getUserImage())
+					.putExtra("otherUserId", certainUserModel.getUserId()));
 			break;
 
 		default:

@@ -148,6 +148,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/layout_activityDetails_chatSingle"
                         android:layout_width="60dp"
                         android:layout_height="fill_parent"
                         android:background="#E6E6E6"
@@ -399,6 +400,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/layout_activityDetails_seeLine"
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_marginLeft="50dp"

@@ -88,6 +88,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private void initView() {
 		httpUtils = new XUtilsUtil();
+		registrationID = JPushInterface.getRegistrationID(LoginActivity.this);
+		System.out.println("registrationID:"+registrationID);
+		
 		fogetTxt = (TextView) findViewById(R.id.txt_loginActivity_forget);
 
 		loginBtn = (Button) findViewById(R.id.btn_loginActivity_login);
@@ -110,7 +113,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onComplete(Object value) {
-				// TODO Auto-generated method stub
 
 				System.out.println("有数据返回..");
 				if (value == null) {
@@ -118,15 +120,13 @@ public class LoginActivity extends Activity implements OnClickListener {
 				}
 
 				try {
-					JSONObject jo = (JSONObject) value;
+					final JSONObject jo = (JSONObject) value;
 
 					int ret = jo.getInt("ret");
 
 					System.out.println("json=" + String.valueOf(jo));
-					if (ret == 0) {
-						Toast.makeText(LoginActivity.this, "登录成功",
-								Toast.LENGTH_LONG).show();
 
+					if (ret == 0) {
 						String openID = jo.getString("openid");
 						String accessToken = jo.getString("access_token");
 						String expires = jo.getString("expires_in");
@@ -148,7 +148,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 								JSONObject re = (JSONObject) response;
 								System.out.println("response="
 										+ String.valueOf(response));
-								sendTencentCode(response);
+
+								sendTencentCode(re, jo);
 							}
 
 							@Override
@@ -159,7 +160,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
 				}
 
 			}
@@ -194,9 +194,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 			break;
 
 		case R.id.btn_loginActivity_visitor:
-			// new SystemUtil().makeToast(this, "游客模式");
-			// startActivity(new Intent(LoginActivity.this,
-			// MainActivity.class).putExtra("loginFlag", 2));
 			finish();
 			break;
 
@@ -221,7 +218,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 			req.scope = "snsapi_userinfo";
 			req.state = "qilaiqiqu";
 			api.sendReq(req);
-			LoginActivity.this.finish();
 			break;
 
 		case R.id.img_loginactivity_weibo:
@@ -229,16 +225,75 @@ public class LoginActivity extends Activity implements OnClickListener {
 			break;
 		}
 	}
-	
-	private void sendTencentCode(Object response){
-		
+
+	private void sendTencentCode(JSONObject re, JSONObject jo) {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addQueryStringParameter("pushToken", registrationID);
+		params.addQueryStringParameter("adviceType", "ANDROID");
+		params.addQueryStringParameter("openId", jo.optString("openid"));
+		params.addQueryStringParameter("accessToken",
+				jo.optString("access_token"));
+		params.addQueryStringParameter("nickname", re.optString("nickname"));
+		params.addQueryStringParameter("gender", re.optString("gender"));
+		params.addQueryStringParameter("avatarURL50",
+				re.optString("figureurl_1"));
+		params.addQueryStringParameter("avatarURL100",
+				re.optString("figureurl_2"));
+		httpUtils.httpPost("common/qqLogin.html", params, new CallBackPost() {
+
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				String result = responseInfo.result;
+				try {
+					JSONObject jsonObject = new JSONObject(result);
+					if (jsonObject.getBoolean("result")) {
+						JSONObject data = jsonObject.getJSONObject("data");
+
+						/**
+						 * SharedPreferences存储用户Id和uniqueKey
+						 */
+						SharedPreferences sharedPreferences = getSharedPreferences(
+								"userLogin", Context.MODE_PRIVATE);
+						Editor editor = sharedPreferences.edit();// 获取编辑器
+						editor.putString("imId", data.optString("imId"));
+						editor.putString("mobilePhone",
+								data.optString("mobilePhone"));
+						editor.putString("imPassword",
+								data.optString("imPassword"));
+						editor.putInt("userId", data.optInt("userId"));
+						editor.putString("userImage",
+								data.optString("userImage"));
+						editor.putString("userName", data.optString("userName"));
+						editor.putString("imUserName",
+								data.optString("imUserName"));
+						editor.putString("uniqueKey",
+								data.optString("uniqueKey"));
+						editor.putInt("loginFlag", 1);
+						editor.commit();
+						Toast.makeText(LoginActivity.this, "登录成功",
+								Toast.LENGTH_LONG).show();
+						LoginActivity.this.finish();
+
+					} else {
+
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+			}
+
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				System.out.println("QQLogin失败:" + msg + ":" + error);
+			}
+
+		});
+
 	}
-	
 
 	private void login() {
 		RequestParams params = new RequestParams("UTF-8");
-		String registrationID = JPushInterface
-				.getRegistrationID(LoginActivity.this);
 
 		params.addQueryStringParameter("mobilePhone", usernameEdt.getText()
 				.toString());
@@ -286,6 +341,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 										"userLogin", Context.MODE_PRIVATE);
 								Editor editor = sharedPreferences.edit();// 获取编辑器
 								editor.putInt("userId", userLogin.getUserId());
+								editor.putString("imId", userLogin.getImId());
 								editor.putString("uniqueKey",
 										userLogin.getUniqueKey());
 								editor.putString("userName",
@@ -300,14 +356,15 @@ public class LoginActivity extends Activity implements OnClickListener {
 										userLogin.getMobilePhone());
 								editor.putString("riderId",
 										userLogin.getRiderId());
-								
-								
+
 								editor.putInt("loginFlag", 1);
 								editor.commit();
 
 								LoginActivity.this.finish();
-								/*startActivity(new Intent(LoginActivity.this,
-										MainActivity.class));*/
+								/*
+								 * startActivity(new Intent(LoginActivity.this,
+								 * MainActivity.class));
+								 */
 
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -367,41 +424,34 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-/*
+
+	/*
 	*//**
 	 * 菜单、返回键响应
-	 *//*
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			exitBy2Click(); // 调用双击退出函数
-		}
-		return false;
-	}*/
+	 */
+	/*
+	 * @Override public boolean onKeyDown(int keyCode, KeyEvent event) { if
+	 * (keyCode == KeyEvent.KEYCODE_BACK) { exitBy2Click(); // 调用双击退出函数 } return
+	 * false; }
+	 */
 
 	/**
 	 * 双击退出函数
 	 */
 	private static Boolean isExit = false;
 	private Tencent mTencent;
+	private String registrationID;
 
-/*	private void exitBy2Click() {
-		Timer tExit = null;
-		if (isExit == false) {
-			isExit = true; // 准备退出
-			Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
-			tExit = new Timer();
-			tExit.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					isExit = false; // 取消退出
-				}
-			}, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
-
-		} else {
-			finish();
-			System.exit(0);
-		}
-	}*/
+	/*
+	 * private void exitBy2Click() { Timer tExit = null; if (isExit == false) {
+	 * isExit = true; // 准备退出 Toast.makeText(this, "再按一次退出程序",
+	 * Toast.LENGTH_SHORT).show(); tExit = new Timer(); tExit.schedule(new
+	 * TimerTask() {
+	 * 
+	 * @Override public void run() { isExit = false; // 取消退出 } }, 2000); //
+	 * 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+	 * 
+	 * } else { finish(); System.exit(0); } }
+	 */
 
 }

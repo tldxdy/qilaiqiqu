@@ -1,35 +1,25 @@
 package com.qizhi.qilaiqiqu.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.model.BitmapDescriptor;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
+import com.qizhi.qilaiqiqu.activity.RouteOverlayActivity;
 
-public class RouteOverlay {
+class RouteOverlay {
 	protected List<Marker> stationMarkers = new ArrayList<Marker>();
 	protected List<Polyline> allPolyLines = new ArrayList<Polyline>();
-
-	List<HashMap<String, List<Polyline>>> linesMaps = new ArrayList<HashMap<String, List<Polyline>>>();
-
-	List<List<Polyline>> ll = new ArrayList<List<Polyline>>();
-
-	HashMap<String, List<Polyline>> hashMap = new HashMap<String, List<Polyline>>();
 
 	protected Marker startMarker;
 	protected Marker endMarker;
@@ -38,48 +28,42 @@ public class RouteOverlay {
 	protected AMap mAMap;
 	private Context mContext;
 	private Bitmap startBit, endBit, busBit, walkBit, driveBit;
-	private AssetManager am;
+	protected boolean nodeIconVisible = true;
 
 	public RouteOverlay(Context context) {
 		mContext = context;
-		am = mContext.getResources().getAssets();
 	}
 
 	/**
-	 * 清除绘制
+	 * 去掉BusRouteOverlay上所有的Marker。
+	 * 
+	 * @since V2.1.0
 	 */
 	public void removeFromMap() {
-		// if (startMarker != null) {
-		// startMarker.remove();
-		//
-		// }
-		// if (endMarker != null) {
-		// endMarker.remove();
-		// }
-		// for (Marker marker : stationMarkers) {
-		// marker.remove();
-		// }
-		System.out.println("ll.size():" + ll.size());
-		for (Polyline line : ll.get(ll.size() - 1)) {
-			line.remove();
-		}
-		//
-		// // allPolyLines.get(allPolyLines.size()).remove();
-		// System.out.println("linesMaps.size():" + linesMaps.size());
-		//
-		// linesMaps.get(linesMaps.size() - 1).get("line")
-		// .removeAll(linesMaps.get(linesMaps.size() - 1).get("line"));
+		if (startMarker != null) {
+			startMarker.remove();
 
-		//
-		// if (stationMarkers.size() > 0) {
-		// stationMarkers.get(allPolyLines.size() - 1).remove();
-		// System.out.println("stationMarkers!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		// }
-		//
-		// if (allPolyLines.size() > 0) {
-		// allPolyLines.get(allPolyLines.size() - 1).remove();
-		// System.out.println("allPolyLines!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		// }
+		}
+		if (endMarker != null) {
+			endMarker.remove();
+		}
+		for (Marker marker : stationMarkers) {
+			marker.remove();
+		}
+		for (Polyline line : RouteOverlayActivity.lineList
+				.get(RouteOverlayActivity.lineList.size() - 1)) {
+			line.remove();
+			RouteOverlayActivity.lineList.remove(allPolyLines);
+		}
+
+		System.out.println("RouteOverlayActivity.lineList.size()"
+				+ RouteOverlayActivity.lineList.size());
+		System.out
+				.println("RouteOverlayActivity.lineList.get(RouteOverlayActivity.lineList.size()-1).size()"
+						+ RouteOverlayActivity.lineList.get(
+								RouteOverlayActivity.lineList.size() - 1)
+								.size());
+
 		destroyBit();
 	}
 
@@ -106,58 +90,76 @@ public class RouteOverlay {
 		}
 	}
 
-	protected BitmapDescriptor getStartBitmapDescriptor() {
-		return getBitDes(startBit, "");
-	}
+	/**
+	 * 给起点Marker设置图标，并返回更换图标的图片。如不用默认图片，需要重写此方法。
+	 * 
+	 * @return 更换的Marker图片。
+	 * @since V2.1.0
+	 */
+	// protected BitmapDescriptor getStartBitmapDescriptor() {
+	// return BitmapDescriptorFactory.fromResource(R.drawable.start);
+	// }
 
-	protected BitmapDescriptor getEndBitmapDescriptor() {
-		return getBitDes(endBit, "");
-	}
+	/**
+	 * 给终点Marker设置图标，并返回更换图标的图片。如不用默认图片，需要重写此方法。
+	 * 
+	 * @return 更换的Marker图片。
+	 * @since V2.1.0
+	 */
+	// protected BitmapDescriptor getEndBitmapDescriptor() {
+	// return BitmapDescriptorFactory.fromResource(R.drawable.start);
+	// }
 
-	protected BitmapDescriptor getBusBitmapDescriptor() {
-		return getBitDes(busBit, "");
-	}
+	/**
+	 * 给公交Marker设置图标，并返回更换图标的图片。如不用默认图片，需要重写此方法。
+	 * 
+	 * @return 更换的Marker图片。
+	 * @since V2.1.0
+	 */
+	// protected BitmapDescriptor getBusBitmapDescriptor() {
+	// return BitmapDescriptorFactory.fromResource(R.drawable.start);
+	// }
 
-	protected BitmapDescriptor getWalkBitmapDescriptor() {
-		return getBitDes(walkBit, "");
-	}
-
-	protected BitmapDescriptor getDriveBitmapDescriptor() {
-		return getBitDes(driveBit, "");
-	}
-
-	private BitmapDescriptor getBitDes(Bitmap bitmap, String fileName) {
-		InputStream stream;
-		try {
-			stream = am.open(fileName);
-			bitmap = BitmapFactory.decodeStream(stream);
-			bitmap = AMapServicesUtil.zoomBitmap(bitmap, 1);
-			stream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-
-		}
-		return BitmapDescriptorFactory.fromBitmap(bitmap);
-	}
+	/**
+	 * 给步行Marker设置图标，并返回更换图标的图片。如不用默认图片，需要重写此方法。
+	 * 
+	 * @return 更换的Marker图片。
+	 * @since V2.1.0
+	 */
+	// protected BitmapDescriptor getWalkBitmapDescriptor() {
+	// return BitmapDescriptorFactory.fromResource(R.drawable.start);
+	// }
+	//
+	// protected BitmapDescriptor getDriveBitmapDescriptor() {
+	// return BitmapDescriptorFactory.fromResource(R.drawable.start);
+	// }
 
 	// protected void addStartAndEndMarker() {
 	// startMarker = mAMap.addMarker((new MarkerOptions())
 	// .position(startPoint));
-	// startMarker.showInfoWindow();
+	// // startMarker.showInfoWindow();
 	//
-	// endMarker = mAMap.addMarker((new
-	// MarkerOptions()).position(endPoint));
-	// mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPoint,
-	// getShowRouteZoom()));
+	// endMarker = mAMap.addMarker((new MarkerOptions()).position(endPoint));
+	// // mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPoint,
+	// // getShowRouteZoom()));
 	// }
 
+	/**
+	 * 移动镜头到当前的视角。
+	 * 
+	 * @since V2.1.0
+	 */
 	public void zoomToSpan() {
-		if (startPoint != null && startPoint != null) {
+		if (startPoint != null) {
 			if (mAMap == null)
 				return;
-			LatLngBounds bounds = getLatLngBounds();
-			mAMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+			try {
+				LatLngBounds bounds = getLatLngBounds();
+				mAMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,
+						50));
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -168,19 +170,61 @@ public class RouteOverlay {
 		return b.build();
 	}
 
+	/**
+	 * 路段节点图标控制显示接口。
+	 * 
+	 * @param visible
+	 *            true为显示节点图标，false为不显示。
+	 * @since V2.3.1
+	 */
+	public void setNodeIconVisibility(boolean visible) {
+		try {
+			nodeIconVisible = visible;
+			if (this.stationMarkers != null && this.stationMarkers.size() > 0) {
+				for (int i = 0; i < this.stationMarkers.size(); i++) {
+					this.stationMarkers.get(i).setVisible(visible);
+				}
+			}
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void addStationMarker(MarkerOptions options) {
+		if (options == null) {
+			return;
+		}
+		Marker marker = mAMap.addMarker(options);
+		if (marker != null) {
+			stationMarkers.add(marker);
+		}
+
+	}
+
+	protected void addPolyLine(PolylineOptions options) {
+		if (options == null) {
+			return;
+		}
+		Polyline polyline = mAMap.addPolyline(options);
+		if (polyline != null) {
+			allPolyLines.add(polyline);
+			RouteOverlayActivity.lineList.add(allPolyLines);
+			System.out.println("addPolyLine(PolylineOptions options)______________________");
+		}
+
+	}
+
+	protected float getRouteWidth() {
+		return 18f;
+	}
+
+	/**
+	 * 自定义路线颜色。 return 自定义路线颜色。
+	 * 
+	 * @since V2.2.1
+	 */
 	protected int getWalkColor() {
-		return Color.parseColor("#ff0000");
+		return Color.parseColor("#6db74d");
 	}
 
-	protected int getBusColor() {
-		return Color.parseColor("#ff3030");
-	}
-
-	protected int getDriveColor() {
-		return Color.parseColor("#6dbfed");
-	}
-
-	// protected int getShowRouteZoom() {
-	// return 15;
-	// }
 }

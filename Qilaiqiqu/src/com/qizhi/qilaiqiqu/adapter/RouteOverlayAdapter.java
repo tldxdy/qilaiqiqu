@@ -36,12 +36,6 @@ public class RouteOverlayAdapter extends BaseAdapter {
 		this.aMap = aMap;
 		this.markerList = markerList;
 		inflater = LayoutInflater.from(context);
-		// this.paths = paths;
-		// if (paths.size() > 1) {
-		// lastPolyline = paths.get(paths.size() - 1);
-		// }
-		// RouteSearch routeSearch = new RouteSearch(this);
-		// routeSearch.setRouteSearchListener(this);
 	}
 
 	@Override
@@ -87,9 +81,7 @@ public class RouteOverlayAdapter extends BaseAdapter {
 					markerList.get(markerList.size() - 1).remove();
 					markerList.remove(markerList.size() - 1);
 
-					walkRouteOverlay.removeLine();
-
-					System.out.println("walkRouteOverlay:" + walkRouteOverlay);
+					walkRouteOverlay.removeFromMap();
 
 					notifyDataSetChanged();
 					// lastPolyline.remove();
@@ -105,21 +97,6 @@ public class RouteOverlayAdapter extends BaseAdapter {
 
 		return v;
 	}
-
-	// private void mRouteOverlay() {
-	// if (mapScreenMarkers.size() > 1) {
-	//
-	//
-	// fromAndTo = new
-	// FromAndTo(AMapUtil.convertToLatLonPoint(mapScreenMarkers.get(
-	// mapScreenMarkers.size() - 2).getPosition()),
-	// AMapUtil.convertToLatLonPoint(mapScreenMarkers.get(
-	// mapScreenMarkers.size() - 1).getPosition()));// 实例化FromAndTo，字面意思,哪到哪
-	// WalkRouteQuery walkRouteQuery = new WalkRouteQuery(fromAndTo,
-	// RouteSearch.WalkDefault);
-	// routeSearch.calculateWalkRouteAsyn(walkRouteQuery);
-	// }
-	// }
 
 	public class ViewHolder {
 

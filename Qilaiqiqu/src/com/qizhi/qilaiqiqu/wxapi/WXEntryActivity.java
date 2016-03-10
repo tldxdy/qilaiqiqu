@@ -15,9 +15,11 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.HuanxinLogOutActivity;
 import com.qizhi.qilaiqiqu.activity.LoginActivity;
 import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.tencent.mm.sdk.modelbase.BaseReq;
@@ -27,8 +29,8 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
-public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
-		CallBackPost {
+public class WXEntryActivity extends HuanxinLogOutActivity implements
+		IWXAPIEventHandler, CallBackPost {
 
 	private IWXAPI api;
 	private String openid;
@@ -36,7 +38,6 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wx_entry);
 		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID_WX, false);
@@ -57,10 +58,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 
 			String code = ((SendAuth.Resp) resp).code;
 			// 上面的code就是接入指南里要拿到的code
-			System.out
-					.println("000000000000000000000000|||||||||||||||||||||||||||:"
-							+ code);
 			wxRequest(code);
+			
 			break;
 
 		default:
@@ -97,23 +96,29 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler,
 						"userLogin", Context.MODE_PRIVATE);
 				Editor editor = sharedPreferences.edit();// 获取编辑器
 				editor.putInt("userId", data.getInt("userId"));
+				editor.putString("imId", data.getString("imId"));
+				editor.putString("riderId", data.getString("riderId"));
 				editor.putString("uniqueKey", data.getString("uniqueKey"));
 				editor.putString("userName", data.getString("userName"));
 				editor.putString("userImage", data.getString("userImage"));
 				editor.putString("imUserName", data.getString("imUserName"));
 				editor.putString("imPassword", data.getString("imPassword"));
 				editor.putString("mobilePhone", data.getString("mobilePhone"));
-				editor.putString("riderId", data.getString("riderId"));
 				editor.putInt("loginFlag", 1);
 				editor.commit();
 
-				startActivity(new Intent(WXEntryActivity.this,
-						MainActivity.class));
+				
+			}else {
+				Toasts.show(this, "微信登录失败", 0);
 			}
+			
+			
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		startActivity(new Intent(WXEntryActivity.this,
+				MainActivity.class).putExtra("loginFlag", 1));
 
 	}
 
