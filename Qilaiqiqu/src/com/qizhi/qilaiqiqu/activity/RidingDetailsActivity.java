@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -10,11 +11,15 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.helpers.Util;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -50,11 +55,24 @@ import com.qizhi.qilaiqiqu.model.ArticleMemoDetailModel;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.service.PhotoUploadingService;
+import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.PopupWindowUploading;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.tencent.connect.share.QQShare;
+import com.tencent.connect.share.QzoneShare;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX.Req;
+import com.tencent.mm.sdk.modelmsg.WXImageObject;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -138,6 +156,13 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private List<ActivityListRecommendModel> recommendList;
 	
 	private PopupWindowUploading pUploading;
+	
+	private Tencent mTencent;
+	
+	private IUiListener baseUiListener; // 监听器
+	
+	private IWXAPI api;
+	
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -177,6 +202,8 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_riding_details);
 		jpushFlag = getIntent().getStringExtra("jpushFlag");
+		mTencent = Tencent.createInstance(ConstantsUtil.APP_ID_TX,
+				this.getApplicationContext());
 		initView();
 		initEvent();
 
@@ -254,7 +281,24 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			ridingList.setAdapter(previewadapter);
 			ridingList.setDividerHeight(0);
 		}
-
+		baseUiListener = new IUiListener() {
+			
+			@Override
+			public void onError(UiError arg0) {
+				
+			}
+			
+			@Override
+			public void onComplete(Object arg0) {
+				
+			}
+			
+			@Override
+			public void onCancel() {
+				
+			}
+		};
+		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID_WX);
 	}
 
 	private void initEvent() {
@@ -276,7 +320,9 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			break;
 
 		case R.id.img_ridingDetailsActivity_share:
-
+			showPopupWindow3(v);
+			//onClickQQShare();
+			//onClickWXShare();
 			break;
 		case R.id.img_ridingDetailsActivity_cllection:
 			if (cllectionFlag == 1) {
@@ -391,6 +437,66 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			break;
 		}
 	}
+	
+	//分享到QQ与QQ空间
+	private void onClickQQShare() { 
+	    final Bundle params = new Bundle();
+	    params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
+	    params.putString(QQShare.SHARE_TO_QQ_TITLE, articleModel.getTitle());
+	    params.putString(QQShare.SHARE_TO_QQ_SUMMARY,  "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId());
+	    params.putString(QQShare.SHARE_TO_QQ_TARGET_URL,  SystemUtil.IMGPHTH + articleModel.getDefaultShowImage());
+	    params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,SystemUtil.IMGPHTH + articleModel.getDefaultShowImage());
+	    params.putString(QQShare.SHARE_TO_QQ_APP_NAME,  "骑来骑去");
+	    params.putString(QzoneShare.SHARE_TO_QQ_TITLE, articleModel.getTitle());//必填
+	    params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！");//选填
+	    params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId());//必填
+	    params.putString(QzoneShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH + articleModel.getDefaultShowImage());
+	    mTencent.shareToQQ(RidingDetailsActivity.this, params, baseUiListener);
+	}
+	//分享到微信
+	private void  onClickWXShare(){
+		
+		
+		String text = "share our application";  
+        WXTextObject textObj = new WXTextObject();  
+        textObj.text = text;  
+
+        WXMediaMessage msg = new WXMediaMessage(textObj);  
+        msg.mediaObject = textObj;  
+        msg.description = text;  
+          
+        SendMessageToWX.Req req = new SendMessageToWX.Req();  
+        req.transaction = String.valueOf(System.currentTimeMillis());  
+        req.message = msg;  
+          
+        
+		
+	/*	Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.bitmap_homepage);
+		
+		//初始化WXImageObject和WXMediaMessage对象
+		WXImageObject imgobj = new WXImageObject(bmp);
+		WXMediaMessage msg = new WXMediaMessage();
+		msg.mediaObject = imgobj;
+		
+		Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+		bmp.recycle();
+		msg.thumbData = Bitmap2Bytes(thumbBmp);
+		
+		Req req = new Req();
+		//req.transaction = buildTransaction("img");
+		req.transaction = String.valueOf(System.currentTimeMillis());*/
+        
+		req.scene =SendMessageToWX.Req.WXSceneSession;
+		api.sendReq(req); 
+	}
+	private void onClickWBShare(){
+	}
+	
+	
+	
+
+	
+	
 
 	private void deleteRiding() {
 		RequestParams params = new RequestParams();
@@ -1090,6 +1196,83 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
 
 	}
+	
+	
+	private void showPopupWindow3(View view) {
+
+		// 一个自定义的布局，作为显示的内容
+		View mview = LayoutInflater.from(this).inflate(
+				R.layout.share, null);
+
+		LinearLayout qq = (LinearLayout) mview.findViewById(R.id.qq);
+		LinearLayout wx = (LinearLayout) mview.findViewById(R.id.wx);
+		LinearLayout pyq = (LinearLayout) mview.findViewById(R.id.pyq);
+		LinearLayout wb = (LinearLayout) mview.findViewById(R.id.wb);
+		LinearLayout qx = (LinearLayout) mview.findViewById(R.id.qx);
+		
+		final PopupWindow popupWindow = new PopupWindow(mview,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+
+		popupWindow.setTouchable(true);
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		qq.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				onClickQQShare();
+				popupWindow.dismiss();
+			}
+		});
+
+		wx.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		pyq.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		wb.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		qx.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 50);
+
+	}
+
 
 	/**
 	 * 预览发布

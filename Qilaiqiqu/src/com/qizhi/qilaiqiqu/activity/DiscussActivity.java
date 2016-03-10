@@ -14,9 +14,6 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.DiscussListAdapter;
 import com.qizhi.qilaiqiqu.model.CommentPaginationListModel;
 import com.qizhi.qilaiqiqu.model.RidingCommentModel;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.Refresh;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -50,11 +47,11 @@ import android.widget.TextView;
  */
 public class DiscussActivity extends Activity implements OnClickListener,
 		OnItemClickListener, OnTouchListener,OnRefreshListener,
-		OnfreshListener{
+		OnLoadListener{
 
 	private LinearLayout backLayout;
 
-	private FooterListView discussList;
+	private ListView discussList;
 
 	private EditText contentEdit;
 
@@ -80,7 +77,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 	
 	private int pageIndex = 1;
 	
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	
 	@Override
@@ -109,7 +106,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 		contentEdit = (EditText) findViewById(R.id.edt__discussactivity_content);
 
-		discussList = (FooterListView) findViewById(R.id.list_discussactivity_discuss);
+		discussList = (ListView) findViewById(R.id.list_discussactivity_discuss);
 		titleTxt = (TextView) findViewById(R.id.txt_discussactivity_title);
 		titleTxt.setText("游记评论");
 		
@@ -121,7 +118,7 @@ public class DiscussActivity extends Activity implements OnClickListener,
 			imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 		}
 		header = View.inflate(this,R.layout.header, null);
-		swipeLayout = (Refresh) findViewById(R.id.swipe_container);
+		swipeLayout = (RefreshLayout) findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
@@ -237,22 +234,18 @@ public class DiscussActivity extends Activity implements OnClickListener,
 									DiscussActivity.this, list);
 							discussList.setAdapter(adapter);
 							discussList.setOnTouchListener(DiscussActivity.this);
-							
 							discussList.setOnItemClickListener(DiscussActivity.this);
 							swipeLayout.setOnRefreshListener(DiscussActivity.this);
-							discussList.setOnfreshListener(DiscussActivity.this);
-						//	discussList.setOnRefreshListener(DiscussActivity.this);
+							swipeLayout.setOnLoadListener(DiscussActivity.this);
 							
 						}else{
 							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
-							//new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
 						Toasts.show(DiscussActivity.this, msg, 0);
-						//new SystemUtil().makeToast(DiscussActivity.this, msg);
 					}
 				});
 	}
@@ -321,17 +314,6 @@ public class DiscussActivity extends Activity implements OnClickListener,
 		return super.onTouchEvent(event);
 	}
 
-/*	@Override
-	public void onRefresh() {
-		pageIndex = 1;
-		dataJ();
-	}
-
-	@Override
-	public void onLoadingMore() {
-		pageIndex = pageIndex + 1;
-		dataJ();
-	}*/
 
 	private void dataJ() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -360,60 +342,51 @@ public class DiscussActivity extends Activity implements OnClickListener,
 
 							List<RidingCommentModel> lists = commentPaginationListModel.getDataList();
 							if(pageIndex == 1){
-								list = lists;
-								adapter = new DiscussListAdapter(
-										DiscussActivity.this, list);
-								discussList.setAdapter(adapter);
+								list.clear();
+								list.addAll(lists);
 							}else{
 								list.addAll(lists);
 							}
 						adapter.notifyDataSetChanged();
-						//discussList.finishRefreshing();
 						
 							
 						}else{
 							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
 							
 						}
-							swipeLayout.setRefreshing(false);
-							discussList.completeRefresh();
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						swipeLayout.setRefreshing(false);
-						discussList.completeRefresh();
 					}
 				});
 	}
-
 	@Override
 	public void onRefresh() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
+				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
-				dataJ();
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+					dataJ();
 				
 			}
-		}, 1000);
+		}, 1500);
 
 	}
 
 	@Override
-	public void onLoadingMore() {
+	public void onLoad() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+				swipeLayout.setLoading(false);
 				pageIndex = pageIndex + 1;
 				dataJ();
 			}
-		}, 1000);
+		}, 1500);
 	}
+
 }

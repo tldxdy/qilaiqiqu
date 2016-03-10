@@ -3,11 +3,9 @@ package com.qizhi.qilaiqiqu.activity;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -17,13 +15,12 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.ActivityDiscussListAdapter;
 import com.qizhi.qilaiqiqu.model.ActivityCommentModel;
 import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.Refresh;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -41,6 +38,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import android.widget.TextView;
 /**
  * 
@@ -49,11 +47,11 @@ import android.widget.TextView;
  * 
  */
 public class ActivityDiscussActivity extends Activity implements OnClickListener,
-OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
+OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 
 	private LinearLayout backLayout;
 
-	private FooterListView discussList;
+	private ListView discussList;
 
 	private EditText contentEdit;
 
@@ -78,7 +76,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 	
 	private int pageIndex = 1;
 	
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	
 	@Override
@@ -106,7 +104,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 
 		contentEdit = (EditText) findViewById(R.id.edt__discussactivity_content);
 
-		discussList = (FooterListView) findViewById(R.id.list_discussactivity_discuss);
+		discussList = (ListView) findViewById(R.id.list_discussactivity_discuss);
 		titleTxt = (TextView) findViewById(R.id.txt_discussactivity_title);
 		titleTxt.setText("活动评论");
 		
@@ -118,7 +116,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 			imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 		}
 		header = View.inflate(this,R.layout.header, null);
-		swipeLayout = (Refresh) findViewById(R.id.swipe_container);
+		swipeLayout = (RefreshLayout) findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
@@ -228,19 +226,16 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 							
 							discussList.setOnItemClickListener(ActivityDiscussActivity.this);
 							swipeLayout.setOnRefreshListener(ActivityDiscussActivity.this);
-							discussList.setOnfreshListener(ActivityDiscussActivity.this);
-						//	discussList.setOnRefreshListener(DiscussActivity.this);
+							swipeLayout.setOnLoadListener(ActivityDiscussActivity.this);
 							
 						}else{
 							Toasts.show(ActivityDiscussActivity.this, jsonObject.optString("message"), 0);
-							//new SystemUtil().makeToast(DiscussActivity.this, jsonObject.optString("message"));
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
 						Toasts.show(ActivityDiscussActivity.this, msg, 0);
-						//new SystemUtil().makeToast(DiscussActivity.this, msg);
 					}
 				});
 	}
@@ -335,10 +330,8 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 							List<ActivityCommentModel> lists = gson.fromJson(
 									dataList.toString(), type);
 							if(pageIndex == 1){
-								list = lists;
-								adapter = new ActivityDiscussListAdapter(
-										ActivityDiscussActivity.this, list);
-								discussList.setAdapter(adapter);
+								list.clear();
+								list.addAll(lists);
 							}else{
 								list.addAll(lists);
 							}
@@ -349,14 +342,10 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 							Toasts.show(ActivityDiscussActivity.this, jsonObject.optString("message"), 0);
 							
 						}
-							swipeLayout.setRefreshing(false);
-							discussList.completeRefresh();
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						swipeLayout.setRefreshing(false);
-						discussList.completeRefresh();
 					}
 				});
 	}
@@ -367,10 +356,9 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 
 			@Override
 			public void run() {
+				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
-				dataJ();
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+					dataJ();
 				
 			}
 		}, 1500);
@@ -378,16 +366,16 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnfreshListener{
 	}
 
 	@Override
-	public void onLoadingMore() {
+	public void onLoad() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+				swipeLayout.setLoading(false);
 				pageIndex = pageIndex + 1;
 				dataJ();
 			}
 		}, 1500);
 	}
+
 }

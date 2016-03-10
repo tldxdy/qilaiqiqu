@@ -22,6 +22,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,10 +36,9 @@ import com.qizhi.qilaiqiqu.model.RidingModel;
 import com.qizhi.qilaiqiqu.model.RidingModelList;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.sqlite.DBManager;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.Refresh;
 import com.qizhi.qilaiqiqu.utils.PopupWindowUploading;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -51,7 +51,7 @@ import com.umeng.analytics.MobclickAgent;
  */
 
 public class RidingActivity extends Activity implements OnClickListener,
-		OnItemClickListener, CallBackPost,OnRefreshListener,OnfreshListener{
+		OnItemClickListener, CallBackPost,OnRefreshListener,OnLoadListener {
 
 	public static RidingActivity ridingActivity;
 
@@ -59,7 +59,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 	private LinearLayout layoutBtn;
 
-	private FooterListView ridingList;
+	private ListView ridingList;
 
 	private List<RidingModelList> list;
 	private List<RidingDraftModel> rDraftModels;
@@ -69,7 +69,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 	
 	private PopupWindowUploading pUploading;
 	
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	
 	private int pageIndex = 1;
@@ -94,13 +94,14 @@ public class RidingActivity extends Activity implements OnClickListener,
 		dbManager = new DBManager(this);
 		ridingModel = new RidingModel();
 		list = new ArrayList<RidingModelList>();
+		rDraftModels = dbManager.queryAll();
 		xUtilsUtil = new XUtilsUtil();
 		preferences = getSharedPreferences("userLogin",Context.MODE_PRIVATE);
 		
 		layoutBtn = (LinearLayout) findViewById(R.id.layout_ridingActivity_back);
-		ridingList = (FooterListView) findViewById(R.id.list_ridingActivity_riding);
+		ridingList = (ListView) findViewById(R.id.list_ridingActivity_riding);
 		header = getLayoutInflater().inflate(R.layout.header, null);
-		swipeLayout = (Refresh) findViewById(R.id.swipe_container);
+		swipeLayout = (RefreshLayout) findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
@@ -108,6 +109,13 @@ public class RidingActivity extends Activity implements OnClickListener,
 				android.R.color.holo_red_light);
 		ridingList.addHeaderView(header);
 		pUploading = new PopupWindowUploading(this);
+		adapter = new RidingListAdapter(this, list , rDraftModels);
+		ridingList.setAdapter(adapter);
+		ridingList.setDividerHeight(0);
+		ridingList.setOnItemClickListener(this);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);
+		
 		
 		
 	}
@@ -135,7 +143,6 @@ public class RidingActivity extends Activity implements OnClickListener,
 			Gson gson = new Gson();
 			Type type = new TypeToken<List<TravelsinformationModel>>(){}.getType();
 			List<TravelsinformationModel> trList = gson.fromJson(rDraftModels.get(position - 1).getJsonString(), type);
-			System.out.println(rDraftModels.size()  + "-----------" + position);
 			
 			intent.putExtra("_id", rDraftModels.get(position - 1).get_id());
 			intent.putExtra("list", (Serializable) trList);
@@ -211,29 +218,16 @@ public class RidingActivity extends Activity implements OnClickListener,
 			Type type = new TypeToken<RidingModel>(){}.getType();
 			ridingModel = gson.fromJson(jsonObject.toString(), type);
 			if(isFirst){
-				list = ridingModel.getDataList();
-				adapter = new RidingListAdapter(this, list , rDraftModels);
-				ridingList.setAdapter(adapter);
-				ridingList.setDividerHeight(0);
-				//ridingList.setOnRefreshListener(this);
-			}else{
-				list.addAll(ridingModel.getDataList());
+				list.clear();
 			}
+			list.addAll(ridingModel.getDataList());
 			adapter.notifyDataSetChanged();
-			swipeLayout.setRefreshing(false);
-			ridingList.setOnItemClickListener(this);
-			swipeLayout.setOnRefreshListener(this);
-			ridingList.setOnfreshListener(this);
-			ridingList.completeRefresh();
-			//ridingList.finishRefreshing();
 			
 		}
 	}
 
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-		swipeLayout.setRefreshing(false);
-		ridingList.completeRefresh();
 		Toasts.show(this, msg, 0);
 		pUploading.dismiss();
 	}
@@ -256,6 +250,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 			@Override
 			public void run() {
+				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
 				isFirst = true;
 				httpRiding();
@@ -264,8 +259,22 @@ public class RidingActivity extends Activity implements OnClickListener,
 
 	}
 
-
 	@Override
+	public void onLoad() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				swipeLayout.setLoading(false);
+				pageIndex = pageIndex + 1;
+				isFirst = false;
+				httpRiding();
+			}
+		}, 1500);
+	}
+
+
+	/*@Override
 	public void onLoadingMore() {
 		swipeLayout.postDelayed(new Runnable() {
 
@@ -276,7 +285,7 @@ public class RidingActivity extends Activity implements OnClickListener,
 				httpRiding();
 			}
 		}, 1500);
-	}
+	}*/
 
 /*	@Override
 	public void onRefresh() {

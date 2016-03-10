@@ -2,7 +2,9 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,7 +35,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -77,7 +78,6 @@ import com.qizhi.qilaiqiqu.fragment.RidingAndActivityFragmentPagerAdapter;
 import com.qizhi.qilaiqiqu.model.SearchResultModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel.SearchDataList;
 import com.qizhi.qilaiqiqu.receiver.EMReceiver;
-import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.SplashView;
@@ -93,7 +93,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		OnClickListener, OnOpenListener, OnCloseListener, CallBackPost,
 		TextWatcher {
 
-	public static List<String> chatUserList;
+	public static Set<String> chatUserList;
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
 
@@ -192,6 +192,10 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 	private void initView() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
+		
+			chatUserList= preferences.getStringSet(preferences.getString("uniqueKey", null), new HashSet<String>());
+		
+		
 
 		searchCancel = (TextView) findViewById(R.id.txt_mainActivity_cancel);
 		inputEdt = (EditText) findViewById(R.id.edt_mainActivity_searchInput);
@@ -229,6 +233,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		// 设置广播的优先级别大于Mainacitivity,这样如果消息来的时候正好在chat页面，直接显示消息，而不是提示消息未读
 		intentFilter.setPriority(3);
 		registerReceiver(receiver, intentFilter);
+		EMChat.getInstance().setAppInited();
 	}
 
 	public void setCurrent(int fragmentNum) {
@@ -713,14 +718,30 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		public void onReceive(Context context, Intent intent) {
 			// 记得把广播给终结掉
 			abortBroadcast();
-
+			//System.out.println(intent.getStringExtra("userName"));
 			String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
+			System.out.println(from + "----" +msgid);
 			chatUserList.add(message.getFrom());
 
 			// 消息不是发给当前会话，return
 			notifyNewMessage(message);
+			
+			SharedPreferences sharedPreferences = getSharedPreferences(
+					"userLogin", Context.MODE_PRIVATE);
+					Editor editor = sharedPreferences.edit();// 获取编辑器
+					editor.putStringSet(sharedPreferences.getString("uniqueKey", null), chatUserList);
+					editor.putInt("userId", sharedPreferences.getInt("userId", -1));
+					editor.putString("riderId", sharedPreferences.getString("riderId", null));
+					editor.putString("userImage", sharedPreferences.getString("userImage", null));
+					editor.putString("uniqueKey", sharedPreferences.getString("uniqueKey", null));
+					editor.putString("imPassword", sharedPreferences.getString("imPassword", null));
+					editor.putString("userName", sharedPreferences.getString("userName", null));
+					editor.putString("imUserName", sharedPreferences.getString("imUserName", null));
+					editor.putString("mobilePhone", sharedPreferences.getString("mobilePhone", null));
+					editor.commit();
+			
 			try {
 				message.getStringAttribute("IMUserNameExpand");
 			} catch (EaseMobException e) {

@@ -55,19 +55,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" > -->
 
-            <com.qizhi.qilaiqiqu.ui.Refresh
+            <com.qizhi.qilaiqiqu.utils.RefreshLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/swipe_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
-                <com.qizhi.qilaiqiqu.ui.FooterListView
+                <ListView
                     android:id="@+id/list_discussactivity_discuss"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:divider="@null" >
-                </com.qizhi.qilaiqiqu.ui.FooterListView>
-            </com.qizhi.qilaiqiqu.ui.Refresh>
+                </ListView>
+            </com.qizhi.qilaiqiqu.utils.RefreshLayout>
             <!-- <ImageView 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

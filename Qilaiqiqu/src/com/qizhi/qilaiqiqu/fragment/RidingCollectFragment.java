@@ -15,9 +15,8 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.RidingCollectAdapter;
 import com.qizhi.qilaiqiqu.model.CollectModel;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.Refresh;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -33,10 +32,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
-public class RidingCollectFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnfreshListener{
+public class RidingCollectFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnLoadListener{
 
-	private FooterListView manageList;
+	private ListView manageList;
 	private View view;
 	private List<CollectModel> Articlelist;
 	private RidingCollectAdapter adapter;
@@ -44,7 +44,7 @@ public class RidingCollectFragment extends Fragment implements OnItemClickListen
 	private SharedPreferences preferences;
 	private XUtilsUtil xUtilsUtil;
 	private int pageIndex = 1;
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	
 	@SuppressLint("InlinedApi")
@@ -53,20 +53,18 @@ public class RidingCollectFragment extends Fragment implements OnItemClickListen
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_riding,null);
-		manageList = (FooterListView) view.findViewById(R.id.list_mainActivity_slideShow);
+		manageList = (ListView) view.findViewById(R.id.list_mainActivity_slideShow);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 		Articlelist = new ArrayList<CollectModel>();
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
+		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		manageList.addHeaderView(header);
-		swipeLayout.setOnRefreshListener(this);
-		manageList.setOnfreshListener(this);
 		data();
 		return view;
 }
@@ -82,30 +80,7 @@ public class RidingCollectFragment extends Fragment implements OnItemClickListen
 		xUtilsUtil.httpPost("mobile/collect/queryCollectForArticleMemoList.html", params,this);
 	}
 	
-	@Override
-	public void onRefresh() {
-		swipeLayout.postDelayed(new Runnable() {
 
-			@Override
-			public void run() {
-				pageIndex = 1;
-					dataJ();
-			}
-		}, 1500);
-
-	}
-
-	@Override
-	public void onLoadingMore() {
-		swipeLayout.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				pageIndex = pageIndex + 1;
-				dataJ();
-			}
-		}, 1500);
-	}
 
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
@@ -133,19 +108,13 @@ public class RidingCollectFragment extends Fragment implements OnItemClickListen
 			manageList
 					.setOnItemClickListener(this);
 			swipeLayout.setOnRefreshListener(this);
-			manageList.setOnfreshListener(this);
-			// 更新UI
-			adapter.notifyDataSetChanged();
-			swipeLayout.setRefreshing(false);
-			manageList.completeRefresh();
+			swipeLayout.setOnLoadListener(this);
 		}
 
 	}
 
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
-		swipeLayout.setRefreshing(false);
-		manageList.completeRefresh();
 	}
 	
 	private void dataJ() {
@@ -180,35 +149,23 @@ public class RidingCollectFragment extends Fragment implements OnItemClickListen
 							jsonArray.toString(), type);
 					pageIndex = jsonObject.optInt("pageIndex");
 					if(pageIndex == 1){
-						
-						Articlelist = lists;
-						//adapter = new RidingListAdapter(this, list , new );
-						//manageList.setAdapter(adapter);
-						//manageList.setOnItemClickListener(RidingFragment.this);
+						Articlelist.clear();
+						Articlelist.addAll(lists);
 						Toasts.show(context, "刷新成功", 0);
-						//new SystemUtil().makeToast(getActivity(), "刷新成功");
 					}else if(1 < pageIndex && pageIndex <= pageCount){
 						Articlelist.addAll(lists);
 						Toasts.show(context, "加载成功", 0);
-						//new SystemUtil().makeToast(getActivity(), "加载成功");
 					}else{
 						pageIndex = jsonObject.optInt("pageIndex");
 						Toasts.show(context, "以显示全部内容", 0);
 					}
-
 					// 更新UI
-
-					//manageList.finishRefreshing();
 				}
 				adapter.notifyDataSetChanged();
-				swipeLayout.setRefreshing(false);
-				manageList.completeRefresh();
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-					swipeLayout.setRefreshing(false);
-					manageList.completeRefresh();
 			}
 		});
 	}
@@ -219,5 +176,34 @@ public class RidingCollectFragment extends Fragment implements OnItemClickListen
 		intent.putExtra("isMe", false);
 		intent.putExtra("articleId",Articlelist.get(position-1).getQuoteId() );
 		startActivity(intent);
+	}
+
+	
+	@Override
+	public void onRefresh() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				swipeLayout.setRefreshing(false);
+				pageIndex = 1;
+					dataJ();
+				
+			}
+		}, 1500);
+
+	}
+
+	@Override
+	public void onLoad() {
+		swipeLayout.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				swipeLayout.setLoading(false);
+				pageIndex = pageIndex + 1;
+				dataJ();
+			}
+		}, 1500);
 	}
 }

@@ -3,10 +3,8 @@ package com.qizhi.qilaiqiqu.fragment;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -19,11 +17,10 @@ import com.qizhi.qilaiqiqu.activity.CommentMessageActivity;
 import com.qizhi.qilaiqiqu.adapter.MyMessageAdapter;
 import com.qizhi.qilaiqiqu.model.CommentModel;
 import com.qizhi.qilaiqiqu.model.SystemMessageModel;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.Refresh;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -37,18 +34,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
-public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener, OnfreshListener{
+public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener, OnLoadListener{
 	private View view;
 	private Context context;
 	
-	private FooterListView myMessageList;		//系统消息的集合
+	private ListView myMessageList;		//系统消息的集合
 	private MyMessageAdapter adapter;
 	private XUtilsUtil xUtilsUtil;
 	private Integer pageIndex = 1;
 	private SharedPreferences preferences;
 	private List<SystemMessageModel> list;
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	
 	
@@ -58,21 +56,19 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_message,null);
-		myMessageList = (FooterListView) view.findViewById(R.id.list_fragment_message);
+		myMessageList = (ListView) view.findViewById(R.id.list_fragment_message);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		list = new ArrayList<SystemMessageModel>();
 		xUtilsUtil = new XUtilsUtil();
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
+		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		myMessageList.addHeaderView(header);
-		swipeLayout.setOnRefreshListener(this);
-		//swipeLayout.setOnLoadListener(this);
 		
 		return view;
 	}
@@ -214,10 +210,9 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 			adapter = new MyMessageAdapter(context, list);
 			myMessageList.setAdapter(adapter);
 			myMessageList.setOnItemClickListener(this);
-			myMessageList.setOnfreshListener(this);
-			//myMessageList.setOnRefreshListener(this);
+			swipeLayout.setOnRefreshListener(this);
+			swipeLayout.setOnLoadListener(this);
 			
-			//myMessageList.finishRefreshing();
 		}
 	}
 
@@ -225,24 +220,6 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 	public void onMyFailure(HttpException error, String msg) {
 		
 	}
-	
-/*	@Override
-	public void onRefresh() {
-		pageIndex = 1;
-		System.out.println("aaaaaa");
-		data();
-		
-	}
-
-
-	@Override
-	public void onLoadingMore() {
-		System.out.println(pageIndex);
-		pageIndex = pageIndex + 1;
-		dataJ();
-	}*/
-
-
 	private void dataJ() {
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
@@ -267,38 +244,23 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 					Type type = new TypeToken<List<SystemMessageModel>>(){}.getType();
 					List<SystemMessageModel> dataList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), type);
 					if(pageIndex == 1){
-						list = dataList;
-						new SystemUtil().makeToast(getActivity(), "刷新成功");
+						list.clear();
+						list.addAll(dataList);
+						Toasts.show(getActivity(), "刷新成功", 0);
 					}else if(1 < pageIndex && pageIndex <= pageCount){
 						list.addAll(dataList);
-						new SystemUtil().makeToast(getActivity(), "加载成功");
+						Toasts.show(getActivity(), "加载成功", 0);
 					}else if(pageIndex > pageCount){
 						list.addAll(dataList);
-						//new SystemUtil().makeToast(getActivity(), "已显示全部内容");
 					}
 					// 更新UI
 					adapter.notifyDataSetChanged();
-				//	myMessageList.finishRefreshing();
 					
 				}
-				swipeLayout.setRefreshing(false);
-				myMessageList.completeRefresh();
-				
-				/*if(pageIndex == 1){
-					swipeLayout.setRefreshing(false);
-				}else{
-					swipeLayout.setLoading(false);
-				}*/
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				swipeLayout.setRefreshing(false);
-				/*if(pageIndex == 1){
-					swipeLayout.setRefreshing(false);
-				}else{
-					swipeLayout.setLoading(false);
-				}*/
 			}
 		});
 	}
@@ -310,43 +272,27 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 
 			@Override
 			public void run() {
+				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
-				dataJ();
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+					dataJ();
 				
 			}
-		}, 2000);
+		}, 1500);
 
 	}
-
 
 	@Override
-	public void onLoadingMore() {
-		swipeLayout.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
-				pageIndex = pageIndex + 1;
-				dataJ();
-			}
-		}, 2000);
-	}
-
-/*	@Override
 	public void onLoad() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+				swipeLayout.setLoading(false);
 				pageIndex = pageIndex + 1;
 				dataJ();
 			}
-		}, 1000);
-	}*/
+		}, 1500);
+	}
+
 }
 	

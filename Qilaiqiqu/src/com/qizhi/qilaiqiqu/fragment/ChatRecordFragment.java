@@ -1,19 +1,27 @@
 package com.qizhi.qilaiqiqu.fragment;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.exceptions.EaseMobException;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.ChatSingleActivity;
+import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.adapter.ChatRecordAdapter;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.Refresh;
+import com.qizhi.qilaiqiqu.model.CertainUserModel;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,18 +33,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class ChatRecordFragment extends Fragment implements OnItemClickListener,OnRefreshListener,OnfreshListener{
-	private FooterListView chatList;
+public class ChatRecordFragment extends Fragment implements OnItemClickListener,OnRefreshListener,OnLoadListener{
+	private ListView chatList;
 	private View view;
-	private List<?> list;
+	private List<EMMessage> list;
 	private ChatRecordAdapter adapter;
 	private Context context;
 	private SharedPreferences preferences;
 	private int pageIndex = 1;
 	
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	private EMConversation conversation;
+	
+	private Set<String> chatUserList;
 	
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
@@ -44,26 +54,39 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_chat_record,null);
-		chatList = (FooterListView) view.findViewById(R.id.list_fragment_chat_record);
+		chatList = (ListView) view.findViewById(R.id.list_fragment_chat_record);
 		context = getActivity();
+		list = new ArrayList<EMMessage>();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
+		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		chatList.addHeaderView(header);
-		conversation = EMChatManager.getInstance().getConversation(preferences.getString("imUserName", null));
-		if(conversation != null){
-			
-			//获取此会话的所有消息
-			List<EMMessage> messages = conversation.getAllMessages();
-			System.out.println("-------------------------------");
-			
-			System.out.println(messages);
-			System.out.println("-------------------------------");
+		
+		chatUserList = preferences.getStringSet(preferences.getString("uniqueKey", null), new HashSet<String>());
+		System.out.println("chatUserList====>" + chatUserList.size());
+		for (String aa : chatUserList) {
+			conversation = EMChatManager.getInstance().getConversation(aa);
+			if(conversation != null){
+				//获取此会话的所有消息
+				List<EMMessage> messages = conversation.getAllMessages();
+				if(messages.size() > 0 ){
+					list.add(messages.get(messages.size() - 1));
+				}
+			}else{
+				List<EMMessage> messages = conversation.loadMoreGroupMsgFromDB(aa, 10);
+				System.out.println("12312312aaa"+messages.size());
+				if(messages.size() > 0 ){
+					list.add(messages.get(messages.size() - 1));
+				}
+			}
 		}
+			
+		
+		
 		
 		
 		//sdk初始化加载的聊天记录为20条，到顶时需要去db里获取更多
@@ -79,43 +102,71 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 		adapter = new ChatRecordAdapter(context, list);
 		chatList.setAdapter(adapter);
 		swipeLayout.setOnRefreshListener(this);
-		chatList.setOnfreshListener(this);
+		swipeLayout.setOnLoadListener(this);
+		chatList.setOnItemClickListener(this);
 	}
 
+
+	private CertainUserModel certainUserModel;
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+		System.out.println(position);
+		
+		try {
+		if(list.get(position - 1).getChatType() == ChatType.GroupChat){
+			certainUserModel = new CertainUserModel();
+			certainUserModel.setImUserName(list.get(position - 1).getUserName());
+			certainUserModel.setUserName(list.get(position - 1).getStringAttribute("conversationOtherUserNameExpand"));
+			certainUserModel.setUserImage(list.get(position - 1 ).getStringAttribute("conversationOtherUserImageExpand"));
+			certainUserModel.setUserId(list.get(position - 1).getIntAttribute("ConversationOtherUserIdentifier"));
+			startActivity(new Intent(context, ChatSingleActivity.class).putExtra(
+					"certainUserModel", certainUserModel));
+		}else{
+				/*System.out.println(list.get(position).getIntAttribute("ConversationOtherUserIdentifier")
+						+ "-" + list.get(position).getStringAttribute("conversationOtherUserNameExpand")
+						+ "-" + list.get(position).getStringAttribute("conversationOtherUserImageExpand")
+						+ "-" + list.get(position).getUserName());*/
+			certainUserModel = new CertainUserModel();
+			certainUserModel.setImUserName(list.get(position - 1).getUserName());
+			certainUserModel.setUserName(list.get(position - 1).getStringAttribute("IMUserNameExpand"));
+			certainUserModel.setUserImage(list.get(position - 1).getStringAttribute("IMUserImageExpand"));
+			certainUserModel.setUserId(list.get(position - 1).getIntAttribute("IMUserIdentifierExpand"));
+			startActivity(new Intent(context, ChatSingleActivity.class).putExtra(
+					"certainUserModel", certainUserModel));
+		}
+		} catch (EaseMobException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	
 	@Override
 	public void onRefresh() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				pageIndex = 1;
-				//dataJ();
 				swipeLayout.setRefreshing(false);
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+				pageIndex = 1;
+					//dataJ();
 				
 			}
-		}, 1000);
+		}, 1500);
 
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		
-	}
-
-	@Override
-	public void onLoadingMore() {
+	public void onLoad() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+				swipeLayout.setLoading(false);
 				pageIndex = pageIndex + 1;
 				//dataJ();
-				chatList.completeRefresh();
 			}
-		}, 1000);
+		}, 1500);
 	}
+
 }

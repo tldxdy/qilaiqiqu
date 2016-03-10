@@ -22,10 +22,9 @@ import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.adapter.SlideShowListAdapter;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.model.CarouselModel;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.Refresh;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -46,10 +45,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
-public class RidingFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnfreshListener{
+public class RidingFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnLoadListener{
 	
-	private FooterListView manageList;
+	private ListView manageList;
 	private View view;
 	private List<ArticleModel> Articlelist;
 	private SlideShowListAdapter adapter;
@@ -59,7 +59,7 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 	private int pageIndex = 1;
 	private List<CarouselModel> cmList;
 	List<ImageCycleViewUtil.ImageInfo> IClist;
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
@@ -67,18 +67,19 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_riding,null);
-		manageList = (FooterListView) view.findViewById(R.id.list_mainActivity_slideShow);
+		manageList = (ListView) view.findViewById(R.id.list_mainActivity_slideShow);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 		Articlelist = new ArrayList<ArticleModel>();
-		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
+		IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
+		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		swipeLayout.setOnRefreshListener(this);
-		manageList.setOnfreshListener(this);
+		
 		imageUrl();
 		return view;
 		
@@ -131,7 +132,6 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 						Picasso.with(context)
 								.load(imageInfo.image.toString())
 								.into(imageView);
-						// imageView.setImageResource(R.drawable.demo);
 
 						return imageView;
 
@@ -191,8 +191,6 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						swipeLayout.setRefreshing(false);
-						manageList.completeRefresh();
 					}
 
 					@Override
@@ -205,8 +203,6 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 							MainActivity.splashView.splashAndDisappear();
 							MainActivity.loginFlag = 0;
 						}
-						swipeLayout.setRefreshing(false);
-						manageList.completeRefresh();
 					}
 				});
 	}
@@ -249,18 +245,13 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 			manageList
 					.setOnItemClickListener(RidingFragment.this);
 			swipeLayout.setOnRefreshListener(this);
-			manageList.setOnfreshListener(this);
+			swipeLayout.setOnLoadListener(this);
 			/*manageList
 					.setOnRefreshListener(RidingFragment.this);*/
 			if (MainActivity.loginFlag == 1) {
 				MainActivity.splashView.splashAndDisappear();
 				MainActivity.loginFlag = 0;
 			}
-			// 更新UI
-			adapter.notifyDataSetChanged();
-			swipeLayout.setRefreshing(false);
-			manageList.completeRefresh();
-			//manageList.finishRefreshing();
 		}
 	}
 	@Override
@@ -269,8 +260,6 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 			MainActivity.splashView.splashAndDisappear();
 			MainActivity.loginFlag = 0;
 		}
-		swipeLayout.setRefreshing(false);
-		manageList.completeRefresh();
 	}
 /*	@Override
 	public void onRefresh() {
@@ -326,35 +315,23 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 							jsonArray.toString(), type);
 					pageIndex = jsonObject.optInt("pageIndex");
 					if(pageIndex == 1){
-						
-						Articlelist = lists;
-						adapter = new SlideShowListAdapter(context, Articlelist);
-						manageList.setAdapter(adapter);
-						//manageList.setOnItemClickListener(RidingFragment.this);
+						Articlelist.clear();
+						Articlelist.addAll(lists);
 						Toasts.show(context, "刷新成功", 0);
-						//new SystemUtil().makeToast(getActivity(), "刷新成功");
 					}else if(1 < pageIndex && pageIndex <= pageCount){
 						Articlelist.addAll(lists);
 						Toasts.show(context, "加载成功", 0);
-						//new SystemUtil().makeToast(getActivity(), "加载成功");
 					}else{
 						pageIndex = jsonObject.optInt("pageIndex");
 						Toasts.show(context, "以显示全部内容", 0);
 					}
-
-					// 更新UI
-
-					//manageList.finishRefreshing();
 				}
 				adapter.notifyDataSetChanged();
-				swipeLayout.setRefreshing(false);
-				manageList.completeRefresh();
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-					swipeLayout.setRefreshing(false);
-					manageList.completeRefresh();
+					
 			}
 		});
 	}
@@ -364,7 +341,7 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 
 			@Override
 			public void run() {
-				
+				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
 				if(IClist == null){
 					imageUrl();
@@ -380,13 +357,12 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 	}
 
 	@Override
-	public void onLoadingMore() {
+	public void onLoad() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+				swipeLayout.setLoading(false);
 				pageIndex = pageIndex + 1;
 				dataJ();
 			}

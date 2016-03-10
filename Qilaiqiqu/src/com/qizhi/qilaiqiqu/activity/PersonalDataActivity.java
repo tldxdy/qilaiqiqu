@@ -238,16 +238,17 @@ public class PersonalDataActivity extends BaseActivity implements
 			popCheck();
 			//showPopupWindow2(v);
 			break;
+			
+		case R.id.layout_personalDataActivity_fans:
+			startActivity(new Intent(PersonalDataActivity.this,
+					FriendActivity.class).putExtra("friendFlag", 0));
+			break;
 
 		case R.id.layout_personalDataActivity_care:
 			startActivity(new Intent(PersonalDataActivity.this,
 					FriendActivity.class).putExtra("friendFlag", 1));
 			break;
 
-		case R.id.layout_personalDataActivity_fans:
-			startActivity(new Intent(PersonalDataActivity.this,
-					FriendActivity.class).putExtra("friendFlag", 0));
-			break;
 		case R.id.layout_personalDataActivity_bindphone:
 			/*
 			 * Intent intent = new Intent(PersonalDataActivity.this,

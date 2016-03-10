@@ -15,9 +15,8 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
-import com.qizhi.qilaiqiqu.ui.FooterListView;
-import com.qizhi.qilaiqiqu.ui.FooterListView.OnfreshListener;
-import com.qizhi.qilaiqiqu.ui.Refresh;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -34,10 +33,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
-public class ActivityFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnfreshListener{
+public class ActivityFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener,OnLoadListener{
 	
-	private FooterListView manageList;
+	private ListView manageList;
 	private View view;
 	private List<StartAndParticipantActivityModel> dataList;
 	private ManageAdapter adapter;
@@ -45,7 +45,7 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 	private SharedPreferences preferences;
 	private XUtilsUtil xUtilsUtil;
 	private int pageIndex = 1;
-	private Refresh swipeLayout;
+	private RefreshLayout swipeLayout;
 	private View header;
 	
 	@SuppressLint("InlinedApi")
@@ -54,21 +54,18 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_manage,null);
-		manageList = (FooterListView) view.findViewById(R.id.list_fragment_manage);
+		manageList = (ListView) view.findViewById(R.id.list_fragment_manage);
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 		dataList = new ArrayList<StartAndParticipantActivityModel>();
 		header = View.inflate(getActivity(),R.layout.header, null);
-		swipeLayout = (Refresh) view.findViewById(R.id.swipe_container);
+		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		manageList.addHeaderView(header);
-		swipeLayout.setOnRefreshListener(this);
-		manageList.setOnfreshListener(this);
-		
 		data();
 		return view;
 	}
@@ -103,23 +100,13 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 			manageList.setAdapter(adapter);
 			manageList.setOnItemClickListener(this);
 			swipeLayout.setOnRefreshListener(this);
-			manageList.setOnfreshListener(this);
+			swipeLayout.setOnLoadListener(this);
 		}
 	}
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
 		
 	}
-/*	@Override
-	public void onRefresh() {
-		pageIndex = 1;
-		dataJ();
-	}
-	@Override
-	public void onLoadingMore() {
-		pageIndex = pageIndex + 1;
-		dataJ();
-	}*/
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 		//Toasts.show(context, "点击" + position, 0);
@@ -153,10 +140,8 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 					
 					
 					if(pageIndex == 1){
-						dataList = lists;
-						adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
-						manageList.setAdapter(adapter);
-						//manageList.setOnItemClickListener(ActivityFragment.this);
+						dataList.clear();
+						dataList.addAll(lists);
 						Toasts.show(getActivity(), "刷新成功", 0);
 					}else if(1 < pageIndex && pageIndex <= pageCount){
 						dataList.addAll(lists);
@@ -168,16 +153,11 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 				}
 				// 更新UI
 				adapter.notifyDataSetChanged();
-				//manageList.finishRefreshing();
-					swipeLayout.setRefreshing(false);
-					manageList.completeRefresh();
 				
 			}
 			
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-					swipeLayout.setRefreshing(false);
-					manageList.completeRefresh();
 			}
 		});
 	}
@@ -187,10 +167,9 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 
 			@Override
 			public void run() {
+				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
-				dataJ();
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+					dataJ();
 				
 			}
 		}, 1500);
@@ -198,18 +177,16 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 	}
 
 	@Override
-	public void onLoadingMore() {
+	public void onLoad() {
 		swipeLayout.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
+				swipeLayout.setLoading(false);
 				pageIndex = pageIndex + 1;
 				dataJ();
-				
 			}
-		}, 2000);
+		}, 1500);
 	}
 
 }

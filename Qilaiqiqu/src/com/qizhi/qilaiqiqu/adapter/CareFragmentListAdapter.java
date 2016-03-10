@@ -15,14 +15,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.CareModel.CareDataList;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
 
 public class CareFragmentListAdapter extends BaseAdapter {
@@ -111,27 +110,10 @@ public class CareFragmentListAdapter extends BaseAdapter {
 		params.addBodyParameter("quoteUserId", list.get(position)
 				.getQuoteUserId() + "");
 		params.addBodyParameter("uniqueKey", uniqueKey);
-
-		HttpUtils http = new HttpUtils();
-		http.send(HttpRequest.HttpMethod.POST, "http://120.55.195.170:80/"
-				+ url, params, new RequestCallBack<String>() {
-
+		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
+			
 			@Override
-			public void onStart() {
-				System.out.println("开始请求");
-			}
-
-			@Override
-			public void onLoading(long total, long current, boolean isUploading) {
-				if (isUploading) {
-					System.out.println("加载中");
-				} else {
-					System.out.println("未加载");
-				}
-			}
-
-			@Override
-			public void onSuccess(ResponseInfo<String> responseInfo) {
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
 				try {
 					JSONObject object = new JSONObject(responseInfo.result);
 					boolean result = object.getBoolean("result");
@@ -141,9 +123,10 @@ public class CareFragmentListAdapter extends BaseAdapter {
 					e.printStackTrace();
 				}
 			}
-
+			
 			@Override
-			public void onFailure(HttpException error, String msg) {
+			public void onMyFailure(HttpException error, String msg) {
+				
 			}
 		});
 	}

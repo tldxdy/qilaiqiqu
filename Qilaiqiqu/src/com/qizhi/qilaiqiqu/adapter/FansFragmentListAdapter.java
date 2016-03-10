@@ -1,6 +1,7 @@
 package com.qizhi.qilaiqiqu.adapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,11 +17,11 @@ import com.squareup.picasso.Picasso;
 
 public class FansFragmentListAdapter extends BaseAdapter {
 
-	private ArrayList<FansDataList> list;
+	private List<FansDataList> list;
 	private Context context;
 	private ViewHolder holder;
 	
-	public FansFragmentListAdapter(Context context, ArrayList<FansDataList> list){
+	public FansFragmentListAdapter(Context context, List<FansDataList> list){
 		this.list = list;
 		this.context = context;
 	}

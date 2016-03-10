@@ -1,9 +1,14 @@
 package com.qizhi.qilaiqiqu.adapter;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.exceptions.EaseMobException;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.MyMessageAdapter.ViewHolder;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 
 import android.content.Context;
@@ -17,14 +22,14 @@ import android.widget.TextView;
 
 public class ChatRecordAdapter extends BaseAdapter {
 
-	private List<?> list;
+	private List<EMMessage> list;
 	private Context context;
 	private XUtilsUtil xUtilsUtil;
 	private SharedPreferences preferences;
 	private ViewHolder holder;
 	private LayoutInflater inflater;
 	
-	public ChatRecordAdapter(Context context ,List<?> list){
+	public ChatRecordAdapter(Context context ,List<EMMessage> list){
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		this.list = list;
@@ -34,7 +39,7 @@ public class ChatRecordAdapter extends BaseAdapter {
 	
 	@Override
 	public int getCount() {
-		return 5;
+		return list.size();
 	}
 
 	@Override
@@ -59,6 +64,41 @@ public class ChatRecordAdapter extends BaseAdapter {
 		}else{
 			holder = (ViewHolder) convertView.getTag();
 		}
+		try {
+			System.out.println("============");
+			System.out.println(list.get(position).getBody().toString());
+		if(list.get(position).getChatType() == ChatType.GroupChat){
+				holder.nameTxt.setText(list.get(position).getStringAttribute("IMUserNameExpand"));
+				if(list.get(position).getType().toString().equals("TXT")){
+					String na = list.get(position).getBody().toString();
+					String[] naa = na.split(":");
+					String substring = na.substring(naa[0].length() + 2, na.length() - 1);
+					holder.contentTxt.setText(substring);
+				}else if(list.get(position).getType().toString().equals("IMAGE")){
+					holder.contentTxt.setText("[图片]");
+				}else{
+					holder.contentTxt.setText("[语音]");
+				}
+				SystemUtil.Imagexutils(SystemUtil.IMGPHTH + list.get(position).getStringAttribute("IMConversationUserImageExpand"), holder.portraitImg, context);
+				
+		}else{
+			holder.nameTxt.setText(list.get(position).getStringAttribute("IMUserNameExpand"));
+			if(list.get(position).getType().toString().equals("TXT")){
+				String na = list.get(position).getBody().toString();
+				String[] naa = na.split(":");
+				String substring = na.substring(naa[0].length() + 2, na.length() - 1);
+				holder.contentTxt.setText(substring);
+			}else if(list.get(position).getType().toString().equals("IMAGE")){
+				holder.contentTxt.setText("[图片]");
+			}else{
+				holder.contentTxt.setText("[语音]");
+			}
+			SystemUtil.Imagexutils(SystemUtil.IMGPHTH + list.get(position).getStringAttribute("IMUserImageExpand"), holder.portraitImg, context);
+		}
+		} catch (EaseMobException e) {
+			e.printStackTrace();
+		}
+		
 		return convertView;
 	}
 	

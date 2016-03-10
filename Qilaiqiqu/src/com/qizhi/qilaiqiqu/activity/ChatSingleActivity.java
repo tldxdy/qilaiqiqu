@@ -260,8 +260,8 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 				TextMessageBody txtBody = new TextMessageBody((edtContent
 						.getText() + "").toString());
 				// 拓展中的User ID 如果是群组,则为对应的群组ID
-				messageTXT.setAttribute("ConversationMyUserIdentifier",
-						preferences.getString("userId", null));
+				messageTXT.setAttribute("IMUserIdentifierExpand",
+						preferences.getInt("userId", -1));
 				// 拓展中的用户头像
 				messageTXT.setAttribute("IMUserImageExpand",
 						preferences.getString("userImage", null));

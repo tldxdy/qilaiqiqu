@@ -35,8 +35,8 @@ public class FooterListView extends ListView implements OnScrollListener{
 
 	
 	private void init() {
-		setOnScrollListener(this);
 		initFooterView();
+		setOnScrollListener(this);
 	}
 	//尾部上拉加载
 		private void initFooterView() {
