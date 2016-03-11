@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -457,10 +458,11 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
 		    try
 		    {
-		      Bitmap bmp = SystemUtil.compressImageFromFile("http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId(), 300);
+		      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 300);
 		      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 150, 150, true);
 		      bmp.recycle();
-		      msg.setThumbImage(thumbBmp);
+		      msg.thumbData = Bitmap2Bytes(thumbBmp); 
+		      //msg.setThumbImage(thumbBmp);
 		    } 
 		    catch (Exception e)
 		    {
@@ -481,10 +483,11 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
 			    try
 			    {
-			      Bitmap bmp = SystemUtil.compressImageFromFile("http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId(), 300);
+			      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 300);
 			      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 150, 150, true);
 			      bmp.recycle();
-			      msg.setThumbImage(thumbBmp);
+			      msg.thumbData = Bitmap2Bytes(thumbBmp); 
+			      //msg.setThumbImage(thumbBmp);
 			    } 
 			    catch (Exception e)
 			    {
@@ -506,6 +509,12 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	private String buildTransaction(final String type) {
 		return (type == null) ? String.valueOf(System.currentTimeMillis())
 				: type + System.currentTimeMillis();
+	}
+	
+	public byte[] Bitmap2Bytes(Bitmap bm) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+		return baos.toByteArray();
 	}
 	
 	//sina微博
