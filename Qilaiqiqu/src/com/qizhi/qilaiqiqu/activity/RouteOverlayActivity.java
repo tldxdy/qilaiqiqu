@@ -254,10 +254,8 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 			ReleaseActiveActivity.lanInfo = llp;
 			ReleaseActiveActivity.mileage = (distance / 1000) + "";
 
-			System.out.println("lanName:" + ReleaseActiveActivity.lanName);
-			System.out.println("lanInfo:" + ReleaseActiveActivity.lanInfo);
-			System.out.println("mileage:" + ReleaseActiveActivity.mileage);
-
+			finish();
+			
 			break;
 
 		default:

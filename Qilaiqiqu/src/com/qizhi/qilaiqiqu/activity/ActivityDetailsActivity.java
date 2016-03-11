@@ -732,7 +732,11 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		scanNumTxt.setText(activity.getScanNum() + "次浏览");
 		userNameTxt.setText(activity.getUserName());
 		activityTitleTxt.setText(activity.getActivityTitle());
-		mileageTxt.setText(activity.getMileage() + "KM");
+		if(activity.getMileage() == null){
+			mileageTxt.setText("发起者未规划路线");
+		}else {
+			mileageTxt.setText(activity.getMileage() + "KM");
+		}
 		int hour = activity.getDuration() / 60;
 		if (hour / 24 > 0) {
 			int days = hour / 24;

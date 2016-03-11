@@ -127,7 +127,6 @@ public class SetActivity extends Activity implements OnClickListener {
 		opintionLayout.setOnClickListener(this);
 		introduceLayout.setOnClickListener(this);
 		clearCacheLayout.setOnClickListener(this);
-
 		view1.setOnChangeListener(new OnSwitchChangedListener() {
 
 			@Override

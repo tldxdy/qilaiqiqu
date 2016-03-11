@@ -95,7 +95,7 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 
 	private void initEvent() {
 		Backlayout.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				finish();
@@ -292,20 +292,25 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 
 	private void drawLine() {
 		pointList = new ArrayList<LatLonPoint>();
-		stringExtra = getIntent().getStringExtra("LanInfo");
-		split = stringExtra.split(",");
-		if (split.length > 1) {
-			for (int i = 0; i < split.length; i++) {
-				split2 = split[i].split(" ");
-				latLonPoint = new LatLonPoint(Double.parseDouble(split2[0]),
-						Double.parseDouble(split2[1]));
-				pointList.add(latLonPoint);
+		if ("".equals(getIntent().getStringExtra("LanInfo"))) {
+			stringExtra = getIntent().getStringExtra("LanInfo");
+			if (stringExtra != null) {
+				split = stringExtra.split(",");
+				if (split.length > 1) {
+					for (int i = 0; i < split.length; i++) {
+						split2 = split[i].split(" ");
+						latLonPoint = new LatLonPoint(
+								Double.parseDouble(split2[0]),
+								Double.parseDouble(split2[1]));
+						pointList.add(latLonPoint);
+					}
+
+					System.out.println(pointList);
+
+					mRouteOverlay(pointList.get(0), pointList.get(1));
+
+				}
 			}
-
-			System.out.println(pointList);
-
-			mRouteOverlay(pointList.get(0), pointList.get(1));
-
 		}
 
 	}
@@ -330,29 +335,30 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 
 	@Override
 	public void onWalkRouteSearched(WalkRouteResult result, int rCode) {
-		if (result != null && result.getPaths() != null
-				&& result.getPaths().size() > 0) {
-			walkRouteResult = result;
-			WalkPath walkPath = walkRouteResult.getPaths().get(0);
-			walkRouteOverlay = new WalkRouteOverlayUtil(this, aMap, walkPath,
-					walkRouteResult.getStartPos(),
-					walkRouteResult.getTargetPos());
-			walkRouteOverlay.addToMap();
+		if (rCode == 0) {
+			if (result != null && result.getPaths() != null
+					&& result.getPaths().size() > 0) {
+				walkRouteResult = result;
+				WalkPath walkPath = walkRouteResult.getPaths().get(0);
+				walkRouteOverlay = new WalkRouteOverlayUtil(this, aMap,
+						walkPath, walkRouteResult.getStartPos(),
+						walkRouteResult.getTargetPos());
+				walkRouteOverlay.addToMap();
 
+			} else {
+				new SystemUtil().makeToast(ShowLineActivity.this,
+						R.string.no_result + "no_result");
+			}
+		} else if (rCode == 27) {
+			new SystemUtil().makeToast(ShowLineActivity.this,
+					R.string.error_network + "error_network");
+		} else if (rCode == 32) {
+			new SystemUtil().makeToast(ShowLineActivity.this,
+					R.string.error_key + "error_key");
 		} else {
 			new SystemUtil().makeToast(ShowLineActivity.this,
-					R.string.no_result + "no_result");
+					getString(R.string.error_other) + ",rCode:" + rCode + "");
 		}
-		// } else if (rCode == 27) {
-		// new SystemUtil().makeToast(ShowLineActivity.this,
-		// R.string.error_network + "error_network");
-		// } else if (rCode == 32) {
-		// new SystemUtil().makeToast(ShowLineActivity.this,
-		// R.string.error_key + "error_key");
-		// } else {
-		// new SystemUtil().makeToast(ShowLineActivity.this,
-		// getString(R.string.error_other)+",rCode:" + rCode + "");
-		// }
 
 	}
 
