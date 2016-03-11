@@ -3,7 +3,6 @@ package com.qizhi.qilaiqiqu.wxapi;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,12 +15,12 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.HuanxinLogOutActivity;
-import com.qizhi.qilaiqiqu.activity.LoginActivity;
 import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.tencent.mm.sdk.constants.ConstantsAPI;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
@@ -46,22 +45,40 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 	}
 
 	@Override
-	public void onReq(BaseReq arg0) {
-
+	public void onReq(BaseReq req) {
 	}
 
 	@Override
 	public void onResp(BaseResp resp) {
-		Bundle bundle = new Bundle();
+		if(resp.getType()==ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX){//分享
+			 String result = "";
+
+		        switch (resp.errCode) {
+		            case BaseResp.ErrCode.ERR_OK:
+		                result = "成功";
+		                break;
+		            case BaseResp.ErrCode.ERR_USER_CANCEL:
+		                result = "取消";
+		                break;
+		            case BaseResp.ErrCode.ERR_AUTH_DENIED:
+		                result = "拒绝";
+		                break;
+		            default:
+		                result = "。。。。";
+		                break;
+		        }
+		        Toasts.show(this, result, 0);
+		        return;
+			}
 		switch (resp.errCode) {
 		case BaseResp.ErrCode.ERR_OK:
-
+			
 			String code = ((SendAuth.Resp) resp).code;
 			// 上面的code就是接入指南里要拿到的code
 			wxRequest(code);
 			
 			break;
-
+			
 		default:
 			break;
 		}

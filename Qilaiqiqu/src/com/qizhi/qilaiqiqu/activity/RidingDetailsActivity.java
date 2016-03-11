@@ -1,6 +1,5 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -11,7 +10,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.helpers.Util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,7 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -64,10 +61,8 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.SendMessageToWX.Req;
-import com.tencent.mm.sdk.modelmsg.WXImageObject;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.tauth.IUiListener;
@@ -320,9 +315,9 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			break;
 
 		case R.id.img_ridingDetailsActivity_share:
+			
+			
 			showPopupWindow3(v);
-			//onClickQQShare();
-			//onClickWXShare();
 			break;
 		case R.id.img_ridingDetailsActivity_cllection:
 			if (cllectionFlag == 1) {
@@ -455,40 +450,65 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	}
 	//分享到微信
 	private void  onClickWXShare(){
-		
-		
-		String text = "share our application";  
-        WXTextObject textObj = new WXTextObject();  
-        textObj.text = text;  
-
-        WXMediaMessage msg = new WXMediaMessage(textObj);  
-        msg.mediaObject = textObj;  
-        msg.description = text;  
-          
-        SendMessageToWX.Req req = new SendMessageToWX.Req();  
-        req.transaction = String.valueOf(System.currentTimeMillis());  
-        req.message = msg;  
-          
-        
-		
-	/*	Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.bitmap_homepage);
-		
-		//初始化WXImageObject和WXMediaMessage对象
-		WXImageObject imgobj = new WXImageObject(bmp);
-		WXMediaMessage msg = new WXMediaMessage();
-		msg.mediaObject = imgobj;
-		
-		Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-		bmp.recycle();
-		msg.thumbData = Bitmap2Bytes(thumbBmp);
-		
-		Req req = new Req();
-		//req.transaction = buildTransaction("img");
-		req.transaction = String.valueOf(System.currentTimeMillis());*/
-        
-		req.scene =SendMessageToWX.Req.WXSceneSession;
-		api.sendReq(req); 
+		 WXWebpageObject webpage = new WXWebpageObject();
+		    webpage.webpageUrl = "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId();
+		    WXMediaMessage msg = new WXMediaMessage(webpage);
+		    msg.title = articleModel.getTitle();
+		    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
+		    try
+		    {
+		      Bitmap bmp = SystemUtil.compressImageFromFile("http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId(), 300);
+		      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 150, 150, true);
+		      bmp.recycle();
+		      msg.setThumbImage(thumbBmp);
+		    } 
+		    catch (Exception e)
+		    {
+		      e.printStackTrace();
+		    }
+		    SendMessageToWX.Req req = new SendMessageToWX.Req();
+		    req.transaction = buildTransaction("图文链接");
+		    req.message = msg;
+		    req.scene = SendMessageToWX.Req.WXSceneSession;
+		    api.sendReq(req);
 	}
+		//分享到微信
+		private void  onClickWXPYQShare(){
+			 WXWebpageObject webpage = new WXWebpageObject();
+			    webpage.webpageUrl = "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId();
+			    WXMediaMessage msg = new WXMediaMessage(webpage);
+			    msg.title = articleModel.getTitle();
+			    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
+			    try
+			    {
+			      Bitmap bmp = SystemUtil.compressImageFromFile("http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId(), 300);
+			      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 150, 150, true);
+			      bmp.recycle();
+			      msg.setThumbImage(thumbBmp);
+			    } 
+			    catch (Exception e)
+			    {
+			      e.printStackTrace();
+			    }
+			    SendMessageToWX.Req req = new SendMessageToWX.Req();
+			    req.transaction = buildTransaction("图文链接");
+			    req.message = msg;
+			    req.scene = SendMessageToWX.Req.WXSceneTimeline;
+			    api.sendReq(req);
+		}
+	
+
+	/**
+	 * 构造一个用于请求的唯一标识
+	 * @param type 分享的内容类型
+	 * @return 
+	 */
+	private String buildTransaction(final String type) {
+		return (type == null) ? String.valueOf(System.currentTimeMillis())
+				: type + System.currentTimeMillis();
+	}
+	
+	//sina微博
 	private void onClickWBShare(){
 	}
 	
@@ -1240,6 +1260,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 			@Override
 			public void onClick(View arg0) {
+				onClickWXShare();
 				popupWindow.dismiss();
 			}
 		});
@@ -1247,6 +1268,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 			@Override
 			public void onClick(View arg0) {
+				onClickWXPYQShare();
 				popupWindow.dismiss();
 			}
 		});
