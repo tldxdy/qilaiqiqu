@@ -24,7 +24,6 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.utils.DataCleanManager;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView.OnSwitchChangedListener;
@@ -57,6 +56,9 @@ public class SetActivity extends Activity implements OnClickListener {
 
 	DataCleanManager cleanManager;
 
+	private SharedPreferences sp;
+	Editor editor;
+
 	private Handler handler = new Handler() {
 
 		@Override
@@ -80,7 +82,7 @@ public class SetActivity extends Activity implements OnClickListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_set);
 
-		SharedPreferences sp = getSharedPreferences("userLogin", 0);
+		sp = getSharedPreferences("userLogin", 0);
 		if (sp.getInt("userId", -1) == -1) {
 			logoutFlag = 1;
 		} else {
@@ -93,6 +95,8 @@ public class SetActivity extends Activity implements OnClickListener {
 	}
 
 	private void initView() {
+		editor = sp.edit();// 获取编辑器
+
 		view1 = (PushSlideSwitchView) findViewById(R.id.push_set_warm_switchview1);
 		// view2 = (PushSlideSwitchView)
 		// findViewById(R.id.push_set_warm_switchview2);
@@ -127,6 +131,8 @@ public class SetActivity extends Activity implements OnClickListener {
 		opintionLayout.setOnClickListener(this);
 		introduceLayout.setOnClickListener(this);
 		clearCacheLayout.setOnClickListener(this);
+		view1.setChecked(sp.getBoolean("view1", true));
+		System.out.println("sp.getBoolean(view1, true):"+sp.getBoolean("view1", true));
 		view1.setOnChangeListener(new OnSwitchChangedListener() {
 
 			@Override
@@ -136,33 +142,20 @@ public class SetActivity extends Activity implements OnClickListener {
 						.getChatOptions();
 				options = EMChatManager.getInstance().getChatOptions();
 				if (isChecked) {
-					options.setNotifyBySoundAndVibrate(true);
+					System.out.println("isChecked:"+isChecked);
+					editor.putBoolean("view1", isChecked);
+					editor.commit();
+					options.setNotifyBySoundAndVibrate(isChecked);
+					System.out.println("sp.getBoolean(view1, true):"+sp.getBoolean("view1", false));
 				} else {
-					options.setNotifyBySoundAndVibrate(false);
+					System.out.println("isChecked:"+isChecked);
+					editor.putBoolean("view1", isChecked);
+					editor.commit();
+					options.setNotifyBySoundAndVibrate(isChecked);
+					System.out.println("sp.getBoolean(view1, true):"+sp.getBoolean("view1", false));
 				}
-
-				// new SystemUtil().makeToast(SetActivity.this, "滑动开关1:"
-				// + isChecked);
 			}
 		});
-		// view2.setOnChangeListener(new OnSwitchChangedListener() {
-		//
-		// @Override
-		// public void onSwitchChange(PushSlideSwitchView switchView,
-		// boolean isChecked) {
-		// new SystemUtil().makeToast(SetActivity.this, "滑动开关2:"
-		// + isChecked);
-		// }
-		// });
-		// view3.setOnChangeListener(new OnSwitchChangedListener() {
-		//
-		// @Override
-		// public void onSwitchChange(PushSlideSwitchView switchView,
-		// boolean isChecked) {
-		// new SystemUtil().makeToast(SetActivity.this, "滑动开关3:"
-		// + isChecked);
-		// }
-		// });
 	}
 
 	@Override
@@ -236,20 +229,19 @@ public class SetActivity extends Activity implements OnClickListener {
 	}
 
 	private void httpQuery() {
-		SharedPreferences sharedPreferences = getSharedPreferences("userLogin",
-				Context.MODE_PRIVATE);
-		final Editor editor = sharedPreferences.edit();// 获取编辑器
 
 		String url = "mobile/push/releaseToken.html";
 		RequestParams params = new RequestParams();
 
 		params.addBodyParameter("userId",
-				sharedPreferences.getInt("userId", -1) + "");
+				sp.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
-				sharedPreferences.getString("uniqueKey", null));
-//		String checkCode = sharedPreferences.getString("checkCode", null);
-//		String defaultCode = sharedPreferences.getString("defaultCode", null);
-//		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));
+				sp.getString("uniqueKey", null));
+		// String checkCode = sharedPreferences.getString("checkCode", null);
+		// String defaultCode = sharedPreferences.getString("defaultCode",
+		// null);
+		// params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode,
+		// defaultCode));
 		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
 
 			@Override
@@ -269,12 +261,18 @@ public class SetActivity extends Activity implements OnClickListener {
 						editor.putString("imPassword", null);
 						editor.putString("imUserName", null);
 						editor.putString("mobilePhone", null);
-						/*editor.putString("checkCode", jsonObject.optString("checkCode"));
-						editor.putString("defaultCode", jsonObject.optString("defaultCode"));*/
+						/*
+						 * editor.putString("checkCode",
+						 * jsonObject.optString("checkCode"));
+						 * editor.putString("defaultCode",
+						 * jsonObject.optString("defaultCode"));
+						 */
 						editor.commit();
 						SetActivity.this.finish();
-						/*startActivity(new Intent(SetActivity.this,
-								LoginActivity.class));*/
+						/*
+						 * startActivity(new Intent(SetActivity.this,
+						 * LoginActivity.class));
+						 */
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

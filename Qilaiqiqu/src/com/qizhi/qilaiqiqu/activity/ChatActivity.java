@@ -270,8 +270,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				TextMessageBody txtBody = new TextMessageBody((edtContent
 						.getText() + "").toString());
 
-				messageTXT.setAttribute("ConversationMyUserIdentifier",
-						preferences.getString("userId", null));
+				messageTXT.setAttribute("IMUserIdentifierExpand",
+						preferences.getInt("userId", -1)+"");
 				messageTXT.setAttribute("IMUserNameExpand",
 						preferences.getString("userName", null));
 				messageTXT.setAttribute("IMConversationUserImageExpand",
@@ -742,8 +742,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					final ImageMessageBody body = new ImageMessageBody(
 							new File(stringArrayListExtra.get(i)));
 
-					messageIMAGE.setAttribute("ConversationMyUserIdentifier",
-							preferences.getString("userId", null));
+					messageIMAGE.setAttribute("IMUserIdentifierExpand",
+							preferences.getInt("userId", -1)+"");
 					messageIMAGE.setAttribute("IMUserNameExpand",
 							preferences.getString("userName", null));
 					messageIMAGE.setAttribute("IMConversationUserImageExpand",
@@ -919,8 +919,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				messageVOICE.setChatType(ChatType.GroupChat);
 			messageVOICE.setReceipt(username);
 
-			messageVOICE.setAttribute("ConversationMyUserIdentifier",
-					preferences.getString("userId", null));
+			messageVOICE.setAttribute("IMUserIdentifierExpand",
+					preferences.getInt("userId", -1)+"");
 			messageVOICE.setAttribute("IMUserNameExpand",
 					preferences.getString("userName", null));
 			messageVOICE.setAttribute("IMConversationUserImageExpand",

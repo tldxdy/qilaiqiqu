@@ -287,38 +287,20 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.txt_releaseActiveActivity_release:
-			if (themeEdt.getText() == null
-					|| timeTxt.getText().equals("请选择天数  请选择小时数")
-					|| dateTxt.getText().equals("请选择日期  请选择时间")
-					|| signatureEdt.getText() == null) {
-				new SystemUtil().makeToast(this, "必填项不能为空");
-			} else {
-				String s = dateTxt.getText().toString() + ":00";
-
-				if (!falg) {
-					Toasts.show(this, "正在发布，请稍候", 0);
-					// new SystemUtil().makeToast(this, "正在发布，请稍候");
-					break;
-				}
-				falg = false;
-				pDialog = ProgressDialog.show(this, "请稍等", "正在发布");
-				// Toasts.show(this, "正在发布，请稍候", 0);
-				// new SystemUtil().makeToast(this, "正在发布，请稍候");
-				if (bitList.size() != 0) {
-					photoList = new ArrayList<String>();
-					uploadingNum = 0;
-					try {
-						new SystemUtil().httpClient(
-								saveMyBitmap(bitList.get(uploadingNum)),
-								preferences, handler, "HD");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					// releasePictue();
-				} else {
-					postAll("");
-				}
+			if (preferences.getString("mobilePhone", null) == null
+					|| preferences.getString("mobilePhone", null).equals("")
+					|| preferences.getString("mobilePhone", null).equals("null")) {
+				Toasts.show(this, "请先绑定手机号码", 0);
+				Intent intent = new Intent(ReleaseActiveActivity.this,
+						BindPhoneActivity.class);
+				intent.putExtra("userId", preferences.getInt("userId", -1));
+				intent.putExtra("uniqueKey",
+						preferences.getString("uniqueKey", null));
+				startActivityForResult(intent, 4);
+				break;
 			}
+
+			isReleaseOK();
 			break;
 
 		case R.id.layout_releaseActiveActivity_date:
@@ -364,6 +346,39 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 		default:
 			break;
+		}
+	}
+
+	private void isReleaseOK() {
+		if (themeEdt.getText() == null
+				|| timeTxt.getText().equals("请选择天数  请选择小时数")
+				|| dateTxt.getText().equals("请选择日期  请选择时间")
+				|| signatureEdt.getText() == null) {
+			new SystemUtil().makeToast(this, "必填项不能为空");
+		} else {
+
+			if (!falg) {
+				Toasts.show(this, "正在发布，请稍候", 0);
+				// new SystemUtil().makeToast(this, "正在发布，请稍候");
+			}
+			falg = false;
+			pDialog = ProgressDialog.show(this, "请稍等", "正在发布");
+			// Toasts.show(this, "正在发布，请稍候", 0);
+			// new SystemUtil().makeToast(this, "正在发布，请稍候");
+			if (bitList.size() != 0) {
+				photoList = new ArrayList<String>();
+				uploadingNum = 0;
+				try {
+					new SystemUtil().httpClient(
+							saveMyBitmap(bitList.get(uploadingNum)),
+							preferences, handler, "HD");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				// releasePictue();
+			} else {
+				postAll("");
+			}
 		}
 	}
 
@@ -484,8 +499,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 							// "发布成功");
 							ReleaseActiveActivity.this.finish();
 						} else {
-							Toasts.show(getApplicationContext(),
-									jsonObject.optString("message"), 0);
+							Toasts.show(getApplicationContext(), "result:"
+									+ jsonObject.optString("message"), 0);
 						}
 					}
 
@@ -493,7 +508,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 					public void onMyFailure(HttpException error, String msg) {
 						pDialog.dismiss();
 						falg = true;
-						Toasts.show(getApplicationContext(), msg, 0);
+						Toasts.show(getApplicationContext(), "Xutils发送失败:"
+								+ msg, 0);
 					}
 				});
 	}
@@ -523,6 +539,10 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 						}
 					}
 				}
+				break;
+			case 4:
+				isReleaseOK();
+				Toasts.show(this, "绑定成功", 0);
 				break;
 			}
 		}
@@ -602,8 +622,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		final Time t = new Time();
 		t.setToNow();
 
-//		((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
-//				.getChildAt(0).setVisibility(View.GONE);
+		// ((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
+		// .getChildAt(0).setVisibility(View.GONE);
 		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 		datePicker.init(minCalendar.get(Calendar.YEAR),

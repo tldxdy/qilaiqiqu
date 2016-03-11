@@ -228,6 +228,15 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private void sendTencentCode(JSONObject re, JSONObject jo) {
 		RequestParams params = new RequestParams("UTF-8");
+		
+		System.out.println("pushToken:"+registrationID);
+		System.out.println("openId:"+jo.optString("openid"));
+		System.out.println("accessToken:"+jo.optString("access_token"));
+		System.out.println("nickname:"+re.optString("nickname"));
+		System.out.println("gender:"+re.optString("gender"));
+		System.out.println("avatarURL50:"+re.optString("figureurl_1"));
+		System.out.println("avatarURL100:"+re.optString("figureurl_2"));
+		
 		params.addQueryStringParameter("pushToken", registrationID);
 		params.addQueryStringParameter("adviceType", "ANDROID");
 		params.addQueryStringParameter("openId", jo.optString("openid"));

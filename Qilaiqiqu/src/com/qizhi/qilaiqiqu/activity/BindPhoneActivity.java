@@ -29,7 +29,8 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
-public class BindPhoneActivity extends Activity implements OnClickListener, CallBackPost{
+public class BindPhoneActivity extends Activity implements OnClickListener,
+		CallBackPost {
 
 	private LinearLayout backLayout;// 返回按钮
 
@@ -38,7 +39,7 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 	private int i = 60;
 	private EditText phoneEdt;
 	private EditText codeEdt;
-	
+
 	private Timer timer;
 	private TimerTask task;
 	private int timeFlag = 1;
@@ -47,8 +48,7 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 	private int userId;
 	private String uniqueKey;
 	private String mobilePhone;
-	
-	
+
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 
@@ -82,7 +82,7 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 
 		phoneEdt = (EditText) findViewById(R.id.edt_bindphoneactivity_phone);
 		codeEdt = (EditText) findViewById(R.id.edt_bindphoneactivity_code);
-		
+
 		Intent intent = getIntent();
 		userId = intent.getIntExtra("userId", -1);
 		uniqueKey = intent.getStringExtra("uniqueKey");
@@ -114,23 +114,24 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 			}
 		});
 		phoneEdt.addTextChangedListener(new TextWatcher() {
-			
+
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				
+
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
-				if(s.length() != 11){
+				if (s.length() != 11) {
 					phoneFlag = 1;
-				}else{
+				} else {
 					phoneFlag = 2;
 				}
 			}
@@ -150,12 +151,11 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 
 		new XUtilsUtil().httpPost(url, params, BindPhoneActivity.this);
 	}
-	
-	
+
 	private void httpRegister() {
 		finishFlag = 2;
 		String url = "mobile/user/changeUserMobilePhone.html";
-		String mobilePhone = phoneEdt.getText().toString().trim();
+		final String mobilePhone = phoneEdt.getText().toString().trim();
 		String codeNo = codeEdt.getText().toString().trim();
 
 		RequestParams params = new RequestParams();
@@ -164,10 +164,42 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 		params.addBodyParameter("userId", userId + "");
 		params.addBodyParameter("codeNo", codeNo);
 
-		new XUtilsUtil().httpPost(url, params, BindPhoneActivity.this);
+		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
+
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				try {
+					JSONObject jsonObject = new JSONObject(responseInfo.result);
+					if (jsonObject.getBoolean("result")) {
+						if (finishFlag == 2) {
+							new SystemUtil().makeToast(BindPhoneActivity.this,
+									"绑定成功");
+							Intent intent = new Intent();
+							intent.putExtra("mobilePhone", mobilePhone);
+							setResult(4, intent);
+							finishFlag = 1;
+							finish();
+						}
+
+					} else {
+						String string = jsonObject.getString("message");
+						new SystemUtil().makeToast(BindPhoneActivity.this,
+								string);
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+
+			}
+		});
 	}
-	
-	
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -176,14 +208,14 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 			break;
 		case R.id.btn_bindphoneactivity_send:
 			if (phoneFlag == 2) {
-					if (timeFlag == 1) {
-						startTime();
-						httpSendCode();
-						timeFlag = 2;
-					} else {
-						new SystemUtil().makeToast(BindPhoneActivity.this,
-								"验证码每60秒发送发送一次");
-					}
+				if (timeFlag == 1) {
+					startTime();
+					httpSendCode();
+					timeFlag = 2;
+				} else {
+					new SystemUtil().makeToast(BindPhoneActivity.this,
+							"验证码每60秒发送发送一次");
+				}
 			} else {
 				new SystemUtil().makeToast(BindPhoneActivity.this, "手机号码为11位");
 			}
@@ -193,6 +225,7 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 			break;
 		}
 	}
+
 	/**
 	 * @param 5秒启动handle
 	 */
@@ -226,8 +259,9 @@ public class BindPhoneActivity extends Activity implements OnClickListener, Call
 			JSONObject jsonObject = new JSONObject(responseInfo.result);
 			if (jsonObject.getBoolean("result")) {
 				if (finishFlag == 1) {
-					new SystemUtil().makeToast(BindPhoneActivity.this, "验证码已发送");
-				}else {
+					new SystemUtil()
+							.makeToast(BindPhoneActivity.this, "验证码已发送");
+				} else {
 					new SystemUtil().makeToast(BindPhoneActivity.this, "绑定成功");
 					Intent intent = new Intent();
 					intent.putExtra("mobilePhone", mobilePhone);

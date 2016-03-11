@@ -14,9 +14,11 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.BindPhoneActivity;
 import com.qizhi.qilaiqiqu.activity.HuanxinLogOutActivity;
 import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -50,35 +52,36 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 
 	@Override
 	public void onResp(BaseResp resp) {
-		if(resp.getType()==ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX){//分享
-			 String result = "";
+		if (resp.getType() == ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX) {// 分享
+			String result = "";
 
-		        switch (resp.errCode) {
-		            case BaseResp.ErrCode.ERR_OK:
-		                result = "成功";
-		                break;
-		            case BaseResp.ErrCode.ERR_USER_CANCEL:
-		                result = "取消";
-		                break;
-		            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-		                result = "拒绝";
-		                break;
-		            default:
-		                result = "。。。。";
-		                break;
-		        }
-		        Toasts.show(this, result, 0);
-		        return;
+			switch (resp.errCode) {
+			case BaseResp.ErrCode.ERR_OK:
+				result = "成功";
+				break;
+			case BaseResp.ErrCode.ERR_USER_CANCEL:
+				result = "取消";
+				break;
+			case BaseResp.ErrCode.ERR_AUTH_DENIED:
+				result = "拒绝";
+				break;
+			default:
+				result = "。。。。";
+				break;
 			}
+			Toasts.show(this, result, 0);
+			finish();
+			return;
+		}
 		switch (resp.errCode) {
 		case BaseResp.ErrCode.ERR_OK:
-			
+
 			String code = ((SendAuth.Resp) resp).code;
 			// 上面的code就是接入指南里要拿到的code
 			wxRequest(code);
-			
+
 			break;
-			
+
 		default:
 			break;
 		}
@@ -124,18 +127,17 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 				editor.putInt("loginFlag", 1);
 				editor.commit();
 
-				
-			}else {
-				Toasts.show(this, "微信登录失败", 0);
+			} else {
+				String string = jsonObject.getString("message");
+				new SystemUtil().makeToast(WXEntryActivity.this, string);
 			}
-			
-			
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
-		startActivity(new Intent(WXEntryActivity.this,
-				MainActivity.class).putExtra("loginFlag", 1));
+
+		startActivity(new Intent(WXEntryActivity.this, MainActivity.class)
+				.putExtra("loginFlag", 1));
 
 	}
 

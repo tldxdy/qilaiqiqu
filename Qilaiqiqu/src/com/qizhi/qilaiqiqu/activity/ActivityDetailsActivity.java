@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -1343,11 +1344,20 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			    msg.title = model.getActivitys().getActivityTitle();
 			    msg.description = model.getActivitys().getActivityMemo();
 			    
-			    Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 800);
-				Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-				bmp.recycle();
-				msg.thumbData = SystemUtil.bmpToByteArray(thumbBmp, true); 
-				
+			    
+			    
+			    try
+			    {
+			      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 300);
+			      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+			      bmp.recycle();
+			      msg.thumbData = Bitmap2Bytes(thumbBmp); 
+			      //msg.setThumbImage(thumbBmp);
+			    } 
+			    catch (Exception e)
+			    {
+			      e.printStackTrace();
+			    }
 			    SendMessageToWX.Req req = new SendMessageToWX.Req();
 			    req.transaction = buildTransaction("图文链接");
 			    req.message = msg;
@@ -1362,10 +1372,18 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				    msg.title = model.getActivitys().getActivityTitle();
 				    msg.description = model.getActivitys().getActivityMemo();
 				    
-				    Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 800);
-					Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-				    bmp.recycle();
-				    msg.thumbData = SystemUtil.bmpToByteArray(thumbBmp, true); 
+				    try
+				    {
+				      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 300);
+				      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+				      bmp.recycle();
+				      msg.thumbData = Bitmap2Bytes(thumbBmp); 
+				      //msg.setThumbImage(thumbBmp);
+				    } 
+				    catch (Exception e)
+				    {
+				      e.printStackTrace();
+				    }
 				    SendMessageToWX.Req req = new SendMessageToWX.Req();
 				    req.transaction = buildTransaction("图文链接");
 				    req.message = msg;
@@ -1388,5 +1406,10 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		
 		//sina微博
 		private void onClickWBShare(){
+		}
+		public byte[] Bitmap2Bytes(Bitmap bm) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+			return baos.toByteArray();
 		}
 }

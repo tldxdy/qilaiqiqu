@@ -457,11 +457,18 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		    msg.title = articleModel.getTitle();
 		    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
 		    
-		    Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 800);
-			Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-			bmp.recycle();
-			msg.thumbData = SystemUtil.bmpToByteArray(thumbBmp, true); 
-			
+		    try
+		    {
+		      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 300);
+		      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+		      bmp.recycle();
+		      msg.thumbData = Bitmap2Bytes(thumbBmp); 
+		      //msg.setThumbImage(thumbBmp);
+		    } 
+		    catch (Exception e)
+		    {
+		      e.printStackTrace();
+		    }
 		    SendMessageToWX.Req req = new SendMessageToWX.Req();
 		    req.transaction = buildTransaction("图文链接");
 		    req.message = msg;
@@ -475,10 +482,18 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			    WXMediaMessage msg = new WXMediaMessage(webpage);
 			    msg.title = articleModel.getTitle();
 			    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
-			    Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 800);
-			    Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-			    bmp.recycle();
-			    msg.thumbData = SystemUtil.bmpToByteArray(thumbBmp, true); 
+			    try
+			    {
+			      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 300);
+			      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+			      bmp.recycle();
+			      msg.thumbData = Bitmap2Bytes(thumbBmp); 
+			      //msg.setThumbImage(thumbBmp);
+			    } 
+			    catch (Exception e)
+			    {
+			      e.printStackTrace();
+			    }
 			    SendMessageToWX.Req req = new SendMessageToWX.Req();
 			    req.transaction = buildTransaction("图文链接");
 			    req.message = msg;
@@ -497,7 +512,11 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 				: type + System.currentTimeMillis();
 	}
 	
-	
+	public byte[] Bitmap2Bytes(Bitmap bm) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+		return baos.toByteArray();
+	}
 	
 	//sina微博
 	private void onClickWBShare(){
