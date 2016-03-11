@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,11 +45,22 @@ import com.qizhi.qilaiqiqu.model.ActivityModel.Activitys;
 import com.qizhi.qilaiqiqu.utils.CircleImageViewUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
+import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
+import com.tencent.connect.share.QQShare;
+import com.tencent.connect.share.QzoneShare;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 
 public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		CallBackPost, OnClickListener {
@@ -91,6 +103,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 	private ImageView likeImg;
 	private ImageView cllectionImg;
+	private ImageView shareImg;
 
 	private Animation animation;
 
@@ -136,6 +149,12 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 	private ActivityModel model;
 
+	private Tencent mTencent;
+	
+	private IUiListener baseUiListener; // 监听器
+	
+	private IWXAPI api;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -188,9 +207,33 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 		appendLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_append);
 		backLayout = (LinearLayout) findViewById(R.id.layout_activityDetailsActivity_back);
+		shareImg = (ImageView) findViewById(R.id.img_activityDetails_share);
 
 		activityId = getIntent().getIntExtra("activityId", -1);
 		integral = getIntent().getIntExtra("integral", -1);
+		
+		
+		mTencent = Tencent.createInstance(ConstantsUtil.APP_ID_TX,
+				this.getApplicationContext());
+		
+		baseUiListener = new IUiListener() {
+			
+			@Override
+			public void onError(UiError arg0) {
+				
+			}
+			
+			@Override
+			public void onComplete(Object arg0) {
+				
+			}
+			
+			@Override
+			public void onCancel() {
+				
+			}
+		};
+		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID_WX);
 
 	}
 
@@ -281,6 +324,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		cllectionImg.setOnClickListener(this);
 		chatSingleLayout.setOnClickListener(this);
 		seeLinelayout.setOnClickListener(this);
+		shareImg.setOnClickListener(this);
 	}
 
 	@Override
@@ -526,6 +570,9 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			startActivity(new Intent(this, ShowLineActivity.class).putExtra(
 					"LanInfo", activity.getLanInfo()));
 
+			break;
+		case R.id.img_activityDetails_share:
+			showPopupWindow3(v);
 			break;
 
 		default:
@@ -1196,5 +1243,150 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		super.onDestroy();
 		handler.removeCallbacksAndMessages(null);
 	}
+	private void showPopupWindow3(View view) {
 
+		// 一个自定义的布局，作为显示的内容
+		View mview = LayoutInflater.from(this).inflate(
+				R.layout.share, null);
+
+		LinearLayout qq = (LinearLayout) mview.findViewById(R.id.qq);
+		LinearLayout wx = (LinearLayout) mview.findViewById(R.id.wx);
+		LinearLayout pyq = (LinearLayout) mview.findViewById(R.id.pyq);
+		LinearLayout wb = (LinearLayout) mview.findViewById(R.id.wb);
+		LinearLayout qx = (LinearLayout) mview.findViewById(R.id.qx);
+		
+		final PopupWindow popupWindow = new PopupWindow(mview,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+
+		popupWindow.setTouchable(true);
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		qq.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				onClickQQShare();
+				popupWindow.dismiss();
+			}
+		});
+
+		wx.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				onClickWXShare();
+				popupWindow.dismiss();
+			}
+		});
+		pyq.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				onClickWXPYQShare();
+				popupWindow.dismiss();
+			}
+		});
+		wb.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		qx.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 50);
+
+	}
+	
+	//分享到QQ与QQ空间
+		private void onClickQQShare() { 
+		    final Bundle params = new Bundle();
+		    params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
+		    params.putString(QQShare.SHARE_TO_QQ_TITLE, model.getActivitys().getActivityTitle());
+		    params.putString(QQShare.SHARE_TO_QQ_SUMMARY,  "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId());
+		    params.putString(QQShare.SHARE_TO_QQ_TARGET_URL,  SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage());
+		    params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage());
+		    params.putString(QQShare.SHARE_TO_QQ_APP_NAME,  "骑来骑去");
+		    params.putString(QzoneShare.SHARE_TO_QQ_TITLE, model.getActivitys().getActivityTitle());//必填
+		    params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, model.getActivitys().getActivityMemo());//选填
+		    params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId());//必填
+		    params.putString(QzoneShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage());
+		    mTencent.shareToQQ(ActivityDetailsActivity.this, params, baseUiListener);
+		}
+		//分享到微信
+		private void  onClickWXShare(){
+			 WXWebpageObject webpage = new WXWebpageObject();
+			    webpage.webpageUrl = "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId();
+			    WXMediaMessage msg = new WXMediaMessage(webpage);
+			    msg.title = model.getActivitys().getActivityTitle();
+			    msg.description = model.getActivitys().getActivityMemo();
+			    
+			    Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 800);
+				Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+				bmp.recycle();
+				msg.thumbData = SystemUtil.bmpToByteArray(thumbBmp, true); 
+				
+			    SendMessageToWX.Req req = new SendMessageToWX.Req();
+			    req.transaction = buildTransaction("图文链接");
+			    req.message = msg;
+			    req.scene = SendMessageToWX.Req.WXSceneSession;
+			    api.sendReq(req);
+		}
+			//分享到微信
+			private void  onClickWXPYQShare(){
+				 WXWebpageObject webpage = new WXWebpageObject();
+				    webpage.webpageUrl = "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId();
+				    WXMediaMessage msg = new WXMediaMessage(webpage);
+				    msg.title = model.getActivitys().getActivityTitle();
+				    msg.description = model.getActivitys().getActivityMemo();
+				    
+				    Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 800);
+					Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+				    bmp.recycle();
+				    msg.thumbData = SystemUtil.bmpToByteArray(thumbBmp, true); 
+				    SendMessageToWX.Req req = new SendMessageToWX.Req();
+				    req.transaction = buildTransaction("图文链接");
+				    req.message = msg;
+				    req.scene = SendMessageToWX.Req.WXSceneTimeline;
+				    api.sendReq(req);
+			}
+		
+
+		/**
+		 * 构造一个用于请求的唯一标识
+		 * @param type 分享的内容类型
+		 * @return 
+		 */
+		private String buildTransaction(final String type) {
+			return (type == null) ? String.valueOf(System.currentTimeMillis())
+					: type + System.currentTimeMillis();
+		}
+		
+		
+		
+		//sina微博
+		private void onClickWBShare(){
+		}
 }

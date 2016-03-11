@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.os.Environment;
 import android.os.Handler;
@@ -291,5 +292,20 @@ public class SystemUtil {
 			}
 		}).start();
 	}
-
+	public static byte[] bmpToByteArray(final Bitmap bmp, final boolean needRecycle) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		bmp.compress(CompressFormat.PNG, 100, output);
+		if (needRecycle) {
+			bmp.recycle();
+		}
+		
+		byte[] result = output.toByteArray();
+		try {
+			output.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
 }
