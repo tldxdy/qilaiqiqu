@@ -95,6 +95,9 @@ public class RidingActivity extends Activity implements OnClickListener,
 		ridingModel = new RidingModel();
 		list = new ArrayList<RidingModelList>();
 		rDraftModels = dbManager.queryAll();
+		System.out.println("-------");
+		System.out.println(rDraftModels.size());
+		System.out.println("-------"); 
 		xUtilsUtil = new XUtilsUtil();
 		preferences = getSharedPreferences("userLogin",Context.MODE_PRIVATE);
 		

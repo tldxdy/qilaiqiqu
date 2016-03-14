@@ -129,10 +129,10 @@ public class RidingListAdapter extends BaseAdapter{
 			Gson gson = new Gson();
 			Type type = new TypeToken<List<TravelsinformationModel>>(){}.getType();
 			List<TravelsinformationModel> trList = gson.fromJson(rDraftModels.get(position).getJsonString(), type);
-			
+			System.out.println(trList.toString());
 			zeroholder.timeTxt.setText(trList.get(0).getTime());
 			zeroholder.titleTxt.setText(trList.get(0).getTitle());
-			if(list.get(position).getDefaultShowImage() != null){
+			if(trList.get(position).getArticleImage() != null){
 				
 				Picasso.with(context).load(new File(trList.get(0).getArticleImage()))
 				.resize(800, 400).centerInside()

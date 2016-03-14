@@ -2,6 +2,7 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -75,11 +76,9 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.SearchResultAdapter;
 import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.fragment.RidingAndActivityFragmentPagerAdapter;
-import com.qizhi.qilaiqiqu.model.ChatJsonModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel.SearchDataList;
 import com.qizhi.qilaiqiqu.receiver.EMReceiver;
-import com.qizhi.qilaiqiqu.sqlite.DBManager;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.SplashView;
@@ -96,7 +95,9 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		TextWatcher {
 
 	public Set<String> chatUserList;
-	public Set<String> GroupChatUserList;
+	public Set<String> groupChatUserList;
+	private Gson gson;
+	private Type type;
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
 
@@ -130,8 +131,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private int fragmentNum;
 
 	private SharedPreferences preferences;
-	
-	private DBManager db;
 
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
@@ -196,11 +195,25 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	}
 
 	private void initView() {
+		chatUserList = new HashSet<String>();
+		groupChatUserList = new HashSet<String>();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		
-			db = new DBManager(this);
-			
-			
+		gson = new Gson();
+		type = new TypeToken<HashSet<String>>(){}.getType();
+		String chat = preferences.getString("Chat" + preferences.getString("uniqueKey", null), null);
+		if(chat != null){
+			chatUserList = gson.fromJson(chat, type);
+		}
+		String groupChat = preferences.getString("GroupChat" + preferences.getString("uniqueKey", null), null);
+		if(groupChat != null){
+			groupChatUserList = gson.fromJson(groupChat, type);
+		}
+		
+			/*chatUserList= preferences.getStringSet("Chat" + preferences.getString("uniqueKey", null), new HashSet<String>());
+			groupChatUserList = preferences.getStringSet("GroupChat" + preferences.getString("uniqueKey", null), new HashSet<String>());*/
+		
+
 		searchCancel = (TextView) findViewById(R.id.txt_mainActivity_cancel);
 		inputEdt = (EditText) findViewById(R.id.edt_mainActivity_searchInput);
 		titleLayout = (RelativeLayout) findViewById(R.id.layout_mainActivity_title);
@@ -726,27 +739,26 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
-			System.out.println(message.getChatType() + "---" + message.getFrom());
-			
-			
 			System.out.println(from + "----" +msgid);
+			
 			if(message.getChatType() == ChatType.Chat){
 				chatUserList.add(message.getFrom());
-				Gson gson = new Gson();
-				String json_string = gson.toJson(chatUserList);
-				ChatJsonModel chatJsonModel = new ChatJsonModel(0, "Chat" + preferences.getString("uniqueKey", null), json_string);
-				System.out.println("Chat" + preferences.getString("uniqueKey", null));
-				db.update(chatJsonModel);
 			}else if(message.getChatType() == ChatType.GroupChat){
-				GroupChatUserList.add(message.getFrom());
-				Gson gson = new Gson();
-				String json_string = gson.toJson(GroupChatUserList);
-				ChatJsonModel chatJsonModel = new ChatJsonModel(0, "GroupChat" + preferences.getString("uniqueKey", null), json_string);
-				db.update(chatJsonModel);
-				
+				groupChatUserList.add(message.getFrom());
 			}
+			String chat = gson.toJson(chatUserList);
+			String groupChat = gson.toJson(groupChatUserList);
+			
+
 			// 消息不是发给当前会话，return
 			notifyNewMessage(message);
+			
+			SharedPreferences sharedPreferences = getSharedPreferences(
+					"userLogin", Context.MODE_PRIVATE);
+					Editor editor = sharedPreferences.edit();// 获取编辑器
+					editor.putString("Chat" + sharedPreferences.getString("uniqueKey", null), chat);
+					editor.putString("GroupChat" + sharedPreferences.getString("uniqueKey", null), groupChat);
+					editor.commit();
 			
 			try {
 				message.getStringAttribute("IMUserNameExpand");
@@ -1132,10 +1144,11 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private void headPortrait() {
 		isNews();
 		if (preferences.getInt("userId", -1) != -1) {
-			Picasso.with(MainActivity.this)
+			SystemUtil.Imagexutils(preferences.getString("userImage", null), photoImg, MainActivity.this);
+			/*Picasso.with(MainActivity.this)
 					.load(SystemUtil.IMGPHTH
 							+ preferences.getString("userImage", null))
-					.into(photoImg);
+					.into(photoImg);*/
 			// dotView.setVisibility(View.VISIBLE);
 		} else {
 			photoImg.setImageResource(R.drawable.user_default);

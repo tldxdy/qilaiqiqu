@@ -3,9 +3,7 @@ package com.qizhi.qilaiqiqu.sqlite;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import com.qizhi.qilaiqiqu.model.ChatJsonModel;
 import com.qizhi.qilaiqiqu.model.RidingDraftModel;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,8 +15,6 @@ public class DBManager {
 		
 		private static final String TABLE_NAME = "travel_tbl";
 		
-		public static final String TABLE_NAME2 = "char_tbl";
-		
 		//private static final String SQL_DROP_TABLE = "drop table if exists " + TABLE_NAME;
 
 		private static final String SQL_INSERT = "insert into " + TABLE_NAME + " values (NULL, ?)";
@@ -28,16 +24,6 @@ public class DBManager {
 		private static final String SQL_UPDATE = "update " + TABLE_NAME + " set _id = ?, json_string = ?  where _id = ?";
 	    
 		private static final String SQL_DELETE = "delete from " + TABLE_NAME +" where _id = ?";
-		
-		
-		
-		private static final String SQL_INSERT2 = "insert into " + TABLE_NAME2 + " values (NULL, ? , ?)";
-		
-		private static final String SQL_QUERY2 = "select * from " + TABLE_NAME2;
-		
-		private static final String SQL_UPDATE2 = "update " + TABLE_NAME2 + " set json_string = ?  where json_name = ?";
-	    
-		private static final String SQL_QUERYONE = "select * from " + TABLE_NAME2 +" where json_name = ?";
 	      
 	    public DBManager(Context context) {  
 	        helper = new DBHelper(context);  
@@ -82,35 +68,5 @@ public class DBManager {
 		 db.execSQL(SQL_DELETE, new String[]{ridingDraftModel.get_id()+""});
 		return true;
 	 }
-	 
-	 public boolean add(ChatJsonModel chatJsonModel){
-		 db.execSQL(SQL_INSERT2,new String[]{chatJsonModel.getJson_name(), chatJsonModel.getJson_string()});
-		return true;  
-	 }
-	 
-	 public ChatJsonModel query(String json_name){
-		 ChatJsonModel chatJsonModel = null;
-		 Cursor cursor = db.rawQuery(SQL_QUERYONE,new String[]{json_name});
-		 if(cursor.moveToFirst()){//判断游标是否为空
-			 int _id=cursor.getInt(cursor.getColumnIndex("_id"));
-			 String jsonName=cursor.getString(cursor.getColumnIndex("json_name"));
-			 String jsonString=cursor.getString(cursor.getColumnIndex("json_string"));
-			 chatJsonModel = new ChatJsonModel(_id, jsonName, jsonString);
-		 }
-		return chatJsonModel;
-		 
-	 }
-	 
-	 public boolean update(ChatJsonModel chatJsonModel){
-		 Cursor cursor = db.rawQuery(SQL_QUERYONE,new String[]{chatJsonModel.getJson_string()});
-		 if(cursor.moveToNext()){
-			 db.execSQL(SQL_UPDATE2, new String[]{chatJsonModel.getJson_string(),chatJsonModel.getJson_name()});
-		 }else{
-			 return add(chatJsonModel);
-		 }
-		 
-		return true;
-	 }
-	 
 	 
 }

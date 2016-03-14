@@ -1,9 +1,7 @@
 package com.qizhi.qilaiqiqu.sqlite;
 
 import android.content.Context;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -13,19 +11,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		//版本
 	    private static final int DATABASE_VERSION = 1;
 	    
-	    public static final String TABLE_NAME1 = "travel_tbl";
-	    
-	    public static final String TABLE_NAME2 = "char_tbl";
+	    public static final String TABLE_NAME = "travel_tbl";
 	    
 	    
-	    private static final String SQL_CREATE_TABLE1 = "create table if not exists " + TABLE_NAME1 
+	    private static final String SQL_CREATE_TABLE = "create table if not exists " + TABLE_NAME 
 	             + " ( _id integer primary key autoincrement, "
-				 + "   json_string varchar(60000) "
-				 + "  )";
-	    
-	    private static final String SQL_CREATE_TABLE2 = "create table if not exists " + TABLE_NAME2 
-	             + " ( _id integer primary key autoincrement, "
-	             + "   json_name varchar(100),"
 				 + "   json_string varchar(60000) "
 				 + "  )";
 	    
@@ -36,8 +26,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-	    db.execSQL(SQL_CREATE_TABLE1);
-	    db.execSQL(SQL_CREATE_TABLE2);
+	    db.execSQL(SQL_CREATE_TABLE);
 	}
 
 	@Override
