@@ -252,4 +252,24 @@ public class CertainUserModel implements Serializable {
 		this.realName = realName;
 	}
 
+	@Override
+	public String toString() {
+		return "CertainUserModel [userId=" + userId + ", userImage="
+				+ userImage + ", userName=" + userName + ", userMemo="
+				+ userMemo + ", sex=" + sex + ", integral=" + integral
+				+ ", concernNum=" + concernNum + ", fansNum=" + fansNum
+				+ ", address=" + address + ", articleMemoNum=" + articleMemoNum
+				+ ", activityNum=" + activityNum + ", state=" + state
+				+ ", riderId=" + riderId + ", attentionFlag=" + attentionFlag
+				+ ", participantNum=" + participantNum + ", imId=" + imId
+				+ ", attendRiderFlag=" + attendRiderFlag + ", concern="
+				+ concern + ", createDate=" + createDate + ", loginName="
+				+ loginName + ", idCard=" + idCard + ", imUserName="
+				+ imUserName + ", userFans=" + userFans + ", mobilePhone="
+				+ mobilePhone + ", email=" + email + ", realName=" + realName
+				+ "]";
+	}
+	
+	
+
 }

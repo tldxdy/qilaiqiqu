@@ -13,11 +13,19 @@ public class DBHelper extends SQLiteOpenHelper {
 		//版本
 	    private static final int DATABASE_VERSION = 1;
 	    
-	    public static final String TABLE_NAME = "travel_tbl";
+	    public static final String TABLE_NAME1 = "travel_tbl";
+	    
+	    public static final String TABLE_NAME2 = "char_tbl";
 	    
 	    
-	    private static final String SQL_CREATE_TABLE = "create table if not exists " + TABLE_NAME 
+	    private static final String SQL_CREATE_TABLE1 = "create table if not exists " + TABLE_NAME1 
 	             + " ( _id integer primary key autoincrement, "
+				 + "   json_string varchar(60000) "
+				 + "  )";
+	    
+	    private static final String SQL_CREATE_TABLE2 = "create table if not exists " + TABLE_NAME2 
+	             + " ( _id integer primary key autoincrement, "
+	             + "   json_name varchar(100),"
 				 + "   json_string varchar(60000) "
 				 + "  )";
 	    
@@ -28,7 +36,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-	    db.execSQL(SQL_CREATE_TABLE);
+	    db.execSQL(SQL_CREATE_TABLE1);
+	    db.execSQL(SQL_CREATE_TABLE2);
 	}
 
 	@Override
