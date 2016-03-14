@@ -16,6 +16,7 @@ import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
 import com.qizhi.qilaiqiqu.utils.PopupWindowUploading;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -103,25 +104,26 @@ public class ManageFragment extends Fragment  implements OnItemClickListener,Cal
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		handler.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				pUploading.dismiss();
+			}
+		}, 500);
 		if (jsonObject.optBoolean("result")) {
-			handler.postDelayed(new Runnable() {
-
-				@Override
-				public void run() {
-					pUploading.dismiss();
-				}
-				}, 500);
 			pageIndex = jsonObject.optInt("pageIndex");
 			Gson gson = new Gson();
 			dataList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), new TypeToken<ArrayList<StartAndParticipantActivityModel>>(){}.getType());
 			
-			adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
-			manageList.setAdapter(adapter);
-			manageList.setOnItemClickListener(this);
-			swipeLayout.setOnRefreshListener(this);
-			swipeLayout.setOnLoadListener(this);
-			
+		}else{
+			Toasts.show(getActivity(),	jsonObject.optString("message"), 0 );
 		}
+		adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
+		manageList.setAdapter(adapter);
+		manageList.setOnItemClickListener(this);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);
 	}
 	@Override
 	public void onMyFailure(HttpException error, String msg) {

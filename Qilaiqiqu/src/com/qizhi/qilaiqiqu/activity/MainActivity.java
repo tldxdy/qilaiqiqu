@@ -2,7 +2,6 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -61,6 +60,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.NetUtils;
 import com.google.gson.Gson;
@@ -75,9 +75,11 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.SearchResultAdapter;
 import com.qizhi.qilaiqiqu.fragment.MenuLeftFragment;
 import com.qizhi.qilaiqiqu.fragment.RidingAndActivityFragmentPagerAdapter;
+import com.qizhi.qilaiqiqu.model.ChatJsonModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel.SearchDataList;
 import com.qizhi.qilaiqiqu.receiver.EMReceiver;
+import com.qizhi.qilaiqiqu.sqlite.DBManager;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.SplashView;
@@ -93,7 +95,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		OnClickListener, OnOpenListener, OnCloseListener, CallBackPost,
 		TextWatcher {
 
-	public static Set<String> chatUserList;
+	public Set<String> chatUserList;
+	public Set<String> GroupChatUserList;
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
 
@@ -127,6 +130,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private int fragmentNum;
 
 	private SharedPreferences preferences;
+	
+	private DBManager db;
 
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
@@ -193,10 +198,9 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private void initView() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		
-			chatUserList= preferences.getStringSet(preferences.getString("uniqueKey", null), new HashSet<String>());
-		
-		
-
+			db = new DBManager(this);
+			
+			
 		searchCancel = (TextView) findViewById(R.id.txt_mainActivity_cancel);
 		inputEdt = (EditText) findViewById(R.id.edt_mainActivity_searchInput);
 		titleLayout = (RelativeLayout) findViewById(R.id.layout_mainActivity_title);
@@ -722,25 +726,27 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
+			System.out.println(message.getChatType() + "---" + message.getFrom());
+			
+			
 			System.out.println(from + "----" +msgid);
-			chatUserList.add(message.getFrom());
-
+			if(message.getChatType() == ChatType.Chat){
+				chatUserList.add(message.getFrom());
+				Gson gson = new Gson();
+				String json_string = gson.toJson(chatUserList);
+				ChatJsonModel chatJsonModel = new ChatJsonModel(0, "Chat" + preferences.getString("uniqueKey", null), json_string);
+				System.out.println("Chat" + preferences.getString("uniqueKey", null));
+				db.update(chatJsonModel);
+			}else if(message.getChatType() == ChatType.GroupChat){
+				GroupChatUserList.add(message.getFrom());
+				Gson gson = new Gson();
+				String json_string = gson.toJson(GroupChatUserList);
+				ChatJsonModel chatJsonModel = new ChatJsonModel(0, "GroupChat" + preferences.getString("uniqueKey", null), json_string);
+				db.update(chatJsonModel);
+				
+			}
 			// 消息不是发给当前会话，return
 			notifyNewMessage(message);
-			
-			SharedPreferences sharedPreferences = getSharedPreferences(
-					"userLogin", Context.MODE_PRIVATE);
-					Editor editor = sharedPreferences.edit();// 获取编辑器
-					editor.putStringSet(sharedPreferences.getString("uniqueKey", null), chatUserList);
-					editor.putInt("userId", sharedPreferences.getInt("userId", -1));
-					editor.putString("riderId", sharedPreferences.getString("riderId", null));
-					editor.putString("userImage", sharedPreferences.getString("userImage", null));
-					editor.putString("uniqueKey", sharedPreferences.getString("uniqueKey", null));
-					editor.putString("imPassword", sharedPreferences.getString("imPassword", null));
-					editor.putString("userName", sharedPreferences.getString("userName", null));
-					editor.putString("imUserName", sharedPreferences.getString("imUserName", null));
-					editor.putString("mobilePhone", sharedPreferences.getString("mobilePhone", null));
-					editor.commit();
 			
 			try {
 				message.getStringAttribute("IMUserNameExpand");

@@ -79,7 +79,7 @@ public class ChatRecordAdapter extends BaseAdapter {
 				}else{
 					holder.contentTxt.setText("[语音]");
 				}
-				SystemUtil.Imagexutils(SystemUtil.IMGPHTH + list.get(position).getStringAttribute("IMConversationUserImageExpand"), holder.portraitImg, context);
+				SystemUtil.Imagexutils(list.get(position).getStringAttribute("IMConversationUserImageExpand"), holder.portraitImg, context);
 				
 		}else{
 			holder.nameTxt.setText(list.get(position).getStringAttribute("IMUserNameExpand"));
@@ -93,7 +93,7 @@ public class ChatRecordAdapter extends BaseAdapter {
 			}else{
 				holder.contentTxt.setText("[语音]");
 			}
-			SystemUtil.Imagexutils(SystemUtil.IMGPHTH + list.get(position).getStringAttribute("IMUserImageExpand"), holder.portraitImg, context);
+			SystemUtil.Imagexutils(list.get(position).getStringAttribute("IMUserImageExpand"), holder.portraitImg, context);
 		}
 		} catch (EaseMobException e) {
 			e.printStackTrace();

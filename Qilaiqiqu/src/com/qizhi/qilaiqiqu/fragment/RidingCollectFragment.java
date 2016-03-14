@@ -105,6 +105,7 @@ public class RidingCollectFragment extends Fragment implements OnItemClickListen
 
 			adapter = new RidingCollectAdapter(getActivity(), Articlelist);
 			manageList.setAdapter(adapter);
+			manageList.setDividerHeight(0);
 			manageList
 					.setOnItemClickListener(this);
 			swipeLayout.setOnRefreshListener(this);

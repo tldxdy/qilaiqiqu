@@ -94,13 +94,12 @@ public class HistoryFragment extends Fragment implements OnItemClickListener,OnR
 					pageIndex = jsonObject.optInt("pageIndex");
 					Gson gson = new Gson();
 					dataList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), new TypeToken<ArrayList<StartAndParticipantActivityModel>>(){}.getType());
-					
-					adapter = new HistoryAdapter(context, dataList, preferences.getInt("userId", -1));
-					historyList.setAdapter(adapter);
-					historyList.setOnItemClickListener(HistoryFragment.this);
-					swipeLayout.setOnRefreshListener(HistoryFragment.this);
-					swipeLayout.setOnLoadListener(HistoryFragment.this);
 				}
+				adapter = new HistoryAdapter(context, dataList, preferences.getInt("userId", -1));
+				historyList.setAdapter(adapter);
+				historyList.setOnItemClickListener(HistoryFragment.this);
+				swipeLayout.setOnRefreshListener(HistoryFragment.this);
+				swipeLayout.setOnLoadListener(HistoryFragment.this);
 				
 				
 			}

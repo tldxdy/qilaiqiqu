@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.fragment;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,11 +13,16 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.exceptions.EaseMobException;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ChatSingleActivity;
 import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.adapter.ChatRecordAdapter;
 import com.qizhi.qilaiqiqu.model.CertainUserModel;
+import com.qizhi.qilaiqiqu.model.ChatJsonModel;
+import com.qizhi.qilaiqiqu.model.SearchResultModel;
+import com.qizhi.qilaiqiqu.sqlite.DBManager;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import android.annotation.SuppressLint;
@@ -47,6 +53,8 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 	private EMConversation conversation;
 	
 	private Set<String> chatUserList;
+	private Set<String> GroupChatUserList;
+	private DBManager db;
 	
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
@@ -65,9 +73,27 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		chatList.addHeaderView(header);
-		
-		chatUserList = preferences.getStringSet(preferences.getString("uniqueKey", null), new HashSet<String>());
-		System.out.println("chatUserList====>" + chatUserList.size());
+		Gson gson = new Gson();
+		Type type =new TypeToken<HashSet<String>>(){}.getType();
+		System.out.println("Chat" + preferences.getString("uniqueKey", null));
+		db = new DBManager(context); 
+		ChatJsonModel chatJson = db.query("Chat" + preferences.getString("uniqueKey", null));
+		if(chatJson == null){
+			chatUserList = new HashSet<String>();
+		}else{
+			chatUserList = gson.fromJson(chatJson.getJson_string(),type);
+			
+		}
+		//chatUserList = preferences.getStringSet("Chat" + preferences.getString("uniqueKey", null), new HashSet<String>());
+		ChatJsonModel groupChatJson = db.query("GroupChat" + preferences.getString("uniqueKey", null));
+		if(groupChatJson == null){
+			GroupChatUserList = new HashSet<String>();
+		}else{
+			GroupChatUserList = gson.fromJson(groupChatJson.getJson_string(),type);
+		}
+		//GroupChatUserList = preferences.getStringSet("GroupChat" + preferences.getString("uniqueKey", null), new HashSet<String>());
+		System.out.println("chatUserList====>" + chatUserList.size() +";;;;;GroupChatUserList=====>"+GroupChatUserList.size());
+		System.out.println(chatUserList.toString()+"-=-=------------===="+GroupChatUserList.toString());
 		for (String aa : chatUserList) {
 			conversation = EMChatManager.getInstance().getConversation(aa);
 			if(conversation != null){
@@ -76,19 +102,19 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 				if(messages.size() > 0 ){
 					list.add(messages.get(messages.size() - 1));
 				}
-			}else{
-				List<EMMessage> messages = conversation.loadMoreGroupMsgFromDB(aa, 10);
-				System.out.println("12312312aaa"+messages.size());
-				if(messages.size() > 0 ){
-					list.add(messages.get(messages.size() - 1));
-				}
 			}
 		}
-			
-		
-		
-		
-		
+		for(String aa : GroupChatUserList){
+			conversation = EMChatManager.getInstance().getConversation(aa);
+			if(conversation != null){
+				//获取此会话的所有消息
+				List<EMMessage> messages = conversation.getAllMessages();
+				System.out.println(messages.size());
+				/*if(messages.size() > 0 ){
+					list.add(messages.get(messages.size() - 1));
+				}*/
+			}
+		}
 		//sdk初始化加载的聊天记录为20条，到顶时需要去db里获取更多
 	/*	//获取startMsgId之前的pagesize条消息，此方法获取的messages sdk会自动存入到此会话中，app中无需再次把获取到的messages添加到会话中
 		List<EMMessage> messages = conversation.loadMoreMsgFromDB(startMsgId, pagesize);
@@ -122,20 +148,19 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 			startActivity(new Intent(context, ChatSingleActivity.class).putExtra(
 					"certainUserModel", certainUserModel));
 		}else{
-				/*System.out.println(list.get(position).getIntAttribute("ConversationOtherUserIdentifier")
-						+ "-" + list.get(position).getStringAttribute("conversationOtherUserNameExpand")
-						+ "-" + list.get(position).getStringAttribute("conversationOtherUserImageExpand")
-						+ "-" + list.get(position).getUserName());*/
 			certainUserModel = new CertainUserModel();
 			certainUserModel.setImUserName(list.get(position - 1).getUserName());
 			certainUserModel.setUserName(list.get(position - 1).getStringAttribute("IMUserNameExpand"));
 			certainUserModel.setUserImage(list.get(position - 1).getStringAttribute("IMUserImageExpand"));
 			certainUserModel.setUserId(list.get(position - 1).getIntAttribute("IMUserIdentifierExpand"));
-			startActivity(new Intent(context, ChatSingleActivity.class).putExtra(
-					"certainUserModel", certainUserModel));
+			startActivity(new Intent(context, ChatSingleActivity.class)
+			.putExtra("username", certainUserModel.getImUserName())
+			.putExtra("otherUserName", certainUserModel.getUserName())
+			.putExtra("otherUserImage", certainUserModel.getUserImage())
+			.putExtra("otherUserId", certainUserModel.getUserId()));
+			
 		}
 		} catch (EaseMobException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
