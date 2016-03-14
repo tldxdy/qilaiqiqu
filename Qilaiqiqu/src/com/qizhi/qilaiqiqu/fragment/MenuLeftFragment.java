@@ -352,7 +352,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 					}else{
 						userSexImg.setImageBitmap(null);
 					}
-					SystemUtil.loadImagexutils(user.getString("userImage"), userImageImg,context);
+					SystemUtil.Imagexutils(user.getString("userImage"), userImageImg,context);
 					
 					puim = new PersonageUserInformationModel();
 					puim.setAddress(user.getString("address"));

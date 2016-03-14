@@ -77,6 +77,13 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 
 		sharedPreferences = getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
+
+		if (ActivityDetailsActivity.userId == sharedPreferences.getInt(
+				"userId", -1)) {
+			txtQuit.setText("取消活动");
+		} else {
+			txtQuit.setText("取消报名");
+		}
 	}
 
 	private void initEvent() {
@@ -101,12 +108,16 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 
 		case R.id.groupActivity_owner:
 			startActivity(new Intent(GroupActivity.this, PersonActivity.class)
-					.putExtra("userId", model.getData().getOwner().getUserId()));
+					.putExtra("userId", ActivityDetailsActivity.userId));
 			break;
 
 		case R.id.groupActivity_quitActivity:
-			quitActivity();
-			cancelActivity();
+			if (ActivityDetailsActivity.userId == sharedPreferences.getInt(
+					"userId", -1)) {
+				cancelActivity();
+			} else {
+				quitActivity();
+			}
 			break;
 		default:
 			break;
@@ -179,6 +190,10 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 						try {
 							if (new JSONObject(result).getBoolean("result")) {
 								Toasts.show(GroupActivity.this, "活动取消成功", 0);
+								ActivityCollectorUtil.finishAll();
+								startActivity(new Intent(GroupActivity.this,
+										MainActivity.class).putExtra(
+										"fragmentNum", 1));
 							} else {
 								Toasts.show(GroupActivity.this, new JSONObject(
 										result).getBoolean("message") + "", 0);
@@ -190,8 +205,8 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						new SystemUtil()
-								.makeToast(GroupActivity.this, "未知错误:"+error+","+msg+"!");
+						new SystemUtil().makeToast(GroupActivity.this, "未知错误:"
+								+ error + "," + msg + "!");
 					}
 				});
 

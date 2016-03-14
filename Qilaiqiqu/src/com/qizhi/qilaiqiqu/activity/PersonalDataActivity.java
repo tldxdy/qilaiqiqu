@@ -691,7 +691,7 @@ public class PersonalDataActivity extends BaseActivity implements
 					DistrictTxt.setText(ss[2]);
 				}
 			}
-			SystemUtil.loadImagexutils(certainUserModel.getUserImage(),
+			SystemUtil.Imagexutils(certainUserModel.getUserImage(),
 					photoImg, this);
 		}
 	}

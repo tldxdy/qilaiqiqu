@@ -140,8 +140,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 						info.getUserInfo(new IUiListener() {
 
 							@Override
-							public void onError(UiError arg0) {
-
+							public void onError(UiError msg) {
+								Toasts.show(LoginActivity.this, "未知错误："+msg, 0);
 							}
 
 							@Override
@@ -285,10 +285,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 						editor.commit();
 						Toast.makeText(LoginActivity.this, "登录成功",
 								Toast.LENGTH_LONG).show();
-						LoginActivity.this.finish();
+						LoginActivity.this.finish(); 
 
 					} else {
-
+						Toasts.show(LoginActivity.this, "登录失败:"+jsonObject.getString("message"), 0);
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -408,6 +408,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		MobclickAgent.onPause(this);
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d("TAG", "-->onActivityResult " + requestCode + " resultCode="

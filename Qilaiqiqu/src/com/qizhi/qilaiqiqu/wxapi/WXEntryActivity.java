@@ -91,7 +91,7 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 	public void wxRequest(String code) {
 		String url = "common/weixinLogin.html";
 
-		RequestParams params = new RequestParams();
+		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("code", code);
 		params.addBodyParameter("pushToken",
 				JPushInterface.getRegistrationID(WXEntryActivity.this));

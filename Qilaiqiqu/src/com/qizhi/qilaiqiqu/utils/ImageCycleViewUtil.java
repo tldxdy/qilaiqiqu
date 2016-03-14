@@ -414,7 +414,6 @@ public class ImageCycleViewUtil extends FrameLayout {
 					}
 				}
 			});
-
 			container.addView(imageView);
 			return imageView;
 		}

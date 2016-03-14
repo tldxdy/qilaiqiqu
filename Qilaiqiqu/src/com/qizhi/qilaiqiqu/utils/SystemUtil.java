@@ -108,10 +108,17 @@ public class SystemUtil {
 			.into(sellersmallimg);
 		}else{
 			String uri = UrlSize(url);
-			Picasso.with(context).load(IMGPHTH + uri)
-			.placeholder(R.drawable.bitmap_homepage)
-			.error(R.drawable.bitmap_homepage)
-			.into(sellersmallimg);
+			if(uri.indexOf("http") != -1){
+				Picasso.with(context).load(uri)
+				.placeholder(R.drawable.bitmap_homepage)
+				.error(R.drawable.bitmap_homepage)
+				.into(sellersmallimg);
+			}else{
+				Picasso.with(context).load(IMGPHTH + uri)
+				.placeholder(R.drawable.bitmap_homepage)
+				.error(R.drawable.bitmap_homepage)
+				.into(sellersmallimg);
+			}
 		}
 		
 	}

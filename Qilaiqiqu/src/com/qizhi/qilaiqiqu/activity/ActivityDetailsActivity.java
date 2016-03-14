@@ -155,6 +155,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	private IUiListener baseUiListener; // 监听器
 
 	private IWXAPI api;
+	
+	public static int userId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +169,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	}
 
 	private void initView() {
+		userId = activity.getUserId();
+		
 		sharedPreferences = getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
@@ -357,7 +361,6 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 					ChatActivity.class).putExtra("Group", "Group")
 					.putExtra("username", activity.getImGroupId())
 					.putExtra("activityId", activityId)
-					.putExtra("userId", activity.getUserId())
 					.putExtra("groupName", activity.getActivityTitle()));
 			break;
 
