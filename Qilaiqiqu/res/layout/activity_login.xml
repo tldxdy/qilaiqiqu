@@ -1,198 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_bg"
-    android:gravity="center_horizontal"
     android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/logo" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:text="@string/text_loginactivity_hello"
-        android:textColor="#ffffff"
-        
-        android:textSize="18sp" />
-
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
         <ImageView
-            android:id="@+id/imageView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:src="@drawable/username" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/logo" />
 
-        <com.qizhi.qilaiqiqu.utils.LineEditText
-            android:id="@+id/edt_loginActivity_username"
-            android:layout_width="215.5dp"
-            android:layout_height="25dp"
-            android:layout_gravity="bottom"
-            android:layout_marginLeft="15dp"
-            android:background="@null"
-            android:ems="10"
-            android:hint="@string/edt_loginActivity_username"
-            android:inputType="none"
-            android:maxLength="11"
-            android:numeric="integer"
-            android:phoneNumber="true"
-            android:textColor="#ffffff"
-            android:textColorHint="#66ffffff"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginBottom="25dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal" >
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:src="@drawable/password" />
-
-        <com.qizhi.qilaiqiqu.utils.LineEditText
-            android:id="@+id/edt_loginActivity_password"
-            android:layout_width="215.5dp"
-            android:layout_height="25dp"
-            android:layout_gravity="bottom"
-            android:layout_marginLeft="15dp"
-            android:background="@null"
-            android:ems="10"
-            android:hint="@string/edt_loginActivity_password"
-            android:inputType="textPassword"
-            android:textColor="#ffffff"
-            android:textColorHint="#66ffffff"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical" >
-	<LinearLayout
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical" >
-        <Button
-            android:id="@+id/btn_loginActivity_login"
-            android:layout_width="265dp"
-            android:layout_height="39dp"
-            android:background="@drawable/switch_rounded_loginactivity_button"
-            android:text="@string/button_loginactivity_login"
-            android:textSize="14sp"
-            android:textColor="#ffffff" />
-
-        <TextView
-            android:id="@+id/txt_loginActivity_forget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginBottom="40dp"
-            android:layout_marginRight="19.5dp"
-            android:layout_marginTop="15dp"
-            android:text="@string/text_loginactivity_forget"
-            android:textColor="#ffffff" />
-        </LinearLayout>
-    </LinearLayout>
- <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical" >
-    <Button
-        android:id="@+id/btn_loginActivity_register"
-        android:layout_width="265dp"
-        android:layout_height="39dp"
-        android:layout_marginBottom="15dp"
-        android:background="@drawable/switch_rounded_loginactivity_button2"
-        android:text="@string/button_loginactivity_register"
-        android:textSize="14sp"
-        android:textColor="#ffffff" />
-</LinearLayout>
- <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical" >
-    <Button
-        android:id="@+id/btn_loginActivity_visitor"
-        android:layout_width="265dp"
-        android:layout_height="39dp"
-        android:background="@drawable/switch_rounded_loginactivity_button2"
-        android:text="返回"
-        android:textSize="14sp"
-        android:textColor="#ffffff" />
-</LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="vertical" >
-	<LinearLayout
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:text="@string/txt_loginactivity_sanfang"
-            android:textColor="#ffffff" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/text_loginactivity_hello"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:src="@drawable/username" />
+
+            <com.qizhi.qilaiqiqu.utils.LineEditText
+                android:id="@+id/edt_loginActivity_username"
+                android:layout_width="215.5dp"
+                android:layout_height="25dp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="15dp"
+                android:background="@null"
+                android:ems="10"
+                android:hint="@string/edt_loginActivity_username"
+                android:inputType="none"
+                android:maxLength="11"
+                android:numeric="integer"
+                android:phoneNumber="true"
+                android:textColor="#ffffff"
+                android:textColorHint="#66ffffff"
+                android:textCursorDrawable="@null"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="265dp"
-            android:layout_height="51dp"
-            android:gravity="center|bottom"
-            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal" >
-        
 
             <ImageView
-                android:id="@+id/img_loginactivity_qq"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginRight="35dp"
-                android:src="@drawable/qq" />
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/password" />
 
-            <ImageView
-                android:id="@+id/img_loginactivity_wechat"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginRight="35dp"
-                android:src="@drawable/wechat" />
-
-            <ImageView
-                android:id="@+id/img_loginactivity_weibo"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/weibo" />
+            <com.qizhi.qilaiqiqu.utils.LineEditText
+                android:id="@+id/edt_loginActivity_password"
+                android:layout_width="215.5dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:background="@null"
+                android:ems="10"
+                android:hint="@string/edt_loginActivity_password"
+                android:inputType="textPassword"
+                android:textColor="#ffffff"
+                android:textColorHint="#66ffffff"
+                android:textCursorDrawable="@null"
+                android:textSize="14sp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btn_loginActivity_login"
+                android:layout_width="265dp"
+                android:layout_height="39dp"
+                android:background="@drawable/switch_rounded_loginactivity_button"
+                android:text="@string/button_loginactivity_login"
+                android:textColor="#ffffff"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/txt_loginActivity_forget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="19.5dp"
+                android:layout_marginTop="15dp"
+                android:text="@string/text_loginactivity_forget"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_loginActivity_register"
+            android:layout_width="265dp"
+            android:layout_height="39dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/switch_rounded_loginactivity_button2"
+            android:text="@string/button_loginactivity_register"
+            android:textColor="#ffffff"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_loginActivity_visitor"
+            android:layout_width="265dp"
+            android:layout_height="39dp"
+            android:background="@drawable/switch_rounded_loginactivity_button2"
+            android:text="返回"
+            android:textColor="#ffffff"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/img_loginactivity_qq"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/qq" />
+
+        <ImageView
+            android:id="@+id/img_loginactivity_wechat"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/wechat" />
+
+        <ImageView
+            android:id="@+id/img_loginactivity_weibo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/weibo" />
     </LinearLayout>
 
 </LinearLayout>

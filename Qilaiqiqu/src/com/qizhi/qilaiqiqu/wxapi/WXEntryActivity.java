@@ -83,6 +83,7 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 			break;
 
 		default:
+			finish();
 			break;
 		}
 	}
@@ -129,7 +130,8 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 
 			} else {
 				String string = jsonObject.getString("message");
-				new SystemUtil().makeToast(WXEntryActivity.this, string);
+				new SystemUtil().makeToast(WXEntryActivity.this, "result:"+jsonObject.getString("result")+":"+string);
+				finish();
 			}
 
 		} catch (JSONException e) {

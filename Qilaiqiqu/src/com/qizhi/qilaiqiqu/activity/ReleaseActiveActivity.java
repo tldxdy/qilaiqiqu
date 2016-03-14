@@ -289,7 +289,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		case R.id.txt_releaseActiveActivity_release:
 			if (preferences.getString("mobilePhone", null) == null
 					|| preferences.getString("mobilePhone", null).equals("")
-					|| preferences.getString("mobilePhone", null).equals("null")) {
+					|| preferences.getString("mobilePhone", null)
+							.equals("null")) {
 				Toasts.show(this, "请先绑定手机号码", 0);
 				Intent intent = new Intent(ReleaseActiveActivity.this,
 						BindPhoneActivity.class);
@@ -622,8 +623,16 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		final Time t = new Time();
 		t.setToNow();
 
-		// ((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
-		// .getChildAt(0).setVisibility(View.GONE);
+		LayoutParams params1 = new LayoutParams(100, LayoutParams.WRAP_CONTENT);
+		params1.leftMargin = 10;
+		params1.rightMargin = 10;
+		LayoutParams params2 = new LayoutParams(76, LayoutParams.WRAP_CONTENT);
+		params2.rightMargin = 10;
+		
+		((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
+				.getChildAt(0).setLayoutParams(params1);
+		((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
+				.getChildAt(1).setLayoutParams(params2);
 		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 		datePicker.init(minCalendar.get(Calendar.YEAR),

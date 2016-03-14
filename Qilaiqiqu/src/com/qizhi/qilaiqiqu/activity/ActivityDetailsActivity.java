@@ -44,9 +44,9 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.ActivityModel;
 import com.qizhi.qilaiqiqu.model.ActivityModel.Activitys;
 import com.qizhi.qilaiqiqu.utils.CircleImageViewUtil;
+import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
-import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -151,11 +151,11 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	private ActivityModel model;
 
 	private Tencent mTencent;
-	
+
 	private IUiListener baseUiListener; // 监听器
-	
+
 	private IWXAPI api;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -212,26 +212,25 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 		activityId = getIntent().getIntExtra("activityId", -1);
 		integral = getIntent().getIntExtra("integral", -1);
-		
-		
+
 		mTencent = Tencent.createInstance(ConstantsUtil.APP_ID_TX,
 				this.getApplicationContext());
-		
+
 		baseUiListener = new IUiListener() {
-			
+
 			@Override
 			public void onError(UiError arg0) {
-				
+
 			}
-			
+
 			@Override
 			public void onComplete(Object arg0) {
-				
+
 			}
-			
+
 			@Override
 			public void onCancel() {
-				
+
 			}
 		};
 		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID_WX);
@@ -358,6 +357,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 					ChatActivity.class).putExtra("Group", "Group")
 					.putExtra("username", activity.getImGroupId())
 					.putExtra("activityId", activityId)
+					.putExtra("userId", activity.getUserId())
 					.putExtra("groupName", activity.getActivityTitle()));
 			break;
 
@@ -780,9 +780,10 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		scanNumTxt.setText(activity.getScanNum() + "次浏览");
 		userNameTxt.setText(activity.getUserName());
 		activityTitleTxt.setText(activity.getActivityTitle());
-		if(activity.getMileage() == null){
-			mileageTxt.setText("发起者未规划路线");
-		}else {
+		if (activity.getMileage() == null || activity.getMileage() == "") {
+			findViewById(R.id.layout_activityDetails_rideLine).setVisibility(View.GONE);
+			findViewById(R.id.layout_activityDetails_rideLine2).setVisibility(View.GONE);
+		} else {
 			mileageTxt.setText(activity.getMileage() + "KM");
 		}
 		int hour = activity.getDuration() / 60;
@@ -1244,18 +1245,18 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		super.onDestroy();
 		handler.removeCallbacksAndMessages(null);
 	}
+
 	private void showPopupWindow3(View view) {
 
 		// 一个自定义的布局，作为显示的内容
-		View mview = LayoutInflater.from(this).inflate(
-				R.layout.share, null);
+		View mview = LayoutInflater.from(this).inflate(R.layout.share, null);
 
 		LinearLayout qq = (LinearLayout) mview.findViewById(R.id.qq);
 		LinearLayout wx = (LinearLayout) mview.findViewById(R.id.wx);
 		LinearLayout pyq = (LinearLayout) mview.findViewById(R.id.pyq);
 		LinearLayout wb = (LinearLayout) mview.findViewById(R.id.wb);
 		LinearLayout qx = (LinearLayout) mview.findViewById(R.id.qx);
-		
+
 		final PopupWindow popupWindow = new PopupWindow(mview,
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
@@ -1312,104 +1313,113 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				popupWindow.dismiss();
 			}
 		});
-		
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 50);
 
 	}
-	
-	//分享到QQ与QQ空间
-		private void onClickQQShare() { 
-		    final Bundle params = new Bundle();
-		    params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-		    params.putString(QQShare.SHARE_TO_QQ_TITLE, model.getActivitys().getActivityTitle());
-		    params.putString(QQShare.SHARE_TO_QQ_SUMMARY,  "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId());
-		    params.putString(QQShare.SHARE_TO_QQ_TARGET_URL,  SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage());
-		    params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage());
-		    params.putString(QQShare.SHARE_TO_QQ_APP_NAME,  "骑来骑去");
-		    params.putString(QzoneShare.SHARE_TO_QQ_TITLE, model.getActivitys().getActivityTitle());//必填
-		    params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, model.getActivitys().getActivityMemo());//选填
-		    params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId());//必填
-		    params.putString(QzoneShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage());
-		    mTencent.shareToQQ(ActivityDetailsActivity.this, params, baseUiListener);
-		}
-		//分享到微信
-		private void  onClickWXShare(){
-			 WXWebpageObject webpage = new WXWebpageObject();
-			    webpage.webpageUrl = "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId();
-			    WXMediaMessage msg = new WXMediaMessage(webpage);
-			    msg.title = model.getActivitys().getActivityTitle();
-			    msg.description = model.getActivitys().getActivityMemo();
-			    
-			    
-			    
-			    try
-			    {
-			      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 300);
-			      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-			      bmp.recycle();
-			      msg.thumbData = Bitmap2Bytes(thumbBmp); 
-			      //msg.setThumbImage(thumbBmp);
-			    } 
-			    catch (Exception e)
-			    {
-			      e.printStackTrace();
-			    }
-			    SendMessageToWX.Req req = new SendMessageToWX.Req();
-			    req.transaction = buildTransaction("图文链接");
-			    req.message = msg;
-			    req.scene = SendMessageToWX.Req.WXSceneSession;
-			    api.sendReq(req);
-		}
-			//分享到微信
-			private void  onClickWXPYQShare(){
-				 WXWebpageObject webpage = new WXWebpageObject();
-				    webpage.webpageUrl = "http://www.weride.com.cn/page/activityDetail.html?activityId="+model.getActivitys().getActivityId();
-				    WXMediaMessage msg = new WXMediaMessage(webpage);
-				    msg.title = model.getActivitys().getActivityTitle();
-				    msg.description = model.getActivitys().getActivityMemo();
-				    
-				    try
-				    {
-				      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + model.getActivitys().getDefaultImage(), 300);
-				      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-				      bmp.recycle();
-				      msg.thumbData = Bitmap2Bytes(thumbBmp); 
-				      //msg.setThumbImage(thumbBmp);
-				    } 
-				    catch (Exception e)
-				    {
-				      e.printStackTrace();
-				    }
-				    SendMessageToWX.Req req = new SendMessageToWX.Req();
-				    req.transaction = buildTransaction("图文链接");
-				    req.message = msg;
-				    req.scene = SendMessageToWX.Req.WXSceneTimeline;
-				    api.sendReq(req);
-			}
-		
 
-		/**
-		 * 构造一个用于请求的唯一标识
-		 * @param type 分享的内容类型
-		 * @return 
-		 */
-		private String buildTransaction(final String type) {
-			return (type == null) ? String.valueOf(System.currentTimeMillis())
-					: type + System.currentTimeMillis();
+	// 分享到QQ与QQ空间
+	private void onClickQQShare() {
+		final Bundle params = new Bundle();
+		params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE,
+				QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
+		params.putString(QQShare.SHARE_TO_QQ_TITLE, model.getActivitys()
+				.getActivityTitle());
+		params.putString(QQShare.SHARE_TO_QQ_SUMMARY,
+				"http://www.weride.com.cn/page/activityDetail.html?activityId="
+						+ model.getActivitys().getActivityId());
+		params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, SystemUtil.IMGPHTH
+				+ model.getActivitys().getDefaultImage());
+		params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH
+				+ model.getActivitys().getDefaultImage());
+		params.putString(QQShare.SHARE_TO_QQ_APP_NAME, "骑来骑去");
+		params.putString(QzoneShare.SHARE_TO_QQ_TITLE, model.getActivitys()
+				.getActivityTitle());// 必填
+		params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, model.getActivitys()
+				.getActivityMemo());// 选填
+		params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL,
+				"http://www.weride.com.cn/page/activityDetail.html?activityId="
+						+ model.getActivitys().getActivityId());// 必填
+		params.putString(QzoneShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH
+				+ model.getActivitys().getDefaultImage());
+		mTencent.shareToQQ(ActivityDetailsActivity.this, params, baseUiListener);
+	}
+
+	// 分享到微信
+	private void onClickWXShare() {
+		WXWebpageObject webpage = new WXWebpageObject();
+		webpage.webpageUrl = "http://www.weride.com.cn/page/activityDetail.html?activityId="
+				+ model.getActivitys().getActivityId();
+		WXMediaMessage msg = new WXMediaMessage(webpage);
+		msg.title = model.getActivitys().getActivityTitle();
+		msg.description = model.getActivitys().getActivityMemo();
+
+		try {
+			Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH
+					+ model.getActivitys().getDefaultImage(), 300);
+			Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+			bmp.recycle();
+			msg.thumbData = Bitmap2Bytes(thumbBmp);
+			// msg.setThumbImage(thumbBmp);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		
-		
-		//sina微博
-		private void onClickWBShare(){
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = buildTransaction("图文链接");
+		req.message = msg;
+		req.scene = SendMessageToWX.Req.WXSceneSession;
+		api.sendReq(req);
+	}
+
+	// 分享到微信
+	private void onClickWXPYQShare() {
+		WXWebpageObject webpage = new WXWebpageObject();
+		webpage.webpageUrl = "http://www.weride.com.cn/page/activityDetail.html?activityId="
+				+ model.getActivitys().getActivityId();
+		WXMediaMessage msg = new WXMediaMessage(webpage);
+		msg.title = model.getActivitys().getActivityTitle();
+		msg.description = model.getActivitys().getActivityMemo();
+
+		try {
+			Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH
+					+ model.getActivitys().getDefaultImage(), 300);
+			Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+			bmp.recycle();
+			msg.thumbData = Bitmap2Bytes(thumbBmp);
+			// msg.setThumbImage(thumbBmp);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		public byte[] Bitmap2Bytes(Bitmap bm) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-			return baos.toByteArray();
-		}
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = buildTransaction("图文链接");
+		req.message = msg;
+		req.scene = SendMessageToWX.Req.WXSceneTimeline;
+		api.sendReq(req);
+	}
+
+	/**
+	 * 构造一个用于请求的唯一标识
+	 * 
+	 * @param type
+	 *            分享的内容类型
+	 * @return
+	 */
+	private String buildTransaction(final String type) {
+		return (type == null) ? String.valueOf(System.currentTimeMillis())
+				: type + System.currentTimeMillis();
+	}
+
+	// sina微博
+	private void onClickWBShare() {
+	}
+
+	public byte[] Bitmap2Bytes(Bitmap bm) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+		return baos.toByteArray();
+	}
 }

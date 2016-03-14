@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,19 +22,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.adapter.GroupGridAdapter;
 import com.qizhi.qilaiqiqu.adapter.GroupMemberAdapter;
 import com.qizhi.qilaiqiqu.model.GroupMemberModel;
-import com.qizhi.qilaiqiqu.model.UserLoginModel;
 import com.qizhi.qilaiqiqu.model.GroupMemberModel.Data.UserList;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.squareup.picasso.Picasso;
@@ -109,6 +106,7 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 
 		case R.id.groupActivity_quitActivity:
 			quitActivity();
+			cancelActivity();
 			break;
 		default:
 			break;
@@ -144,7 +142,7 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 																.getStringExtra(
 																		"groupName")
 														+ "》活动的报名");
-								new ActivityCollectorUtil().finishAll();
+								ActivityCollectorUtil.finishAll();
 								startActivity(new Intent(GroupActivity.this,
 										MainActivity.class).putExtra(
 										"fragmentNum", 1));
@@ -162,6 +160,41 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 								.makeToast(GroupActivity.this, "取消报名失败");
 					}
 				});
+	}
+
+	private void cancelActivity() {
+		RequestParams params = new RequestParams("UTF_8");
+		params.addQueryStringParameter("activityId",
+				getIntent().getIntExtra("activityId", -1) + "");
+		params.addQueryStringParameter("userId",
+				sharedPreferences.getInt("userId", -1) + "");
+		params.addQueryStringParameter("uniqueKey",
+				sharedPreferences.getString("uniqueKey", null));
+		new XUtilsUtil().httpPost("/mobile/activity/cancelActivity.html",
+				params, new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String result = responseInfo.result;
+						try {
+							if (new JSONObject(result).getBoolean("result")) {
+								Toasts.show(GroupActivity.this, "活动取消成功", 0);
+							} else {
+								Toasts.show(GroupActivity.this, new JSONObject(
+										result).getBoolean("message") + "", 0);
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+						new SystemUtil()
+								.makeToast(GroupActivity.this, "未知错误:"+error+","+msg+"!");
+					}
+				});
+
 	}
 
 	private void getGroupMember() {

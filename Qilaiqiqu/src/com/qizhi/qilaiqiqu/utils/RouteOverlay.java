@@ -209,7 +209,6 @@ class RouteOverlay {
 		if (polyline != null) {
 			allPolyLines.add(polyline);
 			RouteOverlayActivity.lineList.add(allPolyLines);
-			System.out.println("addPolyLine(PolylineOptions options)______________________");
 		}
 
 	}
