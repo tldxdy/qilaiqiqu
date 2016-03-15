@@ -3,8 +3,6 @@ package com.qizhi.qilaiqiqu.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.ls.LSInput;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.pm.ApplicationInfo;
@@ -221,8 +219,6 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 			markerList.remove(markerList.size() - 1);
 			infoLayout.setVisibility(View.GONE);
 
-			walkRouteOverlay.removeFromMap();
-
 			break;
 
 		case R.id.edt_routeOverlayActivity_keyWord:
@@ -235,9 +231,9 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 		case R.id.txt_routeOverlayActivity_keepLine:
 
 			for (int i = 0; i < latLonPointList.size(); i++) {
-				latLonPointBuffer.append(latLonPointList.get(i).getLongitude());
-				latLonPointBuffer.append(" ");
 				latLonPointBuffer.append(latLonPointList.get(i).getLatitude());
+				latLonPointBuffer.append(" ");
+				latLonPointBuffer.append(latLonPointList.get(i).getLongitude());
 				latLonPointBuffer.append(",");
 			}
 			String llp = latLonPointBuffer.substring(0,
@@ -255,7 +251,6 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 			ReleaseActiveActivity.mileage = (distance / 1000) + "";
 
 			finish();
-			
 			break;
 
 		default:
@@ -271,8 +266,8 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 			endPoint = AMapUtil.convertToLatLonPoint(markerList.get(
 					markerList.size() - 1).getPosition());
 
-			System.out.println("endPoint"+endPoint);
-			
+			System.out.println("endPoint" + endPoint);
+
 			fromAndTo = new FromAndTo(startPoint, endPoint);// 实例化FromAndTo，字面意思,哪到哪
 			WalkRouteQuery walkRouteQuery = new WalkRouteQuery(fromAndTo,
 					RouteSearch.WalkDefault);
@@ -289,18 +284,10 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 	private void setMarker(LatLonPoint llp) {
 
 		markerList.add(aMap.addMarker(new MarkerOptions().anchor(0.1f, 0.1f)
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.strat_map))));
 
 		markerList.get(markerList.size() - 1).setPosition(
 				AMapUtil.convertToLatLng(llp));
-
-		// aMap.addMarker(
-		// new MarkerOptions()
-		// .anchor(0.1f, 0.1f)
-		// .icon(BitmapDescriptorFactory
-		// .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
-		// .setPosition(AMapUtil.convertToLatLng(llp));
 
 		adapter.notifyDataSetChanged();
 	}
@@ -659,9 +646,6 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 		if (isSelectOk) {
 			isSelectOk = false;
 			latLonPoint = new LatLonPoint(l.latitude, l.longitude);
-
-			System.out.println("latLonPoint:" + latLonPoint);
-
 			latLonPointList.add(latLonPoint);
 
 			getAddress(latLonPoint);

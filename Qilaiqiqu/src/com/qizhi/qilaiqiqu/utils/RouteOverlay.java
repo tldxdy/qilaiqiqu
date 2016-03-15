@@ -50,20 +50,15 @@ class RouteOverlay {
 		for (Marker marker : stationMarkers) {
 			marker.remove();
 		}
+
 		for (Polyline line : RouteOverlayActivity.lineList
 				.get(RouteOverlayActivity.lineList.size() - 1)) {
 			line.remove();
-			RouteOverlayActivity.lineList.remove(allPolyLines);
+			RouteOverlayActivity.lineList.remove(RouteOverlayActivity.lineList
+					.get(RouteOverlayActivity.lineList.size() - 1));
+			System.out.println("for:RouteOverlayActivity.lineList.size()"
+					+ RouteOverlayActivity.lineList.size());
 		}
-
-		System.out.println("RouteOverlayActivity.lineList.size()"
-				+ RouteOverlayActivity.lineList.size());
-		System.out
-				.println("RouteOverlayActivity.lineList.get(RouteOverlayActivity.lineList.size()-1).size()"
-						+ RouteOverlayActivity.lineList.get(
-								RouteOverlayActivity.lineList.size() - 1)
-								.size());
-
 		destroyBit();
 	}
 

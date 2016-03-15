@@ -73,7 +73,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private IUiListener loginListener; // 腾讯授权登录监听器
 
-	private UserInfo userInfo;
+	private Tencent mTencent;
+	private String registrationID;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +91,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 	private void initView() {
 		httpUtils = new XUtilsUtil();
 		registrationID = JPushInterface.getRegistrationID(LoginActivity.this);
-		System.out.println("registrationID:"+registrationID);
-		
+		System.out.println("registrationID:" + registrationID);
+
 		fogetTxt = (TextView) findViewById(R.id.txt_loginActivity_forget);
 
 		loginBtn = (Button) findViewById(R.id.btn_loginActivity_login);
@@ -141,7 +142,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 							@Override
 							public void onError(UiError msg) {
-								Toasts.show(LoginActivity.this, "未知错误："+msg, 0);
+								Toasts.show(LoginActivity.this, "未知错误：" + msg,
+										0);
 							}
 
 							@Override
@@ -230,15 +232,15 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private void sendTencentCode(JSONObject re, JSONObject jo) {
 		RequestParams params = new RequestParams("UTF-8");
-		
-		System.out.println("pushToken:"+registrationID);
-		System.out.println("openId:"+jo.optString("openid"));
-		System.out.println("accessToken:"+jo.optString("access_token"));
-		System.out.println("nickname:"+re.optString("nickname"));
-		System.out.println("gender:"+re.optString("gender"));
-		System.out.println("avatarURL50:"+re.optString("figureurl_1"));
-		System.out.println("avatarURL100:"+re.optString("figureurl_2"));
-		
+
+		System.out.println("pushToken:" + registrationID);
+		System.out.println("openId:" + jo.optString("openid"));
+		System.out.println("accessToken:" + jo.optString("access_token"));
+		System.out.println("nickname:" + re.optString("nickname"));
+		System.out.println("gender:" + re.optString("gender"));
+		System.out.println("avatarURL50:" + re.optString("figureurl_1"));
+		System.out.println("avatarURL100:" + re.optString("figureurl_2"));
+
 		params.addQueryStringParameter("pushToken", registrationID);
 		params.addQueryStringParameter("adviceType", "ANDROID");
 		params.addQueryStringParameter("openId", jo.optString("openid"));
@@ -255,8 +257,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {
 				String result = responseInfo.result;
-				System.out.println("QQ用户信息:"+result);
-				
+				System.out.println("QQ用户信息:" + result);
+
 				try {
 					JSONObject jsonObject = new JSONObject(result);
 					if (jsonObject.getBoolean("result")) {
@@ -285,10 +287,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 						editor.commit();
 						Toast.makeText(LoginActivity.this, "登录成功",
 								Toast.LENGTH_LONG).show();
-						LoginActivity.this.finish(); 
+						LoginActivity.this.finish();
 
 					} else {
-						Toasts.show(LoginActivity.this, "登录失败:"+jsonObject.getString("message"), 0);
+						Toasts.show(LoginActivity.this,
+								"登录失败:" + jsonObject.getString("message"), 0);
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -429,11 +432,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 			Tencent.handleResultData(data, loginListener);
 			Log.d("TAG", "-->onActivityResult handle logindata");
 			// }
-		} else if (requestCode == Constants.REQUEST_APPBAR) { // app��Ӧ�ðɵ�¼
+		} else if (requestCode == Constants.REQUEST_APPBAR) {
 			// if (resultCode == Constants.RESULT_LOGIN) {
-			Toast.makeText(LoginActivity.this,
-					data.getStringExtra(Constants.LOGIN_INFO) + "........", 0)
-					.show();
+			Toasts.show(LoginActivity.this, data.getStringExtra(Constants.LOGIN_INFO) + "........", 0);
 			// }
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -452,9 +453,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 	/**
 	 * 双击退出函数
 	 */
-	private static Boolean isExit = false;
-	private Tencent mTencent;
-	private String registrationID;
 
 	/*
 	 * private void exitBy2Click() { Timer tExit = null; if (isExit == false) {

@@ -3,6 +3,7 @@ package com.qizhi.qilaiqiqu.activity;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,7 +156,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	private IUiListener baseUiListener; // 监听器
 
 	private IWXAPI api;
-	
+
 	public static int userId;
 
 	@Override
@@ -169,8 +170,6 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	}
 
 	private void initView() {
-		userId = activity.getUserId();
-		
 		sharedPreferences = getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
@@ -563,17 +562,26 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			break;
 
 		case R.id.layout_activityDetails_chatSingle:
-			startActivity(new Intent(this, ChatSingleActivity.class)
-					.putExtra("username", activity.getImUserName())
-					.putExtra("otherUserName", activity.getUserName())
-					.putExtra("otherUserImage", activity.getUserName())
-					.putExtra("otherUserId", activity.getUserId()));
+
+			if (sharedPreferences.getInt("userId", -1) != -1) {
+				startActivity(new Intent(this, ChatSingleActivity.class)
+						.putExtra("username", activity.getImUserName())
+						.putExtra("otherUserName", activity.getUserName())
+						.putExtra("otherUserImage", activity.getUserName())
+						.putExtra("otherUserId", activity.getUserId()));
+			} else {
+				Toasts.show(ActivityDetailsActivity.this, "请登录", 0);
+				Intent intent1 = new Intent(ActivityDetailsActivity.this,
+						LoginActivity.class);
+				startActivity(intent1);
+			}
+
 			break;
 
 		case R.id.layout_activityDetails_seeLine:
 			startActivity(new Intent(this, ShowLineActivity.class).putExtra(
 					"LanInfo", activity.getLanInfo()));
-
+			System.err.println("activity.getLanInfo()" + activity.getLanInfo());
 			break;
 		case R.id.img_activityDetails_share:
 			showPopupWindow3(v);
@@ -720,7 +728,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 						.toString(), type);
 
 				activity = model.getActivitys();
-
+				userId = activity.getUserId();
 				if (activity != null) {
 
 					setView(model);
@@ -784,10 +792,13 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		userNameTxt.setText(activity.getUserName());
 		activityTitleTxt.setText(activity.getActivityTitle());
 		if (activity.getMileage() == null || activity.getMileage() == "") {
-			findViewById(R.id.layout_activityDetails_rideLine).setVisibility(View.GONE);
-			findViewById(R.id.layout_activityDetails_rideLine2).setVisibility(View.GONE);
+			findViewById(R.id.layout_activityDetails_rideLine).setVisibility(
+					View.GONE);
+			findViewById(R.id.layout_activityDetails_rideLine2).setVisibility(
+					View.GONE);
 		} else {
-			mileageTxt.setText(activity.getMileage() + "KM");
+			mileageTxt.setText(new DecimalFormat("0.00").format(Double
+					.parseDouble(activity.getMileage())) + "KM");
 		}
 		int hour = activity.getDuration() / 60;
 		if (hour / 24 > 0) {

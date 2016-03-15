@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 	private TextView signatureTxt;
 	private TextView releaseTxt;
 	private TextView memoTxt;
+	private TextView mileageTxt;
 
 	private LinearLayout dateLayout;
 	private LinearLayout timeLayout;
@@ -108,7 +110,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 
 	protected static String lanInfo;
 	protected static String lanName;
-	protected static String mileage;
+	protected static String mileage = null;
 
 	private boolean falg = true;
 
@@ -216,6 +218,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		timeTxt = (TextView) findViewById(R.id.txt_releaseActiveActivity_time);
 		themeEdt = (EditText) findViewById(R.id.edt_releaseActiveActivity_theme);
 		moneyTxt = (EditText) findViewById(R.id.edt_releaseActiveActivity_money);
+		mileageTxt = (TextView) findViewById(R.id.txt_releaseActiveActivity_mileage);
 		signatureEdt = (EditText) findViewById(R.id.edt_releaseActiveActivity_signature);
 		signatureTxt = (TextView) findViewById(R.id.txt_releaseActiveActivity_textLengh);
 		releaseTxt = (TextView) findViewById(R.id.txt_releaseActiveActivity_release);
@@ -470,7 +473,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		params.addBodyParameter("duration", (days * 24 + hours) * 60 + "");
 		params.addBodyParameter("lanInfo", lanInfo);
 		params.addBodyParameter("lanName", lanName);
-		params.addBodyParameter("mileage", mileage);
+		params.addBodyParameter("mileage",
+				new DecimalFormat("#0.00").format(Double.parseDouble(mileage)));
 		// activityImage 图片(多张用逗号隔开)
 		params.addBodyParameter("activityImage", picName);
 		params.addBodyParameter("location", "");
@@ -628,7 +632,7 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		params1.rightMargin = 10;
 		LayoutParams params2 = new LayoutParams(76, LayoutParams.WRAP_CONTENT);
 		params2.rightMargin = 10;
-		
+
 		((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
 				.getChildAt(0).setLayoutParams(params1);
 		((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0))
@@ -842,6 +846,11 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		if (isFirst) {
 			photoList = getIntent().getStringArrayListExtra("photoList");
 			isFirst = false;
+		}
+
+		if (mileage != null) {
+			mileageTxt.setText(new DecimalFormat("0.00").format(Double
+					.parseDouble(mileage)) + "KM");
 		}
 
 		super.onResume();

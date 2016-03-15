@@ -20,6 +20,7 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -36,6 +37,7 @@ import com.amap.api.services.route.RouteSearch.WalkRouteQuery;
 import com.amap.api.services.route.WalkPath;
 import com.amap.api.services.route.WalkRouteResult;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.AMapUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.WalkRouteOverlayUtil;
 import com.umeng.analytics.MobclickAgent;
@@ -68,10 +70,11 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (msg.arg1 == 1) {
+			if (isGoOn == 1) {
 				isGoOn = 0;
 				stopTime();
 				drawLine();
+				System.out.println("stopTime()+drawLine()");
 			}
 		}
 
@@ -107,7 +110,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 	 * 初始化
 	 */
 	private void init() {
-		System.out.println("1");
 		mapView = (MapView) findViewById(R.id.showLineActivty_map);
 		if (aMap == null) {
 			aMap = mapView.getMap();
@@ -130,7 +132,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 	 * 设置一些amap的属性
 	 */
 	private void setUpMap() {
-		System.out.println("2");
 		aMap.setLocationSource(this);// 设置定位监听
 		aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
 		aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
@@ -143,7 +144,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 	 */
 	@Override
 	public void onLocationChanged(AMapLocation amapLocation) {
-		System.out.println("3");
 		if (mListener != null && amapLocation != null) {
 			if (amapLocation != null && amapLocation.getErrorCode() == 0) {
 				mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
@@ -161,7 +161,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 	 */
 	@Override
 	public void activate(OnLocationChangedListener listener) {
-		System.out.println("4");
 		mListener = listener;
 		if (mlocationClient == null) {
 			mlocationClient = new AMapLocationClient(this);
@@ -281,9 +280,12 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 				Message message = handler.obtainMessage();
 				message.arg1 = isGoOn;
 				handler.sendMessage(message);
+
+				System.out.println("startTime()+run()");
+
 			}
 		};
-		timer.schedule(task, 3000);
+		timer.schedule(task, 1000);
 	}
 
 	private void stopTime() {
@@ -292,10 +294,16 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 
 	private void drawLine() {
 		pointList = new ArrayList<LatLonPoint>();
-		if ("".equals(getIntent().getStringExtra("LanInfo"))) {
+
+		System.out.println("getIntent().getStringExtra(LanInfo):"
+				+ getIntent().getStringExtra("LanInfo"));
+		if (!"".equals(getIntent().getStringExtra("LanInfo"))) {
 			stringExtra = getIntent().getStringExtra("LanInfo");
+			System.out.println("stringExtra" + stringExtra);
+
 			if (stringExtra != null) {
 				split = stringExtra.split(",");
+				System.out.println("split" + split);
 				if (split.length > 1) {
 					for (int i = 0; i < split.length; i++) {
 						split2 = split[i].split(" ");
@@ -303,19 +311,27 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 								Double.parseDouble(split2[0]),
 								Double.parseDouble(split2[1]));
 						pointList.add(latLonPoint);
+						setmarker(pointList.get(i));
 					}
-
-					System.out.println(pointList);
-
-					mRouteOverlay(pointList.get(0), pointList.get(1));
+					if (pointList.size() > 1) {
+						for (int i = 0; i < pointList.size() - 1; i++) {
+							mRouteOverlay(pointList.get(i),
+									pointList.get(i + 1));
+						}
+					}
 
 				}
 			}
+			aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+					AMapUtil.convertToLatLng(pointList.get(0)), 14.5f));
+			markerList.get(markerList.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.finish_map));
 		}
 
 	}
 
 	private void mRouteOverlay(LatLonPoint start, LatLonPoint end) {
+
+		System.out.println("mRouteOverlay()");
 
 		startPoint = start;
 		endPoint = end;
@@ -324,6 +340,15 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 		WalkRouteQuery walkRouteQuery = new WalkRouteQuery(fromAndTo,
 				RouteSearch.WalkDefault);
 		routeSearch.calculateWalkRouteAsyn(walkRouteQuery);
+	}
+
+	private void setmarker(LatLonPoint llp) {
+		markerList.add(aMap.addMarker(new MarkerOptions().anchor(0.1f, 0.1f)
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.strat_map))));
+
+		markerList.get(markerList.size() - 1).setPosition(
+				AMapUtil.convertToLatLng(llp));
+
 	}
 
 	/**
@@ -335,6 +360,9 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 
 	@Override
 	public void onWalkRouteSearched(WalkRouteResult result, int rCode) {
+
+		System.out.println("rCode:" + rCode + ",result:" + result);
+
 		if (rCode == 0) {
 			if (result != null && result.getPaths() != null
 					&& result.getPaths().size() > 0) {

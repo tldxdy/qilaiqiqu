@@ -76,12 +76,14 @@ public class RouteOverlayAdapter extends BaseAdapter {
 
 				@Override
 				public void onClick(View arg0) {
-
+					if (markerList.size() > 1) {
+						System.out.println("walkRouteOverlay.removeFromMap()");
+						walkRouteOverlay.removeFromMap();
+					}
 					list.remove(list.size() - 1);
 					markerList.get(markerList.size() - 1).remove();
 					markerList.remove(markerList.size() - 1);
-
-					walkRouteOverlay.removeFromMap();
+					
 
 					notifyDataSetChanged();
 					// lastPolyline.remove();

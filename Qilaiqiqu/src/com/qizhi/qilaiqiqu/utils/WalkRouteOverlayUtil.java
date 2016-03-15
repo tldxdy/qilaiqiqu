@@ -3,6 +3,7 @@ package com.qizhi.qilaiqiqu.utils;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.LatLng;
@@ -81,7 +82,6 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 
 				// addWalkStationMarkers(walkStep, latLng);
 				addWalkPolyLines(walkStep);
-				System.out.println("addWalkPolyLines(walkStep)!!!!!!!!!!!!!!");
 			}
 			// addStartAndEndMarker();
 		} catch (Throwable e) {
@@ -126,7 +126,7 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 
 	private void addWalkPolyLine(LatLng latLngFrom, LatLng latLngTo) {
 		addPolyLine(new PolylineOptions().add(latLngFrom, latLngTo)
-				.color(getWalkColor()).width(getRouteWidth()));
+				.color(Color.RED).width(getRouteWidth()));
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class WalkRouteOverlayUtil extends RouteOverlay {
 	private void addWalkPolyLines(WalkStep walkStep) {
 		addPolyLine(new PolylineOptions()
 				.addAll(AMapServicesUtil.convertArrList(walkStep.getPolyline()))
-				.color(getWalkColor()).width(getRouteWidth()));
+				.color(Color.RED).width(getRouteWidth()));
 	}
 
 	/**

@@ -84,7 +84,7 @@
     <string name="text_personaldataactivity_editing">个性签名编辑</string>
     <string name="text_personaldataactivity_username">13129907055</string>
     <string name="text_personaldataactivity_nick">独步天涯</string>
-    <string name="text_personaldataactivity_confirm">确定</string>
+    <string name="text_personaldataactivity_confirm">保存</string>
     <string name="title_activity_comment_message">CommentMessageActivity</string>
     <string name="title_activity_my_message">MyMessageActivity</string>
     <string name="title_activity_native_image">NativeImageActivity</string>

@@ -24,12 +24,14 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.DataCleanManager;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView.OnSwitchChangedListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.tencent.tauth.Tencent;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -58,6 +60,8 @@ public class SetActivity extends Activity implements OnClickListener {
 
 	private SharedPreferences sp;
 	Editor editor;
+
+	private Tencent mTencent;
 
 	private Handler handler = new Handler() {
 
@@ -110,6 +114,8 @@ public class SetActivity extends Activity implements OnClickListener {
 		introduceLayout = (LinearLayout) findViewById(R.id.layout_setActivity_introduce);
 		clearCacheLayout = (LinearLayout) findViewById(R.id.layout_setActivity_clearCache);
 
+		mTencent = Tencent.createInstance(ConstantsUtil.APP_ID_TX,
+				this.getApplicationContext());
 	}
 
 	private void initEvent() {
@@ -132,7 +138,8 @@ public class SetActivity extends Activity implements OnClickListener {
 		introduceLayout.setOnClickListener(this);
 		clearCacheLayout.setOnClickListener(this);
 		view1.setChecked(sp.getBoolean("view1", true));
-		System.out.println("sp.getBoolean(view1, true):"+sp.getBoolean("view1", true));
+		System.out.println("sp.getBoolean(view1, true):"
+				+ sp.getBoolean("view1", true));
 		view1.setOnChangeListener(new OnSwitchChangedListener() {
 
 			@Override
@@ -142,17 +149,19 @@ public class SetActivity extends Activity implements OnClickListener {
 						.getChatOptions();
 				options = EMChatManager.getInstance().getChatOptions();
 				if (isChecked) {
-					System.out.println("isChecked:"+isChecked);
+					System.out.println("isChecked:" + isChecked);
 					editor.putBoolean("view1", isChecked);
 					editor.commit();
 					options.setNotifyBySoundAndVibrate(isChecked);
-					System.out.println("sp.getBoolean(view1, true):"+sp.getBoolean("view1", false));
+					System.out.println("sp.getBoolean(view1, true):"
+							+ sp.getBoolean("view1", false));
 				} else {
-					System.out.println("isChecked:"+isChecked);
+					System.out.println("isChecked:" + isChecked);
 					editor.putBoolean("view1", isChecked);
 					editor.commit();
 					options.setNotifyBySoundAndVibrate(isChecked);
-					System.out.println("sp.getBoolean(view1, true):"+sp.getBoolean("view1", false));
+					System.out.println("sp.getBoolean(view1, true):"
+							+ sp.getBoolean("view1", false));
 				}
 			}
 		});
@@ -175,6 +184,7 @@ public class SetActivity extends Activity implements OnClickListener {
 
 		case R.id.txt_setActivity_logout:
 			logOut();
+			logoutQQ();
 			break;
 
 		case R.id.layout_setActivity_clearCache:
@@ -228,15 +238,17 @@ public class SetActivity extends Activity implements OnClickListener {
 		});
 	}
 
+	public void logoutQQ() {
+		mTencent.logout(this);
+	}
+
 	private void httpQuery() {
 
 		String url = "mobile/push/releaseToken.html";
 		RequestParams params = new RequestParams();
 
-		params.addBodyParameter("userId",
-				sp.getInt("userId", -1) + "");
-		params.addBodyParameter("uniqueKey",
-				sp.getString("uniqueKey", null));
+		params.addBodyParameter("userId", sp.getInt("userId", -1) + "");
+		params.addBodyParameter("uniqueKey", sp.getString("uniqueKey", null));
 		// String checkCode = sharedPreferences.getString("checkCode", null);
 		// String defaultCode = sharedPreferences.getString("defaultCode",
 		// null);
