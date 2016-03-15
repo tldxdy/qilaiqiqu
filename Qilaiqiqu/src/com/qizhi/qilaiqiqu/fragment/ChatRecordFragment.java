@@ -8,12 +8,16 @@ import java.util.Set;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.exceptions.EaseMobException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.ChatActivity;
 import com.qizhi.qilaiqiqu.activity.ChatSingleActivity;
 import com.qizhi.qilaiqiqu.adapter.ChatRecordAdapter;
 import com.qizhi.qilaiqiqu.model.CertainUserModel;
@@ -81,11 +85,10 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 			groupChatUserList = gson.fromJson(groupChat, type);
 		}
 		System.out.println("chatUserList====>" + chatUserList.size()+"----------chatUserList====>" + groupChatUserList.size());
-	/*	chatUserList = preferences.getStringSet("Chat" + preferences.getString("uniqueKey", null), new HashSet<String>());
-		System.out.println("chatUserList====>" + chatUserList.size());*/
 		for (String aa : chatUserList) {
 			conversation = EMChatManager.getInstance().getConversation(aa);
 			if(conversation != null){
+				System.out.println("::::::"+conversation.getUnreadMsgCount());
 				//获取此会话的所有消息
 				List<EMMessage> messages = conversation.getAllMessages();
 				if(messages.size() > 0 ){
@@ -94,9 +97,17 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 			}
 			
 		}
-			
-		
-		
+			for (String aa : groupChatUserList) {
+				conversation = EMChatManager.getInstance().getConversation(aa);
+				if(conversation != null){
+					System.out.println("::::::"+conversation.getUnreadMsgCount());
+					//获取此会话的所有消息
+					List<EMMessage> messages = conversation.getAllMessages();
+					if(messages.size() > 0 ){
+						list.add(messages.get(messages.size() - 1));
+					}
+				}
+			}
 		
 		
 		data();
@@ -112,28 +123,21 @@ public class ChatRecordFragment extends Fragment implements OnItemClickListener,
 	}
 
 
-	private CertainUserModel certainUserModel;
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		System.out.println(position);
-		
 		try {
 		if(list.get(position - 1).getChatType() == ChatType.GroupChat){
-			certainUserModel = new CertainUserModel();
-			certainUserModel.setImUserName(list.get(position - 1).getUserName());
-			certainUserModel.setUserName(list.get(position - 1).getStringAttribute("conversationOtherUserNameExpand"));
-			certainUserModel.setUserImage(list.get(position - 1 ).getStringAttribute("conversationOtherUserImageExpand"));
-			certainUserModel.setUserId(list.get(position - 1).getIntAttribute("ConversationOtherUserIdentifier"));
-			startActivity(new Intent(context, ChatSingleActivity.class).putExtra(
-					"certainUserModel", certainUserModel));
-		}else{
-			certainUserModel = new CertainUserModel();
-			certainUserModel.setImUserName(list.get(position - 1).getUserName());
-			certainUserModel.setUserName(list.get(position - 1).getStringAttribute("IMUserNameExpand"));
-			certainUserModel.setUserImage(list.get(position - 1).getStringAttribute("IMUserImageExpand"));
-			certainUserModel.setUserId(list.get(position - 1).getIntAttribute("IMUserIdentifierExpand"));
-			startActivity(new Intent(context, ChatSingleActivity.class).putExtra(
-					"certainUserModel", certainUserModel));
+			startActivity(new Intent(context,
+					ChatActivity.class).putExtra("Group", "Group")
+					.putExtra("username", list.get(position - 1).getTo())
+					.putExtra("groupName", list.get(position - 1).getStringAttribute("IMConversationUserNameExpand")));
+		}else if(list.get(position - 1).getChatType() == ChatType.Chat){
+			int a = Integer.parseInt(list.get(position - 1).getStringAttribute("ConversationMyUserIdentifier"));
+			startActivity(new Intent(context, ChatSingleActivity.class)
+			.putExtra("username", list.get(position - 1).getUserName())
+			.putExtra("otherUserName", list.get(position - 1).getStringAttribute("IMUserNameExpand"))
+			.putExtra("otherUserImage", list.get(position - 1).getStringAttribute("IMUserImageExpand"))
+			.putExtra("otherUserId", a));
 		}
 		} catch (EaseMobException e) {
 			e.printStackTrace();

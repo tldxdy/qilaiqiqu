@@ -219,7 +219,7 @@ public class PersonActivity extends Activity implements OnClickListener,
 								} else {
 									sexImg.setImageBitmap(null);
 								}
-								SystemUtil.loadImagexutils(
+								SystemUtil.Imagexutils(
 										certainUserModel.getUserImage(),
 										photoImg, PersonActivity.this);
 								if (certainUserModel.isAttentionFlag()) {

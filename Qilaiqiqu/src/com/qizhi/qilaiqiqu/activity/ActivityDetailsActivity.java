@@ -359,7 +359,6 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			startActivity(new Intent(ActivityDetailsActivity.this,
 					ChatActivity.class).putExtra("Group", "Group")
 					.putExtra("username", activity.getImGroupId())
-					.putExtra("activityId", activityId)
 					.putExtra("groupName", activity.getActivityTitle()));
 			break;
 
@@ -753,25 +752,23 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			Picasso.with(ActivityDetailsActivity.this)
 					.load(R.drawable.bitmap_homepage).into(userImageImg);
 		} else {
-			Picasso.with(ActivityDetailsActivity.this)
-					.load(imageUrl
-							+ SystemUtil.UrlSize(activity.getUserImage().split(
-									"@")[0])).into(userImageImg);
+			SystemUtil.Imagexutils(SystemUtil.UrlSize(activity.getUserImage()), userImageImg, ActivityDetailsActivity.this);
+			
+		/*	Picasso.with(ActivityDetailsActivity.this)
+					.load(imageUrl+ SystemUtil.UrlSize(activity.getUserImage())).into(userImageImg);*/
 		}
 
 		if (activity.getActivityImage() == null
 				|| "null".equals(activity.getActivityImage())
 				|| "".equals(activity.getActivityImage())) {
-			IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.IMGPHTH
-					+ SystemUtil.UrlSize(activity.getDefaultImage()), null,
+			IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.UrlSize(activity.getDefaultImage()), null,
 					null, null));
 		} else {
 
 			String[] split = activity.getActivityImage().split(",");
 
 			for (int i = 0; i < split.length; i++) {
-				IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.IMGPHTH
-						+ SystemUtil.UrlSize(split[i].split("@")[0]), null,
+				IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.UrlSize(split[i]), null,
 						null, null));
 
 			}
@@ -843,6 +840,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		int size;
 		if (model.getParticipantList().size() < 7) {
 			size = model.getParticipantList().size();
+			dianTxt.setVisibility(View.GONE);
 		} else {
 			size = 6;
 		}
@@ -850,13 +848,20 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			CircleImageViewUtil imageView = new CircleImageViewUtil(this);
 
 			linearLayout.addView(imageView);
-
-			Picasso.with(ActivityDetailsActivity.this)
-					.load(imageUrl
-							+ model.getParticipantList().get(i).getUserImage())
-					.resize(dp2px(ActivityDetailsActivity.this, 45f),
-							dp2px(ActivityDetailsActivity.this, 45f))
-					.into(imageView);
+			if(model.getParticipantList().get(i).getUserImage().indexOf("http") != -1){
+				Picasso.with(ActivityDetailsActivity.this)
+				.load(model.getParticipantList().get(i).getUserImage())
+						.resize(dp2px(ActivityDetailsActivity.this, 45f),
+								dp2px(ActivityDetailsActivity.this, 45f))
+								.into(imageView);
+			}else{
+				Picasso.with(ActivityDetailsActivity.this)
+				.load(imageUrl
+						+ model.getParticipantList().get(i).getUserImage())
+						.resize(dp2px(ActivityDetailsActivity.this, 45f),
+								dp2px(ActivityDetailsActivity.this, 45f))
+								.into(imageView);
+			}
 		}
 
 		if (sharedPreferences.getInt("userId", -1) == activity.getUserId()) {
@@ -933,10 +938,10 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 						ImageView imageView = new ImageView(
 								ActivityDetailsActivity.this);
-
-						Picasso.with(ActivityDetailsActivity.this)
+						SystemUtil.Imagexutils(imageInfo.image.toString(), imageView, ActivityDetailsActivity.this);
+						/*Picasso.with(ActivityDetailsActivity.this)
 								.load(imageInfo.image.toString())
-								.into(imageView);
+								.into(imageView);*/
 						// imageView.setImageResource(R.drawable.demo);
 
 						return imageView;

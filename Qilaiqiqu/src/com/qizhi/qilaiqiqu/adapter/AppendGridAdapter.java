@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.ActivityModel.ParticipantList;
 import com.qizhi.qilaiqiqu.utils.CircleImageViewUtil;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.squareup.picasso.Picasso;
 
 public class AppendGridAdapter extends BaseAdapter {
@@ -57,9 +58,11 @@ public class AppendGridAdapter extends BaseAdapter {
 			holder = (ViewHolder) view.getTag();
 		}
 		holder.username.setText(list.get(position).getUserName());
-		Picasso.with(context)
+		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.image, context);
+		
+		/*Picasso.with(context)
 				.load(imageUrl + list.get(position).getUserImage())
-				.into(holder.image);
+				.into(holder.image);*/
 		return view;
 	}
 

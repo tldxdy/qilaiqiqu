@@ -25,7 +25,6 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.PersonActivity;
 import com.qizhi.qilaiqiqu.model.ArticleModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
@@ -43,26 +42,14 @@ public class SlideShowListAdapter extends BaseAdapter {
 	private List<ArticleModel> list;
 	private Context context;
 	
-	
-/*	private  boolean scrollState=false;  
-	  
-	public void setScrollState(boolean scrollState) {  
-	        this.scrollState = scrollState;  
-	    }
-*/
-	// private boolean falg = false;
-
-	//private ImageCycleViewUtil mImageCycleView;
 
 	private XUtilsUtil xUtilsUtil;
 	private SharedPreferences preferences;
 
-	//List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
 	public SlideShowListAdapter(Context context, List<ArticleModel> list) {
 		this.context = context;
 		this.list = list;
-		//this.IClist = IClist;
 		inflater = LayoutInflater.from(context);
 		preferences = context.getSharedPreferences("userLogin",
 				Context.MODE_PRIVATE);
@@ -120,7 +107,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 		holder.likeTxt.setText((list.get(position).getPraiseNum() + list
 				.get(position).getVirtualPraise()) + "");
 
-			SystemUtil.loadImagexutils(list.get(position).getUserImage(),
+			SystemUtil.Imagexutils(list.get(position).getUserImage(),
 					holder.photoImg, context);
 			//holder.photoImg.setImageResource(R.drawable.homepage_picture);
 		
@@ -257,47 +244,6 @@ public class SlideShowListAdapter extends BaseAdapter {
 				}
 			}
 		});
-		/*
-		 * holder.likeImg.setOnTouchListener(new OnTouchListener() {
-		 * 
-		 * @Override public boolean onTouch(View arg0, MotionEvent event) { if
-		 * (event.getAction() == MotionEvent.ACTION_DOWN) {
-		 * 
-		 * // Create a system to run the physics loop for a set of springs.
-		 * SpringSystem springSystem = SpringSystem.create(); // Add a spring to
-		 * the system. Spring spring = springSystem.createSpring(); // Add a
-		 * listener to observe the motion of the spring. spring.addListener(new
-		 * SimpleSpringListener() {
-		 * 
-		 * @Override public void onSpringUpdate(Spring spring) { // You can
-		 * observe the updates in the spring // state by asking its current
-		 * value in // onSpringUpdate. float value = (float)
-		 * spring.getCurrentValue(); float scale = 1f - (value * 0.85f);
-		 * holder.likeImg.setScaleX(scale); holder.likeImg.setScaleY(scale); }
-		 * });
-		 * 
-		 * // Set the spring in motion; moving from 0 to 1
-		 * spring.setEndValue(1);
-		 * 
-		 * } else if (event.getAction() == MotionEvent.ACTION_UP) {
-		 * 
-		 * // Create a system to run the physics loop for a set of springs.
-		 * SpringSystem springSystem = SpringSystem.create(); // Add a spring to
-		 * the system. Spring spring = springSystem.createSpring(); // Add a
-		 * listener to observe the motion of the spring. spring.addListener(new
-		 * SimpleSpringListener() {
-		 * 
-		 * @Override public void onSpringUpdate(Spring spring) {
-		 * System.out.println("----------------------------"); // You can
-		 * observe the updates in the spring // state by asking its current
-		 * value in // onSpringUpdate. float value = (float)
-		 * spring.getCurrentValue(); float scale = (value * 1f);
-		 * holder.likeImg.setScaleX(scale); holder.likeImg.setScaleY(scale); }
-		 * }); // Set the spring in motion; moving from 0 to 1
-		 * spring.setEndValue(1); }
-		 * 
-		 * return true; } });
-		 */
 
 		return view;
 	}

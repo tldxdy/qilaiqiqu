@@ -26,7 +26,6 @@ import com.qizhi.qilaiqiqu.R;
 import com.squareup.picasso.Picasso;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -91,7 +90,7 @@ public class SystemUtil {
 	 */
 	public static void Imagexutils(String url, ImageView sellersmallimg,Context context) {
 
-		@SuppressWarnings("deprecation")
+/*		@SuppressWarnings("deprecation")
 		int screenWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）  
 		String[] s = url.split("@");
 		if(s.length == 2){
@@ -106,20 +105,21 @@ public class SystemUtil {
 			.placeholder(R.drawable.bitmap_homepage)
 			.error(R.drawable.bitmap_homepage)
 			.into(sellersmallimg);
-		}else{
-			String uri = UrlSize(url);
-			if(uri.indexOf("http") != -1){
-				Picasso.with(context).load(uri)
+		}else{*/
+			
+			if(url.indexOf("http") != -1){
+				Picasso.with(context).load(url)
 				.placeholder(R.drawable.bitmap_homepage)
 				.error(R.drawable.bitmap_homepage)
 				.into(sellersmallimg);
 			}else{
+				String uri = UrlSize(url);
 				Picasso.with(context).load(IMGPHTH + uri)
 				.placeholder(R.drawable.bitmap_homepage)
 				.error(R.drawable.bitmap_homepage)
 				.into(sellersmallimg);
 			}
-		}
+	//	}
 		
 	}
 	

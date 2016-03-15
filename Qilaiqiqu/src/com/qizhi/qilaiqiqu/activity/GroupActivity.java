@@ -126,15 +126,13 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 
 	private void quitActivity() {
 		RequestParams params = new RequestParams("UTF-8");
-		params.addQueryStringParameter("activityId",
-				getIntent().getIntExtra("activityId", -1) + "");
-		params.addQueryStringParameter("userId",
-				sharedPreferences.getInt("userId", -1) + "");
+		params.addQueryStringParameter("imGroupId",
+				sharedPreferences.getString("username", null));
 		params.addQueryStringParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
 
 		new XUtilsUtil().httpPost(
-				"mobile/participant/cancelActivityParticipant.html", params,
+				"mobile/activity/queryGroupForUserPaginationList.html", params,
 				new CallBackPost() {
 
 					@Override
@@ -181,7 +179,7 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 				sharedPreferences.getInt("userId", -1) + "");
 		params.addQueryStringParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
-		new XUtilsUtil().httpPost("/mobile/activity/cancelActivity.html",
+		new XUtilsUtil().httpPost("mobile/activity/cancelActivity.html",
 				params, new CallBackPost() {
 
 					@Override
@@ -243,11 +241,20 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 							ownerName.setText(model.getData().getOwner()
 									.getUserName()
 									+ "");
-							Picasso.with(GroupActivity.this)
-									.load(SystemUtil.IMGPHTH
-											+ model.getData().getOwner()
-													.getUserImage())
-									.into(ownerImg);
+
+							/*System.out.println("-------------------------");
+							System.out.println(model.getData().getOwner()
+									.getUserImage());*/
+
+							SystemUtil.Imagexutils(model.getData().getOwner()
+									.getUserImage(), ownerImg,
+									GroupActivity.this);
+							/*
+							 * Picasso.with(GroupActivity.this)
+							 * .load(SystemUtil.IMGPHTH +
+							 * model.getData().getOwner() .getUserImage())
+							 * .into(ownerImg);
+							 */
 
 						} catch (JSONException e) {
 							e.printStackTrace();

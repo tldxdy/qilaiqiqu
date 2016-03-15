@@ -86,7 +86,6 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
-import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("HandlerLeak")
@@ -670,10 +669,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 				sharedPreferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
-		
-	/*	String checkCode = sharedPreferences.getString("checkCode", null);
-		String defaultCode = sharedPreferences.getString("defaultCode", null);
-		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));*/
 
 		new XUtilsUtil().httpPost(url, params, new CallBackPost() {
 
@@ -693,8 +688,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 						editor.putString("userName", null);
 						editor.putString("imUserName", null);
 						editor.putString("mobilePhone", null);
-						/*editor.putString("checkCode", jsonObject.optString("checkCode"));
-						editor.putString("defaultCode", jsonObject.optString("defaultCode"));*/
 						editor.commit();
 
 						// 实例化Intent
@@ -705,11 +698,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 						sendBroadcast(intent);
 						isdialog = true;
 
-						// MainActivity.this.finish();
-						/*
-						 * startActivity(new Intent(MainActivity.this,
-						 * LoginActivity.class));
-						 */
 					}
 
 				} catch (JSONException e) {
@@ -735,16 +723,14 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		public void onReceive(Context context, Intent intent) {
 			// 记得把广播给终结掉
 			abortBroadcast();
-			//System.out.println(intent.getStringExtra("userName"));
-			String from = intent.getStringExtra("from");
+			//String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
-			System.out.println(from + "----" +msgid);
 			
 			if(message.getChatType() == ChatType.Chat){
 				chatUserList.add(message.getFrom());
 			}else if(message.getChatType() == ChatType.GroupChat){
-				groupChatUserList.add(message.getFrom());
+				groupChatUserList.add(message.getTo());
 			}
 			String chat = gson.toJson(chatUserList);
 			String groupChat = gson.toJson(groupChatUserList);
@@ -882,27 +868,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 					@Override
 					public void onSuccess() {
 
-						// // 保存用户名密码
-						// userInfo_Editor.putString(
-						// "USER_NAME",
-						// usernameEdt.getText()
-						// .toString());
-						// userInfo_Editor.putString(
-						// "USER_PASSWORD",
-						// passwordEdt.getText()
-						// .toString());
-						// userInfo_Editor.putBoolean(
-						// "isLogin", true);
-						// userInfo_Editor.commit();
-
-						// 更新环信用户昵称
-						// EMChatManager
-						// .getInstance()
-						// .updateCurrentUserNick(
-						// usernameEdt
-						// .getText()
-						// .toString());
-
 						EMGroupManager.getInstance().loadAllGroups();
 
 						Log.d("main", "环信登录成功！");
@@ -966,14 +931,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
-		/*String checkCode = preferences.getString("checkCode", null);
-		String defaultCode = preferences.getString("defaultCode", null);
-		System.out.println("-------------------------------");
-		System.out.println(checkCode + "---" + defaultCode);
-		System.out.println("-------------------------------");
-		
-		
-		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));*/
 
 		xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html",
 				params, new CallBackPost() {
@@ -987,14 +944,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
-							/*SharedPreferences sharedPreferences = getSharedPreferences(
-									"userLogin", Context.MODE_PRIVATE);
-							Editor editor = sharedPreferences.edit();// 获取编辑器
-							editor.putString("checkCode", jsonObject.optString("checkCode"));
-							editor.putString("defaultCode", jsonObject.optString("defaultCode"));
-							editor.commit();*/
-							
-							
 							
 							int num = jsonObject.optInt("data");
 							if (num == 0) {
@@ -1145,11 +1094,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		isNews();
 		if (preferences.getInt("userId", -1) != -1) {
 			SystemUtil.Imagexutils(preferences.getString("userImage", null), photoImg, MainActivity.this);
-			/*Picasso.with(MainActivity.this)
-					.load(SystemUtil.IMGPHTH
-							+ preferences.getString("userImage", null))
-					.into(photoImg);*/
-			// dotView.setVisibility(View.VISIBLE);
 		} else {
 			photoImg.setImageResource(R.drawable.user_default);
 			dotView.setVisibility(View.GONE);

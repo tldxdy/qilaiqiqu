@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginLeft="13dp"
-            android:src="@drawable/delta_white" />
+            android:src="@drawable/little" />
     </FrameLayout>
 
     <LinearLayout

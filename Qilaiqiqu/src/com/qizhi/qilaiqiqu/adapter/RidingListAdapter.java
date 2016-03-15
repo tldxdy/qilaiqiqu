@@ -155,36 +155,6 @@ public class RidingListAdapter extends BaseAdapter{
 			break;
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		/*if (view == null || view.getTag() == null) {
-			zeroholder = new ZeroViewHolder();
-			view = inflater.inflate(R.layout.item_list_riding, null);
-			zeroholder.timeTxt = (TextView) view.findViewById(R.id.txt_ridingList_time);
-			zeroholder.titleTxt = (TextView) view.findViewById(R.id.txt_ridingList_title);
-			zeroholder.numberTxt = (TextView) view.findViewById(R.id.txt_ridingList_number);
-			zeroholder.pictureImg = (ImageView) view.findViewById(R.id.img_ridingList_picture);
-			view.setTag(zeroholder);
-		}else {
-			zeroholder = (ZeroViewHolder) view.getTag();
-		}
-		
-		zeroholder.timeTxt.setText(list.get(position).getCreateDate().subSequence(0, 10));
-		zeroholder.titleTxt.setText(list.get(position).getTitle());
-		zeroholder.numberTxt.setText(list.get(position).getScanNum()+"次浏览");
-		if(list.get(position).getDefaultShowImage() != null){
-			
-			SystemUtil.Imagexutils(list.get(position).getDefaultShowImage(), zeroholder.pictureImg, context);
-		}*/
-		
 		return view;
 	}
 

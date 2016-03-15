@@ -24,6 +24,9 @@ public class GroupMemberAdapter extends BaseAdapter {
 
 	public GroupMemberAdapter(List<UserList> list, Context context) {
 		this.list = list;
+		System.out.println("==============================>"+list.size());
+		
+		
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 	}
@@ -58,9 +61,10 @@ public class GroupMemberAdapter extends BaseAdapter {
 		}
 
 		holder.username.setText(list.get(position).getUserName());
-		Picasso.with(context)
+		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.image, context);
+		/*Picasso.with(context)
 				.load(SystemUtil.IMGPHTH + list.get(position).getUserImage())
-				.into(holder.image);
+				.into(holder.image);*/
 
 		return convertView;
 	}

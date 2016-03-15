@@ -226,11 +226,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 			@Override
 			public void onClick(View v) {
 				startActivity(new Intent(ChatActivity.this, GroupActivity.class)
-						.putExtra("username", username)
-						.putExtra("groupName",
-								getIntent().getStringExtra("groupName"))
-						.putExtra("activityId",
-								getIntent().getIntExtra("activityId", -1)));
+						.putExtra("username", username).putExtra("groupName",
+								getIntent().getStringExtra("groupName")));
 			}
 		});
 
@@ -270,8 +267,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				TextMessageBody txtBody = new TextMessageBody((edtContent
 						.getText() + "").toString());
 
-				messageTXT.setAttribute("IMUserIdentifierExpand",
-						preferences.getInt("userId", -1)+"");
+				messageTXT.setAttribute("IMUserIdentifierExpand", username);
 				messageTXT.setAttribute("IMUserNameExpand",
 						preferences.getString("userName", null));
 				messageTXT.setAttribute("IMConversationUserImageExpand",
@@ -649,10 +645,14 @@ public class ChatActivity extends HuanxinLogOutActivity {
 						+ ":");
 			}
 			convertView.setTag(holder);
-
-			Picasso.with(context)
-					.load((chatList.get(position).get(from[0])).toString())
-					.into(holder.imageView);
+			SystemUtil.Imagexutils(
+					(chatList.get(position).get(from[0]).toString()),
+					holder.imageView, context);
+			/*
+			 * Picasso.with(context)
+			 * .load((chatList.get(position).get(from[0])).toString())
+			 * .into(holder.imageView);
+			 */
 
 			if (chatList.get(position).get("type").toString().equals("TXT")) {
 				holder.textView.setVisibility(View.VISIBLE);
@@ -669,9 +669,14 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				holder.textImgView.setVisibility(View.VISIBLE);
 
 				if (who == OTHER) {
-					Picasso.with(context)
-							.load((chatList.get(position).get(from[2]))
-									.toString()).into(holder.textImgView);
+					SystemUtil.Imagexutils(
+							(chatList.get(position).get(from[2]).toString()),
+							holder.imageView, context);
+					/*
+					 * Picasso.with(context)
+					 * .load((chatList.get(position).get(from[2]))
+					 * .toString()).into(holder.textImgView);
+					 */
 				} else {
 					File file = new File(
 							(chatList.get(position).get(from[2])).toString());
@@ -743,7 +748,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 							new File(stringArrayListExtra.get(i)));
 
 					messageIMAGE.setAttribute("IMUserIdentifierExpand",
-							preferences.getInt("userId", -1)+"");
+							username);
 					messageIMAGE.setAttribute("IMUserNameExpand",
 							preferences.getString("userName", null));
 					messageIMAGE.setAttribute("IMConversationUserImageExpand",
@@ -919,8 +924,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 				messageVOICE.setChatType(ChatType.GroupChat);
 			messageVOICE.setReceipt(username);
 
-			messageVOICE.setAttribute("IMUserIdentifierExpand",
-					preferences.getInt("userId", -1)+"");
+			messageVOICE.setAttribute("IMUserIdentifierExpand", username);
 			messageVOICE.setAttribute("IMUserNameExpand",
 					preferences.getString("userName", null));
 			messageVOICE.setAttribute("IMConversationUserImageExpand",

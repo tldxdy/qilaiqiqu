@@ -159,7 +159,7 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 		username = getIntent().getStringExtra("username");
 		otherUserName = getIntent().getStringExtra("otherUserName");
 		otherUserImage = getIntent().getStringExtra("otherUserImage");
-		otherUserId = getIntent().getIntExtra("otherUserId", -1)+"";
+		otherUserId = getIntent().getIntExtra("otherUserId", -1) +"";
 
 		new SystemUtil().makeToast(ChatSingleActivity.this, username);
 
@@ -634,9 +634,10 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 			}
 			convertView.setTag(holder);
 
-			Picasso.with(context)
+			SystemUtil.Imagexutils((chatList.get(position).get(from[0])).toString(),holder.imageView, context);
+			/*Picasso.with(context)
 					.load((chatList.get(position).get(from[0])).toString())
-					.into(holder.imageView);
+					.into(holder.imageView);*/
 
 			if (chatList.get(position).get("type").toString().equals("TXT")) {
 				holder.textView.setVisibility(View.VISIBLE);
@@ -653,9 +654,10 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 				holder.textImgView.setVisibility(View.VISIBLE);
 
 				if (who == OTHER) {
-					Picasso.with(context)
+					SystemUtil.Imagexutils((chatList.get(position).get(from[2]).toString()),holder.imageView, context);
+					/*c.with(context)
 							.load((chatList.get(position).get(from[2]))
-									.toString()).into(holder.textImgView);
+									.toString()).into(holder.textImgView);*/
 				} else {
 					File file = new File(
 							(chatList.get(position).get(from[2])).toString());
