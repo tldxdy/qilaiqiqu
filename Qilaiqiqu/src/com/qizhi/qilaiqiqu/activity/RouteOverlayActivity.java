@@ -145,6 +145,9 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 		mapView.onCreate(savedInstanceState);// 此方法必须重写
 		initView();
 		initEvent();
+		ReleaseActiveActivity.lanName = null;
+		ReleaseActiveActivity.lanInfo = null;
+		ReleaseActiveActivity.mileage = null;
 	}
 
 	// public boolean onTouchEvent(MotionEvent event) {
@@ -284,7 +287,8 @@ public class RouteOverlayActivity extends Activity implements OnClickListener,
 	private void setMarker(LatLonPoint llp) {
 
 		markerList.add(aMap.addMarker(new MarkerOptions().anchor(0.1f, 0.1f)
-				.icon(BitmapDescriptorFactory.fromResource(R.drawable.strat_map))));
+				.icon(BitmapDescriptorFactory
+						.fromResource(R.drawable.strat_map))));
 
 		markerList.get(markerList.size() - 1).setPosition(
 				AMapUtil.convertToLatLng(llp));

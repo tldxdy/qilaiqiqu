@@ -238,7 +238,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 	 * 设置小篮点
 	 */
 	public void setLoctionStyle() {
-		System.out.println("5");
 		// 自定义系统定位蓝点
 		MyLocationStyle myLocationStyle = new MyLocationStyle();
 		// 自定义定位蓝点图标
@@ -294,16 +293,10 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 
 	private void drawLine() {
 		pointList = new ArrayList<LatLonPoint>();
-
-		System.out.println("getIntent().getStringExtra(LanInfo):"
-				+ getIntent().getStringExtra("LanInfo"));
 		if (!"".equals(getIntent().getStringExtra("LanInfo"))) {
 			stringExtra = getIntent().getStringExtra("LanInfo");
-			System.out.println("stringExtra" + stringExtra);
-
 			if (stringExtra != null) {
 				split = stringExtra.split(",");
-				System.out.println("split" + split);
 				if (split.length > 1) {
 					for (int i = 0; i < split.length; i++) {
 						split2 = split[i].split(" ");
@@ -330,8 +323,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 	}
 
 	private void mRouteOverlay(LatLonPoint start, LatLonPoint end) {
-
-		System.out.println("mRouteOverlay()");
 
 		startPoint = start;
 		endPoint = end;

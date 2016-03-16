@@ -58,6 +58,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.adapter.PersonMessageListAdapter.viewHolder;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -108,8 +109,8 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 	private int hours;
 	private ProgressDialog pDialog;
 
-	protected static String lanInfo;
-	protected static String lanName;
+	protected static String lanInfo = null;
+	protected static String lanName = null;
 	protected static String mileage = null;
 
 	private boolean falg = true;
@@ -473,8 +474,10 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		params.addBodyParameter("duration", (days * 24 + hours) * 60 + "");
 		params.addBodyParameter("lanInfo", lanInfo);
 		params.addBodyParameter("lanName", lanName);
-		params.addBodyParameter("mileage",
-				new DecimalFormat("#0.00").format(Double.parseDouble(mileage)));
+		if (mileage != null) {
+			params.addBodyParameter("mileage", new DecimalFormat("#0.00")
+					.format(Double.parseDouble(mileage)));
+		}
 		// activityImage 图片(多张用逗号隔开)
 		params.addBodyParameter("activityImage", picName);
 		params.addBodyParameter("location", "");
@@ -851,6 +854,13 @@ public class ReleaseActiveActivity extends Activity implements OnClickListener {
 		if (mileage != null) {
 			mileageTxt.setText(new DecimalFormat("0.00").format(Double
 					.parseDouble(mileage)) + "KM");
+
+			findViewById(R.id.txt_releaseActiveActivity_reOverlay)
+					.setVisibility(View.VISIBLE);
+		} else {
+			mileageTxt.setText("0.00" + "KM");
+			findViewById(R.id.txt_releaseActiveActivity_reOverlay)
+					.setVisibility(View.GONE);
 		}
 
 		super.onResume();
