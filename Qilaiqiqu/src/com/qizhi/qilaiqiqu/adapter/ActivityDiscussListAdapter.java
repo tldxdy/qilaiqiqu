@@ -64,7 +64,7 @@ public class ActivityDiscussListAdapter extends BaseAdapter{
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		SystemUtil.loadImagexutils(list.get(position).getUserImage(), holder.portraitImg, context);
+		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.portraitImg, context);
 		
 		
 		

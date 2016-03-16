@@ -34,9 +34,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener, OnLoadListener{
+public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener, OnLoadListener/*,OnItemLongClickListener*/{
 	private View view;
 	private Context context;
 	
@@ -63,13 +64,11 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 		xUtilsUtil = new XUtilsUtil();
 		header = View.inflate(getActivity(),R.layout.header, null);
 		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
-		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		myMessageList.addHeaderView(header);
-		
 		return view;
 	}
 
@@ -207,14 +206,13 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 			Gson gson = new Gson();
 			Type type = new TypeToken<List<SystemMessageModel>>(){}.getType();
 			list = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), type);
-			adapter = new MyMessageAdapter(context, list);
-			myMessageList.setAdapter(adapter);
-			myMessageList.setOnItemClickListener(this);
-			swipeLayout.setOnRefreshListener(this);
-			swipeLayout.setOnLoadListener(this);
-			
 		}
-	}
+		adapter = new MyMessageAdapter(context, list);
+		myMessageList.setAdapter(adapter);
+		myMessageList.setOnItemClickListener(this);
+		//myMessageList.setOnItemLongClickListener(this);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);	}
 
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
@@ -294,5 +292,39 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 		}, 1500);
 	}
 
+
+/*	@Override
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position,
+			long arg3) {
+		delete(list.get(position - 1).getSystemMessageId(), position - 1);
+		return true;
+	}*/
+	private void delete(Integer systemMessageId, final int position) {
+		RequestParams params = new RequestParams();
+		params.addBodyParameter("systemMessageId", systemMessageId + "");
+		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
+		xUtilsUtil.httpPost("mobile/systemMessage/deleteSystemMessage.html", params, new CallBackPost() {
+			
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				String s = responseInfo.result;
+				JSONObject jsonObject = null;
+				try {
+					jsonObject = new JSONObject(s);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (jsonObject.optBoolean("result")) {
+					list.remove(position);
+					adapter.notifyDataSetChanged();
+				}
+			}
+			
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				
+			}
+		});
+	}
 }
 	

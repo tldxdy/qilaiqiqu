@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.ActivityModel.ParticipantList;
 import com.qizhi.qilaiqiqu.utils.CircleImageViewUtil;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.squareup.picasso.Picasso;
 
 public class GroupGridAdapter extends BaseAdapter {
@@ -61,6 +62,7 @@ public class GroupGridAdapter extends BaseAdapter {
 		}
 		holder.userClick.setVisibility(View.GONE);
 		holder.userName.setText(list.get(position).getUserName());
+		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.image, context);
 		Picasso.with(context)
 				.load(imageUrl + list.get(position).getUserImage())
 				.into(holder.image);

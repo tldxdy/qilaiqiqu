@@ -24,9 +24,6 @@ public class GroupMemberAdapter extends BaseAdapter {
 
 	public GroupMemberAdapter(List<UserList> list, Context context) {
 		this.list = list;
-		System.out.println("==============================>"+list.size());
-		
-		
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 	}

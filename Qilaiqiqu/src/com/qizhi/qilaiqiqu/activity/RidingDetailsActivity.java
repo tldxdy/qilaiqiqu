@@ -151,7 +151,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	
 	private List<ActivityListRecommendModel> recommendList;
 	
-	private PopupWindowUploading pUploading;
+	//private PopupWindowUploading pUploading;
 	
 	private Tencent mTencent;
 	
@@ -204,7 +204,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		initEvent();
 
 	}
-	private boolean f = true;
+	//private boolean f = true;
 
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
@@ -212,10 +212,10 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 			if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
 				showJPush(jpushFlag);
 			}
-			if(f){
+			/*if(f){
 				f = false; 
 				pUploading.show(this.findViewById(R.id.layout_riding_top));
-			}
+			}*/
 		}
 	}
 
@@ -225,7 +225,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 		aDetailModel = new ArticleMemoDetailModel();
 		list = new ArrayList<ArticleModel>();
 		articleModel = new ArticleModel();
-		pUploading = new PopupWindowUploading(this);
+		//pUploading = new PopupWindowUploading(this);
 
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
@@ -961,15 +961,15 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onStart() {
 		if (!ReleaseActivityfalg) {
-			handler.postDelayed(new Runnable() {
+			uoloadData();
+			/*handler.postDelayed(new Runnable() {
 				
 				@Override
 				public void run() {
-					uoloadData();
 				}
 			}, 500);
 		}else{
-			pUploading.dismiss();
+			pUploading.dismiss();*/
 		}
 		super.onStart();
 	}
@@ -986,7 +986,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						pUploading.dismiss();
+						//pUploading.dismiss();
 						String s = responseInfo.result;
 						JSONObject jsonObject = null;
 						try {
@@ -1031,7 +1031,7 @@ public class RidingDetailsActivity extends Activity implements OnClickListener,
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						pUploading.dismiss();
+						//pUploading.dismiss();
 					}
 				});
 	}

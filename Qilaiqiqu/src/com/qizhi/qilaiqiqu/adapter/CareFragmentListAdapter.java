@@ -20,9 +20,9 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.CareModel.CareDataList;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
-import com.squareup.picasso.Picasso;
 
 public class CareFragmentListAdapter extends BaseAdapter {
 
@@ -76,11 +76,11 @@ public class CareFragmentListAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) view.getTag();
 		}
-
-		Picasso.with(context)
+		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.photoImg, context);
+		/*Picasso.with(context)
 				.load("http://weride.oss-cn-hangzhou.aliyuncs.com/"
 						+ list.get(position).getUserImage())
-				.into(holder.photoImg);
+				.into(holder.photoImg);*/
 		holder.nickTxt.setText(list.get(position).getUserName());
 		holder.personalityTxt.setText(list.get(position).getUserMemo());
 		holder.careTxt.setOnClickListener(new OnClickListener() {

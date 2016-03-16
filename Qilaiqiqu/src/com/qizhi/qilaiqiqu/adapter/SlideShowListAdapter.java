@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -92,6 +93,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 					.findViewById(R.id.img_mainList_photo);
 			holder.backgroundImg = (ImageView) view
 					.findViewById(R.id.img_mainList_background);
+			holder.likeLayout = (FrameLayout) view.findViewById(R.id.layout_ridinglist_like);
 
 			view.setTag(holder);
 
@@ -160,7 +162,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 			holder.likeTxt.setTextColor(0xffffffff);
 
 		}
-		holder.likeImg.setOnClickListener(new OnClickListener() {
+		holder.likeLayout.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -257,7 +259,7 @@ public class SlideShowListAdapter extends BaseAdapter {
 		private ImageView backgroundImg;
 		private ImageView likeImg;
 		private TextView likeTxt;
-
+		private FrameLayout likeLayout;
 	}
 
 	/**

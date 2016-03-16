@@ -191,7 +191,10 @@ public class DiscussActivity extends Activity implements OnClickListener,
 						}else{
 							Toasts.show(DiscussActivity.this,
 									jsonObject.optString("message"), 0);
-							//new SystemUtil().makeToast(DiscussActivity.this,jsonObject.optString("message"));
+							
+							System.out.println("======================================");
+							System.out.println(jsonObject.optString("message"));
+							System.out.println("======================================");
 						}
 						flag = true;
 						pageIndex = 1;

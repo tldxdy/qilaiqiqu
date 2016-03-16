@@ -1,5 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import com.lidroid.xutils.BitmapUtils;
@@ -126,11 +127,24 @@ public class NativeImagesActivity extends Activity implements OnClickListener {
 			if (imagecursor.getString(dataColumnIndex).contains(".jpg")
 					|| imagecursor.getString(dataColumnIndex).contains(".JPG")
 					|| imagecursor.getString(dataColumnIndex).contains(".png")
-					|| imagecursor.getString(dataColumnIndex).contains(".PNG")) {
+					|| imagecursor.getString(dataColumnIndex).contains(".PNG")
+					&& fileIsExists(imagecursor.getString(dataColumnIndex))) {
 				imageUrls.add(imagecursor.getString(dataColumnIndex));
 			}
 		}
 	}
+	public boolean fileIsExists(String img){
+        try{
+                File f=new File(img);
+                if(!f.exists()){
+                        return false;
+                }
+                
+        }catch (Exception e) {
+                return false;
+        }
+        return true;
+}
 
 	@Override
 	public void onClick(View v) {
@@ -140,8 +154,12 @@ public class NativeImagesActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.txt_confirm:
 			if (!falg) {
+				System.out.println("---------------------------------------");
 				ArrayList<String> selectedItems = imageAdapter
 						.getCheckedItems();
+				for (String string : selectedItems) {
+					System.out.println(string);
+				}
 				Intent intentConfirm = new Intent(this, ReleaseActivity.class);
 				intentConfirm.putStringArrayListExtra("photoList",
 						selectedItems);
@@ -233,7 +251,7 @@ public class NativeImagesActivity extends Activity implements OnClickListener {
 			
 			 Picasso.with(mContext).load("file://" +
 					 imageUrls.get(position)).resize(480, 480)
-					 	.centerInside().into(holder.photoImg);
+					 	.centerCrop().into(holder.photoImg);
 			 
 
 			holder.photoChk.setTag(position);

@@ -94,35 +94,6 @@ public class MyMessageAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	private void delete(Integer systemMessageId, final int position) {
-		RequestParams params = new RequestParams();
-		params.addBodyParameter("systemMessageId", systemMessageId + "");
-		params.addBodyParameter("uniqueKey", preferences.getString("uniqueKey", null));
-		xUtilsUtil.httpPost("mobile/systemMessage/deleteSystemMessage.html", params, new CallBackPost() {
-			
-			@Override
-			public void onMySuccess(ResponseInfo<String> responseInfo) {
-				String s = responseInfo.result;
-				JSONObject jsonObject = null;
-				try {
-					jsonObject = new JSONObject(s);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				if (jsonObject.optBoolean("result")) {
-					list.remove(position);
-					notifyDataSetChanged();
-				}
-			}
-			
-			@Override
-			public void onMyFailure(HttpException error, String msg) {
-				
-			}
-		});
-	}
-	
-	
 	public class ViewHolder{
 		private TextView contentTxt;
 		private TextView systemMessageTxt;

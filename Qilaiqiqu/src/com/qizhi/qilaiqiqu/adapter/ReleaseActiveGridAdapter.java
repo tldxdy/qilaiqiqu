@@ -49,20 +49,6 @@ public class ReleaseActiveGridAdapter extends BaseAdapter {
 
 		Toast.makeText(context, "position" + position, 0).show();
 
-		// if (position + 1 == list.size()) {
-		// view = inflater.inflate(R.layout.item_grid_addpicture, null);
-		// addImg = (ImageView) view
-		// .findViewById(R.id.img_releaseActiveActivity_add);
-		// addImg.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View arg0) {
-		// context.startActivity(new Intent(context,
-		// SelectImagesActivity.class));
-		// }
-		// });
-		// }
-
 		if (view == null) {
 			holderHeader = new ViewHolderHeader();
 			view = inflater.inflate(R.layout.item_grid_picture, null);

@@ -70,10 +70,11 @@ public class MyReceiver extends BroadcastReceiver {
 				JSONObject jsonObject = new JSONObject(EXTRA);
 				key = jsonObject.getString("pushType");
 				JSONObject pushValue = null;
+				/*System.out.println("====================================");
+				System.out.println("KEY:"+key+"-------"+jsonObject.toString());*/
 				
 				if (!key.equals("YHGZ")) {
-					pushValue = new JSONObject(
-							jsonObject.getString("pushValue"));
+					pushValue = new JSONObject(jsonObject.getString("pushValue"));
 				}
 
 				if (key.equals("QYJPL")) {
@@ -150,12 +151,11 @@ public class MyReceiver extends BroadcastReceiver {
 					context.startActivity(i);
 				}else if("HDBM".equals(key)){
 					int activityId = pushValue.optInt("activityId");
-					Intent i = new Intent(context, ActivityDiscussActivity.class);
+					Intent i = new Intent(context, ActivityDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("activityId", activityId);
-					
-					context.startActivity(intent);
+					context.startActivity(i);
 				}else if("HDDS".equals(key)){
 					int activityId = pushValue.optInt("activityId");
 					Intent i = new Intent(context, ActivityDetailsActivity.class);
@@ -165,7 +165,7 @@ public class MyReceiver extends BroadcastReceiver {
 					i.putExtra("activityId", activityId);
 					i.putExtra("sumIntegral", pushValue.optInt("sumIntegral"));
 					i.putExtra("userName", pushValue.optString("userName"));
-						context.startActivity(i);
+					context.startActivity(i);
 				}else if("HDPL".equals(key) || "HDYQDS".equals(key)){
 					int activityId = pushValue.optInt("activityId");
 					Intent i = new Intent(context, ActivityDiscussActivity.class);
@@ -179,7 +179,6 @@ public class MyReceiver extends BroadcastReceiver {
 					Intent i = new Intent(context, ActivityDiscussActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						//i.putExtra("superId",jo.optInt("commentId"));
 						i.putExtra("activityId", activityId);
 						context.startActivity(i);
 				}else if("HDDSJG".equals(key)){
@@ -189,10 +188,10 @@ public class MyReceiver extends BroadcastReceiver {
 						i = new Intent(context, ActivityDetailsActivity.class);
 						i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 								| Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						i.putExtra("integral", pushValue.optInt("integral"));
+						//i.putExtra("integral", pushValue.optInt("integral"));
 						i.putExtra("activityId", activityId);
-						i.putExtra("sumIntegral", pushValue.optInt("sumIntegral"));
-						i.putExtra("userName", pushValue.optString("userName"));
+						//i.putExtra("sumIntegral", pushValue.optInt("sumIntegral"));
+						//i.putExtra("userName", pushValue.optString("userName"));
 						context.startActivity(i);
 
 					}else{

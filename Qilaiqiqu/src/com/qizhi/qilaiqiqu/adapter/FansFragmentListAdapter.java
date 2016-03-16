@@ -1,6 +1,5 @@
 package com.qizhi.qilaiqiqu.adapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.FansModel.FansDataList;
-import com.squareup.picasso.Picasso;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 
 public class FansFragmentListAdapter extends BaseAdapter {
 
@@ -58,11 +57,11 @@ public class FansFragmentListAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) view.getTag();
 		}
-
-		Picasso.with(context)
+		SystemUtil.Imagexutils(list.get(position).getUserImage(), holder.photoImg, context);
+/*		Picasso.with(context)
 				.load("http://weride.oss-cn-hangzhou.aliyuncs.com/"
 						+ list.get(position).getUserImage())
-				.into(holder.photoImg);
+				.into(holder.photoImg);*/
 		holder.nickTxt.setText(list.get(position).getUserName());
 		holder.personalityTxt.setText(list.get(position).getUserMemo());
 		
