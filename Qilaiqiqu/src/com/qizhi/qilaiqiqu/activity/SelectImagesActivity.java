@@ -2,12 +2,7 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.util.ArrayList;
 
-import com.lidroid.xutils.BitmapUtils;
-import com.qizhi.qilaiqiqu.R;
-import com.squareup.picasso.Picasso;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,13 +19,16 @@ import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class SelectImagesActivity extends Activity implements OnClickListener {
+import com.lidroid.xutils.BitmapUtils;
+import com.qizhi.qilaiqiqu.R;
+
+public class SelectImagesActivity extends HuanxinLogOutActivity implements OnClickListener {
 
 	// protected ImageLoader imageLoader = ImageLoader.getInstance();
 

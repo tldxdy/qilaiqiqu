@@ -1,6 +1,5 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,7 +16,7 @@ import com.umeng.analytics.MobclickAgent;
  *
  */
 
-public class SystemMessageActivit extends Activity implements OnClickListener{
+public class SystemMessageActivit extends HuanxinLogOutActivity implements OnClickListener{
 	
 	private LinearLayout backLayout;
 	

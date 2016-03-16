@@ -2,7 +2,6 @@ package com.qizhi.qilaiqiqu.activity;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,8 +17,8 @@ import com.qizhi.qilaiqiqu.adapter.AppendGridAdapter;
 import com.qizhi.qilaiqiqu.model.ActivityModel;
 import com.qizhi.qilaiqiqu.model.ActivityModel.ParticipantList;
 
-public class AppendActivity extends Activity implements OnItemClickListener,
-		OnClickListener {
+public class AppendActivity extends HuanxinLogOutActivity implements
+		OnItemClickListener, OnClickListener {
 
 	/**
 	 * 

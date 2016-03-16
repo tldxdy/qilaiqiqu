@@ -1,19 +1,19 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.fragment.MessageCenterFragmentPagerAdapter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MessageCenterActivity extends FragmentActivity implements OnClickListener{
+import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.fragment.MessageCenterFragmentPagerAdapter;
+
+public class MessageCenterActivity extends HuanxinLogOutActivity implements OnClickListener{
 	private LinearLayout backLayout;
 	private TextView manageTxt;
 	private TextView historyTxt;

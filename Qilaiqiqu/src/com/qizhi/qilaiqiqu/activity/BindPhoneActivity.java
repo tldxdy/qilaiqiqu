@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +28,7 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
-public class BindPhoneActivity extends Activity implements OnClickListener,
+public class BindPhoneActivity extends HuanxinLogOutActivity implements OnClickListener,
 		CallBackPost {
 
 	private LinearLayout backLayout;// 返回按钮

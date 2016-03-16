@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +24,6 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import cn.jpush.android.api.JPushInterface;
 
 import com.google.gson.Gson;
@@ -45,7 +43,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author leiqian
  * 
  */
-public class RegisterActivity extends Activity implements OnClickListener,
+public class RegisterActivity extends HuanxinLogOutActivity implements OnClickListener,
 		CallBackPost {
 
 	private LinearLayout backLayout;// 返回按钮

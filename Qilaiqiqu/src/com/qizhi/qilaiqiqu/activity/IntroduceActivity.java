@@ -1,16 +1,15 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import com.qizhi.qilaiqiqu.R;
-import com.umeng.analytics.MobclickAgent;
-
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 
-public class IntroduceActivity extends Activity implements OnClickListener {
+import com.qizhi.qilaiqiqu.R;
+import com.umeng.analytics.MobclickAgent;
+
+public class IntroduceActivity extends HuanxinLogOutActivity implements OnClickListener {
 
 	private LinearLayout backLayout;
 

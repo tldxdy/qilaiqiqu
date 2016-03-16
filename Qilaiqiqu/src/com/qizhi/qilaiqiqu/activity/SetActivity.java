@@ -2,7 +2,6 @@ package com.qizhi.qilaiqiqu.activity;
 
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,7 +39,7 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class SetActivity extends Activity implements OnClickListener {
+public class SetActivity extends HuanxinLogOutActivity implements OnClickListener {
 
 	private LinearLayout backLayout;
 	private LinearLayout opintionLayout;

@@ -1,10 +1,5 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.umeng.analytics.MobclickAgent;
-
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,13 +8,17 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.umeng.analytics.MobclickAgent;
+
 /**
  * 
  * @author leiqian
  * 
  */
 
-public class ModifiPassActivity extends Activity implements OnClickListener {
+public class ModifiPassActivity extends HuanxinLogOutActivity implements OnClickListener {
 
 	private LinearLayout backLayout;
 

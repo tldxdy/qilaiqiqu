@@ -35,7 +35,6 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
-import com.squareup.picasso.Picasso;
 
 public class GroupActivity extends HuanxinLogOutActivity implements
 		OnItemClickListener, OnClickListener {

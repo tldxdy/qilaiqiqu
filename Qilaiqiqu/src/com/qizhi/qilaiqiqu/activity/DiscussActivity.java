@@ -3,25 +3,11 @@ package com.qizhi.qilaiqiqu.activity;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.adapter.DiscussListAdapter;
-import com.qizhi.qilaiqiqu.model.CommentPaginationListModel;
-import com.qizhi.qilaiqiqu.model.RidingCommentModel;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout;
-import com.qizhi.qilaiqiqu.utils.Toasts;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
-import com.umeng.analytics.MobclickAgent;
+
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -40,12 +26,28 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.adapter.DiscussListAdapter;
+import com.qizhi.qilaiqiqu.model.CommentPaginationListModel;
+import com.qizhi.qilaiqiqu.model.RidingCommentModel;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout;
+import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
+import com.qizhi.qilaiqiqu.utils.Toasts;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.umeng.analytics.MobclickAgent;
+
 /**
  * 
  * @author hujianbo
  * 
  */
-public class DiscussActivity extends Activity implements OnClickListener,
+public class DiscussActivity extends HuanxinLogOutActivity implements OnClickListener,
 		OnItemClickListener, OnTouchListener,OnRefreshListener,
 		OnLoadListener{
 

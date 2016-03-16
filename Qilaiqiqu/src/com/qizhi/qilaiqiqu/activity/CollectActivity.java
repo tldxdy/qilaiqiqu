@@ -17,7 +17,7 @@ import com.qizhi.qilaiqiqu.fragment.CollectFragmentPagerAdapter;
  * @author leiqian
  * 
  */
-public class CollectActivity extends FragmentActivity implements OnClickListener{
+public class CollectActivity extends HuanxinLogOutActivity implements OnClickListener{
 	private LinearLayout backLayout;
 	private TextView manageTxt;
 	private TextView historyTxt;

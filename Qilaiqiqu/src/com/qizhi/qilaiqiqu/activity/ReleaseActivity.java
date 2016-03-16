@@ -12,8 +12,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.content.Intent;
@@ -58,7 +58,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author hujianbo
  * 
  */
-public class ReleaseActivity extends Activity implements OnClickListener,
+public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickListener,
 		TextWatcher {
 
 	private LinearLayout backLayout; // 返回

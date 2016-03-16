@@ -8,28 +8,18 @@ import java.util.Map;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.res.AssetManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
 
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.EMMessage.Type;
-import com.easemob.util.EasyUtils;
 import com.qizhi.qilaiqiqu.model.CityModel;
 import com.qizhi.qilaiqiqu.model.DistrictModel;
 import com.qizhi.qilaiqiqu.model.ProvinceModel;
 import com.qizhi.qilaiqiqu.service.XmlParserHandler;
-import com.qizhi.qilaiqiqu.utils.CommonUtils;
 
 /**
  * @author leiqian 地图基类
  */
-public class BaseActivity extends FragmentActivity {
+public class BaseActivity extends HuanxinLogOutActivity {
 
 	/**
 	 * ����ʡ

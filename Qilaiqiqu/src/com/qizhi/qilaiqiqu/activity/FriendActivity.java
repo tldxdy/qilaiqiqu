@@ -1,7 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
@@ -9,10 +8,11 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.fragment.FansAndCareFragmentPagerAdapter;
 
-public class FriendActivity extends FragmentActivity implements OnClickListener{
+public class FriendActivity extends HuanxinLogOutActivity implements OnClickListener{
 
 	private LinearLayout backLayout;
 	private TextView fansTxt;

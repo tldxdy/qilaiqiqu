@@ -7,7 +7,6 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,7 +36,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author hujianbo
  *
  */
-public class MyMessageActivity extends Activity implements OnClickListener,OnItemClickListener, CallBackPost{
+public class MyMessageActivity extends HuanxinLogOutActivity implements OnClickListener,OnItemClickListener, CallBackPost{
 
 	private SideslipDeleteListView myMessageList;		//系统消息的集合
 	private LinearLayout backLayout;		//返回图片

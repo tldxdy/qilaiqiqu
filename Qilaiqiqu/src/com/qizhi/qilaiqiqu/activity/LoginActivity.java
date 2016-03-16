@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +52,7 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class LoginActivity extends Activity implements OnClickListener {
+public class LoginActivity extends HuanxinLogOutActivity implements OnClickListener {
 
 	private Button loginBtn;// 登录按钮
 	private Button visitorBtn;// 游客模式

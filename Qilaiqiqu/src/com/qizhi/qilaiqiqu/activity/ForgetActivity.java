@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,7 +32,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author leiqian
  * 
  */
-public class ForgetActivity extends Activity implements OnClickListener,
+public class ForgetActivity extends HuanxinLogOutActivity implements OnClickListener,
 		CallBackPost {
 
 	private EditText codeEdt;// 验证码

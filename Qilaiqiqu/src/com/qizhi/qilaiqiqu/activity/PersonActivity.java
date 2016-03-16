@@ -2,7 +2,7 @@ package com.qizhi.qilaiqiqu.activity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,7 +31,7 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
  * 
  */
 
-public class PersonActivity extends Activity implements OnClickListener,
+public class PersonActivity extends HuanxinLogOutActivity implements OnClickListener,
 		CallBackPost {
 
 	private LinearLayout backLayout;// 返回按钮

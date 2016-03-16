@@ -3,7 +3,6 @@ package com.qizhi.qilaiqiqu.activity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -34,7 +32,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author hujianbo
  *
  */
-public class CommentMessageActivity extends Activity implements OnClickListener,TextWatcher{
+public class CommentMessageActivity extends HuanxinLogOutActivity implements OnClickListener,TextWatcher{
 
 	private LinearLayout backLayout;		//返回图片
 	

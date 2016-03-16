@@ -1,7 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.fragment.ActivityCenterFragmentPagerAdapter;
 
-public class ActionCenterActivity extends FragmentActivity implements OnClickListener{
+public class ActionCenterActivity extends HuanxinLogOutActivity implements OnClickListener{
 
 	private LinearLayout backLayout;
 	private TextView manageTxt;

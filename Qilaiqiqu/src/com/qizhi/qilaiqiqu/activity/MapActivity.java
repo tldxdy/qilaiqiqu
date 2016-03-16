@@ -3,7 +3,6 @@ package com.qizhi.qilaiqiqu.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -66,7 +65,7 @@ import com.qizhi.qilaiqiqu.utils.AMapUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.umeng.analytics.MobclickAgent;
 
-public class MapActivity extends Activity implements OnClickListener,
+public class MapActivity extends HuanxinLogOutActivity implements OnClickListener,
 		TextWatcher, LocationSource, AMapLocationListener,
 		OnMarkerClickListener, InfoWindowAdapter, OnPoiSearchListener,
 		OnMapLongClickListener, OnGeocodeSearchListener {

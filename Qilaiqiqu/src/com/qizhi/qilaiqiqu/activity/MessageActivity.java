@@ -1,6 +1,5 @@
 package com.qizhi.qilaiqiqu.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,7 +18,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author leiqian
  * 
  */
-public class MessageActivity extends Activity implements OnClickListener,
+public class MessageActivity extends HuanxinLogOutActivity implements OnClickListener,
 		OnItemClickListener {
 
 	private Button backBtn;

@@ -4,7 +4,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +22,7 @@ import com.umeng.analytics.MobclickAgent;
  * @author leiqian
  * 
  */
-public class StartActivity extends Activity {
+public class StartActivity extends HuanxinLogOutActivity {
 
 	private Timer timer;
 	private TimerTask task;
