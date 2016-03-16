@@ -80,7 +80,6 @@ import com.qizhi.qilaiqiqu.model.SearchResultModel;
 import com.qizhi.qilaiqiqu.model.SearchResultModel.SearchDataList;
 import com.qizhi.qilaiqiqu.receiver.EMReceiver;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
-import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.SplashView;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
@@ -130,8 +129,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private int fragmentNum;
 
 	private SharedPreferences preferences;
-
-	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 
 	private View dotView;
 
@@ -1091,6 +1088,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	 * 头像
 	 */
 	private void headPortrait() {
+		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		isNews();
 		if (preferences.getInt("userId", -1) != -1) {
 			SystemUtil.Imagexutils(preferences.getString("userImage", null), photoImg, MainActivity.this);

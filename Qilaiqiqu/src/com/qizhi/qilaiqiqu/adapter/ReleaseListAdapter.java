@@ -244,6 +244,8 @@ public class ReleaseListAdapter extends BaseAdapter {
 
 		confirmBtn = (Button) mview.findViewById(R.id.btn_dialog_box_confirm);
 		cancelBtn = (Button) mview.findViewById(R.id.btn_dialog_box_cancel);
+		confirmBtn.setText("确定");
+		cancelBtn.setText("取消");
 
 		final PopupWindow popupWindow = new PopupWindow(mview,
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);

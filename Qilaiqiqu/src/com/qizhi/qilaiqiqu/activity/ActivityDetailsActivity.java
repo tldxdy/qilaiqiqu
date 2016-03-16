@@ -659,6 +659,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				.findViewById(R.id.btn_dialog_box_cancel);
 
 		textView.setText("你确定报名，您将自动加入活动群组？");
+		confirmBtn.setText("确定");
+		cancelBtn.setText("取消");
 		final PopupWindow popupWindow = new PopupWindow(mview,
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 

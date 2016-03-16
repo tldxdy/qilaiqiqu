@@ -579,25 +579,29 @@ public class PersonalDataActivity extends BaseActivity implements
 						@Override
 						public void onMySuccess(
 								ResponseInfo<String> responseInfo) {
-							pDialog.dismiss();
+							
+							final Editor editor = preferences.edit();// 获取编辑器
+							editor.putString("userImage", certainUserModel.getUserImage());
+							editor.commit();
 							if(path){
-								final Editor editor = preferences.edit();// 获取编辑器
-								editor.putString("userImage", certainUserModel.getUserImage());
-								editor.commit();
 								Toasts.show(PersonalDataActivity.this, "修改成功", 0);
 							}else{
 								Toasts.show(PersonalDataActivity.this, "用户头像修改失败", 0);
 								path = true;
 							}
-							/*
-							 * new SystemUtil().makeToast(
-							 * PersonalDataActivity.this, "修改成功");
-							 */
 							falg = true;
 							// 更新环信用户昵称
 							EMChatManager.getInstance().updateCurrentUserNick(
 									nickEdt.getText().toString().trim());
-							PersonalDataActivity.this.finish();
+							new Handler().postDelayed(new Runnable() {
+
+								@Override
+								public void run() {
+									pDialog.dismiss();
+									PersonalDataActivity.this.finish();
+								}
+							}, 500);
+							
 						}
 
 						@Override
@@ -605,16 +609,13 @@ public class PersonalDataActivity extends BaseActivity implements
 							pDialog.dismiss();
 							Toasts.show(PersonalDataActivity.this, "请求失败"
 									+ error + ":" + msg, 0);
-							/*
-							 * new SystemUtil().makeToast(
-							 * PersonalDataActivity.this, "请求失败" + error + ":" +
-							 * msg);
-							 */
 							falg = true;
 						}
 					});
 		}
 	}
+	
+	
 
 	@Override
 	protected void onResume() {

@@ -131,6 +131,9 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 
 						Picasso.with(context)
 								.load(imageInfo.image.toString())
+								.resize(800, 400)
+								.placeholder(R.drawable.bitmap_homepage)
+								.error(R.drawable.bitmap_homepage)
 								.into(imageView);
 
 						return imageView;
@@ -185,6 +188,9 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 												.get(i).getValue(), c.get(i)
 												.getOpenType(), c.get(i)
 												.getBannerType()));
+							}
+							if(IClist.size() == 0){
+								IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.IMGPHTH + "", "https://www.baidu.com", "URL", 0));
 							}
 							initViewHeader();
 							data();
@@ -323,7 +329,7 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 						Toasts.show(context, "加载成功", 0);
 					}else{
 						pageIndex = jsonObject.optInt("pageIndex");
-						Toasts.show(context, "以显示全部内容", 0);
+						Toasts.show(context, "已显示全部内容", 0);
 					}
 				}
 				adapter.notifyDataSetChanged();

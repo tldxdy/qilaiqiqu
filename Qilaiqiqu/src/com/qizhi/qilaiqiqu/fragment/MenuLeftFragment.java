@@ -2,12 +2,10 @@ package com.qizhi.qilaiqiqu.fragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -32,7 +29,6 @@ import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
 import com.qizhi.qilaiqiqu.activity.RidingActivity;
 import com.qizhi.qilaiqiqu.activity.SetActivity;
 import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
-import com.qizhi.qilaiqiqu.ui.Encryption;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
@@ -147,10 +143,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			startActivity(intent);
 			}else{
 				Toasts.show(getActivity(), "请登录", 0);
-				//new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-//				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_message:
@@ -159,10 +153,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			startActivity(intent2);
 			}else{
 				Toasts.show(getActivity(), "请登录", 0);
-//				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-//				getActivity().finish();
 				
 			}
 			break;
@@ -172,10 +164,8 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			startActivity(intent3);
 			}else{
 				Toasts.show(getActivity(), "请登录", 0);
-//				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-//				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_activity_center:
@@ -196,21 +186,13 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			startActivity(intent4);
 			}else{
 				Toasts.show(getActivity(), "请登录", 0);
-//				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
-//				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_set:
-		//	if(userLoginClass != null){
 			Intent intent5 = new Intent(context, SetActivity.class);
 			startActivity(intent5);
-/*			}else{
-				new SystemUtil().makeToast(getActivity(), "请登录");
-				Intent intent = new Intent(context,LoginActivity.class);
-				startActivity(intent);
-			}*/
 			break;
 		case R.id.layout_personalfragment_back:
 			menu.toggle();
@@ -252,48 +234,6 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		layout_my_action_center.setOnClickListener(this);
 	}
 
-/*	private void systemData() {
-		RequestParams params = new RequestParams("UTF-8");
-		params.addBodyParameter("userId", preferences.getInt("userId", -1)
-				+ "");
-		params.addBodyParameter("uniqueKey",
-				preferences.getString("uniqueKey", null));
-		String checkCode = preferences.getString("checkCode", null);
-		String defaultCode = preferences.getString("defaultCode", null);
-		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));
-
-		xUtilsUtil.httpPost("mobile/systemMessage/countUserMessage.html", params, new CallBackPost() {
-			
-			@Override
-			public void onMySuccess(ResponseInfo<String> responseInfo) {
-				JSONObject jsonObject = null;
-				try {
-					jsonObject = new JSONObject(responseInfo.result);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				if (jsonObject.optBoolean("result")) {
-					int num = jsonObject.optInt("data");
-					if(num != 0){
-						//系统统计数
-						informationNumTxt.setVisibility(View.VISIBLE);
-						informationNumTxt.setText(num + "");
-						SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
-								"userLogin", Context.MODE_PRIVATE);
-						Editor editor = sharedPreferences.edit();// 获取编辑器
-						editor.putString("checkCode", jsonObject.optString("checkCode"));
-						editor.putString("defaultCode", jsonObject.optString("defaultCode"));
-						editor.commit();
-					}
-				}
-			}
-			
-			@Override
-			public void onMyFailure(HttpException error, String msg) {
-				
-			}
-		});
-	}*/
 
 	private void personalData() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -301,10 +241,6 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				+ "");
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
-		/*String checkCode = preferences.getString("checkCode", null);
-		String defaultCode = preferences.getString("defaultCode", null);
-		params.addBodyParameter("authCode",Encryption.encryptionMethod(checkCode, defaultCode));
-*/
 		xUtilsUtil.httpPost("mobile/user/querySingleUser.html", params, new CallBackPost() {
 			
 			@Override
@@ -365,12 +301,6 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 					puim.setUserName(user.getString("userName"));
 					puim.setFansNum(data.optInt("fansNum"));
 					puim.setConcernNum(data.optInt("concernNum"));
-					/*SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
-							"userLogin", Context.MODE_PRIVATE);
-					Editor editor = sharedPreferences.edit();// 获取编辑器
-					editor.putString("checkCode", jsonObject.optString("checkCode"));
-					editor.putString("defaultCode", jsonObject.optString("defaultCode"));
-					editor.commit();*/
 
 				} catch (JSONException e) {
 					e.printStackTrace();
