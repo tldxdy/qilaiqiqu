@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -61,14 +62,17 @@ public class SearchResultAdapter extends BaseAdapter {
 		return position;
 	}
 
+	@SuppressLint("ResourceAsColor")
 	@Override
 	public View getView(final int position, View v, ViewGroup arg2) {
 		if (v == null || v.getTag() == null) {
 			holder = new ViewHolder();
 			v = inflater.inflate(R.layout.item_list_mainactivity_body, null);
 			holder.timeTxt = (TextView) v.findViewById(R.id.txt_mainList_time);
-			holder.likeTxt = (TextView) v.findViewById(R.id.txt_ridinglist_like);
-			holder.likeImg = (ImageView) v.findViewById(R.id.img_ridinglist_like);
+			holder.likeTxt = (TextView) v
+					.findViewById(R.id.txt_ridinglist_like);
+			holder.likeImg = (ImageView) v
+					.findViewById(R.id.img_ridinglist_like);
 			holder.titleTxt = (TextView) v
 					.findViewById(R.id.txt_mainList_title);
 			holder.photoImg = (ImageView) v
@@ -89,6 +93,7 @@ public class SearchResultAdapter extends BaseAdapter {
 			holder.titleTxt.setText(list.get(position).getTitle());
 			holder.byBrowseTxt.setText(list.get(position).getScanNum()
 					+ list.get(position).getScanNum() + "次浏览");
+			holder.likeTxt.setTextColor(R.color.white);
 			holder.likeTxt.setText((list.get(position).getPraiseNum() + list
 					.get(position).getPraiseNum()) + "");
 			SystemUtil.loadImagexutils(list.get(position).getUserImage(),
@@ -96,12 +101,17 @@ public class SearchResultAdapter extends BaseAdapter {
 			holder.likeImg.setImageResource(R.drawable.like_unpress);
 			// holder.likeImg.setTag(position);
 			// holder.photoImg.setImageResource(R.drawable.lena);
-			
-			  SystemUtil.Imagexutils(list.get(position).getDefaultImage(), holder.backgroundImg, context);
-			 
-			/*String internetUrl = "http://weride.oss-cn-hangzhou.aliyuncs.com/"
-					+ list.get(position).getDefaultImage().split("\\@")[0];
-			Picasso.with(context).load(internetUrl).into(holder.backgroundImg);*/
+
+			SystemUtil.Imagexutils(list.get(position).getDefaultImage(),
+					holder.backgroundImg, context);
+
+			/*
+			 * String internetUrl =
+			 * "http://weride.oss-cn-hangzhou.aliyuncs.com/" +
+			 * list.get(position).getDefaultImage().split("\\@")[0];
+			 * Picasso.with
+			 * (context).load(internetUrl).into(holder.backgroundImg);
+			 */
 
 			// holder.backgroundImg.setBackgroundResource(R.drawable.demo3);
 			holder.photoImg.setOnClickListener(new OnClickListener() {

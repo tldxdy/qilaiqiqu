@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -64,6 +65,8 @@ public class RegisterActivity extends Activity implements OnClickListener,
 	private int passFlag = 1; // 密码输入标识 1为不满足6至13位输入条件，2为满足
 	private int finishFlag = 1; // 退出标识 1为不允许推出，2为允许推出
 
+	private ProgressDialog progDialog = null;// 搜索时进度条
+	
 	private Handler handler = new Handler() {
 
 		@Override
@@ -161,7 +164,7 @@ public class RegisterActivity extends Activity implements OnClickListener,
 
 			@Override
 			public void afterTextChanged(Editable e) {
-				if (e.length() > 5 && e.length() <= 13) {
+				if (e.length() > 7 && e.length() <= 13) {
 					passFlag = 2;
 				} else {
 					passFlag = 1;
@@ -191,7 +194,7 @@ public class RegisterActivity extends Activity implements OnClickListener,
 					}
 				} else {
 					new SystemUtil().makeToast(RegisterActivity.this,
-							"密码为6至13位");
+							"密码为8至13位");
 				}
 			} else {
 				new SystemUtil().makeToast(RegisterActivity.this, "手机号码为11位");
@@ -267,6 +270,7 @@ public class RegisterActivity extends Activity implements OnClickListener,
 					new SystemUtil().makeToast(RegisterActivity.this, "验证码已发送");
 				} else {
 					new SystemUtil().makeToast(RegisterActivity.this, "注册成功,自动帮您登录");
+					showProgressDialog();
 					login();
 				}
 			} else {
@@ -298,6 +302,7 @@ public class RegisterActivity extends Activity implements OnClickListener,
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+		dissmissProgressDialog();
 	}
 
 	private void login() {
@@ -387,4 +392,26 @@ public class RegisterActivity extends Activity implements OnClickListener,
 				});
 	}
 
+	/**
+	 * 显示进度框
+	 */
+	private void showProgressDialog() {
+		if (progDialog == null)
+			progDialog = new ProgressDialog(this);
+		progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progDialog.setIndeterminate(false);
+		progDialog.setCancelable(false);
+		progDialog.setMessage("自动为您登录...");
+		progDialog.show();
+	}
+
+	/**
+	 * 隐藏进度框
+	 */
+	private void dissmissProgressDialog() {
+		if (progDialog != null) {
+			progDialog.dismiss();
+		}
+	}
+	
 }

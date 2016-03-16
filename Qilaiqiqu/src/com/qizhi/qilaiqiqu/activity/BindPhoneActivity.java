@@ -187,7 +187,6 @@ public class BindPhoneActivity extends Activity implements OnClickListener,
 								string);
 					}
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

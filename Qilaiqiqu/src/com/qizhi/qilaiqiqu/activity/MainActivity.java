@@ -105,6 +105,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private RelativeLayout titleLayout;
 	private LinearLayout searchLayout;
 	private ListView searchList;
+	private TextView searchTxt;
 
 	private EditText inputEdt;
 
@@ -144,7 +145,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	private int pageIndex;
 
 	private NewMessageBroadcastReceiver receiver;
-	
+
 	private Handler handler = new Handler() {
 
 		@Override
@@ -194,27 +195,34 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		chatUserList = new HashSet<String>();
 		groupChatUserList = new HashSet<String>();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
-		
+
 		gson = new Gson();
-		type = new TypeToken<HashSet<String>>(){}.getType();
-		String chat = preferences.getString("Chat" + preferences.getString("uniqueKey", null), null);
-		if(chat != null){
+		type = new TypeToken<HashSet<String>>() {
+		}.getType();
+		String chat = preferences.getString(
+				"Chat" + preferences.getString("uniqueKey", null), null);
+		if (chat != null) {
 			chatUserList = gson.fromJson(chat, type);
 		}
-		String groupChat = preferences.getString("GroupChat" + preferences.getString("uniqueKey", null), null);
-		if(groupChat != null){
+		String groupChat = preferences.getString(
+				"GroupChat" + preferences.getString("uniqueKey", null), null);
+		if (groupChat != null) {
 			groupChatUserList = gson.fromJson(groupChat, type);
 		}
-		
-			/*chatUserList= preferences.getStringSet("Chat" + preferences.getString("uniqueKey", null), new HashSet<String>());
-			groupChatUserList = preferences.getStringSet("GroupChat" + preferences.getString("uniqueKey", null), new HashSet<String>());*/
-		
+
+		/*
+		 * chatUserList= preferences.getStringSet("Chat" +
+		 * preferences.getString("uniqueKey", null), new HashSet<String>());
+		 * groupChatUserList = preferences.getStringSet("GroupChat" +
+		 * preferences.getString("uniqueKey", null), new HashSet<String>());
+		 */
 
 		searchCancel = (TextView) findViewById(R.id.txt_mainActivity_cancel);
 		inputEdt = (EditText) findViewById(R.id.edt_mainActivity_searchInput);
 		titleLayout = (RelativeLayout) findViewById(R.id.layout_mainActivity_title);
 		searchLayout = (LinearLayout) findViewById(R.id.layout_mainActivity_searchLayout);
 		searchList = (ListView) findViewById(R.id.list_mainActivity_searchResult);
+		searchTxt = (TextView) findViewById(R.id.txt_mainActivity_searchView);
 
 		photoImg = (ImageView) findViewById(R.id.img_mainActivity_photo);
 		searchImg = (RelativeLayout) findViewById(R.id.img_mainActivity_search_photo);
@@ -321,6 +329,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		menu.setOnCloseListener(this);
 		inputEdt.addTextChangedListener(this);
 		inputEdt.setOnClickListener(this);
+		searchTxt.setOnClickListener(this);
 	}
 
 	// 注册接收ack回执消息的BroadcastReceiver
@@ -401,50 +410,58 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			}
 			break;
 		case R.id.txt_mainActivity_cancel:
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(inputEdt.getWindowToken(), 0);
+			exitSearch();
 
-			Animation animationAlpha = new AlphaAnimation(1f, 0f);
-			animationAlpha.setFillAfter(false);// 动画终止时停留在最后一帧，不然会回到没有执行前的状态
-			animationAlpha.setDuration(500);// 动画持续时间1秒
-			searchList.startAnimation(animationAlpha);// 是用ImageView来显示动画的
-			animationAlpha.setAnimationListener(new AnimationListener() {
-
-				@Override
-				public void onAnimationStart(Animation arg0) {
-					ObjectAnimator yBouncer = ObjectAnimator.ofFloat(
-							searchLayout, "y", titleY, searchY);
-					yBouncer.setDuration(500);
-					// 设置插值器(用于调节动画执行过程的速度)
-					// 设置重复次数(缺省为0,表示不重复执行)
-					yBouncer.setRepeatCount(0);
-					// 设置动画开始的延时时间(200ms)
-					// yBouncer.setStartDelay(200);
-					// 开始动画
-					yBouncer.start();
-
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation arg0) {
-				}
-
-				@Override
-				public void onAnimationEnd(Animation arg0) {
-					searchList.setVisibility(View.GONE);
-					addImg.setVisibility(View.VISIBLE);
-					searchImg.setVisibility(View.VISIBLE);
-					// searchString = null;
-					inputEdt.setText("");
-					// viewPager.setCurrentItem(fragmentNum);
-				}
-			});
-
+			break;
+		case R.id.txt_mainActivity_searchView:
+			exitSearch();
+			searchTxt.setVisibility(View.GONE);
 			break;
 
 		default:
 			break;
 		}
+	}
+
+	private void exitSearch() {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(inputEdt.getWindowToken(), 0);
+
+		Animation animationAlpha = new AlphaAnimation(1f, 0f);
+		animationAlpha.setFillAfter(false);// 动画终止时停留在最后一帧，不然会回到没有执行前的状态
+		animationAlpha.setDuration(500);// 动画持续时间1秒
+		searchList.startAnimation(animationAlpha);// 是用ImageView来显示动画的
+		animationAlpha.setAnimationListener(new AnimationListener() {
+
+			@Override
+			public void onAnimationStart(Animation arg0) {
+				ObjectAnimator yBouncer = ObjectAnimator.ofFloat(searchLayout,
+						"y", titleY, searchY);
+				yBouncer.setDuration(500);
+				// 设置插值器(用于调节动画执行过程的速度)
+				// 设置重复次数(缺省为0,表示不重复执行)
+				yBouncer.setRepeatCount(0);
+				// 设置动画开始的延时时间(200ms)
+				// yBouncer.setStartDelay(200);
+				// 开始动画
+				yBouncer.start();
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation arg0) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation arg0) {
+				searchList.setVisibility(View.GONE);
+				addImg.setVisibility(View.VISIBLE);
+				searchImg.setVisibility(View.VISIBLE);
+				// searchString = null;
+				inputEdt.setText("");
+				// viewPager.setCurrentItem(fragmentNum);
+			}
+		});
 	}
 
 	/**
@@ -499,6 +516,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	 * @param view
 	 */
 	private PopupWindow popupWindow;
+
 	private void showPopupWindow(View view) {
 
 		// 一个自定义的布局，作为显示的内容
@@ -514,9 +532,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
 
-		popupWindow = new PopupWindow(mview,
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, false);
-		
+		popupWindow = new PopupWindow(mview, LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT, false);
 
 		popupWindow.setTouchable(true);
 
@@ -622,6 +639,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	class donghua implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
+			searchTxt.setVisibility(View.VISIBLE);
 			addImg.setVisibility(View.GONE);
 			searchImg.setVisibility(View.GONE);
 			titleY = titleLayout.getY();
@@ -720,29 +738,33 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		public void onReceive(Context context, Intent intent) {
 			// 记得把广播给终结掉
 			abortBroadcast();
-			//String from = intent.getStringExtra("from");
+			// String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
-			
-			if(message.getChatType() == ChatType.Chat){
+
+			if (message.getChatType() == ChatType.Chat) {
 				chatUserList.add(message.getFrom());
-			}else if(message.getChatType() == ChatType.GroupChat){
+			} else if (message.getChatType() == ChatType.GroupChat) {
 				groupChatUserList.add(message.getTo());
 			}
 			String chat = gson.toJson(chatUserList);
 			String groupChat = gson.toJson(groupChatUserList);
-			
 
 			// 消息不是发给当前会话，return
 			notifyNewMessage(message);
-			
+
 			SharedPreferences sharedPreferences = getSharedPreferences(
 					"userLogin", Context.MODE_PRIVATE);
-					Editor editor = sharedPreferences.edit();// 获取编辑器
-					editor.putString("Chat" + sharedPreferences.getString("uniqueKey", null), chat);
-					editor.putString("GroupChat" + sharedPreferences.getString("uniqueKey", null), groupChat);
-					editor.commit();
-			
+			Editor editor = sharedPreferences.edit();// 获取编辑器
+			editor.putString(
+					"Chat" + sharedPreferences.getString("uniqueKey", null),
+					chat);
+			editor.putString(
+					"GroupChat"
+							+ sharedPreferences.getString("uniqueKey", null),
+					groupChat);
+			editor.commit();
+
 			try {
 				message.getStringAttribute("IMUserNameExpand");
 			} catch (EaseMobException e) {
@@ -792,14 +814,14 @@ public class MainActivity extends HuanxinLogOutActivity implements
 										jsonObject.toString(), type);
 								List<SearchDataList> dataList = model
 										.getDataList();
-								List<SearchDataList> d = new ArrayList<SearchDataList>();
+								List<SearchDataList> searchResult = new ArrayList<SearchDataList>();
 								for (int i = 0; i < dataList.size(); i++) {
 									if (dataList.get(i).getType().toString()
 											.equals("QYJ")) {
-										d.add(dataList.get(i));
+										searchResult.add(dataList.get(i));
 									}
 								}
-								if (d.size() == 0) {
+								if (searchResult.size() == 0) {
 									Toasts.show(MainActivity.this,
 											"没有搜索到任何结果哦!", 0);
 									/*
@@ -808,8 +830,9 @@ public class MainActivity extends HuanxinLogOutActivity implements
 									 */
 								}
 								adapterSearch = new SearchResultAdapter(
-										MainActivity.this, d);
+										MainActivity.this, searchResult);
 								searchList.setAdapter(adapterSearch);
+								searchTxt.setVisibility(View.GONE);
 								searchList
 										.setOnItemClickListener(new OnItemClickListener() {
 											@Override
@@ -829,7 +852,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 												startActivity(intent);
 											}
 										});
-
 							}
 						}
 
@@ -941,7 +963,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
-							
+
 							int num = jsonObject.optInt("data");
 							if (num == 0) {
 								// 系统统计数
@@ -1091,7 +1113,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		isNews();
 		if (preferences.getInt("userId", -1) != -1) {
-			SystemUtil.Imagexutils(preferences.getString("userImage", null), photoImg, MainActivity.this);
+			SystemUtil.Imagexutils(preferences.getString("userImage", null),
+					photoImg, MainActivity.this);
 		} else {
 			photoImg.setImageResource(R.drawable.user_default);
 			dotView.setVisibility(View.GONE);
@@ -1105,18 +1128,17 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if(addImg.getVisibility() == 8){
+			if (addImg.getVisibility() == 8) {
 				addImg.setVisibility(View.VISIBLE);
 				searchImg.setVisibility(View.VISIBLE);
 			}
-			if(popupWindow != null){
+			if (popupWindow != null) {
 				popupWindow.dismiss();
 				popupWindow = null;
-				
+
 				return false;
 			}
-			
-			
+
 			exitBy2Click(); // 调用双击退出函数
 		}
 		return false;

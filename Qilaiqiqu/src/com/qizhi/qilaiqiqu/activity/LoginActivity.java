@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -75,6 +76,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private Tencent mTencent;
 	private String registrationID;
+
+	private ProgressDialog progDialog = null;// 搜索时进度条
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -210,14 +213,20 @@ public class LoginActivity extends Activity implements OnClickListener {
 			break;
 
 		case R.id.img_loginactivity_qq:
+			showProgressDialog();
 			// 如果session无效，就开始登录
 			if (!mTencent.isSessionValid()) {
 				// 开始qq授权登录
 				mTencent.login(LoginActivity.this, "all", loginListener);
+			} else {
+				dissmissProgressDialog();
+				Toasts.show(LoginActivity.this, "您已登陆,请先退出登陆", 0);
 			}
+
 			break;
 
 		case R.id.img_loginactivity_wechat:
+			showProgressDialog();
 			final SendAuth.Req req = new SendAuth.Req();
 			req.scope = "snsapi_userinfo";
 			req.state = "qilaiqiqu";
@@ -403,6 +412,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
+		dissmissProgressDialog();
 	}
 
 	@Override
@@ -434,7 +444,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 			// }
 		} else if (requestCode == Constants.REQUEST_APPBAR) {
 			// if (resultCode == Constants.RESULT_LOGIN) {
-			Toasts.show(LoginActivity.this, data.getStringExtra(Constants.LOGIN_INFO) + "........", 0);
+			Toasts.show(LoginActivity.this,
+					data.getStringExtra(Constants.LOGIN_INFO) + "........", 0);
 			// }
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -459,11 +470,31 @@ public class LoginActivity extends Activity implements OnClickListener {
 	 * isExit = true; // 准备退出 Toast.makeText(this, "再按一次退出程序",
 	 * Toast.LENGTH_SHORT).show(); tExit = new Timer(); tExit.schedule(new
 	 * TimerTask() {
-	 * 
 	 * @Override public void run() { isExit = false; // 取消退出 } }, 2000); //
 	 * 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
-	 * 
 	 * } else { finish(); System.exit(0); } }
 	 */
+
+	/**
+	 * 显示进度框
+	 */
+	private void showProgressDialog() {
+		if (progDialog == null)
+			progDialog = new ProgressDialog(this);
+		progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progDialog.setIndeterminate(false);
+		progDialog.setCancelable(false);
+		progDialog.setMessage("拉取第三方授权页面...");
+		progDialog.show();
+	}
+
+	/**
+	 * 隐藏进度框
+	 */
+	private void dissmissProgressDialog() {
+		if (progDialog != null) {
+			progDialog.dismiss();
+		}
+	}
 
 }
