@@ -61,7 +61,6 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 	 */
 	private boolean isLoading = false;
 	
-	private boolean down = false;
 	/**
 	 * @param context
 	 */
@@ -116,7 +115,6 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			down = false;
 			// 按下
 			mYDown = (int) event.getRawY();
 			break;
@@ -127,7 +125,6 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 			break;
 
 		case MotionEvent.ACTION_UP:
-			down = true;
 			// 抬起
 			if (canLoad()) {
 				loadData();
@@ -175,7 +172,7 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 	 * 如果到了最底部,而且是上拉操作.那么执行onLoad方法
 	 */
 	private void loadData() {
-		if (mOnLoadListener != null && down) {
+		if (mOnLoadListener != null) {
 			mLastY = 0;
 			// 设置状态
 			setLoading(true);
@@ -217,7 +214,7 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 		if (canLoad()) {
 			loadData();
 		}
-	}
+	} 
 	
 	/**
 	 * 设置刷新

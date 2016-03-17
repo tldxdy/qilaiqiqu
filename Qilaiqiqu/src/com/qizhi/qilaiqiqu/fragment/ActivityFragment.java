@@ -66,6 +66,11 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		manageList.addHeaderView(header);
+		adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
+		manageList.setAdapter(adapter);
+		manageList.setOnItemClickListener(this);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);
 		data();
 		return view;
 	}
@@ -98,9 +103,6 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 			
 			adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
 			manageList.setAdapter(adapter);
-			manageList.setOnItemClickListener(this);
-			swipeLayout.setOnRefreshListener(this);
-			swipeLayout.setOnLoadListener(this);
 		}
 	}
 	@Override
