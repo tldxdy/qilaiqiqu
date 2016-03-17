@@ -202,7 +202,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 		super.onResume();
 		mapView.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 
 	/**
@@ -214,7 +213,6 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 		mapView.onPause();
 		deactivate();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
 
 	/**

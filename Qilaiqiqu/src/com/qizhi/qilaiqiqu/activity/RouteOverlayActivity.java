@@ -347,7 +347,6 @@ public class RouteOverlayActivity extends HuanxinLogOutActivity implements
 		super.onResume();
 		mapView.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 
 	/**
@@ -359,7 +358,6 @@ public class RouteOverlayActivity extends HuanxinLogOutActivity implements
 		mapView.onPause();
 		deactivate();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
 
 	/**

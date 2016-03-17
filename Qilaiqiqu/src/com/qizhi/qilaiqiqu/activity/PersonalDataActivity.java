@@ -700,14 +700,12 @@ public class PersonalDataActivity extends BaseActivity implements
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
 	
 /*

@@ -402,14 +402,12 @@ public class RegisterActivity extends HuanxinLogOutActivity implements OnClickLi
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 		dissmissProgressDialog();
 	}
 }

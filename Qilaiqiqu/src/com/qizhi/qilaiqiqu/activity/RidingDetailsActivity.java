@@ -368,6 +368,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 				new SystemUtil().makeToast(RidingDetailsActivity.this, "请登录");
 				startActivity(new Intent(RidingDetailsActivity.this,
 						LoginActivity.class));
+				RidingDetailsActivity.this.finish();
 			}
 			break;
 		case R.id.img_ridingDetailsActivity_revamp:
@@ -603,6 +604,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 								startActivity(new Intent(
 										RidingDetailsActivity.this,
 										LoginActivity.class));
+								RidingDetailsActivity.this.finish();
 							}
 						}
 					}
@@ -646,6 +648,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 								startActivity(new Intent(
 										RidingDetailsActivity.this,
 										LoginActivity.class));
+								RidingDetailsActivity.this.finish();
 							}
 						}
 					}
@@ -929,6 +932,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 		} else {
 			new SystemUtil().makeToast(this, "请登录");
 			startActivity(new Intent(this, LoginActivity.class));
+			RidingDetailsActivity.this.finish();
 		}
 
 	}
@@ -1050,6 +1054,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 		} else {
 			new SystemUtil().makeToast(this, "请登录");
 			startActivity(new Intent(this, LoginActivity.class));
+			RidingDetailsActivity.this.finish();
 		}
 	}
 
@@ -1365,14 +1370,12 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
 
 	/*

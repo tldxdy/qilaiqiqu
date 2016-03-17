@@ -114,6 +114,7 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 			if (preferences.getInt("userId", -1) == -1) {
 				Toasts.show(this, "请登录", 0);
 				startActivity(new Intent(this, LoginActivity.class));
+				PersonActivity.this.finish();
 				break;
 			}
 
@@ -143,6 +144,7 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 			if (preferences.getInt("userId", -1) == -1) {
 				Toasts.show(this, "请登录", 0);
 				startActivity(new Intent(this, LoginActivity.class));
+				PersonActivity.this.finish();
 				break;
 			}
 			startActivity(new Intent(this, ChatSingleActivity.class)
@@ -288,13 +290,11 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
 }

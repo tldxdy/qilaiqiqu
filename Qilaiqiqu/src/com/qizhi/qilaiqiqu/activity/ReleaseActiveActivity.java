@@ -866,14 +866,12 @@ public class ReleaseActiveActivity extends HuanxinLogOutActivity implements OnCl
 
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
-		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 
 	

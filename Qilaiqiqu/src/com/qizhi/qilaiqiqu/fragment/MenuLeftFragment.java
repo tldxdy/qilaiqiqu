@@ -145,6 +145,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				Toasts.show(getActivity(), "请登录", 0);
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
+				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_message:
@@ -155,6 +156,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				Toasts.show(getActivity(), "请登录", 0);
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
+				getActivity().finish();
 				
 			}
 			break;
@@ -166,6 +168,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				Toasts.show(getActivity(), "请登录", 0);
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
+				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_activity_center:
@@ -177,6 +180,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 //				new SystemUtil().makeToast(getActivity(), "请登录");
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
+				getActivity().finish();
 			}
 			break;
 			
@@ -188,6 +192,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				Toasts.show(getActivity(), "请登录", 0);
 				Intent intent = new Intent(context,LoginActivity.class);
 				startActivity(intent);
+				getActivity().finish();
 			}
 			break;
 		case R.id.layout_personalfragment_my_set:
