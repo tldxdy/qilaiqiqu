@@ -298,7 +298,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 						Toast.makeText(LoginActivity.this, "登录成功",
 								Toast.LENGTH_LONG).show();
 						LoginActivity.this.finish();
-
+						startActivity(new Intent(LoginActivity.this, MainActivity.class));
 					} else {
 						Toasts.show(LoginActivity.this,
 								"登录失败:" + jsonObject.getString("message"), 0);
@@ -387,6 +387,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 								editor.commit();
 
 								LoginActivity.this.finish();
+								startActivity(new Intent(LoginActivity.this, MainActivity.class));
 								/*
 								 * startActivity(new Intent(LoginActivity.this,
 								 * MainActivity.class));
