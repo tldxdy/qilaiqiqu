@@ -34,10 +34,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener, OnLoadListener/*,OnItemLongClickListener*/{
+public class MessageFragment extends Fragment implements OnItemClickListener,CallBackPost,OnRefreshListener, OnLoadListener{
 	private View view;
 	private Context context;
 	
@@ -210,7 +209,6 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 		adapter = new MyMessageAdapter(context, list);
 		myMessageList.setAdapter(adapter);
 		myMessageList.setOnItemClickListener(this);
-		//myMessageList.setOnItemLongClickListener(this);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setOnLoadListener(this);	}
 

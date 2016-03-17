@@ -1,7 +1,6 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.fragment.MessageCenterFragmentPagerAdapter;
+import com.qizhi.qilaiqiqu.utils.NoScrollViewPager;
 
 public class MessageCenterActivity extends HuanxinLogOutActivity implements OnClickListener{
 	private LinearLayout backLayout;
@@ -19,7 +19,7 @@ public class MessageCenterActivity extends HuanxinLogOutActivity implements OnCl
 	private TextView historyTxt;
 	private TextView titleTxt;
 	
-	private ViewPager viewPager;
+	private NoScrollViewPager viewPager;
 	private int several;
 	
 	@Override
@@ -33,7 +33,7 @@ public class MessageCenterActivity extends HuanxinLogOutActivity implements OnCl
 	}
 	private void initView() {
 
-		viewPager = (ViewPager) findViewById(R.id.viewPager_actioncenteractivity);
+		viewPager = (NoScrollViewPager) findViewById(R.id.viewPager_actioncenteractivity);
 		titleTxt = (TextView) findViewById(R.id.text_actioncenteractivity_title);
 		manageTxt = (TextView) findViewById(R.id.txt_actioncenteractivity_manage);
 		historyTxt = (TextView) findViewById(R.id.txt_actioncenteractivity_history);
@@ -41,9 +41,13 @@ public class MessageCenterActivity extends HuanxinLogOutActivity implements OnCl
 		titleTxt.setText("消息中心");
 		manageTxt.setText("聊天记录");
 		historyTxt.setText("系统消息");
+		
 		MessageCenterFragmentPagerAdapter adapter=new MessageCenterFragmentPagerAdapter(
 				getSupportFragmentManager());//需要继承FragmentActivity
 		viewPager.setAdapter(adapter);
+		
+		//设置是否可滑动true=》不可滑动
+		viewPager.setNoScroll(true);
 		manageTxt.setTextColor(0xffffffff);
 		manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
 		historyTxt.setTextColor(0xff6dbfed);

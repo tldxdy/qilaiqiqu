@@ -146,7 +146,7 @@ public class BindPhoneActivity extends HuanxinLogOutActivity implements OnClickL
 
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("mobilePhone", mobilePhone);
-		params.addBodyParameter("type", "XGSJHM");
+		params.addBodyParameter("type", "BDSJHM");
 
 		new XUtilsUtil().httpPost(url, params, BindPhoneActivity.this);
 	}

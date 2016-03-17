@@ -106,7 +106,7 @@ public class PersonalDataActivity extends BaseActivity implements
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int IMAGE_REQUEST_CODE = 2;
 	private static final int RESULT_REQUEST_CODE = 3;
-	//private static final int BING_PHONE = 4;
+	private static final int BING_PHONE = 4;
 
 	private XUtilsUtil xUtilsUtil;
 
@@ -252,13 +252,13 @@ public class PersonalDataActivity extends BaseActivity implements
 			break;
 
 		case R.id.layout_personalDataActivity_bindphone:
-			/*
-			 * Intent intent = new Intent(PersonalDataActivity.this,
-			 * BindPhoneActivity.class); intent.putExtra("userId",
-			 * preferences.getInt("userId", -1)); intent.putExtra("uniqueKey",
-			 * preferences.getString("uniqueKey", null));
-			 * startActivityForResult(intent, BING_PHONE);
-			 */
+			if(preferences.getInt("userId", -1) != -1 && "".equals(usernameTxt.getText().toString().trim())){
+				 Intent intent = new Intent(PersonalDataActivity.this,
+						 BindPhoneActivity.class); intent.putExtra("userId",
+						 preferences.getInt("userId", -1)); 
+						 intent.putExtra("uniqueKey",preferences.getString("uniqueKey", null));
+						 startActivityForResult(intent, BING_PHONE);
+			}
 			break;
 
 		default:
@@ -478,6 +478,11 @@ public class PersonalDataActivity extends BaseActivity implements
 					setImageToView(data);
 				}
 				break;
+			case BING_PHONE:
+				if (data != null) {
+					usernameTxt.setText(data.getStringExtra("mobilePhone"));
+				}
+				break;
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -553,7 +558,6 @@ public class PersonalDataActivity extends BaseActivity implements
 	}
 	private void informationUpdate() {
 		if (!"".equals(nickEdt.getText().toString().trim())
-				&& !"".equals(usernameTxt.getText().toString().trim())
 				&& !"".equals(certainUserModel.getUserImage())) {
 			RequestParams params = new RequestParams("UTF-8");
 			params.addBodyParameter("userId", preferences.getInt("userId", -1)

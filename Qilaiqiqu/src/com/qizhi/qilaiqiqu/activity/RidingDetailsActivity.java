@@ -117,7 +117,6 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 	private TextView popup_cancel;
 
 	
-	private LinearLayout loadingLayout;
 	// private LinearLayout layout_gradePopup_bg;
 	private LinearLayout layout_isShow;
 
@@ -202,7 +201,9 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				this.getApplicationContext());
 		initView();
 		initEvent();
-
+		if (!ReleaseActivityfalg) {
+			uoloadData();
+		}
 	}
 	//private boolean f = true;
 
@@ -230,8 +231,6 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_back);
-		
-		loadingLayout  = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_cartoon);
 		
 		
 		ridingList = (ListView) findViewById(R.id.list_ridingDetailsActivity_riding);
@@ -519,8 +518,8 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 	}
 	
 	//sina微博
-	private void onClickWBShare(){
-	}
+/*	private void onClickWBShare(){
+	}*/
 	
 	
 	
@@ -960,17 +959,6 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 
 	@Override
 	protected void onStart() {
-		if (!ReleaseActivityfalg) {
-			uoloadData();
-			/*handler.postDelayed(new Runnable() {
-				
-				@Override
-				public void run() {
-				}
-			}, 500);
-		}else{
-			pUploading.dismiss();*/
-		}
 		super.onStart();
 	}
 

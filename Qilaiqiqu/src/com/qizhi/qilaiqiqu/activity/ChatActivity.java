@@ -1,9 +1,12 @@
 package com.qizhi.qilaiqiqu.activity;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -11,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
@@ -34,8 +38,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.easemob.EMCallBack;
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
@@ -46,9 +48,12 @@ import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.util.VoiceRecorder;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.CommonUtils;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.VoicePlayClickListener;
 import com.squareup.picasso.Picasso;
 
@@ -117,6 +122,10 @@ public class ChatActivity extends HuanxinLogOutActivity {
 	boolean isText = true;
 
 	private NewMessageBroadcastReceiver receiver;
+	
+	public Set<String> groupChatUserList;
+	private Gson gson;
+	private Type type;
 
 	private Drawable[] micImages;
 
@@ -366,6 +375,17 @@ public class ChatActivity extends HuanxinLogOutActivity {
 
 	private void getChatHistory() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
+		groupChatUserList = new HashSet<String>();
+		gson = new Gson();
+		type = new TypeToken<HashSet<String>>() {
+		}.getType();
+		String groupChat = preferences.getString(
+				"GroupChat" + preferences.getString("uniqueKey", null), null);
+		if (groupChat != null) {
+			groupChatUserList = gson.fromJson(groupChat, type);
+		}
+		
+		
 		EMConversation conversation = EMChatManager.getInstance()
 				.getConversation(username);
 		// 获取此会话的所有消息
@@ -489,6 +509,17 @@ public class ChatActivity extends HuanxinLogOutActivity {
 			String from = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
+			
+			groupChatUserList.add(message.getTo());
+			String groupChat = gson.toJson(groupChatUserList);
+
+			SharedPreferences sharedPreferences = getSharedPreferences(
+					"userLogin", Context.MODE_PRIVATE);
+			Editor editor = sharedPreferences.edit();// 获取编辑器
+			editor.putString("GroupChat"+ sharedPreferences.getString("uniqueKey", null),groupChat);
+			editor.commit();
+			
+			
 
 			if (message.getTo().toString().equals(username)) {
 				if (message.getType().toString().equals("TXT")) {
@@ -818,8 +849,7 @@ public class ChatActivity extends HuanxinLogOutActivity {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				if (!CommonUtils.isExitsSdcard()) {
-					Toast.makeText(ChatActivity.this, "发送语音需要sdcard支持！",
-							Toast.LENGTH_SHORT).show();
+					Toasts.show(ChatActivity.this, "发送语音需要sdcard支持！", 0);
 					return false;
 				}
 				try {
@@ -842,8 +872,8 @@ public class ChatActivity extends HuanxinLogOutActivity {
 					if (voiceRecorder != null)
 						voiceRecorder.discardRecording();
 					recordingContainer.setVisibility(View.INVISIBLE);
-					Toast.makeText(ChatActivity.this, R.string.recoding_fail,
-							Toast.LENGTH_SHORT).show();
+					/*Toast.makeText(ChatActivity.this, R.string.recoding_fail,
+							Toast.LENGTH_SHORT).show();*/
 					return false;
 				}
 
@@ -879,16 +909,13 @@ public class ChatActivity extends HuanxinLogOutActivity {
 									voiceRecorder.getVoiceFileName(username),
 									Integer.toString(length), false);
 						} else if (length == EMError.INVALID_FILE) {
-							Toast.makeText(getApplicationContext(), "无录音权限",
-									Toast.LENGTH_SHORT).show();
+							Toasts.show(getApplicationContext(), "无录音权限", 0);
 						} else {
-							Toast.makeText(getApplicationContext(), "录音时间太短",
-									Toast.LENGTH_SHORT).show();
+							Toasts.show(getApplicationContext(), "录音时间太短", 0);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接",
-								Toast.LENGTH_SHORT).show();
+						Toasts.show(getApplicationContext(), "发送失败，请检测服务器是否连接", 0);
 					}
 
 				}

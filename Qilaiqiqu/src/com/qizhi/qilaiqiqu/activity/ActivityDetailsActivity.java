@@ -6,10 +6,8 @@ import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +33,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -95,7 +92,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	private TextView isSignTxt1;
 	private TextView isSignTxt2;
 	private TextView isSignTxt3;
-	private LinearLayout isMelayout1;
+	//private LinearLayout isMelayout1;
 	private LinearLayout isMelayout2;
 
 	private LinearLayout backLayout;
@@ -206,7 +203,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		isSignTxt1 = (TextView) findViewById(R.id.txt_activityDetails_txt1);
 		isSignTxt2 = (TextView) findViewById(R.id.txt_activityDetails_chat);
 		isSignTxt3 = (TextView) findViewById(R.id.txt_activityDetails_txt3);
-		isMelayout1 = (LinearLayout) findViewById(R.id.layout_activityDetails_button1);
+		//isMelayout1 = (LinearLayout) findViewById(R.id.layout_activityDetails_button1);
 		isMelayout2 = (LinearLayout) findViewById(R.id.layout_activityDetails_button2);
 
 		appendLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_append);
@@ -372,6 +369,11 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			}
 
 			if ("ACTEND".equals(activity.getState())) {
+				if(activity.getUserId() == sharedPreferences.getInt("userId", -1)){
+					Intent intent = new Intent(this, ActivityDiscussActivity.class);
+					intent.putExtra("activityId", activityId);
+					startActivity(intent);
+				}
 				break;
 			}
 
@@ -379,8 +381,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			break;
 
 		case R.id.layout_activityDetails_button1:
-			startActivity(new Intent(ActivityDetailsActivity.this,
-					RidingDetailsActivity.class).putExtra("", articleMemoId1));
+			/*startActivity(new Intent(ActivityDetailsActivity.this,
+					RidingDetailsActivity.class).putExtra("", articleMemoId1));*/
 			break;
 
 		case R.id.layout_activityDetails_append:
@@ -585,7 +587,34 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		case R.id.img_activityDetails_share:
 			showPopupWindow3(v);
 			break;
-
+		case R.id.txt_activityDetails_articleMemo1:
+			if (sharedPreferences.getInt("userId", -1) != -1 && articleMemoId1 != 0) {
+				Intent intent2 = new Intent(ActivityDetailsActivity.this,
+						RidingDetailsActivity.class);
+				intent2.putExtra("articleId", articleMemoId1);
+				startActivity(intent2);
+			} else if(sharedPreferences.getInt("userId", -1) == -1) {
+				Toasts.show(ActivityDetailsActivity.this, "请登录", 0);
+				Intent intent1 = new Intent(ActivityDetailsActivity.this,
+						LoginActivity.class);
+				startActivity(intent1);
+			}
+			break;
+		case R.id.txt_activityDetails_articleMemo2:
+			if (sharedPreferences.getInt("userId", -1) != -1 && articleMemoId2 != 0) {
+				Intent intent2 = new Intent(ActivityDetailsActivity.this,
+						RidingDetailsActivity.class);
+				intent2.putExtra("articleId", articleMemoId2);
+				startActivity(intent2);
+			} else if(sharedPreferences.getInt("userId", -1) == -1){
+				Toasts.show(ActivityDetailsActivity.this, "请登录", 0);
+				Intent intent1 = new Intent(ActivityDetailsActivity.this,
+						LoginActivity.class);
+				startActivity(intent1);
+			}
+			
+			break;
+			
 		default:
 			break;
 		}
@@ -879,20 +908,24 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				isMelayout2.setVisibility(View.GONE);
 			} else {
 				isMelayout2.setVisibility(View.VISIBLE);
+				isSignTxt3.setText("立即报名");
 			}
 		}
 
 		if (sharedPreferences.getInt("userId", -1) == activity.getUserId()) {
 			if ("ACTEND".equals(activity.getState())) {
 				isMelayout2.setVisibility(View.VISIBLE);
-				isSignTxt3.setText("活动已结束");
+				isSignTxt3.setText("查看评论");
+			}else if("UNDERWAY".equals(activity.getState())){
+				isMelayout2.setVisibility(View.VISIBLE);
+				isSignTxt3.setText("活动正在进行中");
 			}
 		} else {
 			if (!activity.isInvolved()) {
 				if ("ACTEND".equals(activity.getState())) {
 					isMelayout2.setVisibility(View.VISIBLE);
 					isSignTxt3.setText("活动已结束");
-				} else if (!"ACTIN".equals(activity.getState())) {
+				} else if ("UNDERWAY".equals(activity.getState())) {
 					isMelayout2.setVisibility(View.VISIBLE);
 					isSignTxt3.setText("活动正在进行中");
 				}
@@ -1434,9 +1467,9 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				: type + System.currentTimeMillis();
 	}
 
-	// sina微博
+/*	// sina微博
 	private void onClickWBShare() {
-	}
+	}*/
 
 	public byte[] Bitmap2Bytes(Bitmap bm) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

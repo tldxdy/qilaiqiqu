@@ -524,7 +524,6 @@
                                 android:layout_marginLeft="20dp"
                                 android:layout_weight="1"
                                 android:gravity="bottom"
-                                android:text="大青海骑游"
                                 android:textColor="#009fe8"
                                 android:textSize="14sp" />
 
@@ -535,7 +534,6 @@
                                 android:layout_marginLeft="20dp"
                                 android:layout_weight="1"
                                 android:gravity="top"
-                                android:text="美丽的春天里——骑游"
                                 android:textColor="#009fe8"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -564,7 +562,6 @@
                     android:layout_weight="1"
                     android:background="@drawable/corners_bg_ao2"
                     android:gravity="center"
-                    android:text="已报名"
                     android:textColor="@color/white" />
 
                 <TextView
@@ -575,7 +572,6 @@
                     android:layout_weight="1"
                     android:background="@drawable/corners_bg_ao"
                     android:gravity="center"
-                    android:text="去聊天"
                     android:textColor="@color/white" />
             </LinearLayout>
 
