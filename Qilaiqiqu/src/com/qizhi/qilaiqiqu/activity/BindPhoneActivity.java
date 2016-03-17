@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -27,9 +29,10 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.umeng.analytics.MobclickAgent;
 
-public class BindPhoneActivity extends HuanxinLogOutActivity implements OnClickListener,
-		CallBackPost {
+public class BindPhoneActivity extends HuanxinLogOutActivity implements
+		OnClickListener, CallBackPost {
 
 	private LinearLayout backLayout;// 返回按钮
 
@@ -283,4 +286,19 @@ public class BindPhoneActivity extends HuanxinLogOutActivity implements OnClickL
 			codeEdt.setText("");
 		}
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
+
 }

@@ -18,6 +18,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -155,19 +157,6 @@ public class MyMessageActivity extends HuanxinLogOutActivity implements OnClickL
 		}
 	}
 	
-	@Override
-	protected void onResume() {
-		data();
-		super.onResume();
-		MobclickAgent.onResume(this);
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		MobclickAgent.onPause(this);
-	}
-
 	private void data() {
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
@@ -201,4 +190,18 @@ public class MyMessageActivity extends HuanxinLogOutActivity implements OnClickL
 		
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
+	
 }

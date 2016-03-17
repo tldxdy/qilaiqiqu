@@ -16,6 +16,8 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
@@ -303,12 +305,14 @@ public class SetActivity extends HuanxinLogOutActivity implements OnClickListene
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
-
+	
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 }

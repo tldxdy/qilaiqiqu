@@ -23,6 +23,7 @@ public class AppendActivity extends HuanxinLogOutActivity implements
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 
 	ActivityModel model;
@@ -43,6 +44,7 @@ public class AppendActivity extends HuanxinLogOutActivity implements
 		initEvent();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initView() {
 		gridview = (GridView) findViewById(R.id.gridview);
 		backLayout = (LinearLayout) findViewById(R.id.layout_appendActivity_back);

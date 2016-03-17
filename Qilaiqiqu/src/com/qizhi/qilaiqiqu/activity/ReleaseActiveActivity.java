@@ -53,6 +53,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -61,6 +63,7 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("SimpleDateFormat")
 public class ReleaseActiveActivity extends HuanxinLogOutActivity implements OnClickListener {
@@ -862,12 +865,16 @@ public class ReleaseActiveActivity extends HuanxinLogOutActivity implements OnCl
 		}
 
 		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
-
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 		super.onPause();
 	}
 
+	
 }

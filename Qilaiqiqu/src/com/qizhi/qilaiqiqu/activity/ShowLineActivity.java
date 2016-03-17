@@ -14,6 +14,8 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -200,6 +202,7 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 		super.onResume();
 		mapView.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 
 	/**
@@ -211,6 +214,7 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 		mapView.onPause();
 		deactivate();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 	/**
@@ -317,7 +321,10 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 			}
 			aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
 					AMapUtil.convertToLatLng(pointList.get(0)), 14.5f));
-			markerList.get(markerList.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.finish_map));
+			markerList.get(markerList.size() - 1)
+					.setIcon(
+							BitmapDescriptorFactory
+									.fromResource(R.drawable.finish_map));
 		}
 
 	}
@@ -335,7 +342,8 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 
 	private void setmarker(LatLonPoint llp) {
 		markerList.add(aMap.addMarker(new MarkerOptions().anchor(0.1f, 0.1f)
-				.icon(BitmapDescriptorFactory.fromResource(R.drawable.strat_map))));
+				.icon(BitmapDescriptorFactory
+						.fromResource(R.drawable.strat_map))));
 
 		markerList.get(markerList.size() - 1).setPosition(
 				AMapUtil.convertToLatLng(llp));

@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import cn.jpush.android.api.JPushInterface;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -65,8 +66,8 @@ import com.qizhi.qilaiqiqu.utils.AMapUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.umeng.analytics.MobclickAgent;
 
-public class MapActivity extends HuanxinLogOutActivity implements OnClickListener,
-		TextWatcher, LocationSource, AMapLocationListener,
+public class MapActivity extends HuanxinLogOutActivity implements
+		OnClickListener, TextWatcher, LocationSource, AMapLocationListener,
 		OnMarkerClickListener, InfoWindowAdapter, OnPoiSearchListener,
 		OnMapLongClickListener, OnGeocodeSearchListener {
 
@@ -242,6 +243,7 @@ public class MapActivity extends HuanxinLogOutActivity implements OnClickListene
 		super.onResume();
 		mapView.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 
 	/**
@@ -253,6 +255,7 @@ public class MapActivity extends HuanxinLogOutActivity implements OnClickListene
 		mapView.onPause();
 		deactivate();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 	/**
@@ -701,7 +704,6 @@ public class MapActivity extends HuanxinLogOutActivity implements OnClickListene
 
 	@Override
 	public void onPoiItemSearched(PoiItem arg0, int arg1) {
-		// TODO Auto-generated method stub
 
 	}
 

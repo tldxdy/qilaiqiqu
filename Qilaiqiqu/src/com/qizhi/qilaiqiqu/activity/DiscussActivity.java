@@ -26,6 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -47,9 +49,9 @@ import com.umeng.analytics.MobclickAgent;
  * @author hujianbo
  * 
  */
-public class DiscussActivity extends HuanxinLogOutActivity implements OnClickListener,
-		OnItemClickListener, OnTouchListener,OnRefreshListener,
-		OnLoadListener{
+public class DiscussActivity extends HuanxinLogOutActivity implements
+		OnClickListener, OnItemClickListener, OnTouchListener,
+		OnRefreshListener, OnLoadListener {
 
 	private LinearLayout backLayout;
 
@@ -58,7 +60,7 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 	private EditText contentEdit;
 
 	private Button discussBtn;
-	
+
 	private TextView titleTxt;
 
 	private DiscussListAdapter adapter;
@@ -74,14 +76,12 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 
 	private int superId = -1;
 	private InputMethodManager imm;
-	
-	
-	
+
 	private int pageIndex = 1;
-	
+
 	private RefreshLayout swipeLayout;
 	private View header;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -95,7 +95,7 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
 	private void initView() {
-		imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		articleId = getIntent().getIntExtra("articleId", -1);
 		xUtilsUtil = new XUtilsUtil();
 		commentPaginationListModel = new CommentPaginationListModel();
@@ -111,26 +111,27 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 		discussList = (ListView) findViewById(R.id.list_discussactivity_discuss);
 		titleTxt = (TextView) findViewById(R.id.txt_discussactivity_title);
 		titleTxt.setText("游记评论");
-		
-		superId =getIntent().getIntExtra("commentId", -1);
-		if(superId != -1){
-			//contentEdit.setHint("回复" + list.get(position).getUserName() + ":");
+
+		superId = getIntent().getIntExtra("commentId", -1);
+		if (superId != -1) {
+			// contentEdit.setHint("回复" + list.get(position).getUserName() +
+			// ":");
 			contentEdit.setFocusable(true);
 			imm.showSoftInputFromInputMethod(contentEdit.getWindowToken(), 0);
 			imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 		}
-		header = View.inflate(this,R.layout.header, null);
+		header = View.inflate(this, R.layout.header, null);
 		swipeLayout = (RefreshLayout) findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
 		discussList.addHeaderView(header);
-		
+
 	}
 
 	private void initEvent() {
-		
+
 		backLayout.setOnClickListener(this);
 	}
 
@@ -138,11 +139,13 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_discussactivity_discuss:
-			//if (!"".equals(contentEdit.getText().toString().trim())) {
-				commentRiding();
-		/*	}else{
-				
-			}*/
+			// if (!"".equals(contentEdit.getText().toString().trim())) {
+			commentRiding();
+			/*
+			 * }else{
+			 * 
+			 * }
+			 */
 			break;
 		case R.id.layout_discussactivity_back:
 			finish();
@@ -154,7 +157,7 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("articleId", articleId + "");
-		if(superId != -1){
+		if (superId != -1) {
 			params.addBodyParameter("superId", superId + "");
 			params.addBodyParameter("parentId", superId + "");
 		}
@@ -176,27 +179,34 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 						if (jsonObject.optBoolean("result")) {
 							contentEdit.setText("");
 							contentEdit.setHint("说几句吧");
-							if(flag){
-								Toasts.show(DiscussActivity.this,
-										"评论成功", 0);
-								/*new SystemUtil().makeToast(DiscussActivity.this,
-										"评论成功");*/
-							}else{
-								Toasts.show(DiscussActivity.this,
-										"回复成功", 0);
-								/*new SystemUtil().makeToast(DiscussActivity.this,
-										"回复成功");*/
+							if (flag) {
+								Toasts.show(DiscussActivity.this, "评论成功", 0);
+								/*
+								 * new
+								 * SystemUtil().makeToast(DiscussActivity.this,
+								 * "评论成功");
+								 */
+							} else {
+								Toasts.show(DiscussActivity.this, "回复成功", 0);
+								/*
+								 * new
+								 * SystemUtil().makeToast(DiscussActivity.this,
+								 * "回复成功");
+								 */
 							}
 							discussBtn.setText("评论");
-							
-							imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
-						}else{
+
+							imm.hideSoftInputFromWindow(
+									contentEdit.getWindowToken(), 0);
+						} else {
 							Toasts.show(DiscussActivity.this,
 									jsonObject.optString("message"), 0);
-							
-							System.out.println("======================================");
+
+							System.out
+									.println("======================================");
 							System.out.println(jsonObject.optString("message"));
-							System.out.println("======================================");
+							System.out
+									.println("======================================");
 						}
 						flag = true;
 						pageIndex = 1;
@@ -205,7 +215,7 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						
+
 					}
 				});
 	}
@@ -238,13 +248,17 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 							adapter = new DiscussListAdapter(
 									DiscussActivity.this, list);
 							discussList.setAdapter(adapter);
-							discussList.setOnTouchListener(DiscussActivity.this);
-							discussList.setOnItemClickListener(DiscussActivity.this);
-							swipeLayout.setOnRefreshListener(DiscussActivity.this);
+							discussList
+									.setOnTouchListener(DiscussActivity.this);
+							discussList
+									.setOnItemClickListener(DiscussActivity.this);
+							swipeLayout
+									.setOnRefreshListener(DiscussActivity.this);
 							swipeLayout.setOnLoadListener(DiscussActivity.this);
-							
-						}else{
-							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
+
+						} else {
+							Toasts.show(DiscussActivity.this,
+									jsonObject.optString("message"), 0);
 						}
 					}
 
@@ -261,12 +275,14 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 		queryCommentPaginationList();
 		super.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 	@Override
@@ -283,11 +299,9 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 		imm.showSoftInputFromInputMethod(contentEdit.getWindowToken(), 0);
 		imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 	}
-	
+
 	/**
-	 * ACTION_DOWN: 表示用户开始触摸
-	 * ACTION_MOVE: 表示用户在移动(手指或者其他) 
-	 * ACTION_UP:表示用户抬起了手指
+	 * ACTION_DOWN: 表示用户开始触摸 ACTION_MOVE: 表示用户在移动(手指或者其他) ACTION_UP:表示用户抬起了手指
 	 * ACTION_CANCEL:表示手势被取消了
 	 */
 	@Override
@@ -296,7 +310,7 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 		case MotionEvent.ACTION_DOWN:
 			System.out.println("ACTION_DOWN");
 			imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
-			if("".equals(contentEdit.getText().toString().trim())){
+			if ("".equals(contentEdit.getText().toString().trim())) {
 				superId = -1;
 				contentEdit.setHint("说几句吧");
 				discussBtn.setText("评论");
@@ -318,7 +332,6 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 
 		return super.onTouchEvent(event);
 	}
-
 
 	private void dataJ() {
 		RequestParams params = new RequestParams("UTF-8");
@@ -345,19 +358,20 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 							commentPaginationListModel = gson.fromJson(
 									jsonObject.toString(), type);
 
-							List<RidingCommentModel> lists = commentPaginationListModel.getDataList();
-							if(pageIndex == 1){
+							List<RidingCommentModel> lists = commentPaginationListModel
+									.getDataList();
+							if (pageIndex == 1) {
 								list.clear();
 								list.addAll(lists);
-							}else{
+							} else {
 								list.addAll(lists);
 							}
-						adapter.notifyDataSetChanged();
-						
-							
-						}else{
-							Toasts.show(DiscussActivity.this, jsonObject.optString("message"), 0);
-							
+							adapter.notifyDataSetChanged();
+
+						} else {
+							Toasts.show(DiscussActivity.this,
+									jsonObject.optString("message"), 0);
+
 						}
 					}
 
@@ -366,6 +380,7 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 					}
 				});
 	}
+
 	@Override
 	public void onRefresh() {
 		swipeLayout.postDelayed(new Runnable() {
@@ -374,8 +389,8 @@ public class DiscussActivity extends HuanxinLogOutActivity implements OnClickLis
 			public void run() {
 				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
-					dataJ();
-				
+				dataJ();
+
 			}
 		}, 1500);
 

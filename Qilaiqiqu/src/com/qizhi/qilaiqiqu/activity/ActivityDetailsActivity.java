@@ -33,6 +33,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -60,6 +62,7 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
+import com.umeng.analytics.MobclickAgent;
 
 public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		CallBackPost, OnClickListener {
@@ -1283,18 +1286,6 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	}
 
 	@Override
-	protected void onResume() {
-
-		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-
-		super.onPause();
-	}
-
-	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		handler.removeCallbacksAndMessages(null);
@@ -1475,5 +1466,19 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
 		return baos.toByteArray();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 }

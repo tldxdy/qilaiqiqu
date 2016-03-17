@@ -9,6 +9,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.PersonMessageListAdapter;
 import com.umeng.analytics.MobclickAgent;
@@ -70,12 +72,14 @@ public class MessageActivity extends HuanxinLogOutActivity implements OnClickLis
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 	
 }

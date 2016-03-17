@@ -29,6 +29,7 @@ import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 public class WXEntryActivity extends HuanxinLogOutActivity implements
 		IWXAPIEventHandler, CallBackPost {
@@ -130,7 +131,8 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 
 			} else {
 				String string = jsonObject.getString("message");
-				new SystemUtil().makeToast(WXEntryActivity.this, "result:"+jsonObject.getString("result")+":"+string);
+				new SystemUtil().makeToast(WXEntryActivity.this, "result:"
+						+ jsonObject.getString("result") + ":" + string);
 				finish();
 			}
 
@@ -146,6 +148,20 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 	@Override
 	public void onMyFailure(HttpException error, String msg) {
 
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 }

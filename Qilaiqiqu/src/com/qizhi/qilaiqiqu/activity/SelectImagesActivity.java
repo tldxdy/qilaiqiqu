@@ -25,10 +25,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.lidroid.xutils.BitmapUtils;
 import com.qizhi.qilaiqiqu.R;
+import com.umeng.analytics.MobclickAgent;
 
-public class SelectImagesActivity extends HuanxinLogOutActivity implements OnClickListener {
+public class SelectImagesActivity extends HuanxinLogOutActivity implements
+		OnClickListener {
 
 	// protected ImageLoader imageLoader = ImageLoader.getInstance();
 
@@ -92,7 +96,6 @@ public class SelectImagesActivity extends HuanxinLogOutActivity implements OnCli
 		confirmTxt = (TextView) findViewById(R.id.txt_confirm);
 		optionTxt = (TextView) findViewById(R.id.txt_nativeimageactivity_option);
 
-
 		bitmapUtils = new BitmapUtils(SelectImagesActivity.this);
 
 		backLayout.setOnClickListener(this);
@@ -136,14 +139,12 @@ public class SelectImagesActivity extends HuanxinLogOutActivity implements OnCli
 			finish();
 			break;
 		case R.id.txt_confirm:
-				ArrayList<String> selectedItems = imageAdapter
-						.getCheckedItems();
-				Intent intentConfirm = new Intent(this, ReleaseActiveActivity.class);
-				intentConfirm.putStringArrayListExtra("photoList",
-						selectedItems);
-				intentConfirm.putExtra("isFirst", true);
-				startActivity(intentConfirm);
-				finish();
+			ArrayList<String> selectedItems = imageAdapter.getCheckedItems();
+			Intent intentConfirm = new Intent(this, ReleaseActiveActivity.class);
+			intentConfirm.putStringArrayListExtra("photoList", selectedItems);
+			intentConfirm.putExtra("isFirst", true);
+			startActivity(intentConfirm);
+			finish();
 			break;
 		}
 	}
@@ -235,8 +236,8 @@ public class SelectImagesActivity extends HuanxinLogOutActivity implements OnCli
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				
-				if(getCheckedItems().size() <= 3){
+
+				if (getCheckedItems().size() <= 3) {
 					mSparseBooleanArray.put((Integer) buttonView.getTag(),
 							isChecked);
 				}
@@ -251,5 +252,19 @@ public class SelectImagesActivity extends HuanxinLogOutActivity implements OnCli
 	private class ViewHolder {
 		private ImageView photoImg;
 		private CheckBox photoChk;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 }

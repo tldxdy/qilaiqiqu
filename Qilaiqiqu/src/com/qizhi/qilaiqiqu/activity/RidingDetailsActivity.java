@@ -41,6 +41,8 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -77,8 +79,8 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnClickListener,
-		CallBackPost, OnItemClickListener {
+public class RidingDetailsActivity extends HuanxinLogOutActivity implements
+		OnClickListener, CallBackPost, OnItemClickListener {
 
 	private LinearLayout backLayout;
 
@@ -116,7 +118,6 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 	private TextView markPointTxt;
 	private TextView popup_cancel;
 
-	
 	// private LinearLayout layout_gradePopup_bg;
 	private LinearLayout layout_isShow;
 
@@ -143,21 +144,20 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 	private String jpushFlag;
 
 	private int num = 0;
-	
+
 	private int _id = 0;
 
 	private List<String> imgListUrl;
-	
+
 	private List<ActivityListRecommendModel> recommendList;
-	
-	//private PopupWindowUploading pUploading;
-	
+
+	// private PopupWindowUploading pUploading;
+
 	private Tencent mTencent;
-	
+
 	private IUiListener baseUiListener; // 监听器
-	
+
 	private IWXAPI api;
-	
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -171,10 +171,13 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				imgListUrl.add(s);
 				if (previewList.size() - 1 != num) {
 					num = num + 1;
-					/*File file = new File(previewList.get(num).getArticleImage());
-					new FileUploadAsyncTask(RidingDetailsActivity.this,
-							(num + 1), previewList.size(), preferences, "QYJ",
-							handler).execute(file);*/
+					/*
+					 * File file = new
+					 * File(previewList.get(num).getArticleImage()); new
+					 * FileUploadAsyncTask(RidingDetailsActivity.this, (num +
+					 * 1), previewList.size(), preferences, "QYJ",
+					 * handler).execute(file);
+					 */
 					// new
 					// SystemUtil().httpClient(list.get(num).getArticleImage(),
 					// preferences, handler, "QYJ");
@@ -205,7 +208,8 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 			uoloadData();
 		}
 	}
-	//private boolean f = true;
+
+	// private boolean f = true;
 
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
@@ -213,10 +217,10 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 			if ("JPushDZ".equals(jpushFlag) || "JPushDS".equals(jpushFlag)) {
 				showJPush(jpushFlag);
 			}
-			/*if(f){
-				f = false; 
-				pUploading.show(this.findViewById(R.id.layout_riding_top));
-			}*/
+			/*
+			 * if(f){ f = false;
+			 * pUploading.show(this.findViewById(R.id.layout_riding_top)); }
+			 */
 		}
 	}
 
@@ -226,13 +230,12 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 		aDetailModel = new ArticleMemoDetailModel();
 		list = new ArrayList<ArticleModel>();
 		articleModel = new ArticleModel();
-		//pUploading = new PopupWindowUploading(this);
+		// pUploading = new PopupWindowUploading(this);
 
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_back);
-		
-		
+
 		ridingList = (ListView) findViewById(R.id.list_ridingDetailsActivity_riding);
 
 		likeImg = (ImageView) findViewById(R.id.img_ridingDetailsActivity_like);
@@ -254,7 +257,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 		isMe = getIntent().getBooleanExtra("isMe", false);
 		ReleaseActivityfalg = getIntent().getBooleanExtra(
 				"ReleaseActivityfalg", false);
-		
+
 		_id = getIntent().getIntExtra("_id", 0);
 		if (isMe) {
 			cllectionImg.setVisibility(View.GONE);
@@ -277,20 +280,20 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 			ridingList.setDividerHeight(0);
 		}
 		baseUiListener = new IUiListener() {
-			
+
 			@Override
 			public void onError(UiError arg0) {
-				
+
 			}
-			
+
 			@Override
 			public void onComplete(Object arg0) {
-				
+
 			}
-			
+
 			@Override
 			public void onCancel() {
-				
+
 			}
 		};
 		api = WXAPIFactory.createWXAPI(this, ConstantsUtil.APP_ID_WX);
@@ -315,8 +318,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 			break;
 
 		case R.id.img_ridingDetailsActivity_share:
-			
-			
+
 			showPopupWindow3(v);
 			break;
 		case R.id.img_ridingDetailsActivity_cllection:
@@ -362,11 +364,9 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				Intent intent = new Intent(this, DiscussActivity.class);
 				intent.putExtra("articleId", articleId);
 				startActivity(intent);
-			}else {
-				new SystemUtil().makeToast(
-						RidingDetailsActivity.this, "请登录");
-				startActivity(new Intent(
-						RidingDetailsActivity.this,
+			} else {
+				new SystemUtil().makeToast(RidingDetailsActivity.this, "请登录");
+				startActivity(new Intent(RidingDetailsActivity.this,
 						LoginActivity.class));
 			}
 			break;
@@ -392,36 +392,37 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				intent.putExtra("articleId", articleId);
 				startActivity(intent);
 			} else {
-				if(PhotoUploadingService.isStart){
+				if (PhotoUploadingService.isStart) {
 					Toasts.show(this, "你有游记正在发布，请稍后再发布", 0);
-					//new SystemUtil().makeToast(this, "你有游记正在发布，请稍后再发布");
+					// new SystemUtil().makeToast(this, "你有游记正在发布，请稍后再发布");
 					break;
 				}
-				
+
 				imgListUrl = new ArrayList<String>();
 				num = 0;
 				// photoUploading();
 
 				if (previewList.size() != 0) {
 					Intent intent = new Intent();
-					intent.putExtra("list", (Serializable)previewList);
-					intent.putExtra("title", previewList.get(0).getTitle().toString());
-					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
-					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
+					intent.putExtra("list", (Serializable) previewList);
+					intent.putExtra("title", previewList.get(0).getTitle()
+							.toString());
+					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");// 你定义的service的action
+					intent.setPackage(getPackageName());// 这里你需要设置你应用的包名
 					startService(intent);
-					
-					
-					
+
 					Intent intent2 = new Intent();
 					intent.putExtra("_id", _id);
-					setResult(100,intent2);
+					setResult(100, intent2);
 					finish();
-					
-					//loadingLayout.setVisibility(View.VISIBLE);
-				/*if (previewList.size() != 0) {
-					File file = new File(previewList.get(num).getArticleImage());
-					new FileUploadAsyncTask(this, num + 1, previewList.size(),
-							preferences, "QYJ", handler).execute(file);*/
+
+					// loadingLayout.setVisibility(View.VISIBLE);
+					/*
+					 * if (previewList.size() != 0) { File file = new
+					 * File(previewList.get(num).getArticleImage()); new
+					 * FileUploadAsyncTask(this, num + 1, previewList.size(),
+					 * preferences, "QYJ", handler).execute(file);
+					 */
 				}
 			}
 			break;
@@ -432,100 +433,105 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 			break;
 		}
 	}
-	
-	//分享到QQ与QQ空间
-	private void onClickQQShare() { 
-	    final Bundle params = new Bundle();
-	    params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-	    params.putString(QQShare.SHARE_TO_QQ_TITLE, articleModel.getTitle());
-	    params.putString(QQShare.SHARE_TO_QQ_SUMMARY,  "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId());
-	    params.putString(QQShare.SHARE_TO_QQ_TARGET_URL,  SystemUtil.IMGPHTH + articleModel.getDefaultShowImage());
-	    params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,SystemUtil.IMGPHTH + articleModel.getDefaultShowImage());
-	    params.putString(QQShare.SHARE_TO_QQ_APP_NAME,  "骑来骑去");
-	    params.putString(QzoneShare.SHARE_TO_QQ_TITLE, articleModel.getTitle());//必填
-	    params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！");//选填
-	    params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId());//必填
-	    params.putString(QzoneShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH + articleModel.getDefaultShowImage());
-	    mTencent.shareToQQ(RidingDetailsActivity.this, params, baseUiListener);
+
+	// 分享到QQ与QQ空间
+	private void onClickQQShare() {
+		final Bundle params = new Bundle();
+		params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE,
+				QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
+		params.putString(QQShare.SHARE_TO_QQ_TITLE, articleModel.getTitle());
+		params.putString(QQShare.SHARE_TO_QQ_SUMMARY,
+				"http://www.weride.com.cn/page/articleDetail.html?articleId="
+						+ articleModel.getArticleId());
+		params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, SystemUtil.IMGPHTH
+				+ articleModel.getDefaultShowImage());
+		params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH
+				+ articleModel.getDefaultShowImage());
+		params.putString(QQShare.SHARE_TO_QQ_APP_NAME, "骑来骑去");
+		params.putString(QzoneShare.SHARE_TO_QQ_TITLE, articleModel.getTitle());// 必填
+		params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY,
+				"每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！");// 选填
+		params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL,
+				"http://www.weride.com.cn/page/articleDetail.html?articleId="
+						+ articleModel.getArticleId());// 必填
+		params.putString(QzoneShare.SHARE_TO_QQ_IMAGE_URL, SystemUtil.IMGPHTH
+				+ articleModel.getDefaultShowImage());
+		mTencent.shareToQQ(RidingDetailsActivity.this, params, baseUiListener);
 	}
-	//分享到微信
-	private void  onClickWXShare(){
-		 WXWebpageObject webpage = new WXWebpageObject();
-		    webpage.webpageUrl = "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId();
-		    WXMediaMessage msg = new WXMediaMessage(webpage);
-		    msg.title = articleModel.getTitle();
-		    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
-		    
-		    try
-		    {
-		      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 300);
-		      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-		      bmp.recycle();
-		      msg.thumbData = Bitmap2Bytes(thumbBmp); 
-		      //msg.setThumbImage(thumbBmp);
-		    } 
-		    catch (Exception e)
-		    {
-		      e.printStackTrace();
-		    }
-		    SendMessageToWX.Req req = new SendMessageToWX.Req();
-		    req.transaction = buildTransaction("图文链接");
-		    req.message = msg;
-		    req.scene = SendMessageToWX.Req.WXSceneSession;
-		    api.sendReq(req);
-	}
-		//分享到微信
-		private void  onClickWXPYQShare(){
-			 WXWebpageObject webpage = new WXWebpageObject();
-			    webpage.webpageUrl = "http://www.weride.com.cn/page/articleDetail.html?articleId="+articleModel.getArticleId();
-			    WXMediaMessage msg = new WXMediaMessage(webpage);
-			    msg.title = articleModel.getTitle();
-			    msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
-			    try
-			    {
-			      Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH + articleModel.getDefaultShowImage(), 300);
-			      Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
-			      bmp.recycle();
-			      msg.thumbData = Bitmap2Bytes(thumbBmp); 
-			      //msg.setThumbImage(thumbBmp);
-			    } 
-			    catch (Exception e)
-			    {
-			      e.printStackTrace();
-			    }
-			    SendMessageToWX.Req req = new SendMessageToWX.Req();
-			    req.transaction = buildTransaction("图文链接");
-			    req.message = msg;
-			    req.scene = SendMessageToWX.Req.WXSceneTimeline;
-			    api.sendReq(req);
+
+	// 分享到微信
+	private void onClickWXShare() {
+		WXWebpageObject webpage = new WXWebpageObject();
+		webpage.webpageUrl = "http://www.weride.com.cn/page/articleDetail.html?articleId="
+				+ articleModel.getArticleId();
+		WXMediaMessage msg = new WXMediaMessage(webpage);
+		msg.title = articleModel.getTitle();
+		msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
+
+		try {
+			Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH
+					+ articleModel.getDefaultShowImage(), 300);
+			Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+			bmp.recycle();
+			msg.thumbData = Bitmap2Bytes(thumbBmp);
+			// msg.setThumbImage(thumbBmp);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = buildTransaction("图文链接");
+		req.message = msg;
+		req.scene = SendMessageToWX.Req.WXSceneSession;
+		api.sendReq(req);
+	}
+
+	// 分享到微信
+	private void onClickWXPYQShare() {
+		WXWebpageObject webpage = new WXWebpageObject();
+		webpage.webpageUrl = "http://www.weride.com.cn/page/articleDetail.html?articleId="
+				+ articleModel.getArticleId();
+		WXMediaMessage msg = new WXMediaMessage(webpage);
+		msg.title = articleModel.getTitle();
+		msg.description = "每一篇游记都是骑友分享的美好骑行时光，让幸福传递下去吧！";
+		try {
+			Bitmap bmp = SystemUtil.compressImageFromFile(SystemUtil.IMGPHTH
+					+ articleModel.getDefaultShowImage(), 300);
+			Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, 100, 100, true);
+			bmp.recycle();
+			msg.thumbData = Bitmap2Bytes(thumbBmp);
+			// msg.setThumbImage(thumbBmp);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = buildTransaction("图文链接");
+		req.message = msg;
+		req.scene = SendMessageToWX.Req.WXSceneTimeline;
+		api.sendReq(req);
+	}
 
 	/**
 	 * 构造一个用于请求的唯一标识
-	 * @param type 分享的内容类型
-	 * @return 
+	 * 
+	 * @param type
+	 *            分享的内容类型
+	 * @return
 	 */
 	private String buildTransaction(final String type) {
 		return (type == null) ? String.valueOf(System.currentTimeMillis())
 				: type + System.currentTimeMillis();
 	}
-	
+
 	public byte[] Bitmap2Bytes(Bitmap bm) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
 		return baos.toByteArray();
 	}
-	
-	//sina微博
-/*	private void onClickWBShare(){
-	}*/
-	
-	
-	
 
-	
-	
+	// sina微博
+	/*
+	 * private void onClickWBShare(){ }
+	 */
 
 	private void deleteRiding() {
 		RequestParams params = new RequestParams();
@@ -694,7 +700,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
 
 		popupWindow.setTouchable(true);
-		
+
 		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
@@ -945,23 +951,6 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 		markPointTxt.setText(markPointInt + "分");
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		MobclickAgent.onResume(this);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		MobclickAgent.onPause(this);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-	}
-
 	private void uoloadData() {
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("articleId", articleId + "");
@@ -974,7 +963,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						//pUploading.dismiss();
+						// pUploading.dismiss();
 						String s = responseInfo.result;
 						JSONObject jsonObject = null;
 						try {
@@ -1010,37 +999,37 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 									+ articleModel.getVirtualPraise() + "");
 
 							adapter = new RidingDetailsListAdapter(
-									RidingDetailsActivity.this, list,recommendList);
+									RidingDetailsActivity.this, list,
+									recommendList);
 							ridingList.setAdapter(adapter);
-							ridingList.setOnItemClickListener(RidingDetailsActivity.this);
+							ridingList
+									.setOnItemClickListener(RidingDetailsActivity.this);
 
 						}
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						//pUploading.dismiss();
+						// pUploading.dismiss();
 					}
 				});
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		if((position - list.size() - 2) >= 0){
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+			long arg3) {
+		if ((position - list.size() - 2) >= 0) {
 			recommendList.get((position - list.size() - 2));
-			Intent intent = new Intent(this,ActivityDetailsActivity.class);
-			intent.putExtra("activityId", recommendList.get((position - list.size() - 2)).getActivityId());
+			Intent intent = new Intent(this, ActivityDetailsActivity.class);
+			intent.putExtra("activityId",
+					recommendList.get((position - list.size() - 2))
+							.getActivityId());
 			startActivity(intent);
-			//new SystemUtil().makeToast(this, "" + (position - list.size() - 2) );
+			// new SystemUtil().makeToast(this, "" + (position - list.size() -
+			// 2) );
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
+
 	@Override
 	public void onMySuccess(ResponseInfo<String> responseInfo) {
 		String s = responseInfo.result;
@@ -1093,7 +1082,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
 		popupWindow.setTouchable(true);
-		
+
 		popupWindow.setAnimationStyle(R.style.PopupAnimation);
 
 		if (jf.equals("JPushDZ")) {
@@ -1114,11 +1103,8 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 					+ userName + "</font>" + " 觉得您的游记《"
 					+ "<font color='#6dbfed'>" + title + "</font>"
 					+ "》写得不错哟!给您打赏了" + "<font color='#ff0000'>" + integral
-					+ "</font>"
-					+ ",你现在的总积分是"
-					+ "<font color='#ff0000'>"
-					+ sumIntegral
-					+ "</font>" + "分"));
+					+ "</font>" + ",你现在的总积分是" + "<font color='#ff0000'>"
+					+ sumIntegral + "</font>" + "分"));
 		}
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
@@ -1131,9 +1117,9 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
 			}
 		});
-		
+
 		quxiao.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				popupWindow.dismiss();
@@ -1211,25 +1197,24 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 		});
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
 
 	}
-	
-	
+
 	private void showPopupWindow3(View view) {
 
 		// 一个自定义的布局，作为显示的内容
-		View mview = LayoutInflater.from(this).inflate(
-				R.layout.share, null);
+		View mview = LayoutInflater.from(this).inflate(R.layout.share, null);
 
 		LinearLayout qq = (LinearLayout) mview.findViewById(R.id.qq);
 		LinearLayout wx = (LinearLayout) mview.findViewById(R.id.wx);
 		LinearLayout pyq = (LinearLayout) mview.findViewById(R.id.pyq);
 		LinearLayout wb = (LinearLayout) mview.findViewById(R.id.wb);
 		LinearLayout qx = (LinearLayout) mview.findViewById(R.id.qx);
-		
+
 		final PopupWindow popupWindow = new PopupWindow(mview,
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 
@@ -1286,15 +1271,14 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 				popupWindow.dismiss();
 			}
 		});
-		
 
 		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-		popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.corners_layout));
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 50);
 
 	}
-
 
 	/**
 	 * 预览发布
@@ -1376,6 +1360,21 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements OnCl
 		}
 
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
+
 	/*
 	 * @Override protected void onActivityResult(int requestCode, int
 	 * resultCode, Intent data) { if (resultCode != RESULT_CANCELED) { switch

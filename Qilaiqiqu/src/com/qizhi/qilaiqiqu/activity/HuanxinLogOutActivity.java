@@ -10,11 +10,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.Type;
 import com.easemob.util.EasyUtils;
 import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.CommonUtils;
+import com.umeng.analytics.MobclickAgent;
 
 public class HuanxinLogOutActivity extends FragmentActivity {
 	
@@ -70,4 +73,18 @@ public class HuanxinLogOutActivity extends FragmentActivity {
         notificationManager.cancel(notifiId);
     }
 	
+    @Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
+    
 }

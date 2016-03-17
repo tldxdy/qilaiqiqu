@@ -11,10 +11,13 @@ import javax.xml.parsers.SAXParserFactory;
 import android.app.NotificationManager;
 import android.content.res.AssetManager;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.qizhi.qilaiqiqu.model.CityModel;
 import com.qizhi.qilaiqiqu.model.DistrictModel;
 import com.qizhi.qilaiqiqu.model.ProvinceModel;
 import com.qizhi.qilaiqiqu.service.XmlParserHandler;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * @author leiqian 地图基类
@@ -127,5 +130,19 @@ public class BaseActivity extends HuanxinLogOutActivity {
 
 		}
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
+
 }
-	

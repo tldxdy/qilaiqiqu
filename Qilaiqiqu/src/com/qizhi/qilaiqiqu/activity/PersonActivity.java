@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -24,6 +26,7 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 
@@ -31,8 +34,8 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
  * 
  */
 
-public class PersonActivity extends HuanxinLogOutActivity implements OnClickListener,
-		CallBackPost {
+public class PersonActivity extends HuanxinLogOutActivity implements
+		OnClickListener, CallBackPost {
 
 	private LinearLayout backLayout;// 返回按钮
 
@@ -281,4 +284,17 @@ public class PersonActivity extends HuanxinLogOutActivity implements OnClickList
 		Toasts.show(this, msg, 0);
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
 }

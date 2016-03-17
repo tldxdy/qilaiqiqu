@@ -9,9 +9,12 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.fragment.MessageCenterFragmentPagerAdapter;
 import com.qizhi.qilaiqiqu.utils.NoScrollViewPager;
+import com.umeng.analytics.MobclickAgent;
 
 public class MessageCenterActivity extends HuanxinLogOutActivity implements OnClickListener{
 	private LinearLayout backLayout;
@@ -158,6 +161,20 @@ public class MessageCenterActivity extends HuanxinLogOutActivity implements OnCl
 		default:
 			break;
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 	
 }

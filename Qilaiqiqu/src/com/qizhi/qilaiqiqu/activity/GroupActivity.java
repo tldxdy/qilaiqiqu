@@ -21,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -35,6 +37,7 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.umeng.analytics.MobclickAgent;
 
 public class GroupActivity extends HuanxinLogOutActivity implements
 		OnItemClickListener, OnClickListener {
@@ -275,10 +278,20 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 				.putExtra("userId", model.getData().getUserList().get(position)
 						.getUserId()));
 	}
-
 	@Override
 	protected void onResume() {
 		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
+	
+	
 
 }

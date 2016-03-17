@@ -23,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -70,8 +72,8 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.WalkRouteOverlayUtil;
 import com.umeng.analytics.MobclickAgent;
 
-public class RouteOverlayActivity extends HuanxinLogOutActivity implements OnClickListener,
-		TextWatcher, LocationSource, AMapLocationListener,
+public class RouteOverlayActivity extends HuanxinLogOutActivity implements
+		OnClickListener, TextWatcher, LocationSource, AMapLocationListener,
 		OnMarkerClickListener, InfoWindowAdapter, OnMapLongClickListener,
 		OnGeocodeSearchListener, OnRouteSearchListener {
 
@@ -345,6 +347,7 @@ public class RouteOverlayActivity extends HuanxinLogOutActivity implements OnCli
 		super.onResume();
 		mapView.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 
 	/**
@@ -356,6 +359,7 @@ public class RouteOverlayActivity extends HuanxinLogOutActivity implements OnCli
 		mapView.onPause();
 		deactivate();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 	/**

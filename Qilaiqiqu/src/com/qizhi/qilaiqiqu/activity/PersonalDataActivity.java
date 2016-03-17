@@ -43,6 +43,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.easemob.chat.EMChatManager;
 import com.google.gson.Gson;
 import com.lidroid.xutils.exception.HttpException;
@@ -620,20 +622,6 @@ public class PersonalDataActivity extends BaseActivity implements
 					});
 		}
 	}
-	
-	
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		MobclickAgent.onResume(this);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		MobclickAgent.onPause(this);
-	}
 
 	private void data() {
 		RequestParams params = new RequestParams();
@@ -707,6 +695,21 @@ public class PersonalDataActivity extends BaseActivity implements
 	public void onMyFailure(HttpException error, String msg) {
 
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+	}
+	
 /*
 	private void showPopupWindow2(View view) {
 

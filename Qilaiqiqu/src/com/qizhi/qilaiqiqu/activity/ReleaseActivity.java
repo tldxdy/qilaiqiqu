@@ -38,6 +38,8 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -58,8 +60,8 @@ import com.umeng.analytics.MobclickAgent;
  * @author hujianbo
  * 
  */
-public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickListener,
-		TextWatcher {
+public class ReleaseActivity extends HuanxinLogOutActivity implements
+		OnClickListener, TextWatcher {
 
 	private LinearLayout backLayout; // 返回
 
@@ -87,15 +89,13 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 
 	private ArrayList<String> photoList;
 	private boolean falg = false; // 判断图片哪里传过来的
-	private  int _id = 0;
+	private int _id = 0;
 	private int articleId;
 
 	private int num = 0;
-	
-	
-	
+
 	private int updateListSum;
-	
+
 	private DBManager dbManager;
 
 	@SuppressLint("HandlerLeak")
@@ -109,11 +109,12 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 				String s = (String) msg.obj;
 				imgListUrl.add(s);
 				if (list.size() - 1 != num) {
-					/*num = num + 1;
-					File file = new File(list.get(num).getArticleImage());
-					new FileUploadAsyncTask(ReleaseActivity.this, (num + 1),
-							list.size(), preferences, "QYJ", handler)
-							.execute(file);*/
+					/*
+					 * num = num + 1; File file = new
+					 * File(list.get(num).getArticleImage()); new
+					 * FileUploadAsyncTask(ReleaseActivity.this, (num + 1),
+					 * list.size(), preferences, "QYJ", handler) .execute(file);
+					 */
 					// new
 					// SystemUtil().httpClient(list.get(num).getArticleImage(),
 					// preferences, handler, "QYJ");
@@ -122,19 +123,19 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 					publishTravels();
 				}
 				break;
-			
-			 case 2: 
-				 int p = (Integer) msg.obj;
-				 if(falg){
-					 if(p < updateListSum){
-						 updateListSum = updateListSum - 1;
-					 }
-				 }
+
+			case 2:
+				int p = (Integer) msg.obj;
+				if (falg) {
+					if (p < updateListSum) {
+						updateListSum = updateListSum - 1;
+					}
+				}
 				list.remove(p);
-				adapter = new ReleaseListAdapter(ReleaseActivity.this, list, falg,handler,updateListSum);
+				adapter = new ReleaseListAdapter(ReleaseActivity.this, list,
+						falg, handler, updateListSum);
 				releaseList.setAdapter(adapter);
-			 break;
-			 
+				break;
 
 			default:
 				break;
@@ -154,14 +155,14 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 
 	@SuppressWarnings("unchecked")
 	private void initView() {
-		
+
 		dbManager = new DBManager(this);
 		list = new ArrayList<TravelsinformationModel>();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_releaseactivity_back);
-		
+
 		browseTxt = (TextView) findViewById(R.id.txt_releaseactivity_browse);
 		publishTxt = (TextView) findViewById(R.id.txt_releaseactivity_publish);
 		titleTxt = (TextView) findViewById(R.id.txt_releaseactivity_title);
@@ -174,14 +175,14 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 		falg = getIntent().getBooleanExtra("falg", false);
 		if (!falg) {
 			_id = getIntent().getIntExtra("_id", 0);
-			if(_id == 0){
+			if (_id == 0) {
 				photoList = getIntent().getStringArrayListExtra("photoList");
 				for (String string : photoList) {
 					TravelsinformationModel rt = new TravelsinformationModel();
 					rt.setArticleImage(string);
 					list.add(rt);
 				}
-			}else{
+			} else {
 				list = (ArrayList<TravelsinformationModel>) getIntent()
 						.getSerializableExtra("list");
 				titleEdt.setText(list.get(0).getTitle());
@@ -199,11 +200,11 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 			titleTxt.setText("修改骑游记");
 		}
 
-		adapter = new ReleaseListAdapter(this, list, falg,handler,updateListSum);
+		adapter = new ReleaseListAdapter(this, list, falg, handler,
+				updateListSum);
 		releaseList.setAdapter(adapter);
 
 	}
-
 
 	private void initHeaderView() {
 		View headerView = View.inflate(releaseList.getContext(),
@@ -229,7 +230,7 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 		browseTxt.setOnClickListener(this);
 		publishTxt.setOnClickListener(this);
 		titleEdt.addTextChangedListener(this);
-		
+
 		releaseAddImg.setOnClickListener(this);
 	}
 
@@ -238,23 +239,22 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.layout_releaseactivity_back:
-			if(!falg && list.size() > 0){
-				showPopupWindow(v , _id);
-			}else{
+			if (!falg && list.size() > 0) {
+				showPopupWindow(v, _id);
+			} else {
 				finish();
 			}
 			break;
 		case R.id.txt_releaseactivity_browse:
-			if("".equals(titleEdt.getText()
-					.toString().trim())){
+			if ("".equals(titleEdt.getText().toString().trim())) {
 				Toasts.show(this, "标题不能为空", 0);
-						//new SystemUtil().makeToast(this, "标题不能为空");
-						break;
-					}
-			if(list.size() == 0){
+				// new SystemUtil().makeToast(this, "标题不能为空");
+				break;
+			}
+			if (list.size() == 0) {
 				Toasts.show(this, "请添加游记图片", 0);
-					//new SystemUtil().makeToast(this, "请添加游记图片");
-					break;
+				// new SystemUtil().makeToast(this, "请添加游记图片");
+				break;
 			}
 			if (list.size() != 0) {
 				Intent intents = new Intent(this, RidingDetailsActivity.class);
@@ -266,23 +266,22 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 			}
 			break;
 		case R.id.txt_releaseactivity_publish:
-			if(PhotoUploadingService.isStart){
+			if (PhotoUploadingService.isStart) {
 				Toasts.show(this, "你有一篇游记在发布，请稍后", 0);
-				//new SystemUtil().makeToast(this, "你有一篇游记在发布，请稍后");
+				// new SystemUtil().makeToast(this, "你有一篇游记在发布，请稍后");
 				break;
 			}
-			if(list.size() == 0){
+			if (list.size() == 0) {
 				Toasts.show(this, "请添加游记图片", 0);
-				//new SystemUtil().makeToast(this, "请添加游记图片");
+				// new SystemUtil().makeToast(this, "请添加游记图片");
 				break;
-		}
-			if("".equals(titleEdt.getText()
-					.toString().trim())){
+			}
+			if ("".equals(titleEdt.getText().toString().trim())) {
 				Toasts.show(this, "标题不能为空", 0);
-						//new SystemUtil().makeToast(this, "标题不能为空");
-						break;
-					}
-			
+				// new SystemUtil().makeToast(this, "标题不能为空");
+				break;
+			}
+
 			// new SystemUtil().makeToast(this, "发表");
 			// 图片上传
 			if (!falg) {
@@ -291,19 +290,22 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 				// photoUploading();
 
 				if (list.size() != 0) {
-					
+
 					Intent intent = new Intent();
-					intent.putExtra("list", (Serializable)list);
-					intent.putExtra("title", titleEdt.getText()
-				.toString().trim());
+					intent.putExtra("list", (Serializable) list);
+					intent.putExtra("title", titleEdt.getText().toString()
+							.trim());
 					intent.putExtra("falg", falg);
-					intent.putExtra("screenWidth", this.getWindowManager().getDefaultDisplay().getWidth());
-					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
-					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
+					intent.putExtra("screenWidth", this.getWindowManager()
+							.getDefaultDisplay().getWidth());
+					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");// 你定义的service的action
+					intent.setPackage(getPackageName());// 这里你需要设置你应用的包名
 					startService(intent);
-					/*File file = new File(list.get(num).getArticleImage());
-					new FileUploadAsyncTask(this, num + 1, list.size(),
-							preferences, "QYJ", handler).execute(file);*/
+					/*
+					 * File file = new File(list.get(num).getArticleImage());
+					 * new FileUploadAsyncTask(this, num + 1, list.size(),
+					 * preferences, "QYJ", handler).execute(file);
+					 */
 					// new
 					// SystemUtil().httpClient(list.get(num).getArticleImage(),
 					// preferences, handler, "QYJ");
@@ -314,37 +316,37 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 				// photoUploading();
 				if (list.size() != 0) {
 					Intent intent = new Intent();
-					intent.putExtra("list", (Serializable)list);
-					intent.putExtra("title", titleEdt.getText()
-				.toString().trim());
+					intent.putExtra("list", (Serializable) list);
+					intent.putExtra("title", titleEdt.getText().toString()
+							.trim());
 					intent.putExtra("falg", falg);
 					intent.putExtra("updateListSum", updateListSum);
 					intent.putExtra("articleId", articleId);
-					intent.putExtra("screenWidth", this.getWindowManager().getDefaultDisplay().getWidth());
-					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");//你定义的service的action
-					intent.setPackage(getPackageName());//这里你需要设置你应用的包名
+					intent.putExtra("screenWidth", this.getWindowManager()
+							.getDefaultDisplay().getWidth());
+					intent.setAction("com.qizhi.qilaiqiqu.service.photoUploadingService");// 你定义的service的action
+					intent.setPackage(getPackageName());// 这里你需要设置你应用的包名
 					startService(intent);
-					
+
 				}
-				
-				/*if (list.size() > updateListSum) {
-					num = updateListSum;
-					File file = new File(list.get(num).getArticleImage());
-					new FileUploadAsyncTask(this, num + 1, list.size() - updateListSum,
-							preferences, "QYJ", handler).execute(file);
-				}else{
-					publishTravels();
-				}*/
+
+				/*
+				 * if (list.size() > updateListSum) { num = updateListSum; File
+				 * file = new File(list.get(num).getArticleImage()); new
+				 * FileUploadAsyncTask(this, num + 1, list.size() -
+				 * updateListSum, preferences, "QYJ", handler).execute(file);
+				 * }else{ publishTravels(); }
+				 */
 			}
 
 			// 发布
 			// publishTravels();
-			if(_id != 0){
+			if (_id != 0) {
 				RidingDraftModel ridingDraftModel = new RidingDraftModel();
 				ridingDraftModel.set_id(_id);
 				dbManager.delete(ridingDraftModel);
 			}
-			
+
 			finish();
 			break;
 		case R.id.img_release_add:
@@ -355,7 +357,7 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 		}
 	}
 
-		@Override
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode != RESULT_CANCELED) {
 			if (requestCode == 1) {
@@ -374,12 +376,12 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 				}
 				adapter.notifyDataSetChanged();
 			} else if (requestCode == 3) {
-				if(getIntent().getIntExtra("_id", 0) != 0){
+				if (getIntent().getIntExtra("_id", 0) != 0) {
 					RidingDraftModel ridingDraftModel = new RidingDraftModel();
 					ridingDraftModel.set_id(_id);
 					dbManager.delete(ridingDraftModel);
 				}
-				
+
 				finish();
 			}
 		}
@@ -435,12 +437,12 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 				params.add(new BasicNameValuePair("articleImage", imgListUrl
 						.get(i)));
 			} else {
-				if(i < updateListSum){
-					params.add(new BasicNameValuePair("articleImage", list.get(i)
-							.getArticleImage()));
-				}else{
-					params.add(new BasicNameValuePair("articleImage", imgListUrl
-							.get(i - updateListSum)));
+				if (i < updateListSum) {
+					params.add(new BasicNameValuePair("articleImage", list.get(
+							i).getArticleImage()));
+				} else {
+					params.add(new BasicNameValuePair("articleImage",
+							imgListUrl.get(i - updateListSum)));
 				}
 			}
 
@@ -487,20 +489,27 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 					if (jsonObject.optBoolean("result")) {
 						if (!falg) {
 							Toasts.show(ReleaseActivity.this, "发表成功", 0);
-							/*new SystemUtil().makeToast(ReleaseActivity.this,
-									"发表成功");*/
+							/*
+							 * new SystemUtil().makeToast(ReleaseActivity.this,
+							 * "发表成功");
+							 */
 							ReleaseActivity.this.finish();
 						} else {
 							Toasts.show(ReleaseActivity.this, "修改成功", 0);
-							/*new SystemUtil().makeToast(ReleaseActivity.this,
-									"修改成功");*/
+							/*
+							 * new SystemUtil().makeToast(ReleaseActivity.this,
+							 * "修改成功");
+							 */
 							ReleaseActivity.this.finish();
 						}
 					} else {
-						//System.out.println(jsonObject.optString("message"));
-						Toasts.show(ReleaseActivity.this, jsonObject.optString("message"), 0);
-						/*new SystemUtil().makeToast(ReleaseActivity.this,
-								jsonObject.optString("message"));*/
+						// System.out.println(jsonObject.optString("message"));
+						Toasts.show(ReleaseActivity.this,
+								jsonObject.optString("message"), 0);
+						/*
+						 * new SystemUtil().makeToast(ReleaseActivity.this,
+						 * jsonObject.optString("message"));
+						 */
 					}
 				}
 
@@ -515,166 +524,165 @@ public class ReleaseActivity extends HuanxinLogOutActivity implements OnClickLis
 		}
 
 	}
-	
-	
-	
+
+	private void showPopupWindow(View view, final int _id) {
+
+		// 一个自定义的布局，作为显示的内容
+		View mview = LayoutInflater.from(this).inflate(
+				R.layout.item_popup_baocun, null);
+		// 保存
+		TextView youjiTxt = (TextView) mview
+				.findViewById(R.id.txt_releasePopup_youji);
+
+		LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
+		// 不保存
+		TextView activeTxt = (TextView) mview
+				.findViewById(R.id.txt_releasePopup_active);
+		// 退出
+		TextView cancelTxt = (TextView) mview
+				.findViewById(R.id.txt_releasePopup_cancel);
+
+		// 退出
+		TextView baocunTxt = (TextView) mview.findViewById(R.id.baocun);
+		final PopupWindow popupWindow = new PopupWindow(mview,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+
+		popupWindow.setTouchable(true);
+
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		if (_id == 0) {
+			baocunTxt.setText("是否保存草稿？");
+			youjiTxt.setText("保存");
+			activeTxt.setText("不保存");
+			cancelTxt.setText("取消");
+		} else {
+			TextView deleteTxt = (TextView) mview
+					.findViewById(R.id.txt_releasePopup_delete);
+			baocunTxt.setText("是否修改草稿？");
+			youjiTxt.setText("修改");
+			activeTxt.setText("不修改");
+			cancelTxt.setBackgroundColor(0xffffffff);
+			deleteTxt.setVisibility(View.VISIBLE);
+			cancelTxt.setText("取消");
+			deleteTxt.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					RidingDraftModel ridingDraftModel = new RidingDraftModel();
+					ridingDraftModel.set_id(_id);
+					boolean aa = dbManager.delete(ridingDraftModel);
+					if (aa) {
+						Toasts.show(ReleaseActivity.this, "草稿被删除", 0);
+					} else {
+						Toasts.show(ReleaseActivity.this, "没有此篇草稿", 0);
+					}
+
+					ReleaseActivity.this.finish();
+					popupWindow.dismiss();
+				}
+			});
+		}
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		youjiTxt.setOnClickListener(new OnClickListener() {
+
+			@SuppressLint("SimpleDateFormat")
+			@Override
+			public void onClick(View arg0) {
+				list.get(0).setTitle(titleEdt.getText().toString().trim());
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");// 设置日期格式
+				list.get(0).setTime(df.format(new Date()));
+				Gson gson = new Gson();
+				String s = gson.toJson(list);
+
+				if (_id == 0) {
+					RidingDraftModel ridingDraftModel = new RidingDraftModel(0,
+							s);
+					boolean aa = dbManager.add(ridingDraftModel);
+					if (aa) {
+						Toasts.show(ReleaseActivity.this, "保存成功", 0);
+					} else {
+						Toasts.show(ReleaseActivity.this, "保存失败", 0);
+					}
+				} else {
+					RidingDraftModel ridingDraftModel = new RidingDraftModel(
+							_id, s);
+					boolean aa = dbManager.update(ridingDraftModel);
+					if (aa) {
+						Toasts.show(ReleaseActivity.this, "修改成功", 0);
+					} else {
+						Toasts.show(ReleaseActivity.this, "修改失败", 0);
+					}
+				}
+
+				ReleaseActivity.this.finish();
+				popupWindow.dismiss();
+			}
+		});
+
+		activeTxt.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				ReleaseActivity.this.finish();
+				popupWindow.dismiss();
+			}
+		});
+
+		cancelTxt.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+			}
+		});
+		quxiao.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			onClick(backLayout);
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
-	private void showPopupWindow(View view, final int _id) {
-
-		// 一个自定义的布局，作为显示的内容
-				View mview = LayoutInflater.from(this).inflate(
-						R.layout.item_popup_baocun, null);
-				//保存
-				TextView youjiTxt = (TextView) mview
-						.findViewById(R.id.txt_releasePopup_youji);
-				
-				LinearLayout quxiao = (LinearLayout) mview.findViewById(R.id.quxiao);
-				//不保存
-				TextView activeTxt = (TextView) mview
-						.findViewById(R.id.txt_releasePopup_active);
-				//退出
-				TextView cancelTxt = (TextView) mview
-						.findViewById(R.id.txt_releasePopup_cancel);
-				
-				//退出
-				TextView baocunTxt = (TextView) mview
-						.findViewById(R.id.baocun);
-				final PopupWindow popupWindow = new PopupWindow(mview,
-						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
-				
-				popupWindow.setTouchable(true);
-				
-				popupWindow.setAnimationStyle(R.style.PopupAnimation);
-				
-				if(_id == 0){
-					baocunTxt.setText("是否保存草稿？");
-					youjiTxt.setText("保存");
-					activeTxt.setText("不保存");
-					cancelTxt.setText("取消");
-				}else{
-					TextView deleteTxt = (TextView) mview.findViewById(R.id.txt_releasePopup_delete);
-					baocunTxt.setText("是否修改草稿？");
-					youjiTxt.setText("修改");
-					activeTxt.setText("不修改");
-					cancelTxt.setBackgroundColor(0xffffffff);
-					deleteTxt.setVisibility(View.VISIBLE);
-					cancelTxt.setText("取消");
-					deleteTxt.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							RidingDraftModel ridingDraftModel = new RidingDraftModel();
-							ridingDraftModel.set_id(_id);
-							boolean aa = dbManager.delete(ridingDraftModel);
-							if(aa){
-								Toasts.show(ReleaseActivity.this, "草稿被删除", 0);
-							}else{
-								Toasts.show(ReleaseActivity.this, "没有此篇草稿", 0);
-							}
-								
-							ReleaseActivity.this.finish();
-							popupWindow.dismiss();
-						}
-					});
-				}
-				
-
-				popupWindow.setTouchInterceptor(new OnTouchListener() {
-
-					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-
-						return false;
-						// 这里如果返回true的话，touch事件将被拦截
-						// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
-					}
-				});
-
-				youjiTxt.setOnClickListener(new OnClickListener() {
-
-					@SuppressLint("SimpleDateFormat")
-					@Override
-					public void onClick(View arg0) {
-						list.get(0).setTitle(titleEdt.getText().toString().trim());
-						SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");// 设置日期格式
-						list.get(0).setTime(df.format(new Date()));
-						Gson gson = new Gson();
-						String s = gson.toJson(list); 
-						
-						if(_id == 0){
-							RidingDraftModel ridingDraftModel = new RidingDraftModel(0, s);
-							boolean aa = dbManager.add(ridingDraftModel);
-							if(aa){
-								Toasts.show(ReleaseActivity.this, "保存成功", 0);
-							}else{
-								Toasts.show(ReleaseActivity.this, "保存失败", 0);
-							}
-						}else{
-							RidingDraftModel ridingDraftModel = new RidingDraftModel(_id, s);
-							boolean aa = dbManager.update(ridingDraftModel);
-							if(aa){
-								Toasts.show(ReleaseActivity.this, "修改成功", 0);
-							}else{
-								Toasts.show(ReleaseActivity.this, "修改失败", 0);
-							}
-						}
-						
-						
-						ReleaseActivity.this.finish();
-						popupWindow.dismiss();
-					}
-				});
-
-				activeTxt.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View arg0) {
-						ReleaseActivity.this.finish();
-						popupWindow.dismiss();
-					}
-				});
-
-				cancelTxt.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View arg0) {
-						popupWindow.dismiss();
-					}
-				});
-				quxiao.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						popupWindow.dismiss();
-					}
-				});
-				
-				// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-				popupWindow.setBackgroundDrawable(getResources().getDrawable(
-						R.drawable.corners_layout));
-				// 设置好参数之后再show
-				popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, Gravity.BOTTOM);
-	}
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		 if (keyCode == KeyEvent.KEYCODE_BACK
-                 && event.getRepeatCount() == 0) {
-			 onClick(backLayout);
-             return true;
-         }
-		return super.onKeyDown(keyCode, event);
-	}
-	
 }

@@ -53,6 +53,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
@@ -940,7 +942,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 		super.onResume();
 		MobclickAgent.onResume(this);
-
+		JPushInterface.onResume(this);
 	}
 
 	private void isNews() {
@@ -1097,6 +1099,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 	@Override
@@ -1168,4 +1171,5 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			System.exit(0);
 		}
 	}
+	
 }

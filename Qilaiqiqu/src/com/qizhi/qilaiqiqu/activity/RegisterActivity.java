@@ -290,19 +290,6 @@ public class RegisterActivity extends HuanxinLogOutActivity implements OnClickLi
 		}
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		MobclickAgent.onResume(this);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		MobclickAgent.onPause(this);
-		dissmissProgressDialog();
-	}
-
 	private void login() {
 		RequestParams params = new RequestParams("UTF-8");
 		String registrationID = JPushInterface
@@ -411,5 +398,18 @@ public class RegisterActivity extends HuanxinLogOutActivity implements OnClickLi
 			progDialog.dismiss();
 		}
 	}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
+		dissmissProgressDialog();
+	}
 }

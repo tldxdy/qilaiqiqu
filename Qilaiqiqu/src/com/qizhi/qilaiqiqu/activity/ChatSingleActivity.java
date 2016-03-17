@@ -38,6 +38,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import cn.jpush.android.api.JPushInterface;
+
 import com.easemob.EMCallBack;
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
@@ -56,6 +58,7 @@ import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.VoicePlayClickListener;
 import com.squareup.picasso.Picasso;
+import com.umeng.analytics.MobclickAgent;
 
 public class ChatSingleActivity extends HuanxinLogOutActivity {
 
@@ -1105,9 +1108,17 @@ public class ChatSingleActivity extends HuanxinLogOutActivity {
 	}
 
 	@Override
-	protected void onPause() {
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
 
+	@Override
+	protected void onPause() {
 		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 }

@@ -26,9 +26,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.lidroid.xutils.BitmapUtils;
 import com.qizhi.qilaiqiqu.R;
 import com.squareup.picasso.Picasso;
+import com.umeng.analytics.MobclickAgent;
 
 public class NativeImagesActivity extends HuanxinLogOutActivity implements OnClickListener {
 
@@ -278,5 +281,19 @@ public class NativeImagesActivity extends HuanxinLogOutActivity implements OnCli
 	private class ViewHolder {
 		private ImageView photoImg;
 		private CheckBox photoChk;
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 }

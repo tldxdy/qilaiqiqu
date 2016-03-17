@@ -80,6 +80,17 @@ public class StartActivity extends HuanxinLogOutActivity {
 		timer.cancel();
 	}
 
+	/**
+	 * 向微信终端注册APP_ID_WX
+	 */
+	private void regToWx() {
+		// 通过WXAPIFactory工厂,获取IWXAPI的实例
+		api = WXAPIFactory.createWXAPI(StartActivity.this,
+				ConstantsUtil.APP_ID_WX, true);
+		// 将应用的APP_ID_WX注册到微信
+		api.registerApp(ConstantsUtil.APP_ID_WX);
+	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -92,17 +103,6 @@ public class StartActivity extends HuanxinLogOutActivity {
 		super.onPause();
 		MobclickAgent.onPause(this);
 		JPushInterface.onPause(this);
-	}
-
-	/**
-	 * 向微信终端注册APP_ID_WX
-	 */
-	private void regToWx() {
-		// 通过WXAPIFactory工厂,获取IWXAPI的实例
-		api = WXAPIFactory.createWXAPI(StartActivity.this,
-				ConstantsUtil.APP_ID_WX, true);
-		// 将应用的APP_ID_WX注册到微信
-		api.registerApp(ConstantsUtil.APP_ID_WX);
 	}
 
 }

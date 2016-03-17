@@ -27,6 +27,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
@@ -41,14 +43,15 @@ import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
+
 /**
  * 
- * @author hujianbo
- * 活动评论
+ * @author hujianbo 活动评论
  * 
  */
-public class ActivityDiscussActivity extends HuanxinLogOutActivity implements OnClickListener,
-OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
+public class ActivityDiscussActivity extends HuanxinLogOutActivity implements
+		OnClickListener, OnItemClickListener, OnTouchListener,
+		OnRefreshListener, OnLoadListener {
 
 	private LinearLayout backLayout;
 
@@ -57,7 +60,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 	private EditText contentEdit;
 
 	private Button discussBtn;
-	
+
 	private TextView titleTxt;
 
 	private ActivityDiscussListAdapter adapter;
@@ -72,14 +75,12 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 
 	private int superId = -1;
 	private InputMethodManager imm;
-	
-	
-	
+
 	private int pageIndex = 1;
-	
+
 	private RefreshLayout swipeLayout;
 	private View header;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -93,7 +94,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
 	private void initView() {
-		imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		activityId = getIntent().getIntExtra("activityId", -1);
 		xUtilsUtil = new XUtilsUtil();
 		list = new ArrayList<ActivityCommentModel>();
@@ -108,15 +109,16 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 		discussList = (ListView) findViewById(R.id.list_discussactivity_discuss);
 		titleTxt = (TextView) findViewById(R.id.txt_discussactivity_title);
 		titleTxt.setText("活动评论");
-		
-		superId =getIntent().getIntExtra("commentId", -1);
-		if(superId != -1){
-			//contentEdit.setHint("回复" + list.get(position).getUserName() + ":");
+
+		superId = getIntent().getIntExtra("commentId", -1);
+		if (superId != -1) {
+			// contentEdit.setHint("回复" + list.get(position).getUserName() +
+			// ":");
 			contentEdit.setFocusable(true);
 			imm.showSoftInputFromInputMethod(contentEdit.getWindowToken(), 0);
 			imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 		}
-		header = View.inflate(this,R.layout.header, null);
+		header = View.inflate(this, R.layout.header, null);
 		swipeLayout = (RefreshLayout) findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
@@ -126,7 +128,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 	}
 
 	private void initEvent() {
-		
+
 		backLayout.setOnClickListener(this);
 	}
 
@@ -134,7 +136,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_discussactivity_discuss:
-				commentRiding();
+			commentRiding();
 			break;
 		case R.id.layout_discussactivity_back:
 			finish();
@@ -146,17 +148,18 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
 		params.addBodyParameter("activityId", activityId + "");
-		if(superId != -1){
+		if (superId != -1) {
 			params.addBodyParameter("superId", superId + "");
 			params.addBodyParameter("parentId", superId + "");
-		}else{
-			params.addBodyParameter("superId","0");
-			params.addBodyParameter("parentId","0");
+		} else {
+			params.addBodyParameter("superId", "0");
+			params.addBodyParameter("parentId", "0");
 		}
 		params.addBodyParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
 		params.addBodyParameter("memo", contentEdit.getText().toString());
-		xUtilsUtil.httpPost("mobile/activityComment/appendActivityComment.html", params,
+		xUtilsUtil.httpPost(
+				"mobile/activityComment/appendActivityComment.html", params,
 				new CallBackPost() {
 
 					@Override
@@ -171,17 +174,18 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 						if (jsonObject.optBoolean("result")) {
 							contentEdit.setText("");
 							contentEdit.setHint("说几句吧");
-							if(flag){
+							if (flag) {
 								Toasts.show(ActivityDiscussActivity.this,
 										"评论成功", 0);
-							}else{
+							} else {
 								Toasts.show(ActivityDiscussActivity.this,
 										"回复成功", 0);
 							}
 							discussBtn.setText("评论");
-							
-							imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
-						}else{
+
+							imm.hideSoftInputFromWindow(
+									contentEdit.getWindowToken(), 0);
+						} else {
 							Toasts.show(ActivityDiscussActivity.this,
 									jsonObject.optString("message"), 0);
 						}
@@ -214,23 +218,28 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 							e.printStackTrace();
 						}
 						if (jsonObject.optBoolean("result")) {
-							JSONArray dataList = jsonObject.optJSONArray("dataList");
+							JSONArray dataList = jsonObject
+									.optJSONArray("dataList");
 							Gson gson = new Gson();
 							Type type = new TypeToken<List<ActivityCommentModel>>() {
 							}.getType();
-							list = gson.fromJson(
-									dataList.toString(), type);
+							list = gson.fromJson(dataList.toString(), type);
 							adapter = new ActivityDiscussListAdapter(
 									ActivityDiscussActivity.this, list);
 							discussList.setAdapter(adapter);
-							discussList.setOnTouchListener(ActivityDiscussActivity.this);
-							
-							discussList.setOnItemClickListener(ActivityDiscussActivity.this);
-							swipeLayout.setOnRefreshListener(ActivityDiscussActivity.this);
-							swipeLayout.setOnLoadListener(ActivityDiscussActivity.this);
-							
-						}else{
-							Toasts.show(ActivityDiscussActivity.this, jsonObject.optString("message"), 0);
+							discussList
+									.setOnTouchListener(ActivityDiscussActivity.this);
+
+							discussList
+									.setOnItemClickListener(ActivityDiscussActivity.this);
+							swipeLayout
+									.setOnRefreshListener(ActivityDiscussActivity.this);
+							swipeLayout
+									.setOnLoadListener(ActivityDiscussActivity.this);
+
+						} else {
+							Toasts.show(ActivityDiscussActivity.this,
+									jsonObject.optString("message"), 0);
 						}
 					}
 
@@ -247,11 +256,13 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 		queryCommentPaginationList();
 		super.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		JPushInterface.onResume(this);
 		MobclickAgent.onPause(this);
 	}
 
@@ -269,11 +280,9 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 		imm.showSoftInputFromInputMethod(contentEdit.getWindowToken(), 0);
 		imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
 	}
-	
+
 	/**
-	 * ACTION_DOWN: 表示用户开始触摸
-	 * ACTION_MOVE: 表示用户在移动(手指或者其他) 
-	 * ACTION_UP:表示用户抬起了手指
+	 * ACTION_DOWN: 表示用户开始触摸 ACTION_MOVE: 表示用户在移动(手指或者其他) ACTION_UP:表示用户抬起了手指
 	 * ACTION_CANCEL:表示手势被取消了
 	 */
 	@Override
@@ -282,7 +291,7 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 		case MotionEvent.ACTION_DOWN:
 			System.out.println("ACTION_DOWN");
 			imm.hideSoftInputFromWindow(contentEdit.getWindowToken(), 0);
-			if("".equals(contentEdit.getText().toString().trim())){
+			if ("".equals(contentEdit.getText().toString().trim())) {
 				superId = -1;
 				contentEdit.setHint("说几句吧");
 				discussBtn.setText("评论");
@@ -323,25 +332,26 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 						}
 						if (jsonObject.optBoolean("result")) {
 							pageIndex = jsonObject.optInt("pageIndex");
-							JSONArray dataList = jsonObject.optJSONArray("dataList");
+							JSONArray dataList = jsonObject
+									.optJSONArray("dataList");
 							Gson gson = new Gson();
 							Type type = new TypeToken<List<ActivityCommentModel>>() {
 							}.getType();
 
 							List<ActivityCommentModel> lists = gson.fromJson(
 									dataList.toString(), type);
-							if(pageIndex == 1){
+							if (pageIndex == 1) {
 								list.clear();
 								list.addAll(lists);
-							}else{
+							} else {
 								list.addAll(lists);
 							}
-						adapter.notifyDataSetChanged();
-						
-							
-						}else{
-							Toasts.show(ActivityDiscussActivity.this, jsonObject.optString("message"), 0);
-							
+							adapter.notifyDataSetChanged();
+
+						} else {
+							Toasts.show(ActivityDiscussActivity.this,
+									jsonObject.optString("message"), 0);
+
 						}
 					}
 
@@ -359,8 +369,8 @@ OnItemClickListener, OnTouchListener,OnRefreshListener,OnLoadListener{
 			public void run() {
 				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
-					dataJ();
-				
+				dataJ();
+
 			}
 		}, 1500);
 
