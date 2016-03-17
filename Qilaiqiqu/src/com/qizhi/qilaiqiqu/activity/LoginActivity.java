@@ -411,6 +411,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements OnClickListe
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 		dissmissProgressDialog();
 	}
 
@@ -418,6 +419,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements OnClickListe
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 
 	@SuppressWarnings("static-access")

@@ -59,7 +59,7 @@
         <!-- 友盟 -->
         <meta-data
             android:name="UMENG_APPKEY"
-            android:value="567249ca67e58ea70d002f32" />
+            android:value="56ea4dcee0f55a3e92000271" />
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="yingyongbao" />
