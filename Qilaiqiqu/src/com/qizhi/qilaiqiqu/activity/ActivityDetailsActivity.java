@@ -368,6 +368,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				// new SystemUtil().makeToast(this, "请登录");
 				Intent intent = new Intent(this, LoginActivity.class);
 				startActivity(intent);
+				this.finish();
 				break;
 			}
 
@@ -400,6 +401,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				// new SystemUtil().makeToast(this, "请登录");
 				Intent intent2 = new Intent(this, LoginActivity.class);
 				startActivity(intent2);
+				this.finish();
 				break;
 			}
 
@@ -481,6 +483,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				new SystemUtil().makeToast(this, "请登录");
 				Intent intent3 = new Intent(this, LoginActivity.class);
 				startActivity(intent3);
+				this.finish();
 				break;
 			}
 			if (activity.isUserPraised()) {
@@ -578,6 +581,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				Intent intent1 = new Intent(ActivityDetailsActivity.this,
 						LoginActivity.class);
 				startActivity(intent1);
+				this.finish();
 			}
 
 			break;
@@ -601,6 +605,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				Intent intent1 = new Intent(ActivityDetailsActivity.this,
 						LoginActivity.class);
 				startActivity(intent1);
+				this.finish();
 			}
 			break;
 		case R.id.txt_activityDetails_articleMemo2:
@@ -614,6 +619,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				Intent intent1 = new Intent(ActivityDetailsActivity.this,
 						LoginActivity.class);
 				startActivity(intent1);
+				this.finish();
 			}
 			
 			break;
@@ -1472,13 +1478,11 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
 }

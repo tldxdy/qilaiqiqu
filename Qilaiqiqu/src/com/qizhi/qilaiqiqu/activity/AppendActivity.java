@@ -16,6 +16,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.AppendGridAdapter;
 import com.qizhi.qilaiqiqu.model.ActivityModel;
 import com.qizhi.qilaiqiqu.model.ActivityModel.ParticipantList;
+import com.umeng.analytics.MobclickAgent;
 
 public class AppendActivity extends HuanxinLogOutActivity implements
 		OnItemClickListener, OnClickListener {
@@ -80,4 +81,15 @@ public class AppendActivity extends HuanxinLogOutActivity implements
 		}
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
 }

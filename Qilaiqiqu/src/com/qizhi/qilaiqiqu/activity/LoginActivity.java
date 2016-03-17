@@ -52,7 +52,8 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class LoginActivity extends HuanxinLogOutActivity implements OnClickListener {
+public class LoginActivity extends HuanxinLogOutActivity implements
+		OnClickListener {
 
 	private Button loginBtn;// 登录按钮
 	private Button visitorBtn;// 游客模式
@@ -159,7 +160,8 @@ public class LoginActivity extends HuanxinLogOutActivity implements OnClickListe
 
 							@Override
 							public void onCancel() {
-
+								System.out
+										.println("onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()onCancel()");
 							}
 						});
 					}
@@ -411,7 +413,6 @@ public class LoginActivity extends HuanxinLogOutActivity implements OnClickListe
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 		dissmissProgressDialog();
 	}
 
@@ -419,7 +420,6 @@ public class LoginActivity extends HuanxinLogOutActivity implements OnClickListe
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
 
 	@SuppressWarnings("static-access")
@@ -471,9 +471,9 @@ public class LoginActivity extends HuanxinLogOutActivity implements OnClickListe
 	 * isExit = true; // 准备退出 Toast.makeText(this, "再按一次退出程序",
 	 * Toast.LENGTH_SHORT).show(); tExit = new Timer(); tExit.schedule(new
 	 * TimerTask() {
+	 * 
 	 * @Override public void run() { isExit = false; // 取消退出 } }, 2000); //
-	 * 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
-	 * } else { finish(); System.exit(0); } }
+	 * 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务 } else { finish(); System.exit(0); } }
 	 */
 
 	/**

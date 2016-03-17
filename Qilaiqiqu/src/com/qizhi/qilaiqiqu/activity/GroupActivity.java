@@ -244,9 +244,11 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 									.getUserName()
 									+ "");
 
-							/*System.out.println("-------------------------");
-							System.out.println(model.getData().getOwner()
-									.getUserImage());*/
+							/*
+							 * System.out.println("-------------------------");
+							 * System.out.println(model.getData().getOwner()
+							 * .getUserImage());
+							 */
 
 							SystemUtil.Imagexutils(model.getData().getOwner()
 									.getUserImage(), ownerImg,
@@ -278,20 +280,17 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 				.putExtra("userId", model.getData().getUserList().get(position)
 						.getUserId()));
 	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-		JPushInterface.onPause(this);
 	}
-	
-	
 
 }

@@ -256,13 +256,11 @@ public class ActivityDiscussActivity extends HuanxinLogOutActivity implements
 		queryCommentPaginationList();
 		super.onResume();
 		MobclickAgent.onResume(this);
-		JPushInterface.onResume(this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		JPushInterface.onResume(this);
 		MobclickAgent.onPause(this);
 	}
 

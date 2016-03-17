@@ -579,6 +579,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 					Intent intent = new Intent(MainActivity.this,
 							LoginActivity.class);
 					startActivity(intent);
+					MainActivity.this.finish();
 					// finish();
 				}
 				popupWindow.dismiss();
@@ -601,6 +602,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 					Intent intent = new Intent(MainActivity.this,
 							LoginActivity.class);
 					startActivity(intent);
+					MainActivity.this.finish();
 					// finish();
 				}
 				popupWindow.dismiss();
