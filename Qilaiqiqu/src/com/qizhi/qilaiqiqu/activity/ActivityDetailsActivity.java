@@ -6,8 +6,10 @@ import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import cn.jpush.android.api.JPushInterface;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
