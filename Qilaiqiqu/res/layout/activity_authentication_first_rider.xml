@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/riderAuthenticationActivity_first_back"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#6dbfed" >
+
+        <LinearLayout
+            android:id="@+id/layout_riderAuthenticationActivity_first_back"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/return_innavigationbar" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/back"
+                android:textColor="@color/write" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_riderAuthenticationActivity_first_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/text_riderAuthenticationActivity_title"
+            android:textColor="@color/write"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/riderAuthenticationActivity_first_back"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="44dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="25dp"
+            android:text="基本资料"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:id="@+id/layout_riderAuthenticationActivity_first_picture"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_marginLeft="10dp"
+                android:orientation="horizontal" >
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/img_riderAuthenticationActivity_first_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/add_pictures" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal"
+            android:paddingLeft="25dp"
+            android:text="上传高清头像可以增加约骑的几率哦！"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/grays"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="手机号码" />
+
+            <EditText
+                android:id="@+id/edt_riderAuthenticationActivity_first_phoneNum"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="手机号仅你同意陪骑的用户可以看到"
+                android:inputType="number"
+                android:maxLength="11"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="1dp" >
+        </LinearLayout>
+
+        <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:background="#f2f2f2" >
+
+                <TextView
+                    android:id="@+id/txt_riderAuthenticationActivity_first_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="陪骑区域"
+                    android:textColor="@color/dark"
+                    android:textSize="14sp" />
+
+                <RelativeLayout
+                    android:id="@+id/layout_riderAuthenticationActivity_first_address"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_toRightOf="@+id/txt_riderAuthenticationActivity_first_address" >
+
+                    <TextView
+                        android:id="@+id/txt_riderAuthenticationActivity_first_province"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:textColor="@color/dark"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/txt_riderAuthenticationActivity_first_city"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_toRightOf="@+id/txt_riderAuthenticationActivity_first_province"
+                        android:textColor="@color/dark"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/img_riderAuthenticationActivity_first_arrows3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/little_return" />
+
+                    <TextView
+                        android:id="@+id/txt_riderAuthenticationActivity_first_district"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_toRightOf="@+id/txt_riderAuthenticationActivity_first_city"
+                        android:textColor="@color/dark"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+            </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_riderAuthenticationActivity_first_next"
+        android:layout_width="250dp"
+        android:layout_height="39dp"
+        android:layout_below="@+id/riderAuthenticationActivity_first_back"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="350dp"
+        android:background="@drawable/corners_bg_blue"
+        android:gravity="center"
+        android:text="下一步"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_riderAuthenticationActivity_first_next"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:hint="第1步，还有2步" />
+
+</RelativeLayout>

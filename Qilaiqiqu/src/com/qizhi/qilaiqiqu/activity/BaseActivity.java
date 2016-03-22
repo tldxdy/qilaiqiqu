@@ -11,8 +11,6 @@ import javax.xml.parsers.SAXParserFactory;
 import android.app.NotificationManager;
 import android.content.res.AssetManager;
 
-import cn.jpush.android.api.JPushInterface;
-
 import com.qizhi.qilaiqiqu.model.CityModel;
 import com.qizhi.qilaiqiqu.model.DistrictModel;
 import com.qizhi.qilaiqiqu.model.ProvinceModel;
@@ -20,7 +18,7 @@ import com.qizhi.qilaiqiqu.service.XmlParserHandler;
 import com.umeng.analytics.MobclickAgent;
 
 /**
- * @author leiqian 地图基类
+ * @author leiqian 基类
  */
 public class BaseActivity extends HuanxinLogOutActivity {
 
@@ -91,15 +89,13 @@ public class BaseActivity extends HuanxinLogOutActivity {
 					mCurrentZipCode = districtList.get(0).getZipcode();
 				}
 			}
-			// */
 			mProvinceDatas = new String[provinceList.size()];
+			System.err.println(mProvinceDatas);
 			for (int i = 0; i < provinceList.size(); i++) {
-				// ��������ʡ������
 				mProvinceDatas[i] = provinceList.get(i).getName();
 				List<CityModel> cityList = provinceList.get(i).getCityList();
 				String[] cityNames = new String[cityList.size()];
 				for (int j = 0; j < cityList.size(); j++) {
-					// ����ʡ����������е�����
 					cityNames[j] = cityList.get(j).getName();
 					List<DistrictModel> districtList = cityList.get(j)
 							.getDistrictList();
@@ -108,20 +104,16 @@ public class BaseActivity extends HuanxinLogOutActivity {
 					DistrictModel[] distrinctArray = new DistrictModel[districtList
 							.size()];
 					for (int k = 0; k < districtList.size(); k++) {
-						// ����������������/�ص�����
 						DistrictModel districtModel = new DistrictModel(
 								districtList.get(k).getName(), districtList
 										.get(k).getZipcode());
-						// ��/�ض��ڵ��ʱ࣬���浽mZipcodeDatasMap
 						mZipcodeDatasMap.put(districtList.get(k).getName(),
 								districtList.get(k).getZipcode());
 						distrinctArray[k] = districtModel;
 						distrinctNameArray[k] = districtModel.getName();
 					}
-					// ��-��/�ص����ݣ����浽mDistrictDatasMap
 					mDistrictDatasMap.put(cityNames[j], distrinctNameArray);
 				}
-				// ʡ-�е����ݣ����浽mCitisDatasMap
 				mCitisDatasMap.put(provinceList.get(i).getName(), cityNames);
 			}
 		} catch (Throwable e) {

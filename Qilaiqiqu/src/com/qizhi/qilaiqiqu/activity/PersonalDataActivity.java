@@ -157,11 +157,11 @@ public class PersonalDataActivity extends BaseActivity implements
 		asset = this.getAssets();
 		initView();
 		initEvnet();
-		sdfsfsdfsd();
+		hide();
 		data();
 	}
 
-	private void sdfsfsdfsd() {
+	private void hide() {
 		// 将输入法隐藏
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(signatureEdt.getWindowToken(), 0);

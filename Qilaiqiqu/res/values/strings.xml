@@ -162,6 +162,7 @@
     <string name="text_activitydetailsactivity_title">活动详情</string>
     <string name="title_activity_action_center">ActionCenterActivity</string>
     <string name="text_actioncenteractivity_title">活动中心</string>
+    <string name="text_riderAuthenticationActivity_title">陪骑士认证</string>
     <string name="title_activity_activity_apply">ActivityApplyActivity</string>
     <string name="title_activityactivity_title">群成员查看</string>
     <string name="text_activityactivity_cancel">取消报名</string>

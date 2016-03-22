@@ -53,8 +53,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import cn.jpush.android.api.JPushInterface;
-
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -392,7 +390,7 @@ public class ReleaseActiveActivity extends HuanxinLogOutActivity implements OnCl
 		LinearLayout linearLayout = pictureLayout;
 		final FrameLayout frameLayout = new FrameLayout(this);
 		LinearLayout.LayoutParams fp = new LinearLayout.LayoutParams(dp2px(
-				this, 100f), LinearLayout.LayoutParams.WRAP_CONTENT);
+				this, 100f), LinearLayout.LayoutParams.MATCH_PARENT);
 		fp.setMargins(dp2px(this, 16f), 0, 0, 0);
 		frameLayout.setLayoutParams(fp);
 

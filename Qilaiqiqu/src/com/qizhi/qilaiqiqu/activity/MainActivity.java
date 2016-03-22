@@ -164,6 +164,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		}
 
 	};
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -492,7 +494,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		// 为侧滑菜单设置布局
 		menu.setMenu(R.layout.left_menu_personal_center);
 
-		Fragment leftFragment = new MenuLeftFragment(this, menu, preferences);
+		Fragment leftFragment =MenuLeftFragment.newInstance("key", this, menu, preferences);
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.left_menu, leftFragment, "Left").commit();
 	}
