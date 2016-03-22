@@ -360,6 +360,10 @@
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.ShowLineActivity" >
         </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderRecommendActiviity">
+        </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderManageCenterActivity">
+        </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationFirstActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

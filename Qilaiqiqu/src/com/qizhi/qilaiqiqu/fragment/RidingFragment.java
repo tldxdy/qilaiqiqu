@@ -291,6 +291,7 @@ public class RidingFragment extends Fragment implements OnItemClickListener,Call
 	
 	
 	private void dataJ() {
+		System.out.println("----" + pageIndex);
 		RequestParams params = new RequestParams("UTF-8");
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		params.addBodyParameter("pageSize", "10");

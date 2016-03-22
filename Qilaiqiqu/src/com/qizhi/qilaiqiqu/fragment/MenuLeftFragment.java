@@ -26,6 +26,7 @@ import com.qizhi.qilaiqiqu.activity.CollectActivity;
 import com.qizhi.qilaiqiqu.activity.LoginActivity;
 import com.qizhi.qilaiqiqu.activity.MessageCenterActivity;
 import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
+import com.qizhi.qilaiqiqu.activity.RiderManageCenterActivity;
 import com.qizhi.qilaiqiqu.activity.RidingActivity;
 import com.qizhi.qilaiqiqu.activity.SetActivity;
 import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
@@ -49,6 +50,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 	private RelativeLayout layout_my_set; // 设置
 	private RelativeLayout layout_my_action_center; // 活动中心
 	private LinearLayout layout_back; // f返回
+	private RelativeLayout layout_my_rider_center;//我的陪骑
 
 	private TextView userNameTxt;
 	private TextView userIntegralTxt; // 积分
@@ -134,6 +136,9 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 				.findViewById(R.id.img_personalfragment_sex);
 		userImageImg = (ImageView) view
 				.findViewById(R.id.img_personalfragment_head_photo);
+		
+		layout_my_rider_center = (RelativeLayout) view
+				.findViewById(R.id.layout_personalfragment_my_rider_center);
 
 	}
 
@@ -207,6 +212,9 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		case R.id.layout_personalfragment_back:
 			menu.toggle();
 			break;
+		case R.id.layout_personalfragment_my_rider_center:
+			startActivity(new Intent(context, RiderManageCenterActivity.class));
+			break;
 		}
 	}
 
@@ -242,6 +250,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		layout_my_set.setOnClickListener(this);
 		layout_back.setOnClickListener(this);
 		layout_my_action_center.setOnClickListener(this);
+		layout_my_rider_center.setOnClickListener(this);
 	}
 
 	private void personalData() {

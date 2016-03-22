@@ -61,6 +61,19 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 	private SharedPreferences preferences;
 	private int fansNum;
 	private CertainUserModel certainUserModel;
+	
+	
+	private TextView txt1;	//同意
+	private TextView txt2;	//拒绝
+	private TextView txt3;	//处理状态
+	private LinearLayout buttonLayout1;	//	未处理
+	private LinearLayout buttonLayout2;	//	已处理
+	
+	private TextView ridingNumTxt;		//发表骑游数
+	private TextView joinNumTxt;		//参加活动数
+	private TextView activityNumTxt;	//发布活动数
+	
+	private TextView attendRiderTxt;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +103,30 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 
 		sexImg = (ImageView) findViewById(R.id.img_personActivity_sex);
 		photoImg = (ImageView) findViewById(R.id.img_personActivity_photo);
+		
+		
+		ridingNumTxt = (TextView) findViewById(R.id.txt_personActivity_ridingNum);
+		joinNumTxt = (TextView) findViewById(R.id.txt_personActivity_joinNum);
+		activityNumTxt = (TextView) findViewById(R.id.txt_personActivity_activityNum);
+		
+		attendRiderTxt = (TextView) findViewById(R.id.txt_personActivity_attendRider);
+		
+		
+		txt1 = (TextView) findViewById(R.id.txt_personActivity_txt1);
+		txt2 = (TextView) findViewById(R.id.txt_personActivity_txt2);
+		txt3 = (TextView) findViewById(R.id.txt_personActivity_txt3);
+		buttonLayout1 = (LinearLayout) findViewById(R.id.layout_personActivity_button1);
+		buttonLayout2 = (LinearLayout) findViewById(R.id.layout_personActivity_button2);
 
 		userId = getIntent().getIntExtra("userId", -1);
-
+		isRider = getIntent().getIntExtra("isRider", -1);
+		if(isRider != -1){
+			buttonLayout1.setVisibility(View.VISIBLE);
+			buttonLayout2.setVisibility(View.GONE);
+		}
 	}
+	
+	private int isRider = -1;
 
 	private void initEvent() {
 		backLayout.setOnClickListener(this);
@@ -101,6 +134,8 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 		photoImg.setOnClickListener(this);
 		careTxt.setOnClickListener(this);
 		personal_letterTxt.setOnClickListener(this);
+		txt1.setOnClickListener(this);
+		txt2.setOnClickListener(this);
 	}
 
 	@Override
@@ -154,6 +189,12 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 					.putExtra("otherUserId", certainUserModel.getUserId()));
 			break;
 
+		case R.id.txt_personActivity_txt1:
+			Toasts.show(this, "同意", 0);
+			break;
+		case R.id.txt_personActivity_txt2:
+			Toasts.show(this, "拒绝", 0);
+			break;
 		default:
 			break;
 		}
@@ -234,7 +275,18 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 								}
 
 							}
-
+							if(certainUserModel.isAttendRiderFlag()){
+								attendRiderTxt.setText("已认证陪骑士");
+							}else{
+								attendRiderTxt.setText("未认证陪骑士");
+							}
+							
+							ridingNumTxt.setText(certainUserModel.getArticleMemoNum() + "");
+							joinNumTxt.setText(certainUserModel.getParticipantNum()+"");
+							activityNumTxt.setText(certainUserModel.getActivityNum()+"");
+								
+							
+							
 							if (preferences.getInt("userId", -1) == certainUserModel
 									.getUserId()) {
 								personal_letterTxt.setVisibility(View.GONE);

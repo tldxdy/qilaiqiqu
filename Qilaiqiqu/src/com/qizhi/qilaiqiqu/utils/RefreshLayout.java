@@ -126,9 +126,9 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 
 		case MotionEvent.ACTION_UP:
 			// 抬起
-			if (canLoad()) {
+			/*if (canLoad()) {
 				loadData();
-			}
+			}*/
 			break;
 		default:
 			break;
@@ -164,7 +164,7 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 	 * @return
 	 */
 	private boolean isPullUp() {
-		System.out.println(mTouchSlop);
+		System.out.println(mTouchSlop + ":::::::::::::::::"+((mYDown - mLastY) >= mTouchSlop && mLastY > 0));
 		return (mYDown - mLastY) >= mTouchSlop && mLastY > 0;
 	}
 
@@ -204,16 +204,18 @@ public class RefreshLayout extends SwipeRefreshLayout implements
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+		if(scrollState==OnScrollListener.SCROLL_STATE_IDLE && canLoad()){
+				loadData();
+		}
 	}
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		// 滚动时到了最底部也可以加载更多
+		/*// 滚动时到了最底部也可以加载更多
 		if (canLoad()) {
 			loadData();
-		}
+		}*/
 	} 
 	
 	/**

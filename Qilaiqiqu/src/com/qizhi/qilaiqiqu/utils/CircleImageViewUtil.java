@@ -328,5 +328,20 @@ public class CircleImageViewUtil extends ImageView {
 
         mBitmapShader.setLocalMatrix(mShaderMatrix);
     }
-
+    /**  
+     * 边缘画圆  
+     */  
+/*    private void drawCircleBorder(Canvas canvas, int radius, int color) {  
+        Paint paint = new Paint();  
+         去锯齿   
+        paint.setAntiAlias(true);  
+        paint.setFilterBitmap(true);  
+        paint.setDither(true);  
+        paint.setColor(color);  
+         设置paint的　style　为STROKE：空心   
+        paint.setStyle(Paint.Style.STROKE);  
+         设置paint的外框宽度   
+        paint.setStrokeWidth(mBorderWidth);  
+        canvas.drawCircle(mBitmapWidth / 2, mBitmapHeight / 2, radius, paint);  
+    }*/
 }
