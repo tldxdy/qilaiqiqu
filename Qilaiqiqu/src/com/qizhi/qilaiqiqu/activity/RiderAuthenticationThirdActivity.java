@@ -5,6 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,15 +33,16 @@ import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.amap.api.mapcore2d.es;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.umeng.analytics.MobclickAgent;
 
 public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 		implements OnClickListener {
@@ -70,7 +74,8 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 				photoList.add((String) msg.obj);
 				uploadingNum = uploadingNum + 1;
 				try {
-					if (uploadingNum == RiderAuthenticationFirstActivity.bitList.size()) {
+					if (uploadingNum == RiderAuthenticationFirstActivity.bitList
+							.size()) {
 						StringBuffer s = new StringBuffer();
 						for (int i = 0; i < photoList.size(); i++) {
 							s.append(photoList.get(i));
@@ -84,9 +89,11 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 						riderAuthentication(s.toString());
 						break;
 					}
-					new SystemUtil().httpClient(
-							saveMyBitmap(RiderAuthenticationFirstActivity.bitList.get(uploadingNum)),
-							preferences, handler, "HD");
+					new SystemUtil()
+							.httpClient(
+									saveMyBitmap(RiderAuthenticationFirstActivity.bitList
+											.get(uploadingNum)), preferences,
+									handler, "HD");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -96,7 +103,8 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 				// Toasts.show(ReleaseActiveActivity.this, "图片发布出现问题", 0);
 				uploadingNum = uploadingNum + 1;
 				try {
-					if (uploadingNum == RiderAuthenticationFirstActivity.bitList.size()) {
+					if (uploadingNum == RiderAuthenticationFirstActivity.bitList
+							.size()) {
 						StringBuffer s = new StringBuffer();
 						for (int i = 0; i < photoList.size(); i++) {
 							s.append(photoList.get(i));
@@ -107,9 +115,11 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 						riderAuthentication(s.toString());
 						break;
 					}
-					new SystemUtil().httpClient(
-							saveMyBitmap(RiderAuthenticationFirstActivity.bitList.get(uploadingNum)),
-							preferences, handler, "HD");
+					new SystemUtil()
+							.httpClient(
+									saveMyBitmap(RiderAuthenticationFirstActivity.bitList
+											.get(uploadingNum)), preferences,
+									handler, "HD");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -122,7 +132,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 		}
 
 	};
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -200,9 +210,11 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 				photoList = new ArrayList<String>();
 				uploadingNum = 0;
 				try {
-					new SystemUtil().httpClient(
-							saveMyBitmap(RiderAuthenticationFirstActivity.bitList.get(uploadingNum)),
-							preferences, handler, "HD");
+					new SystemUtil()
+							.httpClient(
+									saveMyBitmap(RiderAuthenticationFirstActivity.bitList
+											.get(uploadingNum)), preferences,
+									handler, "HD");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -238,8 +250,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 		}
 		return null;
 	}
-	
-	
+
 	int mileagePosition;
 	String mileage = "0-500KM";
 
@@ -386,8 +397,30 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 
 					@Override
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
-						String str = responseInfo.result;
-						System.out.println(str);
+						String result = responseInfo.result;
+						JSONObject jsonObject;
+						try {
+							jsonObject = new JSONObject(result);
+							if (jsonObject.getBoolean("result")) {
+								Toasts.show(
+										RiderAuthenticationThirdActivity.this,
+										"提交成功，请等待审核!", 0);
+								RiderAuthenticationFirstActivity activity1 = new RiderAuthenticationFirstActivity();
+								RiderAuthenticationSecondActivity activity2 = new RiderAuthenticationSecondActivity();
+								ActivityCollectorUtil.removeActivity(activity1);
+								ActivityCollectorUtil.removeActivity(activity2);
+								RiderAuthenticationThirdActivity.this.finish();
+							} else {
+								Toasts.show(
+										RiderAuthenticationThirdActivity.this,
+										"提交认证失败!", 0);
+							}
+
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 					}
 
 					@Override
@@ -397,6 +430,18 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 					}
 				});
 
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 
 }

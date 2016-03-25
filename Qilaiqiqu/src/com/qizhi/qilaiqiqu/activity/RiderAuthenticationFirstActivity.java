@@ -34,6 +34,7 @@ import com.qizhi.qilaiqiqu.adapter.ArrayWheelAdapter;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.widget.OnWheelChangedListener;
 import com.qizhi.qilaiqiqu.widget.WheelView;
+import com.umeng.analytics.MobclickAgent;
 
 public class RiderAuthenticationFirstActivity extends BaseActivity implements
 		OnClickListener, OnWheelChangedListener {
@@ -397,4 +398,16 @@ public class RiderAuthenticationFirstActivity extends BaseActivity implements
 		return m.matches();
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+	
 }

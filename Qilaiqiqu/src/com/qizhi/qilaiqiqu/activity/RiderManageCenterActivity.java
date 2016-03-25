@@ -4,13 +4,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.fragment.MessageCenterFragmentPagerAdapter;
 import com.qizhi.qilaiqiqu.fragment.RiderManageCenterPagetAdapter;
 import com.umeng.analytics.MobclickAgent;
 

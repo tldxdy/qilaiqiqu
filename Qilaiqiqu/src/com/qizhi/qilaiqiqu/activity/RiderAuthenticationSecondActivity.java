@@ -7,9 +7,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources.Theme;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -27,6 +25,7 @@ import android.widget.TextView;
 
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.utils.Toasts;
+import com.umeng.analytics.MobclickAgent;
 
 public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 		implements OnClickListener {
@@ -79,23 +78,6 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 		saturdayTxt = (TextView) findViewById(R.id.txt_riderAuthenticationActivity_second_saturday);
 		sundayTxt = (TextView) findViewById(R.id.txt_riderAuthenticationActivity_second_sunday);
 
-	}
-
-	/**
-	 * dp转px
-	 * 
-	 * @param context
-	 * @param val
-	 * @return
-	 */
-	public static int dp2px(Context context, float dipValue) {
-		final float scale = context.getResources().getDisplayMetrics().density;
-		return (int) (dipValue * scale + 0.5f);
-	}
-
-	public static int px2dp(Context context, float pxValue) {
-		final float scale = context.getResources().getDisplayMetrics().density;
-		return (int) (pxValue / scale + 0.5f);
 	}
 
 	private void initEvent() {
@@ -294,8 +276,6 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 	 * @param viewGroup
 	 */
 	int id;
-	int flag;
-
 	private TextView newDtv;
 
 	List<TextView> list = new ArrayList<TextView>();
@@ -320,13 +300,15 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 
 						id = v.getId() % 100;
 
-						if (day[id - 1] == 1) {
-							day[id - 1] = 0;
+						System.out.println("id"+id);
+						
+						if (day[id] == 1) {
+							day[id] = 0;
 							v.setBackground(getResources().getDrawable(
 									R.drawable.corners_rider_time_white));
 
 						} else {
-							day[id - 1] = 1;
+							day[id] = 1;
 							v.setBackground(getResources().getDrawable(
 									R.drawable.corners_rider_time_blue));
 						}
@@ -366,8 +348,6 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 					}
 				});
 
-				flag = 1;
-
 			} else if (view instanceof LinearLayout) {
 				// 若是布局控件（LinearLayout或RelativeLayout）,继续查询子View
 				this.getTextView((ViewGroup) view, day, num);
@@ -392,5 +372,17 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 				}
 			}
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 }
