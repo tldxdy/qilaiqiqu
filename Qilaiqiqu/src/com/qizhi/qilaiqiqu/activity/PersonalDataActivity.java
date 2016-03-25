@@ -601,14 +601,7 @@ public class PersonalDataActivity extends BaseActivity implements
 									editor.putString("userImage",
 											certainUserModel.getUserImage());
 									editor.commit();
-									if (path) {
-										Toasts.show(PersonalDataActivity.this,
-												"修改成功", 0);
-									} else {
-										Toasts.show(PersonalDataActivity.this,
-												"用户头像修改失败", 0);
-										path = true;
-									}
+									
 									// 更新环信用户昵称
 									EMChatManager.getInstance()
 											.updateCurrentUserNick(
@@ -619,6 +612,14 @@ public class PersonalDataActivity extends BaseActivity implements
 
 										@Override
 										public void run() {
+											if (path) {
+												Toasts.show(PersonalDataActivity.this,
+														"修改成功", 0);
+											} else {
+												Toasts.show(PersonalDataActivity.this,
+														"用户头像修改失败", 0);
+												path = true;
+											}
 											pDialog.dismiss();
 											PersonalDataActivity.this.finish();
 										}

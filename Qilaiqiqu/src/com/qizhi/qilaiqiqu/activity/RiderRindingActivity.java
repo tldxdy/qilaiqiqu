@@ -42,9 +42,9 @@ public class RiderRindingActivity extends HuanxinLogOutActivity implements
 
 		backLayout = (LinearLayout) findViewById(R.id.layout_actioncenteractivity_back);
 		riderList = (ListView) findViewById(R.id.list_activityriderrecommend_list);
-		adapter = new RiderRecommendAdapter(this, list);
+		/*adapter = new RiderRecommendAdapter(this, list);
 		riderList.setAdapter(adapter);
-		riderList.setDividerHeight(0);
+		riderList.setDividerHeight(0);*/
 
 	}
 

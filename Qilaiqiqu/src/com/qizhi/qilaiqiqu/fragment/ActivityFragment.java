@@ -13,12 +13,15 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.RiderAuthenticationFirstActivity;
 import com.qizhi.qilaiqiqu.activity.RiderRecommendActiviity;
 import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
+import com.qizhi.qilaiqiqu.model.RiderRecommendModel;
 import com.qizhi.qilaiqiqu.model.StartAndParticipantActivityModel;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout;
 import com.qizhi.qilaiqiqu.utils.RefreshLayout.OnLoadListener;
 import com.qizhi.qilaiqiqu.utils.CircleImageViewUtil;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
@@ -68,10 +71,10 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 			Bundle savedInstanceState) {
 		view=inflater.inflate(R.layout.fragment_manage,null);
 		manageList = (ListView) view.findViewById(R.id.list_fragment_manage);
-		initViewHeader();
+		xUtilsUtil = new XUtilsUtil();
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
-		xUtilsUtil = new XUtilsUtil();
+		initViewHeader();
 		dataList = new ArrayList<StartAndParticipantActivityModel>();
 		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
@@ -92,6 +95,7 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 	private RelativeLayout becomeLayout;
 	private TextView activityTxt;
 	private void initViewHeader() {
+		riderList = new ArrayList<RiderRecommendModel>();
 		View view = View.inflate(getActivity(),R.layout.rideractivity_activity_header, null);
 		riderLayout = (LinearLayout) view.findViewById(R.id.layout_rideractivity_activity);
 		numLayout = (LinearLayout) view.findViewById(R.id.layout_rideractivity_activity_num);
@@ -102,18 +106,53 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 		becomeLayout.setOnClickListener(this);
 		riderLayout.setOnClickListener(this);
 	}
+	
+	private List<RiderRecommendModel> riderList;
 	private void initNumRider() {
-		for(int i= 0; i < 6; i++){
+		xUtilsUtil.httpPost("common/queryRecommendAttendRiderList.html?authCode=admin"
+				, new RequestParams(), new CallBackPost() {
 			
-			CircleImageViewUtil imageView = new CircleImageViewUtil(getActivity());
-			numLayout.addView(imageView);
-			Picasso.with(getActivity()).load(R.drawable.homepage_picture)
-			.resize(dp2px(getActivity(), 35f),
-					dp2px(getActivity(), 35f))
-					.centerInside()
-					.into(imageView);
-			imageView.setPadding(5, 0, 5, 0);
-		}
+			@Override
+			public void onMySuccess(ResponseInfo<String> responseInfo) {
+				String s = responseInfo.result;
+				JSONObject jsonObject = null;
+				try {
+					jsonObject = new JSONObject(s);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (jsonObject.optBoolean("result")) {
+					Gson gson = new Gson();
+					riderList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(),
+							new TypeToken<ArrayList<RiderRecommendModel>>(){}.getType());
+					for(int i= 0; i < riderList.size(); i++){
+						if(i == 6){
+			 				return;
+						}
+						String[] img = riderList.get(i).getRiderImage().split(",");
+						System.out.println(img[0]);
+						
+						CircleImageViewUtil imageView = new CircleImageViewUtil(getActivity());
+						numLayout.addView(imageView);
+						Picasso.with(getActivity()).load(SystemUtil.IMGPHTH + img[0])
+						.resize(dp2px(getActivity(), 35f),
+								dp2px(getActivity(), 35f))
+								.centerInside()
+								.into(imageView);
+						imageView.setPadding(5, 0, 5, 0);
+					}
+					
+				}
+			}
+			
+			@Override
+			public void onMyFailure(HttpException error, String msg) {
+				Toasts.show(getActivity(), "msg", 0);
+			}
+		});
+		
+		
+		
 	}
 	/**
 	 * dp转px
@@ -248,16 +287,21 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 			}
 		}, 1500);
 	}
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.layout_rideractivity_activity_becomerider:
-			System.out.println("跳转成为陪骑士页面");
-			break;
-		case R.id.layout_rideractivity_activity:
-			startActivity(new Intent(getActivity(), RiderRecommendActiviity.class));
-			break;
 
+	public void onClick(View v) {
+			switch (v.getId()) {
+			case R.id.layout_rideractivity_activity_becomerider:
+				System.out.println("跳转成为陪骑士页面");
+				if (preferences.getInt("userId", -1) != -1) {
+					startActivity(new Intent(getActivity(),
+							RiderAuthenticationFirstActivity.class));
+				}
+				break;
+			case R.id.layout_rideractivity_activity:
+				startActivity(new Intent(getActivity(), RiderRecommendActiviity.class));
+				startActivity(new Intent(getActivity(),
+						RiderRecommendActiviity.class));
+				break;
 		default:
 			break;
 		}

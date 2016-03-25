@@ -3,6 +3,8 @@ package com.qizhi.qilaiqiqu.adapter;
 import java.util.List;
 
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.model.RiderRecommendModel;
+import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.squareup.picasso.Picasso;
 
 import android.content.Context;
@@ -17,10 +19,10 @@ public class RiderRecommendAdapter extends BaseAdapter {
 	
 	private Context context;
 	private LayoutInflater inflater;
-	private List<?> list;
+	private List<RiderRecommendModel> list;
 	private ViewHolder holder;
 	
-	public RiderRecommendAdapter(Context context, List<?> list){
+	public RiderRecommendAdapter(Context context, List<RiderRecommendModel> list){
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		this.list = list;
@@ -28,7 +30,7 @@ public class RiderRecommendAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return 5;
+		return list.size();
 	}
 
 	@Override
@@ -57,7 +59,14 @@ public class RiderRecommendAdapter extends BaseAdapter {
 		}else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		Picasso.with(context).load("http://img.weride.com.cn/USER_201603171720553150_160_160_14.jpg").into(holder.photoImg);
+		holder.pTxt.setText(list.get(position).getAttendArea());
+		holder.cTxt.setText("");
+		holder.dTxt.setText("");
+		SystemUtil.Imagexutils(list.get(position).getRiderImage().split(",")[0], holder.photoImg, context);
+		holder.weeknnumTxt.setText(list.get(position).getWeekTimes() + "");
+		holder.historynumTxt.setText(list.get(position).getAttendTimes() + "");
+		
+		holder.describeTxt.setText(list.get(position).getRiderMemo());
 		
 		return convertView;
 	}
