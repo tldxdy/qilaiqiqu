@@ -360,20 +360,26 @@
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.ShowLineActivity" >
         </activity>
-        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderRecommendActiviity">
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderRecommendActiviity" >
         </activity>
-        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderManageCenterActivity">
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderManageCenterActivity" >
         </activity>
-        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationFirstActivity" >
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationFirstActivity" >
+        </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationSecondActivity" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationThirdActivity" >
+        </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderDetailsActivity" >
+        </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderDiscussActivity" >
         </activity>
 
         <receiver android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" >
