@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -39,6 +40,8 @@ import com.umeng.analytics.MobclickAgent;
 public class RiderAuthenticationFirstActivity extends BaseActivity implements
 		OnClickListener, OnWheelChangedListener {
 
+	public static Activity instanceFirst = null; 
+	
 	private WheelView mViewProvince;
 	private WheelView mViewCity;
 	private WheelView mViewDistrict;
@@ -76,6 +79,7 @@ public class RiderAuthenticationFirstActivity extends BaseActivity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_authentication_first_rider);
 		asset = this.getAssets();
+		instanceFirst = this;
 		initView();
 		initEvent();
 	}

@@ -235,9 +235,9 @@ public class RouteOverlayActivity extends HuanxinLogOutActivity implements
 		case R.id.txt_routeOverlayActivity_keepLine:
 
 			for (int i = 0; i < latLonPointList.size(); i++) {
-				latLonPointBuffer.append(latLonPointList.get(i).getLatitude());
-				latLonPointBuffer.append(" ");
 				latLonPointBuffer.append(latLonPointList.get(i).getLongitude());
+				latLonPointBuffer.append(" ");
+				latLonPointBuffer.append(latLonPointList.get(i).getLatitude());
 				latLonPointBuffer.append(",");
 			}
 			String llp = latLonPointBuffer.substring(0,

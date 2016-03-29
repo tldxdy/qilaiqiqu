@@ -405,15 +405,19 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 								Toasts.show(
 										RiderAuthenticationThirdActivity.this,
 										"提交成功，请等待审核!", 0);
-								RiderAuthenticationFirstActivity activity1 = new RiderAuthenticationFirstActivity();
-								RiderAuthenticationSecondActivity activity2 = new RiderAuthenticationSecondActivity();
-								ActivityCollectorUtil.removeActivity(activity1);
-								ActivityCollectorUtil.removeActivity(activity2);
+
+								RiderAuthenticationFirstActivity.instanceFirst
+										.finish();
+								RiderAuthenticationSecondActivity.instanceSecond
+										.finish();
 								RiderAuthenticationThirdActivity.this.finish();
 							} else {
 								Toasts.show(
 										RiderAuthenticationThirdActivity.this,
-										"提交认证失败!", 0);
+										"提交认证失败:"
+												+ jsonObject
+														.getString("message")
+												+ ",请重试!", 0);
 							}
 
 						} catch (JSONException e) {

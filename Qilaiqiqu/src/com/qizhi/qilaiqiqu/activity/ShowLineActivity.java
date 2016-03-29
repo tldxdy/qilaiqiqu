@@ -303,8 +303,8 @@ public class ShowLineActivity extends HuanxinLogOutActivity implements
 					for (int i = 0; i < split.length; i++) {
 						split2 = split[i].split(" ");
 						latLonPoint = new LatLonPoint(
-								Double.parseDouble(split2[0]),
-								Double.parseDouble(split2[1]));
+								Double.parseDouble(split2[1]),
+								Double.parseDouble(split2[0]));
 						pointList.add(latLonPoint);
 						setmarker(pointList.get(i));
 					}

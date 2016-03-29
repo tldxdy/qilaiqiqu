@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -30,6 +30,8 @@ import com.umeng.analytics.MobclickAgent;
 public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 		implements OnClickListener {
 
+	public static Activity instanceSecond = null; 
+	
 	private LinearLayout timeLayout;
 	private LinearLayout backLayout;
 
@@ -297,11 +299,11 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 
 					@Override
 					public void onClick(View v) {
+						TextView t = (TextView) v;
+						id = Integer.parseInt(t.getHint().toString());
 
-						id = v.getId() % 100;
+						System.out.println("id" + id);
 
-						System.out.println("id"+id);
-						
 						if (day[id] == 1) {
 							day[id] = 0;
 							v.setBackground(getResources().getDrawable(
@@ -373,13 +375,13 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 			}
 		}
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();

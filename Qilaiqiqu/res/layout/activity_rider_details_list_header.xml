@@ -144,6 +144,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="7:00"
+                    android:hint="0"
                     android:textSize="12sp" />
 
                 <TextView
@@ -157,6 +158,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="8:00"
+                    android:hint="1"
                     android:textSize="12sp" />
 
                 <TextView
@@ -170,6 +172,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="9:00"
+                    android:hint="2"
                     android:textSize="12sp" />
 
                 <TextView
@@ -183,6 +186,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="10:00"
+                    android:hint="3"
                     android:textSize="12sp" />
 
                 <TextView
@@ -196,6 +200,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="11:00"
+                    android:hint="4"
                     android:textSize="12sp" />
 
                 <TextView
@@ -209,6 +214,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="12:00"
+                    android:hint="5"
                     android:textSize="12sp" />
 
                 <TextView
@@ -223,6 +229,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="13:00"
+                    android:hint="6"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -243,6 +250,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="14:00"
+                    android:hint="7"
                     android:textSize="12sp" />
 
                 <TextView
@@ -258,6 +266,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="15:00"
+                    android:hint="8"
                     android:textSize="12sp" />
 
                 <TextView
@@ -273,6 +282,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="16:00"
+                    android:hint="9"
                     android:textSize="12sp" />
 
                 <TextView
@@ -288,6 +298,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="17:00"
+                    android:hint="10"
                     android:textSize="12sp" />
 
                 <TextView
@@ -303,6 +314,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="18:00"
+                    android:hint="11"
                     android:textSize="12sp" />
 
                 <TextView
@@ -318,6 +330,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="19:00"
+                    android:hint="12"
                     android:textSize="12sp" />
 
                 <TextView
@@ -334,6 +347,7 @@
                     android:background="@drawable/corners_rider_time_white"
                     android:gravity="center"
                     android:text="20:00"
+                    android:hint="13"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
@@ -363,7 +377,6 @@
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="50元/h"
             android:textColor="@color/dark"
             android:textSize="16sp" />
     </LinearLayout>
@@ -396,7 +409,6 @@
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="12次"
             android:textColor="@color/dark"
             android:textSize="16sp" />
     </LinearLayout>
@@ -429,7 +441,6 @@
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="山地车"
             android:textColor="@color/dark"
             android:textSize="16sp" />
     </LinearLayout>
@@ -462,7 +473,6 @@
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="XX省XX市XX区"
             android:textColor="@color/dark"
             android:textSize="16sp" />
     </LinearLayout>
@@ -495,7 +505,6 @@
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="500KM"
             android:textColor="@color/dark"
             android:textSize="16sp" />
     </LinearLayout>
@@ -510,6 +519,7 @@
         android:layout_width="fill_parent"
         android:layout_height="44dp"
         android:background="#f2f2f2"
+        android:visibility="gone"
         android:orientation="horizontal" >
 
         <TextView
@@ -528,7 +538,6 @@
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="50元/h"
             android:textColor="@color/dark"
             android:textSize="16sp" />
     </LinearLayout>
@@ -561,7 +570,6 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:gravity="center_vertical"
-            android:text="5000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000元/h"
             android:textColor="@color/dark"
             android:textSize="16sp" />
     </LinearLayout>

@@ -16,18 +16,24 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -47,14 +53,17 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
 
-public class RiderDetailsActivivty extends Activity implements OnClickListener {
+public class RiderDetailsActivity extends Activity implements OnClickListener {
+
+	private String riderId;
 
 	private ListView commentList;
 	private RiderDetailsAdapter riderDetailsAdapter;
 
-	LinearLayout hearderViewLayout;
-
+	private LinearLayout hearderViewLayout;
 	private LinearLayout backLayout;
+	private LinearLayout phoneLayout;
+	private LinearLayout buttonLayout;
 
 	private TextView button1;
 	private TextView button2;
@@ -80,6 +89,21 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 	private SharedPreferences preferences;
 
 	private LinearLayout timeLayout;
+
+	private int markPointInt;
+	private ImageView popup_mark0;
+	private ImageView popup_mark1;
+	private ImageView popup_mark2;
+	private ImageView popup_mark3;
+	private ImageView popup_mark4;
+	private ImageView popup_mark5;
+	private ImageView popup_mark6;
+	private ImageView popup_mark7;
+	private ImageView popup_mark8;
+	private ImageView popup_mark9;
+	private TextView popup_ok;
+	private TextView markPointTxt;
+	private TextView popup_cancel;
 
 	private String monday[] = { "0", "0", "0", "0", "0", "0", "0", "0", "0",
 			"0", "0", "0", "0", "0" };
@@ -123,7 +147,7 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
-			getTime(model.getCanApplyPeriod());
+			check();
 			setView();
 			setImageCycleViewUtil();
 			super.handleMessage(msg);
@@ -142,6 +166,7 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 	}
 
 	private void initView() {
+		riderId = getIntent().getIntExtra("riderId", -1) + "";
 		httpUtils = new XUtilsUtil();
 		riderDetailsAdapter = new RiderDetailsAdapter(this);
 
@@ -151,7 +176,10 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 				R.layout.activity_rider_details_list_header, null);
 
 		commentList = (ListView) findViewById(R.id.list_riderDetails_comment);
+		buttonLayout = (LinearLayout) findViewById(R.id.layout_riderDetails_button);
 		backLayout = (LinearLayout) findViewById(R.id.layout_riderDetailsActivity_back);
+		phoneLayout = (LinearLayout) hearderViewLayout
+				.findViewById(R.id.layout_riderDetailsActivity_phone);
 
 		button1 = (TextView) findViewById(R.id.txt_riderDetails_button1);
 		button2 = (TextView) findViewById(R.id.txt_riderDetails_button2);
@@ -224,11 +252,48 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.txt_riderDetails_button1:
+			if (preferences.getInt("userId", -1) == -1) {
+				Toasts.show(this, "请登录", 0);
+				Intent intent = new Intent(this, LoginActivity.class);
+				startActivity(intent);
+				this.finish();
+				break;
+			}
+
+			if (button2.getText().toString().equals("发消息")) {
+				String[] split = attendRider.getRiderImage().split(",");
+				startActivity(new Intent(this, ChatSingleActivity.class)
+						.putExtra("username", model.getImUserName())
+						.putExtra("otherUserName", attendRider.getUserName())
+						.putExtra("otherUserImage", split[0])
+						.putExtra("otherUserId", attendRider.getUserId()));
+			} else if (button2.getText().toString().equals("评论")) {
+				startActivity(new Intent(RiderDetailsActivity.this,
+						RiderDiscussActivity.class).putExtra("riderId",
+						attendRider.getRiderId() + ""));
+			}
 
 			break;
 
 		case R.id.txt_riderDetails_button2:
-			attendTime.substring(0, attendTime.length() - 1);
+			if (preferences.getInt("userId", -1) == -1) {
+				Toasts.show(this, "请登录", 0);
+				Intent intent = new Intent(this, LoginActivity.class);
+				startActivity(intent);
+				this.finish();
+				break;
+			}
+
+			if (button2.getText().toString().equals("约骑")) {
+				appointRider();
+			} else if (button2.getText().toString().equals("待处理")) {
+				Toasts.show(RiderDetailsActivity.this, "正在等待陪骑士处理约骑申请", 0);
+			} else if (button2.getText().toString().equals("约骑成功")) {
+				Toasts.show(RiderDetailsActivity.this, "陪骑士已同意您的约骑申请", 0);
+			} else if (button2.getText().toString().equals("打分")) {
+				showPopupWindow(v);
+			}
+
 			break;
 
 		case R.id.layout_riderDetailsActivity_back:
@@ -285,13 +350,341 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 	}
 
 	/**
+	 * 验证陪骑状态
+	 */
+	String timeType = "";
+
+	private void check() {
+		userApplyState = model.getUserApplyState();
+		if (userApplyState.equals("ATTEND")) {// 已约骑
+			phoneLayout.setVisibility(View.VISIBLE);
+			button1.setText("发消息");
+			button2.setText("约骑成功");
+		} else if (userApplyState.equals("APPLY")) {// 待处理
+			phoneLayout.setVisibility(View.GONE);
+			button1.setText("发消息");
+			button2.setText("待处理");
+		} else if (userApplyState.equals("NOTHING")) {// 没约
+			phoneLayout.setVisibility(View.GONE);
+			button1.setText("发消息");
+			button2.setText("约骑");
+		} else if (userApplyState.equals("DELETE")) {// 拒绝
+			phoneLayout.setVisibility(View.GONE);
+			button1.setText("发消息");
+			button2.setText("约骑");
+		}
+
+		if (preferences.getInt("userId", -1) == attendRider.getUserId()) {
+			getTime(model.getAttendPeriod());
+			timeType = "AttendPeriod";
+			buttonLayout.setVisibility(View.GONE);
+		} else {
+			getTime(model.getCanApplyPeriod());
+			buttonLayout.setVisibility(View.VISIBLE);
+		}
+	}
+
+	/**
+	 * 陪骑士打赏
+	 */
+	private void attendRiderReward(final int markPointInt) {
+		RequestParams params = new RequestParams("UTF-8");
+		params.addQueryStringParameter("userId",
+				preferences.getInt("userId", -1) + "");
+		params.addQueryStringParameter("riderId", attendRider.getRiderId() + "");
+		params.addQueryStringParameter("integral", markPointInt + "");
+		params.addQueryStringParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+		httpUtils.httpPost("mobile/attendRider/attendRiderReward.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String result = responseInfo.result;
+						System.out.println("陪骑打分信息:" + result);
+
+						try {
+							JSONObject jsonObject = new JSONObject(result);
+							if (jsonObject.getBoolean("result")) {
+								Toasts.show(RiderDetailsActivity.this, "您打赏了"
+										+ markPointInt + "分!", 0);
+
+							} else {
+								Toasts.show(RiderDetailsActivity.this, "打赏失败:"
+										+ jsonObject.getString("message")
+										+ ",请重试!", 0);
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+						Toasts.show(RiderDetailsActivity.this, "未知错误" + error
+								+ ":" + msg, 0);
+					}
+				});
+	}
+
+	/**
+	 * 弹窗
+	 * 
+	 * @param view
+	 *            popup所依附的布局
+	 */
+	private void showPopupWindow(View view) {
+
+		// 一个自定义的布局，作为显示的内容
+		View contentView = LayoutInflater.from(this).inflate(
+				R.layout.item_popup_grade, null);
+
+		popup_mark0 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark0);
+		popup_mark1 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark1);
+		popup_mark2 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark2);
+		popup_mark3 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark3);
+		popup_mark4 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark4);
+		popup_mark5 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark5);
+		popup_mark6 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark6);
+		popup_mark7 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark7);
+		popup_mark8 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark8);
+		popup_mark9 = (ImageView) contentView
+				.findViewById(R.id.img_gradePopup_mark9);
+		popup_ok = (TextView) contentView.findViewById(R.id.txt_gradePopup_ok);
+		markPointTxt = (TextView) contentView
+				.findViewById(R.id.txt_gradePopup_markPoint);
+		popup_cancel = (TextView) contentView
+				.findViewById(R.id.txt_gradePopup_cancel);
+		selectMark();
+
+		final PopupWindow popupWindow = new PopupWindow(contentView,
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+
+		popupWindow.setTouchable(true);
+
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		popup_mark0.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				markPointInt = 1;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark1.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				markPointInt = 2;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark2.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				markPointInt = 3;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark3.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				markPointInt = 4;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark4.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				markPointInt = 5;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark5.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				markPointInt = 6;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark6.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				markPointInt = 7;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark7.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				popup_mark7.setImageResource(R.drawable.award_yellow);
+				markPointInt = 8;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark8.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				popup_mark7.setImageResource(R.drawable.award_yellow);
+				popup_mark8.setImageResource(R.drawable.award_yellow);
+				markPointInt = 9;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+		popup_mark9.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				selectMark();
+				popup_mark0.setImageResource(R.drawable.award_yellow);
+				popup_mark1.setImageResource(R.drawable.award_yellow);
+				popup_mark2.setImageResource(R.drawable.award_yellow);
+				popup_mark3.setImageResource(R.drawable.award_yellow);
+				popup_mark4.setImageResource(R.drawable.award_yellow);
+				popup_mark5.setImageResource(R.drawable.award_yellow);
+				popup_mark6.setImageResource(R.drawable.award_yellow);
+				popup_mark7.setImageResource(R.drawable.award_yellow);
+				popup_mark8.setImageResource(R.drawable.award_yellow);
+				popup_mark9.setImageResource(R.drawable.award_yellow);
+				markPointInt = 10;
+				markPointTxt.setText(markPointInt + "分");
+			}
+		});
+
+		popup_ok.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				attendRiderReward(markPointInt);
+				popupWindow.dismiss();
+			}
+		});
+
+		popup_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// Toasts.show(ActivityDetailsActivity.this, "您未打赏积分", 0);
+				popupWindow.dismiss();
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		// 我觉得这里是API的一个bug
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(view, Gravity.CENTER, 0, 50);
+
+	}
+
+	/**
+	 * 设置所有评分图片暗色
+	 */
+	public void selectMark() {
+		popup_mark0.setImageResource(R.drawable.award_gray);
+		popup_mark1.setImageResource(R.drawable.award_gray);
+		popup_mark2.setImageResource(R.drawable.award_gray);
+		popup_mark3.setImageResource(R.drawable.award_gray);
+		popup_mark4.setImageResource(R.drawable.award_gray);
+		popup_mark5.setImageResource(R.drawable.award_gray);
+		popup_mark6.setImageResource(R.drawable.award_gray);
+		popup_mark7.setImageResource(R.drawable.award_gray);
+		popup_mark8.setImageResource(R.drawable.award_gray);
+		popup_mark9.setImageResource(R.drawable.award_gray);
+		markPointInt = 0;
+		markPointTxt.setText(markPointInt + "分");
+	}
+
+	/**
 	 * 获取陪骑士资料
 	 */
 	private void getRiderDate() {
 		RequestParams params = new RequestParams("UTF-8");
-		params.addQueryStringParameter("riderId", "10000");
-		params.addQueryStringParameter("loginUserId", "10025");
-		params.addQueryStringParameter("uniqueKey", "k272kPkeOhH9qTxS7/zv9g==");
+		params.addQueryStringParameter("riderId", riderId);
+		params.addQueryStringParameter("loginUserId",
+				preferences.getInt("userId", -1) + "");
+		params.addQueryStringParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
 		httpUtils.httpPost("common/queryAttendRider.html", params,
 				new CallBackPost() {
 
@@ -315,7 +708,7 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 								handler.sendMessage(m);
 							} else {
 								Toasts.show(
-										RiderDetailsActivivty.this,
+										RiderDetailsActivity.this,
 										"获取陪骑士资料失败:"
 												+ jsonObject
 														.getString("message")
@@ -329,7 +722,8 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-
+						Toasts.show(RiderDetailsActivity.this, "未知错误" + error
+								+ ":" + msg, 0);
 					}
 
 				});
@@ -390,25 +784,63 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 	 * 约骑时间
 	 */
 	private void setRiderTime(String str) {
-		String[] time =  str.split("|");
-		if(!time[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")){
+		String[] time = str.split("|");
+		if (!time[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
 			attendTime = str + ";";
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param v
 	 */
-	private void appointRider(){
-		RequestParams params = new RequestParams("UTF-8");
-		params.addQueryStringParameter("riderId", "riderId");
-		params.addQueryStringParameter("userId", "riderId");
-		params.addQueryStringParameter("datas", "riderId");
-		params.addQueryStringParameter("uniqueKey", "riderId");
-	}
-	
+	private void appointRider() {
+		attendTime.substring(0, attendTime.length() - 1);
 
+		RequestParams params = new RequestParams("UTF-8");
+		params.addQueryStringParameter("riderId", riderId);
+		params.addQueryStringParameter("datas", attendTime);
+		params.addQueryStringParameter("userId",
+				preferences.getInt("userId", -1) + "");
+		params.addQueryStringParameter("uniqueKey",
+				preferences.getString("uniqueKey", null));
+
+		httpUtils.httpPost("mobile/attendRider/appointRider.html", params,
+				new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String result = responseInfo.result;
+						System.out.println("约骑信息:" + result);
+
+						try {
+							JSONObject jsonObject = new JSONObject(result);
+							if (jsonObject.getBoolean("result")) {
+								Toasts.show(RiderDetailsActivity.this, "约骑成功",
+										0);
+								button2.setText("待处理");
+							} else {
+								Toasts.show(RiderDetailsActivity.this, "约骑失败:"
+										+ jsonObject.getString("message")
+										+ ",请重试!", 0);
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+						Toasts.show(RiderDetailsActivity.this, "未知错误" + error
+								+ ":" + msg, 0);
+					}
+				});
+
+	}
+
+	/**
+	 * 设置所有星期为暗色
+	 */
 	private void initTextView(View v) {
 		mondayTxt.setBackgroundResource(R.drawable.corners_rider_time_white);
 		tuesdayTxt.setBackgroundResource(R.drawable.corners_rider_time_white);
@@ -420,6 +852,9 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 		v.setBackgroundResource(R.drawable.corners_rider_time_blue);
 	}
 
+	/**
+	 * 设置轮播图
+	 */
 	private void setImageCycleViewUtil() {
 
 		mImageCycleView.setCycleDelayed(3000);
@@ -440,9 +875,9 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 							ImageCycleViewUtil.ImageInfo imageInfo) {
 
 						ImageView imageView = new ImageView(
-								RiderDetailsActivivty.this);
+								RiderDetailsActivity.this);
 						SystemUtil.Imagexutils(imageInfo.image.toString(),
-								imageView, RiderDetailsActivivty.this);
+								imageView, RiderDetailsActivity.this);
 						/*
 						 * Picasso.with(ActivityDetailsActivity.this)
 						 * .load(imageInfo.image.toString()) .into(imageView);
@@ -485,68 +920,61 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 				newDtv = (TextView) view;
 				list.add(newDtv);
 				hashMap.put(str, list);
-				newDtv.setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
+				if (!timeType.equals("AttendPeriod")) {
+					newDtv.setOnClickListener(new OnClickListener() {
 
-						id = (v.getId() % 100) - 14;
+						@Override
+						public void onClick(View v) {
+							TextView t = (TextView) v;
+							id = Integer.parseInt(t.getHint().toString());
+							System.out.println(t.getHint().toString());
 
-						if (!dayMap.get(str)[id - 1].equals("0")) {
-							panduan(id, v, str, day);
+							if (!dayMap.get(str)[id - 1].equals("0")) {
+								panduan(id, v, str, day);
+
+							}
+
+							switch (num) {
+							case 1:
+								monDayStr = keepData(day, getTimes(0));
+								setRiderTime(monDayStr);
+								break;
+							case 2:
+								tuesDayStr = keepData(day, getTimes(1));
+								setRiderTime(tuesDayStr);
+								break;
+							case 3:
+								wednesDayStr = keepData(day, getTimes(2));
+								setRiderTime(wednesDayStr);
+
+								break;
+							case 4:
+								thursDayStr = keepData(day, getTimes(3));
+								setRiderTime(thursDayStr);
+								break;
+							case 5:
+								FriDayStr = keepData(day, getTimes(4));
+								setRiderTime(FriDayStr);
+
+								break;
+							case 6:
+								saturDayStr = keepData(day, getTimes(5));
+								setRiderTime(saturDayStr);
+
+								break;
+							case 7:
+								sunDayStr = keepData(day, getTimes(6));
+								setRiderTime(sunDayStr);
+								break;
+
+							default:
+								break;
+							}
 
 						}
-
-						// if (dayMap.get(str)[id - 1].equals("1")) {//
-						// .equals("1")表示用户可约的时间;.equals("2")表示用户选择约的时间;.equals("0")表示用户不可约的时间;
-						// } else if (dayMap.get(str)[id - 1].equals("2")) {
-						// idList.remove((Integer) id);
-						//
-						// System.out.println("idList.size() - 1:"
-						// + idList.size());
-						//
-						// panduan(id, v, str, day);
-						// }
-
-						switch (num) {
-						case 1:
-							monDayStr = keepData(day, getTimes(0));
-							setRiderTime(monDayStr);
-							break;
-						case 2:
-							tuesDayStr = keepData(day, getTimes(1));
-							setRiderTime(tuesDayStr);
-							break;
-						case 3:
-							wednesDayStr = keepData(day, getTimes(2));
-							setRiderTime(wednesDayStr);
-
-							break;
-						case 4:
-							thursDayStr = keepData(day, getTimes(3));
-							setRiderTime(thursDayStr);
-							break;
-						case 5:
-							FriDayStr = keepData(day, getTimes(4));
-							setRiderTime(FriDayStr);
-
-							break;
-						case 6:
-							saturDayStr = keepData(day, getTimes(5));
-							setRiderTime(saturDayStr);
-
-							break;
-						case 7:
-							sunDayStr = keepData(day, getTimes(6));
-							setRiderTime(sunDayStr);
-							break;
-
-						default:
-							break;
-						}
-
-					}
-				});
+					});
+				}
 			} else if (view instanceof LinearLayout) {
 				// 若是布局控件（LinearLayout或RelativeLayout）,继续查询子View
 				this.getTextView((ViewGroup) view, str, day, num);
@@ -556,24 +984,33 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 		if (hashMap.get(str).size() == dayMap.get(str).length) {
 			for (int j = 0; j < dayMap.get(str).length; j++) {
 				if (dayMap.get(str)[j].equals("1")) {
-					if (getHour() - 7 > j) {
+					if (preferences.getInt("userId", -1) == attendRider
+							.getUserId()) {
 						hashMap.get(str)
 								.get(j)
 								.setBackground(
 										getResources()
 												.getDrawable(
-														R.drawable.corners_rider_time_gray));
-						dayMap.get(str)[j] = "0";
-						day[j] = "0";
+														R.drawable.corners_rider_time_blue));
 					} else {
-						hashMap.get(str)
-								.get(j)
-								.setBackground(
-										getResources()
-												.getDrawable(
-														R.drawable.corners_rider_time_white));
+						if (getHour() - 7 > j) {
+							hashMap.get(str)
+									.get(j)
+									.setBackground(
+											getResources()
+													.getDrawable(
+															R.drawable.corners_rider_time_gray));
+							dayMap.get(str)[j] = "0";
+							day[j] = "0";
+						} else {
+							hashMap.get(str)
+									.get(j)
+									.setBackground(
+											getResources()
+													.getDrawable(
+															R.drawable.corners_rider_time_white));
+						}
 					}
-
 				} else if (dayMap.get(str)[j].equals("2")) {
 					hashMap.get(str)
 							.get(j)
@@ -593,6 +1030,14 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * @param v
+	 * @param str
+	 * @param day
+	 * 判断时间选择是否符合规则
+	 */
 	private void panduan(int id, View v, String str, String day[]) {
 
 		if (idList.size() == 0) {
@@ -629,10 +1074,6 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 
 		}
 
-		System.out.println("minId:" + minId);
-		System.out.println("maxId:" + maxId);
-		System.out.println("id:" + id);
-
 		if (minId - 1 == id || maxId + 1 == id) {
 			if (dayMap.get(str)[id - 1].equals("2")) {
 				dayMap.get(str)[id - 1] = "1";
@@ -642,10 +1083,6 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 
 				idList.remove((Integer) id);
 
-				System.out.println("==+-1 day[id - 1]:" + day[id - 1]);
-				System.out.println("==+-1 dayMap.get(str)[id - 1]:"
-						+ dayMap.get(str)[id - 1]);
-
 			} else if (dayMap.get(str)[id - 1].equals("1")) {
 				dayMap.get(str)[id - 1] = "2";
 				day[id - 1] = "1";
@@ -653,10 +1090,6 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 						R.drawable.corners_rider_time_blue));
 
 				idList.add(id);
-
-				System.out.println("==+-1 day[id - 1]:" + day[id - 1]);
-				System.out.println("==+-1 dayMap.get(str)[id - 1]:"
-						+ dayMap.get(str)[id - 1]);
 
 			}
 
@@ -669,10 +1102,6 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 
 				idList.remove((Integer) id);
 
-				System.out.println("== day[id - 1]:" + day[id - 1]);
-				System.out.println("== dayMap.get(str)[id - 1]:"
-						+ dayMap.get(str)[id - 1]);
-
 			} else if (dayMap.get(str)[id - 1].equals("1")) {
 				dayMap.get(str)[id - 1] = "2";
 				day[id - 1] = "1";
@@ -680,10 +1109,6 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 						R.drawable.corners_rider_time_blue));
 
 				idList.add(id);
-
-				System.out.println("== day[id - 1]:" + day[id - 1]);
-				System.out.println("== dayMap.get(str)[id - 1]:"
-						+ dayMap.get(str)[id - 1]);
 
 			}
 		} else {
@@ -717,6 +1142,13 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * 
+	 * @param day
+	 * @param content
+	 * @return
+	 * 拼接约骑时间
+	 */
 	private String keepData(String[] day, String content) {
 
 		String str1 = content + "|";
@@ -738,6 +1170,8 @@ public class RiderDetailsActivivty extends Activity implements OnClickListener {
 	 */
 
 	private HashMap<String, String> dayHashMap = new HashMap<String, String>();
+
+	private String userApplyState;
 
 	public String getWeekOfDate(int i) {
 
