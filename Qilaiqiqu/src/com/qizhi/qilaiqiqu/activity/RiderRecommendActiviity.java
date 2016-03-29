@@ -20,6 +20,7 @@ import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -76,11 +77,8 @@ public class RiderRecommendActiviity extends HuanxinLogOutActivity implements
 	}
 
 	private void data() {
-		pageIndex = 1;
 		RequestParams params = new RequestParams();
-		params.addBodyParameter("pageIndex", pageIndex + "");
-		params.addBodyParameter("pageSize",  "10");
-		xUtilsUtil.httpPost("common/queryAttendRiderPaginationList.html", params, this);
+		xUtilsUtil.httpPost("common/queryRecommendAttendRiderList.html", params, this);
 	}
 	
 	@Override
@@ -112,7 +110,9 @@ public class RiderRecommendActiviity extends HuanxinLogOutActivity implements
 	
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		Toasts.show(this, position + "", 0);
+		startActivity(new Intent(this,
+				RiderDetailsActivity.class)
+		.putExtra("riderId", list.get(position).getRiderId()));
 	}
 
 	@Override

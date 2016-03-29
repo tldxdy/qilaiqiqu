@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.RiderAppointAdapter.ViewHolder;
+import com.qizhi.qilaiqiqu.model.RiderApplyModle;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,12 +16,12 @@ import android.widget.TextView;
 public class RiderAccompanyAdapter extends BaseAdapter {
 	
 	private Context context;
-	private List<?> list;
+	private List<RiderApplyModle> list;
 	private ViewHolder holder;
 	private LayoutInflater inflater;
 	
 	
-	public RiderAccompanyAdapter(Context context, List<?> list){
+	public RiderAccompanyAdapter(Context context, List<RiderApplyModle> list){
 		this.context = context;
 		this.list = list;
 		inflater = LayoutInflater.from(context);
@@ -28,7 +29,7 @@ public class RiderAccompanyAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return 10;
+		return list.size();
 	}
 
 	@Override
@@ -53,13 +54,21 @@ public class RiderAccompanyAdapter extends BaseAdapter {
 		}else{
 			holder = (ViewHolder) convertView.getTag();
 		}
-		if(position % 3 == 0){
+		holder.nameTxt.setText(list.get(position).getUserName());
+		String[] times = list.get(position).getTime().split(",");
+		
+		String s = list.get(position).getDate() + " " + 
+				times[0] + ":00-" + (Integer.parseInt(times[times.length - 1]) + 1) + ":00";
+	holder.timeTxt.setText(s);
+		
+		
+		if(list.get(position).getIsAgree().equals("normal")){
 			holder.conditionTxt.setText("待处理");
 			holder.conditionTxt.setTextColor(0xFFFFBF86);
-		}else if(position % 3 == 1){
+		}else if(list.get(position).getIsAgree().equals("true")){
 			holder.conditionTxt.setText("已同意");
 			holder.conditionTxt.setTextColor(0xFF6DBFED);
-		}else{
+		}else if(list.get(position).getIsAgree().equals("false")){
 			holder.conditionTxt.setText("被拒绝");
 			holder.conditionTxt.setTextColor(0xFFFF3030);
 		}

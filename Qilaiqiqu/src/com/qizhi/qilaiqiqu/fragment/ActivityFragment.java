@@ -13,7 +13,8 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
-import com.qizhi.qilaiqiqu.activity.RiderAuthenticationFirstActivity;
+import com.qizhi.qilaiqiqu.activity.RiderAuthenticationActivity;
+import com.qizhi.qilaiqiqu.activity.RiderListActivity;
 import com.qizhi.qilaiqiqu.activity.RiderRecommendActiviity;
 import com.qizhi.qilaiqiqu.adapter.ManageAdapter;
 import com.qizhi.qilaiqiqu.model.RiderRecommendModel;
@@ -94,17 +95,21 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 	private LinearLayout numLayout;
 	private RelativeLayout becomeLayout;
 	private TextView activityTxt;
+	private RelativeLayout peiqiLayout;
 	private void initViewHeader() {
 		riderList = new ArrayList<RiderRecommendModel>();
 		View view = View.inflate(getActivity(),R.layout.rideractivity_activity_header, null);
 		riderLayout = (LinearLayout) view.findViewById(R.id.layout_rideractivity_activity);
 		numLayout = (LinearLayout) view.findViewById(R.id.layout_rideractivity_activity_num);
 		becomeLayout = (RelativeLayout) view.findViewById(R.id.layout_rideractivity_activity_becomerider);
-		initNumRider();
+		peiqiLayout = (RelativeLayout) view.findViewById(R.id.layout_rideractivity_peiqi);
+		
+		//initNumRider();
 		activityTxt = (TextView) view.findViewById(R.id.txt_rideractivity_activity);
 		manageList.addHeaderView(view);
 		becomeLayout.setOnClickListener(this);
 		riderLayout.setOnClickListener(this);
+		peiqiLayout.setOnClickListener(this);
 	}
 	
 	private List<RiderRecommendModel> riderList;
@@ -122,6 +127,7 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 					e.printStackTrace();
 				}
 				if (jsonObject.optBoolean("result")) {
+					numLayout.removeAllViews();
 					Gson gson = new Gson();
 					riderList = gson.fromJson(jsonObject.optJSONArray("dataList").toString(),
 							new TypeToken<ArrayList<RiderRecommendModel>>(){}.getType());
@@ -171,6 +177,7 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 		super.onResume();
 	}
 	private void data() {
+		initNumRider();
 		pageIndex = 1;
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("userId", preferences.getInt("userId", -1) + "");
@@ -268,6 +275,7 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 			public void run() {
 				swipeLayout.setRefreshing(false);
 				pageIndex = 1;
+				initNumRider();
 					dataJ();
 				
 			}
@@ -294,13 +302,17 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 				System.out.println("跳转成为陪骑士页面");
 				if (preferences.getInt("userId", -1) != -1) {
 					startActivity(new Intent(getActivity(),
-							RiderAuthenticationFirstActivity.class));
+							RiderAuthenticationActivity.class));
 				}
 				break;
 			case R.id.layout_rideractivity_activity:
-				startActivity(new Intent(getActivity(), RiderRecommendActiviity.class));
+				//推荐陪骑
 				startActivity(new Intent(getActivity(),
 						RiderRecommendActiviity.class));
+				break;
+			case R.id.layout_rideractivity_peiqi:
+				startActivity(new Intent(getActivity(),
+						RiderListActivity.class));
 				break;
 		default:
 			break;

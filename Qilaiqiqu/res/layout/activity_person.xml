@@ -423,7 +423,6 @@
                     android:id="@+id/txt_personActivity_txt3"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:background="@drawable/corners_bg_ao"
                     android:gravity="center"
                     android:text="已拒绝"
                     android:textColor="@color/white" />

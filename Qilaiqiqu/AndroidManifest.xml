@@ -241,6 +241,11 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.StartActivity"
             android:label="@string/title_activity_start" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.LoginActivity"
@@ -365,11 +370,6 @@
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderManageCenterActivity" >
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderAuthenticationFirstActivity" >
         </activity>
@@ -379,6 +379,7 @@
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderDetailsActivity" >
         </activity>
+		<activity android:name="com.qizhi.qilaiqiqu.activity.RiderListActivity"></activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderDiscussActivity" >
         </activity>
 

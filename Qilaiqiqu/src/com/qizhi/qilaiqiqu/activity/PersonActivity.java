@@ -74,6 +74,7 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 	private TextView activityNumTxt;	//发布活动数
 	
 	private TextView attendRiderTxt;
+	private int applyId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,10 +121,22 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 
 		userId = getIntent().getIntExtra("userId", -1);
 		isRider = getIntent().getIntExtra("isRider", -1);
-		if(isRider != -1){
-			buttonLayout1.setVisibility(View.VISIBLE);
-			buttonLayout2.setVisibility(View.GONE);
-		}
+		applyId = getIntent().getIntExtra("applyId", -1);
+			if(isRider == 1){
+				buttonLayout1.setVisibility(View.VISIBLE);
+				buttonLayout2.setVisibility(View.GONE);
+			}else if(isRider == 2){
+				buttonLayout1.setVisibility(View.GONE);
+				buttonLayout2.setVisibility(View.VISIBLE);
+				txt3.setText("已同意");
+				txt3.setBackgroundColor(0xff6dbfed);
+			}else if(isRider == 3){
+				buttonLayout1.setVisibility(View.GONE);
+				buttonLayout2.setVisibility(View.VISIBLE);
+				txt3.setBackgroundColor(0xffff3030);
+				txt3.setText("已拒绝");
+			}
+			
 	}
 	
 	private int isRider = -1;
@@ -190,10 +203,66 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 			break;
 
 		case R.id.txt_personActivity_txt1:
-			Toasts.show(this, "同意", 0);
+			//同意
+			RequestParams params = new RequestParams();
+			params.addBodyParameter("userId",preferences.getInt("userId", -1) + "");
+			params.addBodyParameter("applyId", applyId + "");
+			params.addBodyParameter("uniqueKey",preferences.getString("uniqueKey", null));
+			xUtilsUtil.httpPost("mobile/attendRider/agreeRiderApply.html", params, new CallBackPost() {
+				
+				@Override
+				public void onMySuccess(ResponseInfo<String> responseInfo) {
+					String s = responseInfo.result;
+					JSONObject jsonObject = null;
+					try {
+						jsonObject = new JSONObject(s);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					if (jsonObject.optBoolean("result")) {
+						buttonLayout1.setVisibility(View.GONE);
+						buttonLayout2.setVisibility(View.VISIBLE);
+						txt3.setText("已同意");
+						txt3.setBackgroundColor(0xff6dbfed);
+					}
+				}
+				
+				@Override
+				public void onMyFailure(HttpException error, String msg) {
+					
+				}
+			});
 			break;
 		case R.id.txt_personActivity_txt2:
-			Toasts.show(this, "拒绝", 0);
+			//拒绝
+			RequestParams params1 = new RequestParams();
+			params1.addBodyParameter("userId",preferences.getInt("userId", -1) + "");
+			params1.addBodyParameter("applyId", applyId + "");
+			params1.addBodyParameter("uniqueKey",preferences.getString("uniqueKey", null));
+			xUtilsUtil.httpPost("mobile/attendRider/rejectRiderApply.html", params1, new CallBackPost() {
+				
+				@Override
+				public void onMySuccess(ResponseInfo<String> responseInfo) {
+					String s = responseInfo.result;
+					JSONObject jsonObject = null;
+					try {
+						jsonObject = new JSONObject(s);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					if (jsonObject.optBoolean("result")) {
+						buttonLayout1.setVisibility(View.GONE);
+						buttonLayout2.setVisibility(View.VISIBLE);
+						txt3.setBackgroundColor(0xffff3030);
+						txt3.setText("已拒绝");
+					}
+				}
+				
+				@Override
+				public void onMyFailure(HttpException error, String msg) {
+					
+				}
+			});
 			break;
 		default:
 			break;
@@ -203,7 +272,7 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 	@Override
 	protected void onStart() {
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
-
+		System.out.println(preferences.getInt("userId", -1)+"====="+preferences.getString("uniqueKey", null));
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("userId", userId + "");
 		if (preferences.getInt("userId", -1) != -1) {

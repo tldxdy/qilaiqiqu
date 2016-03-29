@@ -563,8 +563,7 @@ public class PersonalDataActivity extends BaseActivity implements
 	}
 
 	private void informationUpdate() {
-		if (!"".equals(nickEdt.getText().toString().trim())
-				&& !"".equals(certainUserModel.getUserImage())) {
+		if (!"".equals(certainUserModel.getUserImage())) {
 			RequestParams params = new RequestParams("UTF-8");
 			params.addBodyParameter("userId", preferences.getInt("userId", -1)
 					+ "");
@@ -647,6 +646,8 @@ public class PersonalDataActivity extends BaseActivity implements
 							falg = true;
 						}
 					});
+		}else{
+			pDialog.dismiss();
 		}
 	}
 

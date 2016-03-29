@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -140,6 +141,11 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 		layout_my_rider_center = (RelativeLayout) view
 				.findViewById(R.id.layout_personalfragment_my_rider_center);
 
+		
+		
+		System.out.println("----------------------");
+		System.out.println(preferences.getInt("userId", -1) +"---" + preferences.getString("uniqueKey", null));
+		
 	}
 
 	@Override
@@ -316,6 +322,11 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 							puim.setUserName(user.getString("userName"));
 							puim.setFansNum(data.optInt("fansNum"));
 							puim.setConcernNum(data.optInt("concernNum"));
+							
+							SharedPreferences preferences = getActivity().getSharedPreferences("userLogin", Context.MODE_PRIVATE);
+							Editor editor = preferences.edit();// 获取编辑器
+							editor.putInt("riderId", Integer.parseInt(data.optString("riderId")));
+							editor.commit();
 
 						} catch (JSONException e) {
 							e.printStackTrace();

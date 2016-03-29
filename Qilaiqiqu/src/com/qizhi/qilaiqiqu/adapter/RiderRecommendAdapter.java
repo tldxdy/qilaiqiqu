@@ -63,7 +63,12 @@ public class RiderRecommendAdapter extends BaseAdapter {
 		holder.cTxt.setText("");
 		holder.dTxt.setText("");
 		SystemUtil.Imagexutils(list.get(position).getRiderImage().split(",")[0], holder.photoImg, context);
-		holder.weeknnumTxt.setText(list.get(position).getWeekTimes() + "");
+		
+		if(list.get(position).getWeekTimes() == null){
+			holder.weeknnumTxt.setText("0");
+		}else {
+			holder.weeknnumTxt.setText(list.get(position).getWeekTimes() + "");
+		}
 		holder.historynumTxt.setText(list.get(position).getAttendTimes() + "");
 		
 		holder.describeTxt.setText(list.get(position).getRiderMemo());

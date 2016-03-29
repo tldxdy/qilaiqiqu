@@ -14,11 +14,11 @@ public class RiderManageCenterPagetAdapter extends FragmentPagerAdapter{
 	public Fragment getItem(int arg0) {
 		switch (arg0) {
 		case 0:
-			RideraAppointFragment agreementFragment = new RideraAppointFragment();
-			return agreementFragment;
-		case 1:
 			RiderAccompanyFragment accompanyFragment = new RiderAccompanyFragment();
 			return accompanyFragment;
+		case 1:
+			RideraAppointFragment agreementFragment = new RideraAppointFragment();
+			return agreementFragment;
 
 		default:
 			break;
