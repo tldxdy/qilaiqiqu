@@ -30,7 +30,7 @@
                 android:layout_marginLeft="5dp"
                 android:text="@string/back"
                 android:textColor="#ffffff"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <TextView
@@ -57,26 +57,26 @@
             android:layout_height="wrap_content"
             android:text="独步天涯"
             android:textColor="#6dbfed"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
              <TextView
             android:id="@+id/txt_commentmessageactivity_return_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="评论了你的骑游记"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
             <TextView
             android:id="@+id/txt_commentmessageactivity_return_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="《》"
             android:textColor="#6dbfed"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
             <TextView
             android:id="@+id/txt_commentmessageactivity_return_return"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -87,7 +87,7 @@
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="10dp"
         android:text="@string/txt_commentmessageactivity_return_content"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -108,7 +108,7 @@
             android:textColor="#9d9d9e"
             android:hint="@string/edt_commentmessageactivity_my_return"
             android:maxLength="50"
-            android:textSize="16sp" >
+            android:textSize="14sp" >
 
             <requestFocus />
         </EditText>

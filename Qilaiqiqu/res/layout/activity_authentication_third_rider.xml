@@ -154,7 +154,7 @@
                     android:background="@null"
                     android:gravity="top"
                     android:hint="多说几句,介绍下自己,看看有多少人约你！"
-                    android:maxLength="150"
+                    android:maxLength="50"
                     android:textSize="16sp" />
 
                 <TextView
@@ -164,7 +164,7 @@
                     android:layout_gravity="right|center_horizontal"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="10dp"
-                    android:text="0/150" />
+                    android:text="0/50" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

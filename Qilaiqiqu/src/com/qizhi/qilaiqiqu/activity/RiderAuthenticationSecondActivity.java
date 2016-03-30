@@ -62,6 +62,7 @@ public class RiderAuthenticationSecondActivity extends HuanxinLogOutActivity
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_authentication_second_rider);
+		instanceSecond = this;
 		initView();
 		initEvent();
 	}

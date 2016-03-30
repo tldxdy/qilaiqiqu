@@ -175,7 +175,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				memoLengh.setText(s.length() + "/150");
+				memoLengh.setText(s.length() + "/50");
 			}
 		});
 
@@ -390,6 +390,14 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 				.toString().trim());
 		params.addQueryStringParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
+		
+		/*System.out.println("==========================================");
+		System.out.println("userId:"+preferences.getInt("userId", -1)+";riderImage:" + imagePath
+				+"riderPhone:"+RiderAuthenticationFirstActivity.riderPhone+";attendArea:" + RiderAuthenticationFirstActivity.attendArea
+				+"attendPrice:"+RiderAuthenticationFirstActivity.attendPrice+";attendPeriod:" + RiderAuthenticationFirstActivity.attendPeriod
+				+"bicycleType:"+bikeType+";rideCourse:" + mileage
+				+"riderMemo:"+signatureEdt.getText()
+				.toString().trim()+";uniqueKey:" + preferences.getString("uniqueKey", null));*/
 
 		httpUtils.httpPost("mobile/attendRider/insertAttendRider.html", params,
 				new CallBackPost() {
