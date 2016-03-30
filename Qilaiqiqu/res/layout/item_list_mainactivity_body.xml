@@ -16,9 +16,10 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="60dp"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|top"
         android:orientation="horizontal"
         android:background="@drawable/background_shade"
+        android:paddingTop="12dp"
         android:paddingLeft="12dp"
 >
 
@@ -28,7 +29,6 @@
             android:layout_height="35dp"
             android:src="@drawable/persional_picture"
             app:border_color="@color/light"
-            android:paddingTop="12dp"
             app1:border_width="0dp" />
 
         <LinearLayout
@@ -36,20 +36,19 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_weight="1"
-            android:paddingTop="12dp"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/txt_mainList_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="top"
                 android:textColor="#ffffffff" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="bottom"
+                android:layout_height="wrap_content"
+                android:gravity="top"
                 android:orientation="horizontal" >
 
                 <TextView
