@@ -27,8 +27,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -133,10 +133,11 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	private String saturDayStr = getTimes(5) + "|0,0,0,0,0,0,0,0,0,0,0,0,0,0";
 	private String sunDayStr = getTimes(6) + "|0,0,0,0,0,0,0,0,0,0,0,0,0,0";
 
-	String attendTime;// 用户选择的约骑时间
+	String attendTime = "";// 用户选择的约骑时间
 
 	private List<TextView> list = new ArrayList<TextView>();
 	private HashMap<String, List<TextView>> hashMap = new HashMap<String, List<TextView>>();
+	private HashMap<String, List<Integer>> idMap = new HashMap<String, List<Integer>>();
 
 	private ImageCycleViewUtil mImageCycleView;
 	List<ImageCycleViewUtil.ImageInfo> IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
@@ -220,6 +221,14 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		sundayTxt = (TextView) hearderViewLayout
 				.findViewById(R.id.txt_riderDetailsActivity_sunday);
 
+		idMap.put("monday", new ArrayList<Integer>());
+		idMap.put("tuesday", new ArrayList<Integer>());
+		idMap.put("wednesday", new ArrayList<Integer>());
+		idMap.put("thursday", new ArrayList<Integer>());
+		idMap.put("friday", new ArrayList<Integer>());
+		idMap.put("saturday", new ArrayList<Integer>());
+		idMap.put("sunday", new ArrayList<Integer>());
+
 	}
 
 	private void initEvent() {
@@ -285,7 +294,12 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 			}
 
 			if (button2.getText().toString().equals("约骑")) {
-				appointRider();
+				if (!attendTime.equals(null) || !attendTime.equals("")) {
+					System.out.println("attendTime:" + attendTime);
+					setRiderTime();
+				} else {
+					Toasts.show(this, "请先选择约骑时间！", 0);
+				}
 			} else if (button2.getText().toString().equals("待处理")) {
 				Toasts.show(RiderDetailsActivity.this, "正在等待陪骑士处理约骑申请", 0);
 			} else if (button2.getText().toString().equals("约骑成功")) {
@@ -302,46 +316,49 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		case R.id.txt_riderDetailsActivity_monday:
 			initTextView(v);
 			list.clear();
-			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(0)), monday, 1);
+			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(0)), monday,
+					1, getWeekOfDate(0));
 			break;
 		case R.id.txt_riderDetailsActivity_tuesday:
 			initTextView(v);
 			list.clear();
 			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(1)), tuesday,
-					2);
+					2, getWeekOfDate(1));
 
 			break;
 		case R.id.txt_riderDetailsActivity_wednesday:
 			initTextView(v);
 			list.clear();
 			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(2)),
-					wednesday, 3);
+					wednesday, 3, getWeekOfDate(2));
 
 			break;
 		case R.id.txt_riderDetailsActivity_thuresday:
 			initTextView(v);
 			list.clear();
 			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(3)), thursday,
-					4);
+					4, getWeekOfDate(3));
 
 			break;
 		case R.id.txt_riderDetailsActivity_friday:
 			initTextView(v);
 			list.clear();
-			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(4)), friday, 5);
+			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(4)), friday,
+					5, getWeekOfDate(4));
 
 			break;
 		case R.id.txt_riderDetailsActivity_saturday:
 			initTextView(v);
 			list.clear();
 			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(5)), saturday,
-					6);
+					6, getWeekOfDate(5));
 
 			break;
 		case R.id.txt_riderDetailsActivity_sunday:
 			initTextView(v);
 			list.clear();
-			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(6)), sunday, 7);
+			getTextView(timeLayout, dayHashMap.get(getWeekOfDate(6)), sunday,
+					7, getWeekOfDate(6));
 
 			break;
 		default:
@@ -750,9 +767,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 
 			for (int i = 0; i < value.length; i++) {
 				dasda = value[i] + ",";
-				System.out.println(dasda);
 			}
-			System.out.println("key=" + key + " value=" + value);
 		}
 
 		onClick(mondayTxt);
@@ -783,11 +798,40 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	/**
 	 * 约骑时间
 	 */
-	private void setRiderTime(String str) {
-		String[] time = str.split("|");
-		if (!time[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
-			attendTime = str + ";";
+	private void setRiderTime() {
+
+		String[] monDayime = monDayStr.split("\\|");
+		String[] tuesDayime = tuesDayStr.split("\\|");
+		String[] wednesDayime = wednesDayStr.split("\\|");
+		String[] thursDayime = thursDayStr.split("\\|");
+		String[] FriDayime = FriDayStr.split("\\|");
+		String[] saturDayime = saturDayStr.split("\\|");
+		String[] sunDayime = sunDayStr.split("\\|");
+
+		if (!monDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
+			attendTime = attendTime + monDayStr + ";";
 		}
+		if (!tuesDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
+			attendTime = attendTime + tuesDayStr + ";";
+		}
+		if (!wednesDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
+			attendTime = attendTime + wednesDayStr + ";";
+		}
+		if (!thursDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
+			attendTime = attendTime + thursDayStr + ";";
+		}
+		if (!FriDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
+			attendTime = attendTime + FriDayStr + ";";
+		}
+		if (!saturDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
+			attendTime = attendTime + saturDayStr + ";";
+		}
+		if (!sunDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
+			attendTime = attendTime + sunDayStr + ";";
+		}
+
+		attendTime.substring(0, attendTime.length() - 1);
+		appointRider();
 	}
 
 	/**
@@ -795,8 +839,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	 * @param v
 	 */
 	private void appointRider() {
-		attendTime.substring(0, attendTime.length() - 1);
-
+		
 		RequestParams params = new RequestParams("UTF-8");
 		params.addQueryStringParameter("riderId", riderId);
 		params.addQueryStringParameter("datas", attendTime);
@@ -903,7 +946,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	private String ss = null;
 
 	private void getTextView(ViewGroup viewGroup, final String str,
-			final String day[], final int num) {
+			final String day[], final int num, final String today) {
 
 		if (ss == null) {
 			ss = str;
@@ -928,44 +971,41 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 						public void onClick(View v) {
 							TextView t = (TextView) v;
 							id = Integer.parseInt(t.getHint().toString());
-							System.out.println(t.getHint().toString());
 
-							if (!dayMap.get(str)[id - 1].equals("0")) {
-								panduan(id, v, str, day);
+							System.out.println("id:" + t.getHint().toString());
+							System.out.println("dayMap.get(str)[id]:"
+									+ dayMap.get(str)[id]);
+
+							if (!dayMap.get(str)[id].equals("0")) {
+
+								panduan(id, v, str, day, today, idMap.get(str));
 
 							}
 
 							switch (num) {
 							case 1:
 								monDayStr = keepData(day, getTimes(0));
-								setRiderTime(monDayStr);
 								break;
 							case 2:
 								tuesDayStr = keepData(day, getTimes(1));
-								setRiderTime(tuesDayStr);
 								break;
 							case 3:
 								wednesDayStr = keepData(day, getTimes(2));
-								setRiderTime(wednesDayStr);
 
 								break;
 							case 4:
 								thursDayStr = keepData(day, getTimes(3));
-								setRiderTime(thursDayStr);
 								break;
 							case 5:
 								FriDayStr = keepData(day, getTimes(4));
-								setRiderTime(FriDayStr);
 
 								break;
 							case 6:
 								saturDayStr = keepData(day, getTimes(5));
-								setRiderTime(saturDayStr);
 
 								break;
 							case 7:
 								sunDayStr = keepData(day, getTimes(6));
-								setRiderTime(sunDayStr);
 								break;
 
 							default:
@@ -977,10 +1017,15 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 				}
 			} else if (view instanceof LinearLayout) {
 				// 若是布局控件（LinearLayout或RelativeLayout）,继续查询子View
-				this.getTextView((ViewGroup) view, str, day, num);
+				this.getTextView((ViewGroup) view, str, day, num, today);
 			}
 		}
 
+		initTime(str, day, today);
+
+	}
+
+	private void initTime(final String str, final String[] day, String today) {
 		if (hashMap.get(str).size() == dayMap.get(str).length) {
 			for (int j = 0; j < dayMap.get(str).length; j++) {
 				if (dayMap.get(str)[j].equals("1")) {
@@ -993,15 +1038,22 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 												.getDrawable(
 														R.drawable.corners_rider_time_blue));
 					} else {
-						if (getHour() - 7 > j) {
-							hashMap.get(str)
-									.get(j)
-									.setBackground(
-											getResources()
-													.getDrawable(
-															R.drawable.corners_rider_time_gray));
-							dayMap.get(str)[j] = "0";
-							day[j] = "0";
+						if (getWeekOfDate(0).equals(today)) {
+							if (getHour() - 6 > j) {
+								hashMap.get(str)
+										.get(j)
+										.setBackground(
+												getResources()
+														.getDrawable(
+																R.drawable.corners_rider_time_gray));
+							} else {
+								hashMap.get(str)
+										.get(j)
+										.setBackground(
+												getResources()
+														.getDrawable(
+																R.drawable.corners_rider_time_white));
+							}
 						} else {
 							hashMap.get(str)
 									.get(j)
@@ -1017,7 +1069,6 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 							.setBackground(
 									getResources().getDrawable(
 											R.drawable.corners_rider_time_blue));
-
 				} else {
 					hashMap.get(str)
 							.get(j)
@@ -1027,7 +1078,6 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -1036,37 +1086,34 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	 * @param v
 	 * @param str
 	 * @param day
-	 * 判断时间选择是否符合规则
+	 *            判断时间选择是否符合规则
 	 */
-	private void panduan(int id, View v, String str, String day[]) {
+	private void panduan(int id, View v, String str, String day[],
+			String today, List<Integer> l) {
 
-		if (idList.size() == 0) {
-			idList.add(id);
+		if (l.size() == 0) {
+			l.add(id);
 			minId = id;
 			maxId = id;
 
-			for (int i = 0; i < dayMap.get(str).length; i++) {
-				System.out.println("dayMap.get(str)[i]:" + dayMap.get(str)[i]);
-			}
-
-			dayMap.get(str)[id - 1] = "2";
-			day[id - 1] = "1";
+			dayMap.get(str)[id] = "2";
+			day[id] = "1";
 			v.setBackground(getResources().getDrawable(
 					R.drawable.corners_rider_time_blue));
 
 			return;
-		} else if (idList.size() == 1) {
-			minId = idList.get(0);
-			maxId = idList.get(0);
+		} else if (l.size() == 1) {
+			minId = l.get(0);
+			maxId = l.get(0);
 		} else {
 
-			int minIds = idList.get(0);
-			int maxIds = idList.get(0);
-			for (int i = 0; i < idList.size(); i++) {
+			int minIds = l.get(0);
+			int maxIds = l.get(0);
+			for (int i = 0; i < l.size(); i++) {
 
-				minId = idList.get(i) < minIds ? idList.get(i) : minIds;
+				minId = l.get(i) < minIds ? l.get(i) : minIds;
 				minIds = minId;
-				maxId = idList.get(i) > maxIds ? idList.get(i) : maxIds;
+				maxId = l.get(i) > maxIds ? l.get(i) : maxIds;
 				maxIds = maxId;
 			}
 			maxId = maxIds;
@@ -1074,68 +1121,91 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 
 		}
 
+		System.out.println("idList.size():" + l.size());
+		System.out.println("id:" + id);
+		System.out.println("minId:" + minId);
+		System.out.println("maxId:" + maxId);
+
 		if (minId - 1 == id || maxId + 1 == id) {
-			if (dayMap.get(str)[id - 1].equals("2")) {
-				dayMap.get(str)[id - 1] = "1";
-				day[id - 1] = "0";
+			if (dayMap.get(str)[id].equals("2")) {
+				dayMap.get(str)[id] = "1";
+				day[id] = "0";
 				v.setBackground(getResources().getDrawable(
 						R.drawable.corners_rider_time_white));
 
-				idList.remove((Integer) id);
+				l.remove((Integer) id);
 
-			} else if (dayMap.get(str)[id - 1].equals("1")) {
-				dayMap.get(str)[id - 1] = "2";
-				day[id - 1] = "1";
+			} else if (dayMap.get(str)[id].equals("1")) {
+				dayMap.get(str)[id] = "2";
+				day[id] = "1";
 				v.setBackground(getResources().getDrawable(
 						R.drawable.corners_rider_time_blue));
 
-				idList.add(id);
+				l.add(id);
 
 			}
 
 		} else if (minId == id || maxId == id) {
-			if (dayMap.get(str)[id - 1].equals("2")) {
-				dayMap.get(str)[id - 1] = "1";
-				day[id - 1] = "0";
+
+			if (dayMap.get(str)[id].equals("2")) {
+				dayMap.get(str)[id] = "1";
+				day[id] = "0";
 				v.setBackground(getResources().getDrawable(
 						R.drawable.corners_rider_time_white));
 
-				idList.remove((Integer) id);
+				l.remove((Integer) id);
 
-			} else if (dayMap.get(str)[id - 1].equals("1")) {
-				dayMap.get(str)[id - 1] = "2";
-				day[id - 1] = "1";
+			} else if (dayMap.get(str)[id].equals("1")) {
+				dayMap.get(str)[id] = "2";
+				day[id] = "1";
 				v.setBackground(getResources().getDrawable(
 						R.drawable.corners_rider_time_blue));
 
-				idList.add(id);
+				l.add(id);
 
 			}
 		} else {
 
 			for (int j = 0; j < day.length; j++) {
-				if (getHour() - 7 > j) {
-					hashMap.get(str)
-							.get(j)
-							.setBackground(
-									getResources().getDrawable(
-											R.drawable.corners_rider_time_gray));
-					dayMap.get(str)[j] = "0";
-					day[j] = "0";
 
+				if (getWeekOfDate(0).equals(today)) {
+					if (getHour() - 6 > j) {
+						hashMap.get(str)
+								.get(j)
+								.setBackground(
+										getResources()
+												.getDrawable(
+														R.drawable.corners_rider_time_gray));
+						dayMap.get(str)[j] = "0";
+						day[j] = "0";
+
+					} else {
+						if (!dayMap.get(str)[j].equals("0")) {
+							list.get(j)
+									.setBackground(
+											getResources()
+													.getDrawable(
+															R.drawable.corners_rider_time_white));
+							dayMap.get(str)[j] = "1";
+							day[j] = "0";
+						}
+					}
 				} else {
-					list.get(j).setBackground(
-							getResources().getDrawable(
-									R.drawable.corners_rider_time_white));
-					dayMap.get(str)[j] = "1";
-					day[j] = "0";
+					if (!dayMap.get(str)[j].equals("0")) {
+						list.get(j).setBackground(
+								getResources().getDrawable(
+										R.drawable.corners_rider_time_white));
+						dayMap.get(str)[j] = "1";
+						day[j] = "0";
+					}
 				}
 
 			}
-			idList.clear();
-			idList.add(id);
-			day[id - 1] = "1";
-			dayMap.get(str)[id - 1] = "2";
+			l.clear();
+			l.add(id);
+			day[id] = "1";
+			dayMap.get(str)[id] = "2";
+
 			v.setBackground(getResources().getDrawable(
 					R.drawable.corners_rider_time_blue));
 
@@ -1146,8 +1216,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	 * 
 	 * @param day
 	 * @param content
-	 * @return
-	 * 拼接约骑时间
+	 * @return 拼接约骑时间
 	 */
 	private String keepData(String[] day, String content) {
 
