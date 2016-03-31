@@ -1,5 +1,8 @@
 package com.qizhi.qilaiqiqu.activity;
 
+import java.text.SimpleDateFormat;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -9,14 +12,13 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import cn.jpush.android.api.JPushInterface;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
@@ -25,13 +27,20 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
+import com.qizhi.qilaiqiqu.utils.AccessTokenKeeper;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.DataCleanManager;
+import com.qizhi.qilaiqiqu.utils.LogoutAPI;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView;
 import com.qizhi.qilaiqiqu.utils.PushSlideSwitchView.OnSwitchChangedListener;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
+import com.qizhi.qilaiqiqu.utils.Toasts;
+import com.qizhi.qilaiqiqu.utils.WBConstants;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.sina.weibo.sdk.exception.WeiboException;
+import com.sina.weibo.sdk.net.RequestListener;
 import com.tencent.tauth.Tencent;
 import com.umeng.analytics.MobclickAgent;
 
@@ -41,7 +50,8 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class SetActivity extends HuanxinLogOutActivity implements OnClickListener {
+public class SetActivity extends HuanxinLogOutActivity implements
+		OnClickListener {
 
 	private LinearLayout backLayout;
 	private LinearLayout opintionLayout;
@@ -64,6 +74,12 @@ public class SetActivity extends HuanxinLogOutActivity implements OnClickListene
 
 	private Tencent mTencent;
 
+	/** 当前 Token 信息 */
+	private Oauth2AccessToken mAccessToken;
+	/** 注销操作回调 */
+    private LogOutRequestListener mLogoutRequestListener = new LogOutRequestListener();
+	
+	
 	private Handler handler = new Handler() {
 
 		@Override
@@ -186,6 +202,7 @@ public class SetActivity extends HuanxinLogOutActivity implements OnClickListene
 		case R.id.txt_setActivity_logout:
 			logOut();
 			logoutQQ();
+			logoutWB();
 			break;
 
 		case R.id.layout_setActivity_clearCache:
@@ -243,6 +260,50 @@ public class SetActivity extends HuanxinLogOutActivity implements OnClickListene
 		mTencent.logout(this);
 	}
 
+	public void logoutWB() {
+		// 获取当前已保存过的 Token
+		mAccessToken = AccessTokenKeeper.readAccessToken(this);
+		if (mAccessToken != null && mAccessToken.isSessionValid()) {
+			String date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+					.format(new java.util.Date(mAccessToken.getExpiresTime()));
+		}
+		// 注销按钮
+		if (mAccessToken != null && mAccessToken.isSessionValid()) {
+			new LogoutAPI(SetActivity.this, WBConstants.APP_KEY,
+					mAccessToken).logout(mLogoutRequestListener);
+		} else {
+			Toasts.show(SetActivity.this, "注销失败，请检查 Token 是否正确（一个 token 不能重复注销多次）", 0);
+		}
+
+	}
+
+	/**
+     * 注销按钮的监听器，接收注销处理结果。（API请求结果的监听器）
+     */
+    private class LogOutRequestListener implements RequestListener {
+        @Override
+        public void onComplete(String response) {
+            if (!TextUtils.isEmpty(response)) {
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    String value = obj.getString("result");
+                    
+                    if ("true".equalsIgnoreCase(value)) {
+                        AccessTokenKeeper.clear(SetActivity.this);
+                        mAccessToken = null;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } 
+
+        @Override
+        public void onWeiboException(WeiboException e) {
+        	Toasts.show(SetActivity.this, "注销失败", 0);
+        }
+    }
+	
 	private void httpQuery() {
 
 		String url = "mobile/push/releaseToken.html";
@@ -306,7 +367,7 @@ public class SetActivity extends HuanxinLogOutActivity implements OnClickListene
 		super.onResume();
 		MobclickAgent.onResume(this);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();

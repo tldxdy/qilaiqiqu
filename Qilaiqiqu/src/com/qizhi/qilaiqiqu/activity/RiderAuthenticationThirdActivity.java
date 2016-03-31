@@ -73,7 +73,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 				photoList.add((String) msg.obj);
 				uploadingNum = uploadingNum + 1;
 				try {
-					if (uploadingNum == RiderAuthenticationFirstActivity.bitList
+					if (uploadingNum >= RiderAuthenticationFirstActivity.bitList
 							.size()) {
 						StringBuffer s = new StringBuffer();
 						for (int i = 0; i < photoList.size(); i++) {
@@ -102,7 +102,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 				// Toasts.show(ReleaseActiveActivity.this, "图片发布出现问题", 0);
 				uploadingNum = uploadingNum + 1;
 				try {
-					if (uploadingNum == RiderAuthenticationFirstActivity.bitList
+					if (uploadingNum >= RiderAuthenticationFirstActivity.bitList
 							.size()) {
 						StringBuffer s = new StringBuffer();
 						for (int i = 0; i < photoList.size(); i++) {

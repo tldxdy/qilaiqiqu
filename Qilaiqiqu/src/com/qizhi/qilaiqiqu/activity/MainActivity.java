@@ -101,11 +101,16 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	// 定义action常量
 	protected static final String ACTION = "com.qizhi.qilaiqiqu.receiver.LogoutReceiver";
 
+	private List<SearchDataList> searchResult = new ArrayList<SearchDataList>();;
+	
 	public static SplashView splashView;
 	private FrameLayout frameLayout;
 
 	private RelativeLayout titleLayout;
 	private LinearLayout searchLayout;
+
+	public static LinearLayout allLayout;
+
 	private ListView searchList;
 	private TextView searchTxt;
 
@@ -164,8 +169,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		}
 
 	};
-	
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -220,6 +223,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		 * groupChatUserList = preferences.getStringSet("GroupChat" +
 		 * preferences.getString("uniqueKey", null), new HashSet<String>());
 		 */
+
+		allLayout = (LinearLayout) findViewById(R.id.layout_mainActivity_all);
 
 		searchCancel = (TextView) findViewById(R.id.txt_mainActivity_cancel);
 		inputEdt = (EditText) findViewById(R.id.edt_mainActivity_searchInput);
@@ -428,6 +433,10 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	}
 
 	private void exitSearch() {
+		if(fragmentNum == 0){
+			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		}
+		
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(inputEdt.getWindowToken(), 0);
 
@@ -494,7 +503,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		// 为侧滑菜单设置布局
 		menu.setMenu(R.layout.left_menu_personal_center);
 
-		Fragment leftFragment =MenuLeftFragment.newInstance("key", this, menu, preferences);
+		Fragment leftFragment = MenuLeftFragment.newInstance("key", this, menu,
+				preferences);
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.left_menu, leftFragment, "Left").commit();
 	}
@@ -645,12 +655,18 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	class donghua implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
+			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+			if (fragmentNum == 0) {
+				inputEdt.setHint("搜索骑游记");
+			} else {
+				inputEdt.setHint("搜索活动");
+			}
+			searchResult.clear();
 			searchTxt.setVisibility(View.VISIBLE);
 			addImg.setVisibility(View.GONE);
 			searchImg.setVisibility(View.GONE);
 			titleY = titleLayout.getY();
 			searchY = searchLayout.getY();
-
 			ObjectAnimator yBouncer = ObjectAnimator.ofFloat(searchLayout, "y",
 					searchY, titleY);
 			yBouncer.setDuration(500);
@@ -787,7 +803,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 		 * if (!e.toString().equals("")) { searchString = e.toString();
 		 * viewPager.setCurrentItem(2); }
 		 */
-
+		searchResult.clear();
 		RequestParams params = new RequestParams("UTF-8");
 		if (!e.toString().equals("")) {
 			pageIndex = 1;
@@ -799,6 +815,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 			xUtilsUtil.httpPost("common/fuzzyQueryResultPaginationList.html",
 					params, new CallBackPost() {
+
 
 						@Override
 						public void onMySuccess(
@@ -818,13 +835,20 @@ public class MainActivity extends HuanxinLogOutActivity implements
 								}.getType();
 								final SearchResultModel model = gson.fromJson(
 										jsonObject.toString(), type);
-								List<SearchDataList> dataList = model
+								final List<SearchDataList> dataList = model
 										.getDataList();
-								List<SearchDataList> searchResult = new ArrayList<SearchDataList>();
+								
 								for (int i = 0; i < dataList.size(); i++) {
-									if (dataList.get(i).getType().toString()
-											.equals("QYJ")) {
-										searchResult.add(dataList.get(i));
+									if (fragmentNum == 0) {
+										if (dataList.get(i).getType()
+												.toString().equals("QYJ")) {
+											searchResult.add(dataList.get(i));
+										}
+									} else {
+										if (dataList.get(i).getType()
+												.toString().equals("HD")) {
+											searchResult.add(dataList.get(i));
+										}
 									}
 								}
 								if (searchResult.size() == 0) {
@@ -836,7 +860,9 @@ public class MainActivity extends HuanxinLogOutActivity implements
 									 */
 								}
 								adapterSearch = new SearchResultAdapter(
-										MainActivity.this, searchResult);
+										MainActivity.this, searchResult,
+										fragmentNum, preferences.getInt(
+												"userId", -1));
 								searchList.setAdapter(adapterSearch);
 								searchTxt.setVisibility(View.GONE);
 								searchList
@@ -846,16 +872,31 @@ public class MainActivity extends HuanxinLogOutActivity implements
 													AdapterView<?> arg0,
 													View arg1, int position,
 													long arg3) {
+												if (dataList.get(position).getType()
+														.toString().equals("QYJ")) {
+													Intent intent = new Intent(
+															MainActivity.this,
+															RidingDetailsActivity.class);
+													intent.putExtra("isMe",
+															false);
+													intent.putExtra(
+															"articleId",
+															model.getDataList()
+																	.get(position)
+																	.getId());
+													startActivity(intent);
+												} else {
+													Intent intent = new Intent(
+															MainActivity.this,
+															ActivityDetailsActivity.class);
+													intent.putExtra(
+															"activityId",
+															model.getDataList()
+																	.get(position)
+																	.getId());
+													startActivity(intent);
+												}
 
-												Intent intent = new Intent(
-														MainActivity.this,
-														RidingDetailsActivity.class);
-												intent.putExtra("isMe", false);
-												intent.putExtra("articleId",
-														model.getDataList()
-																.get(position)
-																.getId());
-												startActivity(intent);
 											}
 										});
 							}
@@ -931,18 +972,18 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 	@Override
 	protected void onResume() {
-		splashView.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				// 更新数据
-				// 更新完后调用该方法结束刷新
-				if (loginFlag == 1) {
-					splashView.splashAndDisappear();
-					loginFlag = 0;
-				}
-			}
-		}, 1000);
+		// splashView.postDelayed(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// // 更新数据
+		// // 更新完后调用该方法结束刷新
+		// if (loginFlag == 1) {
+		// splashView.splashAndDisappear();
+		// loginFlag = 0;
+		// }
+		// }
+		// }, 1000);
 
 		super.onResume();
 		MobclickAgent.onResume(this);
@@ -1175,5 +1216,5 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			System.exit(0);
 		}
 	}
-	
+
 }

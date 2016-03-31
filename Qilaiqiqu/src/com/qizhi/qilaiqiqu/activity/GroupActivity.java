@@ -126,13 +126,15 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 
 	private void quitActivity() {
 		RequestParams params = new RequestParams("UTF-8");
-		params.addQueryStringParameter("imGroupId",
-				sharedPreferences.getString("username", null));
+
+		params.addQueryStringParameter("activityId",
+				ActivityDetailsActivity.activityId + "");
+		params.addQueryStringParameter("userId",
+				sharedPreferences.getInt("userId", -1) + "");
 		params.addQueryStringParameter("uniqueKey",
 				sharedPreferences.getString("uniqueKey", null));
-
 		new XUtilsUtil().httpPost(
-				"mobile/activity/queryGroupForUserPaginationList.html", params,
+				"mobile/participant/cancelActivityParticipant.html", params,
 				new CallBackPost() {
 
 					@Override
@@ -154,7 +156,10 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 								ActivityCollectorUtil.finishAll();
 								startActivity(new Intent(GroupActivity.this,
 										MainActivity.class).putExtra(
-										"fragmentNum", 1));
+										"fragmentNum", 1).putExtra("loginFlag", 1));
+							} else {
+								Toasts.show(GroupActivity.this, new JSONObject(
+										result).getBoolean("message") + "", 0);
 							}
 
 						} catch (JSONException e) {
@@ -174,7 +179,7 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 	private void cancelActivity() {
 		RequestParams params = new RequestParams("UTF_8");
 		params.addQueryStringParameter("activityId",
-				getIntent().getIntExtra("activityId", -1) + "");
+				ActivityDetailsActivity.activityId + "");
 		params.addQueryStringParameter("userId",
 				sharedPreferences.getInt("userId", -1) + "");
 		params.addQueryStringParameter("uniqueKey",
@@ -191,7 +196,7 @@ public class GroupActivity extends HuanxinLogOutActivity implements
 								ActivityCollectorUtil.finishAll();
 								startActivity(new Intent(GroupActivity.this,
 										MainActivity.class).putExtra(
-										"fragmentNum", 1));
+										"fragmentNum", 1).putExtra("loginFlag", 1));
 							} else {
 								Toasts.show(GroupActivity.this, new JSONObject(
 										result).getBoolean("message") + "", 0);

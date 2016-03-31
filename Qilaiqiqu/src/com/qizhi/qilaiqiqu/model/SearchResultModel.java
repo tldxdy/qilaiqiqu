@@ -11,21 +11,30 @@ public class SearchResultModel {
 	private List<SearchDataList> dataList;
 
 	public class SearchDataList {
-		private String duration;
-		private String startDate;
-		private int userId;
-		private String createDate;
-		private int scanNum;
-		private int praiseNum;
-		private String userImage;
-		private String defaultImage;
-		private boolean involved;
-		private boolean praised;
 		private int id;
 		private String state;
 		private String type;
-		private String title;
+		private String duration;
 		private String userName;
+		private int userId;
+		private String userImage;
+		private String createDate;
+		private String startDate;
+		private String defaultImage;
+		private int scanNum;
+		private int praiseNum;
+		private String outlay;
+		private String title;
+		private boolean involved;
+		private boolean praised;
+
+		public String getOutlay() {
+			return outlay;
+		}
+
+		public void setOutlay(String outlay) {
+			this.outlay = outlay;
+		}
 
 		public boolean isPraised() {
 			return praised;

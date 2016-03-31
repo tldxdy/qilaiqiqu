@@ -45,6 +45,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.adapter.RiderDetailsAdapter;
 import com.qizhi.qilaiqiqu.model.RiderDetailsModel;
 import com.qizhi.qilaiqiqu.model.RiderDetailsModel.AttendRider;
+import com.qizhi.qilaiqiqu.model.RidingCommentModel;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil;
 import com.qizhi.qilaiqiqu.utils.ImageCycleViewUtil.ImageInfo;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -59,10 +60,10 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 
 	private ListView commentList;
 	private RiderDetailsAdapter riderDetailsAdapter;
+	private List<RidingCommentModel> cList = new ArrayList<RidingCommentModel>();
 
 	private LinearLayout hearderViewLayout;
 	private LinearLayout backLayout;
-	private LinearLayout phoneLayout;
 	private LinearLayout buttonLayout;
 
 	private TextView button1;
@@ -123,8 +124,6 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	// private String day[];
 	private HashMap<String, String[]> dayMap = new HashMap<String, String[]>();
 
-	private List<Integer> idList = new ArrayList<Integer>();
-
 	private String monDayStr = getTimes(0) + "|0,0,0,0,0,0,0,0,0,0,0,0,0,0";
 	private String tuesDayStr = getTimes(1) + "|0,0,0,0,0,0,0,0,0,0,0,0,0,0";
 	private String wednesDayStr = getTimes(2) + "|0,0,0,0,0,0,0,0,0,0,0,0,0,0";
@@ -148,6 +147,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
+			initEvent();
 			check();
 			setView();
 			setImageCycleViewUtil();
@@ -163,14 +163,11 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_rider_details);
 		initView();
 		getRiderDate();
-		initEvent();
 	}
 
 	private void initView() {
 		riderId = getIntent().getIntExtra("riderId", -1) + "";
 		httpUtils = new XUtilsUtil();
-		riderDetailsAdapter = new RiderDetailsAdapter(this);
-
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
 		hearderViewLayout = (LinearLayout) LayoutInflater.from(this).inflate(
@@ -179,8 +176,6 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		commentList = (ListView) findViewById(R.id.list_riderDetails_comment);
 		buttonLayout = (LinearLayout) findViewById(R.id.layout_riderDetails_button);
 		backLayout = (LinearLayout) findViewById(R.id.layout_riderDetailsActivity_back);
-		phoneLayout = (LinearLayout) hearderViewLayout
-				.findViewById(R.id.layout_riderDetailsActivity_phone);
 
 		button1 = (TextView) findViewById(R.id.txt_riderDetails_button1);
 		button2 = (TextView) findViewById(R.id.txt_riderDetails_button2);
@@ -246,15 +241,17 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		sundayTxt.setOnClickListener(this);
 
 		mondayTxt.setText("今天");
-		tuesdayTxt.setText(getWeekOfDate(1));
-		wednesdayTxt.setText(getWeekOfDate(2));
-		thursdayTxt.setText(getWeekOfDate(3));
-		fridayTxt.setText(getWeekOfDate(4));
-		saturdayTxt.setText(getWeekOfDate(5));
-		sundayTxt.setText(getWeekOfDate(6));
+		tuesdayTxt.setText("明天");
+		wednesdayTxt.setText(getMd(2));
+		thursdayTxt.setText(getMd(3));
+		fridayTxt.setText(getMd(4));
+		saturdayTxt.setText(getMd(5));
+		sundayTxt.setText(getMd(6));
 
+		riderDetailsAdapter = new RiderDetailsAdapter(this, cList);
 		commentList.addHeaderView(hearderViewLayout);
 		commentList.setAdapter(riderDetailsAdapter);
+		riderDetailsAdapter.notifyData();
 	}
 
 	@Override
@@ -269,16 +266,16 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 				break;
 			}
 
-			if (button2.getText().toString().equals("发消息")) {
+			if (button1.getText().toString().equals("发消息")) {
 				String[] split = attendRider.getRiderImage().split(",");
 				startActivity(new Intent(this, ChatSingleActivity.class)
 						.putExtra("username", model.getImUserName())
 						.putExtra("otherUserName", attendRider.getUserName())
 						.putExtra("otherUserImage", split[0])
 						.putExtra("otherUserId", attendRider.getUserId()));
-			} else if (button2.getText().toString().equals("评论")) {
+			} else if (button1.getText().toString().equals("评论")) {
 				startActivity(new Intent(RiderDetailsActivity.this,
-						RiderDiscussActivity.class).putExtra("riderId",
+						RiderCommentActivity.class).putExtra("riderId",
 						attendRider.getRiderId() + ""));
 			}
 
@@ -294,15 +291,16 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 			}
 
 			if (button2.getText().toString().equals("约骑")) {
-				if (!attendTime.equals(null) || !attendTime.equals("")) {
-					System.out.println("attendTime:" + attendTime);
-					setRiderTime();
-				} else {
+				setRiderTime();
+				if (attendTime.equals(null) || attendTime.equals("")) {
 					Toasts.show(this, "请先选择约骑时间！", 0);
+				} else {
+					System.out.println("attendTime:" + attendTime);
+					appointRider();
 				}
 			} else if (button2.getText().toString().equals("待处理")) {
 				Toasts.show(RiderDetailsActivity.this, "正在等待陪骑士处理约骑申请", 0);
-			} else if (button2.getText().toString().equals("约骑成功")) {
+			} else if (button2.getText().toString().equals("已同意")) {
 				Toasts.show(RiderDetailsActivity.this, "陪骑士已同意您的约骑申请", 0);
 			} else if (button2.getText().toString().equals("打分")) {
 				showPopupWindow(v);
@@ -374,21 +372,26 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	private void check() {
 		userApplyState = model.getUserApplyState();
 		if (userApplyState.equals("ATTEND")) {// 已约骑
-			phoneLayout.setVisibility(View.VISIBLE);
+			button2.setBackgroundResource(R.drawable.corners_bg_ao3);
 			button1.setText("发消息");
-			button2.setText("约骑成功");
+			button2.setText("已同意");
+			phoneTxt.setText(attendRider.getRiderPhone());
 		} else if (userApplyState.equals("APPLY")) {// 待处理
-			phoneLayout.setVisibility(View.GONE);
+			button2.setBackgroundResource(R.drawable.corners_bg_ao3);
 			button1.setText("发消息");
 			button2.setText("待处理");
 		} else if (userApplyState.equals("NOTHING")) {// 没约
-			phoneLayout.setVisibility(View.GONE);
 			button1.setText("发消息");
 			button2.setText("约骑");
 		} else if (userApplyState.equals("DELETE")) {// 拒绝
-			phoneLayout.setVisibility(View.GONE);
 			button1.setText("发消息");
 			button2.setText("约骑");
+		}
+		System.out.println("getIntent().getStringExtra(pushType):"
+				+ getIntent().getStringExtra("pushType"));
+		if (getIntent().getStringExtra("pushType") != null) {
+			button1.setText("评论");
+			button2.setText("打分");
 		}
 
 		if (preferences.getInt("userId", -1) == attendRider.getUserId()) {
@@ -399,6 +402,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 			getTime(model.getCanApplyPeriod());
 			buttonLayout.setVisibility(View.VISIBLE);
 		}
+
 	}
 
 	/**
@@ -721,6 +725,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 										jsonObject.getJSONObject("data")
 												.toString(), type);
 								attendRider = model.getAttendRider();
+								cList = attendRider.getRiderCommentList();
 								Message m = handler.obtainMessage();
 								handler.sendMessage(m);
 							} else {
@@ -744,6 +749,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 					}
 
 				});
+
 	}
 
 	/**
@@ -780,8 +786,12 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	private void setView() {
 		riderNameTxt.setText(attendRider.getUserName());
 		memoTxt.setText(attendRider.getRiderMemo());
-		priceTxt.setText(attendRider.getAttendPrice() + "元");
-		phoneTxt.setText(attendRider.getRiderPhone());
+		if (attendRider.getAttendPrice().equals("免费")) {
+			priceTxt.setText(attendRider.getAttendPrice());
+		} else {
+			priceTxt.setText(attendRider.getAttendPrice() + "元");
+		}
+		phoneTxt.setText("仅约骑成功后可见");
 		numberTxt.setText(attendRider.getAttendTimes() + "次");
 		mileageTxt.setText(attendRider.getRideCourse());
 		addressTxt.setText(attendRider.getAttendArea());
@@ -829,9 +839,6 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		if (!sunDayime[1].equals("0,0,0,0,0,0,0,0,0,0,0,0,0,0")) {
 			attendTime = attendTime + sunDayStr + ";";
 		}
-
-		attendTime.substring(0, attendTime.length() - 1);
-		appointRider();
 	}
 
 	/**
@@ -839,7 +846,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	 * @param v
 	 */
 	private void appointRider() {
-		
+		attendTime.substring(0, attendTime.length() - 1);
 		RequestParams params = new RequestParams("UTF-8");
 		params.addQueryStringParameter("riderId", riderId);
 		params.addQueryStringParameter("datas", attendTime);
@@ -862,6 +869,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 								Toasts.show(RiderDetailsActivity.this, "约骑成功",
 										0);
 								button2.setText("待处理");
+								button2.setBackgroundResource(R.drawable.corners_bg_ao3);
 							} else {
 								Toasts.show(RiderDetailsActivity.this, "约骑失败:"
 										+ jsonObject.getString("message")
@@ -1242,6 +1250,16 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 
 	private String userApplyState;
 
+	
+	public String getMd(int i){
+		Calendar calendar = Calendar.getInstance();
+		calendar.get(Calendar.HOUR_OF_DAY);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+		calendar.add(Calendar.DAY_OF_YEAR, i);
+		Date date = calendar.getTime();
+		return sdf.format(date);
+	}
+	
 	public String getWeekOfDate(int i) {
 
 		Calendar calendar = Calendar.getInstance();
@@ -1275,6 +1293,8 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		return weekDays[w];
 	}
 
+	
+	
 	/**
 	 * 获取当前日期
 	 * 

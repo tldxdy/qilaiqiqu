@@ -13,7 +13,6 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.ActivityModel.ParticipantList;
 import com.qizhi.qilaiqiqu.utils.CircleImageViewUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.squareup.picasso.Picasso;
 
 public class AppendGridAdapter extends BaseAdapter {
 

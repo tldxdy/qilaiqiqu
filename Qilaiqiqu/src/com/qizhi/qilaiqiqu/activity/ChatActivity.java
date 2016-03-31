@@ -38,7 +38,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import cn.jpush.android.api.JPushInterface;
 
 import com.easemob.EMCallBack;
 import com.easemob.EMError;

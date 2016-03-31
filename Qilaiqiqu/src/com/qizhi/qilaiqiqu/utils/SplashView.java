@@ -1,14 +1,20 @@
 package com.qizhi.qilaiqiqu.utils;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -38,13 +44,29 @@ public class SplashView extends View {
 
 	private SplashState mState = null;
 
+	private Timer timer;
+	private TimerTask task;
+	
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			if (msg.arg1 == 1) {
+				Toasts.show(getContext(), "与服务器连接超时，请检查网络", 0);
+				stopTime();
+			}
+
+		};
+	};
+	
 	private abstract class SplashState {
 		public abstract void drawState(Canvas canvas);
 	}
 
 	public SplashView(Context context) {
 		super(context);
-
+		startTime();
 		initView(context);
 	}
 
@@ -60,6 +82,25 @@ public class SplashView extends View {
 		mPaintBackground.setColor(mSplashBgColor);
 	}
 
+	private void startTime() {
+		timer = new Timer();
+		task = new TimerTask() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Message message = handler.obtainMessage();
+				message.arg1 = 1;
+				handler.sendMessage(message);
+			}
+		};
+		timer.schedule(task, 5000);
+	}
+
+	private void stopTime() {
+		timer.cancel();
+	}
+	
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
@@ -207,6 +248,7 @@ public class SplashView extends View {
 	}
 	
 	public void splashAndDisappear() {
+		stopTime();
 		RotationState rs = (RotationState) mState;
 		rs.cancel();
 		mState = new MergingState();

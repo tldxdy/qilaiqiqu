@@ -185,8 +185,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:src="@drawable/weibo"
-            android:visibility="gone" />
+            android:src="@drawable/weibo" />
     </LinearLayout>
 
 </LinearLayout>

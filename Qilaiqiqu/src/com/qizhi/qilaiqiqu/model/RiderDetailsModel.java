@@ -31,7 +31,7 @@ public class RiderDetailsModel {
 		private Integer integralNum;
 		private Integer attendTimes;
 
-		private List<?> riderCommentList;
+		private List<RidingCommentModel> riderCommentList;
 
 		private Integer commentCount;
 		private Integer weekTimes;
@@ -168,11 +168,11 @@ public class RiderDetailsModel {
 			this.attendTimes = attendTimes;
 		}
 
-		public List<?> getRiderCommentList() {
+		public List<RidingCommentModel> getRiderCommentList() {
 			return riderCommentList;
 		}
 
-		public void setRiderCommentList(List<?> riderCommentList) {
+		public void setRiderCommentList(List<RidingCommentModel> riderCommentList) {
 			this.riderCommentList = riderCommentList;
 		}
 

@@ -5,6 +5,7 @@ import java.util.List;
 public class RidingCommentModel {
 	private Integer userId;
 	private Integer articleId;
+	private Integer riderId;
 	private String userImage;
 	private Integer parentId;
 	private Integer commentId;
@@ -15,6 +16,14 @@ public class RidingCommentModel {
 	private String title;
 	private String userName;
 	private String parentName;
+
+	public Integer getRiderId() {
+		return riderId;
+	}
+
+	public void setRiderId(Integer riderId) {
+		this.riderId = riderId;
+	}
 
 	public Integer getUserId() {
 		return userId;
@@ -112,6 +121,4 @@ public class RidingCommentModel {
 		this.parentName = parentName;
 	}
 
-	
-	
 }

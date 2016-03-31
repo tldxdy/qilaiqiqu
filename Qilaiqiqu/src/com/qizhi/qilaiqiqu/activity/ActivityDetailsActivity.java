@@ -96,7 +96,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	private TextView isSignTxt1;
 	private TextView isSignTxt2;
 	private TextView isSignTxt3;
-	//private LinearLayout isMelayout1;
+	// private LinearLayout isMelayout1;
 	private LinearLayout isMelayout2;
 
 	private LinearLayout backLayout;
@@ -121,7 +121,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	private Activitys activity;
 
 	private SharedPreferences sharedPreferences;
-	private int activityId;
+	public static int activityId;
 	private int integral;
 
 	private int markPointInt;
@@ -207,7 +207,8 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 		isSignTxt1 = (TextView) findViewById(R.id.txt_activityDetails_txt1);
 		isSignTxt2 = (TextView) findViewById(R.id.txt_activityDetails_chat);
 		isSignTxt3 = (TextView) findViewById(R.id.txt_activityDetails_txt3);
-		//isMelayout1 = (LinearLayout) findViewById(R.id.layout_activityDetails_button1);
+		// isMelayout1 = (LinearLayout)
+		// findViewById(R.id.layout_activityDetails_button1);
 		isMelayout2 = (LinearLayout) findViewById(R.id.layout_activityDetails_button2);
 
 		appendLayout = (LinearLayout) findViewById(R.id.layout_activityDetails_append);
@@ -374,8 +375,10 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			}
 
 			if ("ACTEND".equals(activity.getState())) {
-				if(activity.getUserId() == sharedPreferences.getInt("userId", -1)){
-					Intent intent = new Intent(this, ActivityDiscussActivity.class);
+				if (activity.getUserId() == sharedPreferences.getInt("userId",
+						-1)) {
+					Intent intent = new Intent(this,
+							ActivityDiscussActivity.class);
 					intent.putExtra("activityId", activityId);
 					startActivity(intent);
 				}
@@ -386,8 +389,10 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			break;
 
 		case R.id.layout_activityDetails_button1:
-			/*startActivity(new Intent(ActivityDetailsActivity.this,
-					RidingDetailsActivity.class).putExtra("", articleMemoId1));*/
+			/*
+			 * startActivity(new Intent(ActivityDetailsActivity.this,
+			 * RidingDetailsActivity.class).putExtra("", articleMemoId1));
+			 */
 			break;
 
 		case R.id.layout_activityDetails_append:
@@ -596,12 +601,13 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			showPopupWindow3(v);
 			break;
 		case R.id.txt_activityDetails_articleMemo1:
-			if (sharedPreferences.getInt("userId", -1) != -1 && articleMemoId1 != 0) {
+			if (sharedPreferences.getInt("userId", -1) != -1
+					&& articleMemoId1 != 0) {
 				Intent intent2 = new Intent(ActivityDetailsActivity.this,
 						RidingDetailsActivity.class);
 				intent2.putExtra("articleId", articleMemoId1);
 				startActivity(intent2);
-			} else if(sharedPreferences.getInt("userId", -1) == -1) {
+			} else if (sharedPreferences.getInt("userId", -1) == -1) {
 				Toasts.show(ActivityDetailsActivity.this, "请登录", 0);
 				Intent intent1 = new Intent(ActivityDetailsActivity.this,
 						LoginActivity.class);
@@ -610,21 +616,22 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			}
 			break;
 		case R.id.txt_activityDetails_articleMemo2:
-			if (sharedPreferences.getInt("userId", -1) != -1 && articleMemoId2 != 0) {
+			if (sharedPreferences.getInt("userId", -1) != -1
+					&& articleMemoId2 != 0) {
 				Intent intent2 = new Intent(ActivityDetailsActivity.this,
 						RidingDetailsActivity.class);
 				intent2.putExtra("articleId", articleMemoId2);
 				startActivity(intent2);
-			} else if(sharedPreferences.getInt("userId", -1) == -1){
+			} else if (sharedPreferences.getInt("userId", -1) == -1) {
 				Toasts.show(ActivityDetailsActivity.this, "请登录", 0);
 				Intent intent1 = new Intent(ActivityDetailsActivity.this,
 						LoginActivity.class);
 				startActivity(intent1);
 				this.finish();
 			}
-			
+
 			break;
-			
+
 		default:
 			break;
 		}
@@ -793,24 +800,27 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			Picasso.with(ActivityDetailsActivity.this)
 					.load(R.drawable.bitmap_homepage).into(userImageImg);
 		} else {
-			SystemUtil.Imagexutils(SystemUtil.UrlSize(activity.getUserImage()), userImageImg, ActivityDetailsActivity.this);
-			
-		/*	Picasso.with(ActivityDetailsActivity.this)
-					.load(imageUrl+ SystemUtil.UrlSize(activity.getUserImage())).into(userImageImg);*/
+			SystemUtil.Imagexutils(SystemUtil.UrlSize(activity.getUserImage()),
+					userImageImg, ActivityDetailsActivity.this);
+
+			/*
+			 * Picasso.with(ActivityDetailsActivity.this) .load(imageUrl+
+			 * SystemUtil.UrlSize(activity.getUserImage())).into(userImageImg);
+			 */
 		}
 
 		if (activity.getActivityImage() == null
 				|| "null".equals(activity.getActivityImage())
 				|| "".equals(activity.getActivityImage())) {
-			IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.UrlSize(activity.getDefaultImage()), null,
-					null, null));
+			IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil
+					.UrlSize(activity.getDefaultImage()), null, null, null));
 		} else {
 
 			String[] split = activity.getActivityImage().split(",");
 
 			for (int i = 0; i < split.length; i++) {
-				IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil.UrlSize(split[i]), null,
-						null, null));
+				IClist.add(new ImageCycleViewUtil.ImageInfo(SystemUtil
+						.UrlSize(split[i]), null, null, null));
 
 			}
 		}
@@ -889,19 +899,21 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			CircleImageViewUtil imageView = new CircleImageViewUtil(this);
 
 			linearLayout.addView(imageView);
-			if(model.getParticipantList().get(i).getUserImage().indexOf("http") != -1){
+			if (model.getParticipantList().get(i).getUserImage()
+					.indexOf("http") != -1) {
 				Picasso.with(ActivityDetailsActivity.this)
-				.load(model.getParticipantList().get(i).getUserImage())
+						.load(model.getParticipantList().get(i).getUserImage())
 						.resize(dp2px(ActivityDetailsActivity.this, 45f),
 								dp2px(ActivityDetailsActivity.this, 45f))
-								.into(imageView);
-			}else{
+						.into(imageView);
+			} else {
 				Picasso.with(ActivityDetailsActivity.this)
-				.load(imageUrl
-						+ model.getParticipantList().get(i).getUserImage())
+						.load(imageUrl
+								+ model.getParticipantList().get(i)
+										.getUserImage())
 						.resize(dp2px(ActivityDetailsActivity.this, 45f),
 								dp2px(ActivityDetailsActivity.this, 45f))
-								.into(imageView);
+						.into(imageView);
 			}
 		}
 
@@ -926,7 +938,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 			if ("ACTEND".equals(activity.getState())) {
 				isMelayout2.setVisibility(View.VISIBLE);
 				isSignTxt3.setText("查看评论");
-			}else if("UNDERWAY".equals(activity.getState())){
+			} else if ("UNDERWAY".equals(activity.getState())) {
 				isMelayout2.setVisibility(View.VISIBLE);
 				isSignTxt3.setText("活动正在进行中");
 			}
@@ -983,10 +995,12 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 
 						ImageView imageView = new ImageView(
 								ActivityDetailsActivity.this);
-						SystemUtil.Imagexutils(imageInfo.image.toString(), imageView, ActivityDetailsActivity.this);
-						/*Picasso.with(ActivityDetailsActivity.this)
-								.load(imageInfo.image.toString())
-								.into(imageView);*/
+						SystemUtil.Imagexutils(imageInfo.image.toString(),
+								imageView, ActivityDetailsActivity.this);
+						/*
+						 * Picasso.with(ActivityDetailsActivity.this)
+						 * .load(imageInfo.image.toString()) .into(imageView);
+						 */
 						// imageView.setImageResource(R.drawable.demo);
 
 						return imageView;
@@ -1465,16 +1479,16 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 				: type + System.currentTimeMillis();
 	}
 
-/*	// sina微博
-	private void onClickWBShare() {
-	}*/
+	/*
+	 * // sina微博 private void onClickWBShare() { }
+	 */
 
 	public byte[] Bitmap2Bytes(Bitmap bm) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
 		return baos.toByteArray();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();

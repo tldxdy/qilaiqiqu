@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/groupActivity_owner"
+    android:layout_width="90dp"
     android:layout_height="wrap_content"
     android:background="@drawable/corners_grid"
-    android:paddingBottom="4dip" >
+    android:orientation="vertical"
+    android:paddingBottom="4dp" >
 
     <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
         android:id="@+id/img_appendGrid_itemImage"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
+        android:layout_gravity="center_horizontal"
         android:src="@drawable/demo" />
 
     <TextView
         android:id="@+id/txt_appendGrid_itemText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/img_appendGrid_itemImage"
-        android:layout_centerHorizontal="true"
-        android:singleLine="true"
+        android:layout_gravity="center_horizontal"
         android:textSize="14sp" >
     </TextView>
 
@@ -28,12 +26,11 @@
         android:id="@+id/txt_appendGrid_click"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txt_appendGrid_itemText"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="2dp"
         android:text="点击查看"
         android:textColor="#6dbfeb"
         android:textSize="12sp" >
     </TextView>
 
-</RelativeLayout>
+</LinearLayout>
