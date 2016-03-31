@@ -76,14 +76,19 @@ public class RidingFragment extends Fragment implements OnItemClickListener,
 				Context.MODE_PRIVATE);
 		xUtilsUtil = new XUtilsUtil();
 		Articlelist = new ArrayList<ArticleModel>();
+		adapter = new SlideShowListAdapter(
+				context, Articlelist);
 		IClist = new ArrayList<ImageCycleViewUtil.ImageInfo>();
 		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
+		manageList.setAdapter(adapter);
+		manageList.setOnItemClickListener(RidingFragment.this);
 		swipeLayout.setOnRefreshListener(this);
-
+		swipeLayout.setOnLoadListener(this);
+		
 		imageUrl();
 		return view;
 
@@ -238,18 +243,19 @@ public class RidingFragment extends Fragment implements OnItemClickListener,
 		if (jsonObject.optBoolean("result")) {
 			pageIndex = jsonObject.optInt("pageIndex");
 
-			JSONArray jsonArray = jsonObject.optJSONArray("dataList");
+			JSONArray jsonArray = jsonObject
+					.optJSONArray("dataList");
 			// 数据获取
 			Gson gson = new Gson();
 			Type type = new TypeToken<List<ArticleModel>>() {
 			}.getType();
-			Articlelist = gson.fromJson(jsonArray.toString(), type);
-
-			adapter = new SlideShowListAdapter(context, Articlelist);
-			manageList.setAdapter(adapter);
-			manageList.setOnItemClickListener(RidingFragment.this);
-			swipeLayout.setOnRefreshListener(this);
-			swipeLayout.setOnLoadListener(this);
+			List<ArticleModel> lists = gson.fromJson(jsonArray.toString(),
+					type);
+			Articlelist.clear();
+			Articlelist.addAll(lists);
+			adapter.notifyDataSetChanged();
+			adapter = new SlideShowListAdapter(
+					context, Articlelist);
 			/*
 			 * manageList .setOnRefreshListener(RidingFragment.this);
 			 */
@@ -320,16 +326,16 @@ public class RidingFragment extends Fragment implements OnItemClickListener,
 							if (pageIndex == 1) {
 								Articlelist.clear();
 								Articlelist.addAll(lists);
-								Toasts.show(context, "刷新成功", 0);
+								//Toasts.show(context, "刷新成功", 0);
 							} else if (1 < pageIndex && pageIndex <= pageCount) {
 								Articlelist.addAll(lists);
-								Toasts.show(context, "加载成功", 0);
+								//Toasts.show(context, "加载成功", 0);
 							} else {
 								pageIndex = jsonObject.optInt("pageIndex");
-								Toasts.show(context, "已显示全部内容", 0);
+								//Toasts.show(context, "已显示全部内容", 0);
 							}
+							adapter.notifyDataSetChanged();
 						}
-						adapter.notifyDataSetChanged();
 					}
 
 					@Override

@@ -186,5 +186,13 @@
     <string name="weibosdk_demo_token_to_string_format">Token：%1$s \nRefresh Token：%2$s \nexpires_in：%3$s</string>
     <string name="weibosdk_demo_token_to_string_format_1">Token：%1$s \n有效期：%2$s</string>
     <string name="weibosdk_demo_token_has_existed">Token 仍在有效期内，无需再次登录。</string>
+    
+    
+    
+            <string name="listview_header_hint_normal">下拉刷新</string>
+<string name="listview_header_hint_release">释放立即刷新</string>
+<string name="listview_loading">加载更多...</string>
+<string name="nomore_loading">没有更多数据记录</string>
+<string name="refreshing">加载跟多...</string>
 
 </resources>

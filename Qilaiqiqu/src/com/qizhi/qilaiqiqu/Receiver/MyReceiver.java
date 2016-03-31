@@ -16,6 +16,8 @@ import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.activity.ActivityDiscussActivity;
 import com.qizhi.qilaiqiqu.activity.DiscussActivity;
 import com.qizhi.qilaiqiqu.activity.FriendActivity;
+import com.qizhi.qilaiqiqu.activity.RiderDetailsActivity;
+import com.qizhi.qilaiqiqu.activity.RiderManageCenterActivity;
 import com.qizhi.qilaiqiqu.activity.RidingDetailsActivity;
 
 /**
@@ -70,11 +72,20 @@ public class MyReceiver extends BroadcastReceiver {
 				JSONObject jsonObject = new JSONObject(EXTRA);
 				key = jsonObject.getString("pushType");
 				JSONObject pushValue = null;
-				/*System.out.println("====================================");
-				System.out.println("KEY:"+key+"-------"+jsonObject.toString());*/
+				System.out.println("====================================");
+				System.out.println("KEY:"+key+"-------"+jsonObject.toString());
+				System.out.println(key.equals("PQSYQ"));
+				if(key.equals("PQSYQ")){
+					System.out.println("asdasd");
+					//陪骑士邀请
+					Intent i = new Intent(context, RiderManageCenterActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					context.startActivity(i);
+				}
 				
 				if (!key.equals("YHGZ")) {
-					pushValue = new JSONObject(jsonObject.getString("pushValue"));
+					pushValue = new JSONObject(jsonObject.optString("pushValue"));
 				}
 
 				if (key.equals("QYJPL")) {
@@ -86,7 +97,6 @@ public class MyReceiver extends BroadcastReceiver {
 					context.startActivity(i);
 
 				} else if (key.equals("YHGZ")) {
-
 					Intent i = new Intent(context, FriendActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -181,7 +191,7 @@ public class MyReceiver extends BroadcastReceiver {
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						i.putExtra("activityId", activityId);
 						context.startActivity(i);
-				}else if("HDDSJG".equals(key)){
+				}else if(key.equals("HDDSJG")){
 					int activityId = pushValue.optInt("activityId");
 					Intent i;
 					if("".equals(pushValue.optString("memo"))){
@@ -202,7 +212,48 @@ public class MyReceiver extends BroadcastReceiver {
 						i.putExtra("activityId", activityId);
 						context.startActivity(i);
 					}
+				}else if(key.equals("PQSHF")){
+					//陪骑士回复
+					int riderId = pushValue.optInt("riderId");
+					Intent i = new Intent(context, RiderDetailsActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("riderId", riderId);
+						context.startActivity(i);
+				}else if(key.equals("PQSYQDS")){
+					//陪骑士邀请打赏
+					int riderId = pushValue.optInt("riderId");
+					Intent i = new Intent(context, RiderDetailsActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("riderId", riderId);
+					i.putExtra("pushType", key);
+						context.startActivity(i);
+						
+				}else if(key.equals("PQSDS")){
+					//陪骑士打赏
+					int riderId = pushValue.optInt("riderId");
+					int integral = pushValue.optInt("integral");
+					int sumIntegral = pushValue.optInt("sumIntegral");
+					String userName = pushValue.optString("userName");
+					Intent i = new Intent(context, RiderDetailsActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("riderId", riderId);
+					i.putExtra("integral", integral);
+					i.putExtra("sumIntegral", sumIntegral);
+					i.putExtra("userName", userName);
+						context.startActivity(i);
+				}else if(key.equals("PQSJJ") || key.equals("PQSTY")){
+					//陪骑士邀请打赏
+					int riderId = pushValue.optInt("riderId");
+					Intent i = new Intent(context, RiderDetailsActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					i.putExtra("riderId", riderId);
+					context.startActivity(i);
 				}
+				
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

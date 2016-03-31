@@ -71,10 +71,13 @@ public class RiderAccompanyFragment extends Fragment implements OnItemClickListe
 		
 		xUtilsUtil = new XUtilsUtil();
 		preferences = getActivity().getSharedPreferences("userLogin", Context.MODE_PRIVATE);
-		data();
 		return view;
 	}
-	
+	@Override
+	public void onResume() {
+		data();
+		super.onResume();
+	}
 	
 	private void data() {
 		pageIndex = 1;
@@ -104,6 +107,7 @@ public class RiderAccompanyFragment extends Fragment implements OnItemClickListe
 			Type type = new TypeToken<List<RiderApplyModle>>(){}.getType();
 			List<RiderApplyModle> lists = gson.fromJson
 					(jsonObject.optJSONArray("dataList").toString(), type);
+			list.clear();
 			list.addAll(lists);
 			adapter.notifyDataSetChanged();
 		}else{

@@ -72,7 +72,7 @@ public class RideraAppointFragment extends Fragment implements OnItemClickListen
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setOnLoadListener(this);
 		
-		data();
+		
 		return view;
 	}
 	
@@ -80,6 +80,17 @@ public class RideraAppointFragment extends Fragment implements OnItemClickListen
 	
 	
 	
+
+	@Override
+	public void onResume() {
+		data();
+		super.onResume();
+	}
+
+
+
+
+
 
 	private void data() {
 		pageIndex = 1;
@@ -107,6 +118,7 @@ public class RideraAppointFragment extends Fragment implements OnItemClickListen
 			Type type = new TypeToken<List<RiderApplyModle>>(){}.getType();
 			List<RiderApplyModle> lists = gson.fromJson
 					(jsonObject.optJSONArray("dataList").toString(), type);
+			list.clear();
 			list.addAll(lists);
 			adapter.notifyDataSetChanged();
 		}else{

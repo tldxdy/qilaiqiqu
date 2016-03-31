@@ -14,6 +14,7 @@ import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActivityDetailsActivity;
 import com.qizhi.qilaiqiqu.activity.ActivityDiscussActivity;
 import com.qizhi.qilaiqiqu.activity.CommentMessageActivity;
+import com.qizhi.qilaiqiqu.activity.RiderDetailsActivity;
 import com.qizhi.qilaiqiqu.adapter.MyMessageAdapter;
 import com.qizhi.qilaiqiqu.model.CommentModel;
 import com.qizhi.qilaiqiqu.model.SystemMessageModel;
@@ -103,6 +104,8 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {
 				String s = responseInfo.result;
+				System.out.println("==========================");
+				System.out.println(s);
 				JSONObject jsonObject = null;
 				try {
 					jsonObject = new JSONObject(s);
@@ -173,8 +176,19 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 							intent.putExtra("activityId", activityId);
 							getActivity().startActivity(intent);
 							
-						}else if("PQS".equals(smm.getMessageType())){
-							//陪骑士
+						}else if("PQSDSJG".equals(smm.getMessageType())){
+							//陪骑士回复
+							int riderId = jo.optInt("riderId");
+							Intent intent = new Intent(getActivity(), RiderDetailsActivity.class);
+							intent.putExtra("riderId", riderId);
+							getActivity().startActivity(intent);
+							
+						}else if("PQSYQDS".equals(smm.getMessageType())){
+							//陪骑士邀请打赏
+							int riderId = jo.optInt("riderId");
+							Intent intent = new Intent(getActivity(), RiderDetailsActivity.class);
+							intent.putExtra("riderId", riderId);
+							getActivity().startActivity(intent);
 							
 						}
 						

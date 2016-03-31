@@ -29,8 +29,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="返回"
-                android:textSize="16sp"
-                android:textColor="@color/write" />
+                android:textColor="@color/write"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
@@ -154,6 +154,45 @@
             </LinearLayout>
 
             <RelativeLayout
+                android:id="@+id/layout_rideractivity_activity_becomerider"
+                android:layout_width="match_parent"
+                android:background="#ffffffff"
+                android:layout_height="44dp" >
+
+                <TextView
+                    android:id="@+id/txt_personActivity_attendRider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="我要成为陪骑士" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/little_return" />
+
+                <ImageView
+                    android:id="@+id/img_personActivity_rider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_toLeftOf="@+id/txt_personActivity_attendRider"
+                    android:src="@drawable/set_sucessfully" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/write" >
+            </LinearLayout>
+
+            <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="44dp"
                 android:background="#f2f2f2" >
@@ -178,11 +217,12 @@
                     android:layout_toRightOf="@+id/txt_personalDataActivity_nick"
                     android:background="@null"
                     android:inputType="none"
-                    android:textColor="@color/dark"
                     android:maxLength="8"
+                    android:textColor="@color/dark"
                     android:textSize="14sp" />
 
-                <!-- <TextView
+                <!--
+                     <TextView
                     android:id="@+id/txt_personalDataActivity_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -191,9 +231,16 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="15dp"
                     android:text="0/8"
-                    android:textSize="14sp" /> -->
+                    android:textSize="14sp" />
+                -->
 
             </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/write" >
+            </LinearLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_personalDataActivity_bindphone"

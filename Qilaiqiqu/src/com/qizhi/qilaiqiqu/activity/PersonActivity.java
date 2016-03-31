@@ -74,6 +74,8 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 	private TextView activityNumTxt;	//发布活动数
 	
 	private TextView attendRiderTxt;
+	private ImageView RiderImage;
+	
 	private int applyId;
 
 	@Override
@@ -111,7 +113,7 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 		activityNumTxt = (TextView) findViewById(R.id.txt_personActivity_activityNum);
 		
 		attendRiderTxt = (TextView) findViewById(R.id.txt_personActivity_attendRider);
-		
+		RiderImage = (ImageView) findViewById(R.id.img_personActivity_rider);
 		
 		txt1 = (TextView) findViewById(R.id.txt_personActivity_txt1);
 		txt2 = (TextView) findViewById(R.id.txt_personActivity_txt2);
@@ -133,7 +135,7 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 			}else if(isRider == 3){
 				buttonLayout1.setVisibility(View.GONE);
 				buttonLayout2.setVisibility(View.VISIBLE);
-				txt3.setBackgroundColor(0xffff3030);
+				txt3.setBackgroundColor(0xffB3B3B3);
 				txt3.setText("已拒绝");
 			}
 			
@@ -253,7 +255,7 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 					if (jsonObject.optBoolean("result")) {
 						buttonLayout1.setVisibility(View.GONE);
 						buttonLayout2.setVisibility(View.VISIBLE);
-						txt3.setBackgroundColor(0xffff3030);
+						txt3.setBackgroundColor(0xffB3B3B3);
 						txt3.setText("已拒绝");
 					}
 				}
@@ -344,10 +346,14 @@ public class PersonActivity extends HuanxinLogOutActivity implements
 								}
 
 							}
+							
+							System.out.println("certainUserModel.isAttendRiderFlag()"+certainUserModel.isAttendRiderFlag());
 							if(certainUserModel.isAttendRiderFlag()){
 								attendRiderTxt.setText("已认证陪骑士");
+								RiderImage.setImageResource(R.drawable.set_sucessfully);
 							}else{
 								attendRiderTxt.setText("未认证陪骑士");
+								RiderImage.setImageResource(R.drawable.activity_finish);
 							}
 							
 							ridingNumTxt.setText(certainUserModel.getArticleMemoNum() + "");

@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -32,13 +34,14 @@ import com.qizhi.qilaiqiqu.model.RiderRecommendModel;
 import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
+import com.qizhi.qilaiqiqu.xrecyclerview.XRecyclerView;
 import com.umeng.analytics.MobclickAgent;
 
 public class RiderListActivity extends HuanxinLogOutActivity implements
 		OnClickListener, OnRecyclerViewItemClickListener, OnRefreshListener {
 
 	private LinearLayout backLayout;
-	private RecyclerView recyclerView;
+	private XRecyclerView recyclerView;
 	private RiderListAdapter adapter;
 	private List<RiderRecommendModel> list;
 	private int pageIndex = 1;
@@ -58,11 +61,39 @@ public class RiderListActivity extends HuanxinLogOutActivity implements
 	@SuppressWarnings("deprecation")
 	private void initView() {
 		backLayout = (LinearLayout) findViewById(R.id.layout_appendActivity_back);
-		recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
-		recyclerView.setHasFixedSize(true);
-		// 设置layoutManager
-		recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,
-				StaggeredGridLayoutManager.VERTICAL));
+		recyclerView = (XRecyclerView) findViewById(R.id.recycle_view);
+		StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager( 2,
+                StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.setRefreshProgressStyle(22);
+        recyclerView.setLaodingMoreProgressStyle(7);
+        recyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable(){
+                    public void run() {
+                        recyclerView.refreshComplete();
+                    }
+
+                }, 1000);
+            }
+
+            @Override
+            public void onLoadMore() {
+            	
+            	refreshLayout.postDelayed(new Runnable() {
+
+        			@Override
+        			public void run() {
+        				recyclerView.loadMoreComplete();
+                    	pageIndex = pageIndex + 1;
+                    	initDatas();
+        			}
+        		}, 1500);
+            }
+        });
 
 		refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
 		refreshLayout.setColorScheme(android.R.color.holo_blue_bright,
@@ -82,14 +113,15 @@ public class RiderListActivity extends HuanxinLogOutActivity implements
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 		refreshLayout.setOnRefreshListener(this);
 		adapter.setOnItemClickListener(this);
-
+		
+		pageIndex = 1;
 		initData();
 	}
 
-	private void initData() {
+	private void initDatas() {
 		RequestParams params = new RequestParams();
-		// params.addBodyParameter("pageIndex", pageIndex + "");
-		params.addBodyParameter("pageIndex", "1");
+		params.addBodyParameter("pageIndex", pageIndex + "");
+		//params.addBodyParameter("pageIndex", "1");
 		params.addBodyParameter("pageSize", 10 + "");
 		xUtilsUtil.httpPost("common/queryAttendRiderPaginationList.html",
 				params, new CallBackPost() {
@@ -98,6 +130,7 @@ public class RiderListActivity extends HuanxinLogOutActivity implements
 					public void onMySuccess(ResponseInfo<String> responseInfo) {
 						String s = responseInfo.result;
 						JSONObject jsonObject = null;
+						System.out.println(s);
 						try {
 							jsonObject = new JSONObject(s);
 						} catch (JSONException e) {
@@ -111,18 +144,20 @@ public class RiderListActivity extends HuanxinLogOutActivity implements
 													.toString(),
 											new TypeToken<ArrayList<RiderRecommendModel>>() {
 											}.getType());
-							list.clear();
 							list.addAll(lists);
-							adapter.notifyDataSetChanged();
+							
 						} else {
-							Toasts.show(RiderListActivity.this,
-									jsonObject.optInt("message"), 0);
+							/*Toasts.show(RiderListActivity.this,
+									jsonObject.optInt("message"), 0);*/
 						}
+						adapter.notifyDataSetChanged();
+						recyclerView.refreshComplete();
 					}
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						Toasts.show(RiderListActivity.this, msg, 0);
+						//Toasts.show(RiderListActivity.this, msg, 0);
+						recyclerView.refreshComplete();
 					}
 				});
 	}
@@ -169,7 +204,7 @@ public class RiderListActivity extends HuanxinLogOutActivity implements
 			outRect.left = space;
 			outRect.right = space;
 			outRect.bottom = space;
-			outRect.top = space;
+			outRect.top = space/2;
 		}
 	}
 
@@ -190,9 +225,51 @@ public class RiderListActivity extends HuanxinLogOutActivity implements
 			@Override
 			public void run() {
 				refreshLayout.setRefreshing(false);
+				pageIndex = 1;
 				initData();
 			}
 		}, 1500);
 
+	}
+	private void initData() {
+		RequestParams params = new RequestParams();
+		params.addBodyParameter("pageIndex", pageIndex + "");
+		//params.addBodyParameter("pageIndex", "1");
+		params.addBodyParameter("pageSize", 10 + "");
+		xUtilsUtil.httpPost("common/queryAttendRiderPaginationList.html",
+				params, new CallBackPost() {
+
+					@Override
+					public void onMySuccess(ResponseInfo<String> responseInfo) {
+						String s = responseInfo.result;
+						JSONObject jsonObject = null;
+						try {
+							jsonObject = new JSONObject(s);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (jsonObject.optBoolean("result")) {
+							Gson gson = new Gson();
+							List<RiderRecommendModel> lists = gson
+									.fromJson(
+											jsonObject.optJSONArray("dataList")
+													.toString(),
+											new TypeToken<ArrayList<RiderRecommendModel>>() {
+											}.getType());
+							list.clear();
+							list.addAll(lists);
+							adapter.notifyDataSetChanged();
+							recyclerView.refreshComplete();
+						} else {
+							Toasts.show(RiderListActivity.this,
+									jsonObject.optInt("message"), 0);
+						}
+					}
+
+					@Override
+					public void onMyFailure(HttpException error, String msg) {
+						Toasts.show(RiderListActivity.this, msg, 0);
+					}
+				});
 	}
 }

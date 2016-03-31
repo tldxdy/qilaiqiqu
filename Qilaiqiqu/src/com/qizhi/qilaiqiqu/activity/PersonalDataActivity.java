@@ -101,6 +101,9 @@ public class PersonalDataActivity extends BaseActivity implements
 	private LinearLayout photoLayout;
 	private LinearLayout fansLayout;
 	private LinearLayout careLayout;
+	private RelativeLayout riderLayout;
+	private TextView attendRiderTxt;
+	private ImageView RiderImage;
 
 	private AssetManager asset;
 
@@ -194,7 +197,9 @@ public class PersonalDataActivity extends BaseActivity implements
 		photoLayout = (LinearLayout) findViewById(R.id.layout_personalDataActivity_photo);
 		addressLayout = (RelativeLayout) findViewById(R.id.layout_personalDataActivity_address);
 		bindPhoneLayout = (RelativeLayout) findViewById(R.id.layout_personalDataActivity_bindphone);
-
+		riderLayout = (RelativeLayout) findViewById(R.id.layout_rideractivity_activity_becomerider);
+		attendRiderTxt = (TextView) findViewById(R.id.txt_personActivity_attendRider);
+		RiderImage = (ImageView) findViewById(R.id.img_personActivity_rider);
 	}
 
 	private void initEvnet() {
@@ -208,6 +213,7 @@ public class PersonalDataActivity extends BaseActivity implements
 		careLayout.setOnClickListener(this);
 		fansLayout.setOnClickListener(this);
 		bindPhoneLayout.setOnClickListener(this);
+		riderLayout.setOnClickListener(this);
 	}
 
 	@Override
@@ -261,6 +267,15 @@ public class PersonalDataActivity extends BaseActivity implements
 				intent.putExtra("uniqueKey",
 						preferences.getString("uniqueKey", null));
 				startActivityForResult(intent, BING_PHONE);
+			}
+			break;
+		case R.id.layout_rideractivity_activity_becomerider:
+			if (!certainUserModel.isAttendRiderFlag()) {
+				startActivity(new Intent(this,
+						RiderAuthenticationActivity.class));
+			}else{
+				startActivity(new Intent(this, RiderDetailsActivity.class).putExtra(
+						"riderId", certainUserModel.getRiderId()));
 			}
 			break;
 
@@ -716,6 +731,13 @@ public class PersonalDataActivity extends BaseActivity implements
 			}
 			SystemUtil.Imagexutils(certainUserModel.getUserImage(), photoImg,
 					this);
+			if(certainUserModel.isAttendRiderFlag()){
+				attendRiderTxt.setText("已认证陪骑士");
+				RiderImage.setImageResource(R.drawable.set_sucessfully);
+			}else{
+				attendRiderTxt.setText("未认证陪骑士");
+				RiderImage.setImageResource(R.drawable.activity_finish);
+			}
 		}
 	}
 

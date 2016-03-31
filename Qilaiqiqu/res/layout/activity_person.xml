@@ -166,17 +166,9 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:text="已认证陪骑士" />
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/little_return" />
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/img_personActivity_rider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
