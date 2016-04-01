@@ -443,7 +443,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 				R.drawable.corners_layout));
 		// 设置好参数之后再show
 		popupWindow.showAtLocation(RiderDetailsActivity.this
-				.findViewById(R.id.layout_ActivityDetailsActivity),
+				.findViewById(R.id.list_riderDetails_comment),
 				Gravity.CENTER, 0, Gravity.CENTER);
 	}
 	

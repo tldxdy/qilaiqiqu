@@ -218,13 +218,6 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 							intent.putExtra("applyId", applyId);
 							getActivity().startActivity(intent);
 							
-						}else if("PQSDSJG".equals(smm.getMessageType())){
-							//陪骑士回复
-							int riderId = jo.optInt("riderId");
-							Intent intent = new Intent(getActivity(), RiderDetailsActivity.class);
-							intent.putExtra("riderId", riderId);
-							getActivity().startActivity(intent);
-							
 						}else if("PQSYQDS".equals(smm.getMessageType())){
 							//陪骑士邀请打赏
 							int riderId = jo.optInt("riderId");
@@ -246,6 +239,7 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 							intent.putExtra("sumIntegral", sumIntegral);
 							intent.putExtra("userName", userName);
 							getActivity().startActivity(intent);
+							
 							
 						}
 						
@@ -361,7 +355,7 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 	  
 	  popupWindow.setTouchable(true);
 	  
-	  popupWindow.setAnimationStyle(R.style.PopupAnimation);
+	  popupWindow.setAnimationStyle(R.style.Popupfade_in_out);
 	  
 	  popupWindow.setTouchInterceptor(new OnTouchListener() {
 		@Override

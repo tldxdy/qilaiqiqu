@@ -50,7 +50,7 @@ public class MessageCenterActivity extends HuanxinLogOutActivity implements OnCl
 		viewPager.setAdapter(adapter);
 		
 		//设置是否可滑动true=》不可滑动
-		viewPager.setNoScroll(true);
+		viewPager.setNoScroll(false);
 		manageTxt.setTextColor(0xffffffff);
 		manageTxt.setBackgroundResource(R.drawable.corners_fragment_manage_left_press);
 		historyTxt.setTextColor(0xff6dbfed);
