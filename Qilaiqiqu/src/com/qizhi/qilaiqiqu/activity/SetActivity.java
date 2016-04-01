@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -57,7 +60,7 @@ public class SetActivity extends HuanxinLogOutActivity implements
 	private LinearLayout opintionLayout;
 	private LinearLayout introduceLayout;
 	private LinearLayout clearCacheLayout;
-
+	
 	private PushSlideSwitchView view1;
 	private PushSlideSwitchView view2;
 	private PushSlideSwitchView view3;
@@ -66,6 +69,7 @@ public class SetActivity extends HuanxinLogOutActivity implements
 
 	private TextView logoutTxt;
 	private TextView cacheTxt;
+	private TextView nowTxt;
 
 	DataCleanManager cleanManager;
 
@@ -112,8 +116,9 @@ public class SetActivity extends HuanxinLogOutActivity implements
 
 		initView();
 		initEvent();
-
+		getNowVersion();
 	}
+
 
 	private void initView() {
 		editor = sp.edit();// 获取编辑器
@@ -126,6 +131,7 @@ public class SetActivity extends HuanxinLogOutActivity implements
 
 		cacheTxt = (TextView) findViewById(R.id.txt_setActivity_cache);
 		logoutTxt = (TextView) findViewById(R.id.txt_setActivity_logout);
+		nowTxt = (TextView) findViewById(R.id.txt_setActivity_nowVersion);
 		backLayout = (LinearLayout) findViewById(R.id.layout_setActivity_back);
 		opintionLayout = (LinearLayout) findViewById(R.id.layout_setActivity_opintion);
 		introduceLayout = (LinearLayout) findViewById(R.id.layout_setActivity_introduce);
@@ -184,6 +190,17 @@ public class SetActivity extends HuanxinLogOutActivity implements
 		});
 	}
 
+	private void getNowVersion() {
+		String pName = "com.qizhi.qilaiqiqu";
+		try {
+			PackageInfo pinfo = this.getPackageManager().getPackageInfo(
+					pName, PackageManager.GET_CONFIGURATIONS);
+			nowTxt.setText(pinfo.versionName);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {

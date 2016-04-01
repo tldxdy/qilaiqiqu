@@ -12,6 +12,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,6 +43,7 @@ import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.UsersAPI;
 import com.qizhi.qilaiqiqu.utils.WBConstants;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
+import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackGet;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
@@ -443,8 +447,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 
 					@Override
 					public void onMyFailure(HttpException error, String msg) {
-						// TODO Auto-generated method stub
-
+						Toasts.show(LoginActivity.this, "登录失败,请检查网络", 0);
 					}
 
 				});

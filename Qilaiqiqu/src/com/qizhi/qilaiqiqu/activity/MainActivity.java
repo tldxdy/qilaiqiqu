@@ -85,6 +85,7 @@ import com.qizhi.qilaiqiqu.utils.ActivityCollectorUtil;
 import com.qizhi.qilaiqiqu.utils.SplashView;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 import com.qizhi.qilaiqiqu.utils.Toasts;
+import com.qizhi.qilaiqiqu.utils.UpdateManager;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.umeng.analytics.MobclickAgent;
@@ -170,6 +171,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 	};
 
+	UpdateManager updateManager;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -190,12 +193,16 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			frameLayout.addView(view);
 			setContentView(frameLayout);
 		}
+		updateManager = new UpdateManager(this);
+		updateManager.checkUpdateInfo();
 
 		initView();
 		initLeft();
 		initEMSDK();
 		addListener();
 		initEvent();
+		
+		
 	}
 
 	private void initView() {

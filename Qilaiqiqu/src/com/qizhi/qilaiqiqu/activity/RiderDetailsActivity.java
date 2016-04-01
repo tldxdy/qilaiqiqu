@@ -475,6 +475,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		if (getIntent().getStringExtra("pushType") != null) {
 			button1.setText("评论");
 			button2.setText("打分");
+			button2.setBackgroundResource(R.drawable.corners_bg_ao);
 		}
 
 		if (preferences.getInt("userId", -1) == attendRider.getUserId()) {
