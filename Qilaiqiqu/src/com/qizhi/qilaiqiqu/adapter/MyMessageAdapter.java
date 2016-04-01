@@ -70,11 +70,6 @@ public class MyMessageAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		holder.contentTxt.setText(list.get(position).getContent());
-		if(list.get(position).getState().equals("NOVIEW")){
-			holder.contentTxt.setTextColor(0xff6dbfed);
-		}else{
-			holder.contentTxt.setTextColor(0xff666666);
-		}
 		if(list.get(position).getMessageType().contains("QY")){
 			holder.portraitImg.setImageResource(R.drawable.commert_news);
 			holder.systemMessageTxt.setText("游记消息");
@@ -88,7 +83,14 @@ public class MyMessageAdapter extends BaseAdapter {
 			holder.portraitImg.setImageResource(R.drawable.attend_news);
 			holder.systemMessageTxt.setText("陪骑士消息");
 		}
-		holder.systemMessageTxt.setTextColor(0xff6dbfed);
+		
+		
+		if(list.get(position).getState().equals("NOVIEW")){
+			holder.contentTxt.setTextColor(0xff6dbfed);
+		}else{
+			holder.contentTxt.setTextColor(0xffB3B3B3);
+			holder.systemMessageTxt.setTextColor(0xffB3B3B3);
+		}
 		
 		
 		return convertView;
