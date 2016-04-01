@@ -828,7 +828,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 								e.printStackTrace();
 							}
 							if (jsonObject.optBoolean("result")) {
-
 								// 数据获取
 								Gson gson = new Gson();
 								Type type = new TypeToken<SearchResultModel>() {

@@ -252,7 +252,7 @@ public class ActivityDetailsActivity extends HuanxinLogOutActivity implements
 	}
 
 	/**
-	 * 弹窗
+	 * 打赏弹窗
 	 * 
 	 * @param view
 	 *            popup所依附的布局

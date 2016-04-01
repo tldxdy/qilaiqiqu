@@ -599,7 +599,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 
 								LoginActivity.this.finish();
 								startActivity(new Intent(LoginActivity.this,
-										MainActivity.class));
+										MainActivity.class).putExtra("loginFlag", 1));
 								/*
 								 * startActivity(new Intent(LoginActivity.this,
 								 * MainActivity.class));

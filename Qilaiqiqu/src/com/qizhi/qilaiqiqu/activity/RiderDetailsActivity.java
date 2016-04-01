@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -144,6 +145,8 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	private RiderDetailsModel model;
 	private AttendRider attendRider;
 
+	private int integral;
+	
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -165,11 +168,24 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		getRiderDate();
 	}
 
+	
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			if (integral != -1) {
+				showJPush(integral);
+				
+			}
+		}
+	}
+	
 	private void initView() {
 		riderId = getIntent().getIntExtra("riderId", -1) + "";
 		httpUtils = new XUtilsUtil();
 		preferences = getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 
+		integral = getIntent().getIntExtra("integral", -1);
+		
 		hearderViewLayout = (LinearLayout) LayoutInflater.from(this).inflate(
 				R.layout.activity_rider_details_list_header, null);
 
@@ -364,6 +380,73 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	
+	/**
+	 * 打赏弹窗
+	 * 
+	 * @param view
+	 *            popup所依附的布局
+	 */
+	private void showJPush(int i) {
+
+		// 一个自定义的布局，作为显示的内容
+		View v = LayoutInflater.from(this).inflate(R.layout.item_popup_jpush,
+				null);
+		markPointTxt = (TextView) v.findViewById(R.id.txt_JpushPopup_message);
+		popup_cancel = (TextView) v.findViewById(R.id.txt_JpushPopup_cancel);
+		LinearLayout quxiao = (LinearLayout) v.findViewById(R.id.quxiao);
+		final PopupWindow popupWindow = new PopupWindow(v,
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+
+		popupWindow.setTouchable(true);
+
+		popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+		String userName = getIntent().getStringExtra("userName");
+		int praiseNum = getIntent().getIntExtra("sumIntegral", -1);
+		markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
+				+ userName + "</font>" + " 觉得您的活动写得不错哟!给您打赏了"
+				+ "<font color='#ff0000'>" + integral + "</font>" + ",你现在的总积分是"
+				+ "<font color='#ff0000'>" + praiseNum + "</font>" + "分"));
+
+		popupWindow.setTouchInterceptor(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				integral = -1;
+				return false;
+				// 这里如果返回true的话，touch事件将被拦截
+				// 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+			}
+		});
+
+		quxiao.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				popupWindow.dismiss();
+				integral = -1;
+			}
+		});
+
+		popup_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				popupWindow.dismiss();
+				integral = -1;
+			}
+		});
+
+		// 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+		popupWindow.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.corners_layout));
+		// 设置好参数之后再show
+		popupWindow.showAtLocation(RiderDetailsActivity.this
+				.findViewById(R.id.layout_ActivityDetailsActivity),
+				Gravity.CENTER, 0, Gravity.CENTER);
+	}
+	
 	/**
 	 * 验证陪骑状态
 	 */
@@ -417,7 +500,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		params.addQueryStringParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
 		params.addQueryStringParameter("applyId",
-				getIntent().getIntExtra("applyId",-1) +"");
+				getIntent().getIntExtra("applyId", -1) + "");
 		httpUtils.httpPost("mobile/attendRider/attendRiderReward.html", params,
 				new CallBackPost() {
 
@@ -433,9 +516,8 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 										+ markPointInt + "分!", 0);
 
 							} else {
-								Toasts.show(RiderDetailsActivity.this, "打赏失败:"
-										+ jsonObject.getString("message")
-										+ ",请重试!", 0);
+								Toasts.show(RiderDetailsActivity.this,
+										jsonObject.getString("message"), 0);
 							}
 						} catch (JSONException e) {
 							e.printStackTrace();
@@ -1252,8 +1334,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 
 	private String userApplyState;
 
-	
-	public String getMd(int i){
+	public String getMd(int i) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.get(Calendar.HOUR_OF_DAY);
 		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
@@ -1261,7 +1342,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		Date date = calendar.getTime();
 		return sdf.format(date);
 	}
-	
+
 	public String getWeekOfDate(int i) {
 
 		Calendar calendar = Calendar.getInstance();
@@ -1295,8 +1376,6 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		return weekDays[w];
 	}
 
-	
-	
 	/**
 	 * 获取当前日期
 	 * 

@@ -272,7 +272,7 @@ public class SetActivity extends HuanxinLogOutActivity implements
 			new LogoutAPI(SetActivity.this, WBConstants.APP_KEY,
 					mAccessToken).logout(mLogoutRequestListener);
 		} else {
-			Toasts.show(SetActivity.this, "注销失败，请检查 Token 是否正确（一个 token 不能重复注销多次）", 0);
+//			Toasts.show(SetActivity.this, "注销失败，请检查 Token 是否正确（一个 token 不能重复注销多次）", 0);
 		}
 
 	}
