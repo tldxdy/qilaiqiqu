@@ -172,8 +172,10 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 						}else if("HDYQDS".equals(smm.getMessageType())){
 							//活动详情打赏
 							int activityId = jo.optInt("activityId");
+							int applyId = jo.optInt("applyId");
 							Intent intent = new Intent(getActivity(), ActivityDetailsActivity.class);
 							intent.putExtra("activityId", activityId);
+							intent.putExtra("applyId", applyId);
 							getActivity().startActivity(intent);
 							
 						}else if("PQSDSJG".equals(smm.getMessageType())){
@@ -187,6 +189,7 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 							//陪骑士邀请打赏
 							int riderId = jo.optInt("riderId");
 							Intent intent = new Intent(getActivity(), RiderDetailsActivity.class);
+							intent.putExtra("pushType", "PQSYQDS");
 							intent.putExtra("riderId", riderId);
 							getActivity().startActivity(intent);
 							

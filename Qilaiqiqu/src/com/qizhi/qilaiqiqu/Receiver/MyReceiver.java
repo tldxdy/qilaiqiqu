@@ -223,10 +223,12 @@ public class MyReceiver extends BroadcastReceiver {
 				}else if(key.equals("PQSYQDS")){
 					//陪骑士邀请打赏
 					int riderId = pushValue.optInt("riderId");
+					int applyId = pushValue.optInt("applyId");
 					Intent i = new Intent(context, RiderDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					i.putExtra("riderId", riderId);
+					intent.putExtra("applyId", applyId);
 					i.putExtra("pushType", key);
 						context.startActivity(i);
 						
@@ -245,7 +247,6 @@ public class MyReceiver extends BroadcastReceiver {
 					i.putExtra("userName", userName);
 						context.startActivity(i);
 				}else if(key.equals("PQSJJ") || key.equals("PQSTY")){
-					//陪骑士邀请打赏
 					int riderId = pushValue.optInt("riderId");
 					Intent i = new Intent(context, RiderDetailsActivity.class);
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK

@@ -416,6 +416,8 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		params.addQueryStringParameter("integral", markPointInt + "");
 		params.addQueryStringParameter("uniqueKey",
 				preferences.getString("uniqueKey", null));
+		params.addQueryStringParameter("applyId",
+				getIntent().getIntExtra("applyId",-1) +"");
 		httpUtils.httpPost("mobile/attendRider/attendRiderReward.html", params,
 				new CallBackPost() {
 
