@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -103,6 +104,8 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 	private UsersAPI mUsersAPI;
 	private static final String TAG = LoginActivity.class.getName();
 
+	public static Activity instanceLogin = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -114,6 +117,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 		mSsoHandler = new SsoHandler(LoginActivity.this, mAuthInfo);
 		mTencent = Tencent.createInstance(ConstantsUtil.APP_ID_TX,
 				this.getApplicationContext());
+		instanceLogin = this;
 		initView();
 		initEvent();
 	}
@@ -264,7 +268,6 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 
 		case R.id.img_loginactivity_weibo:
 			showProgressDialog();
-			new SystemUtil().makeToast(this, "微博登录");
 			// showProgressDialog();
 			mSsoHandler.authorize(new AuthListener());
 
@@ -509,9 +512,9 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 						editor.commit();
 						Toast.makeText(LoginActivity.this, "登录成功",
 								Toast.LENGTH_LONG).show();
-						LoginActivity.this.finish();
 						startActivity(new Intent(LoginActivity.this,
 								MainActivity.class).putExtra("loginFlag", 1));
+						LoginActivity.this.finish();
 					} else {
 						Toasts.show(LoginActivity.this,
 								"登录失败:" + jsonObject.getString("message"), 0);

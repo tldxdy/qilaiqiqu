@@ -16,6 +16,7 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.BindPhoneActivity;
 import com.qizhi.qilaiqiqu.activity.HuanxinLogOutActivity;
+import com.qizhi.qilaiqiqu.activity.LoginActivity;
 import com.qizhi.qilaiqiqu.activity.MainActivity;
 import com.qizhi.qilaiqiqu.utils.ConstantsUtil;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -128,12 +129,12 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 				editor.putString("mobilePhone", data.getString("mobilePhone"));
 				editor.putInt("loginFlag", 1);
 				editor.commit();
-
+				
+				
 			} else {
 				String string = jsonObject.getString("message");
 				new SystemUtil().makeToast(WXEntryActivity.this, "result:"
-						+ jsonObject.getString("result") + ":" + string);
-				finish();
+						+ jsonObject.getString("result") + ":" + string+"!!!!!!");
 			}
 
 		} catch (JSONException e) {
@@ -142,7 +143,8 @@ public class WXEntryActivity extends HuanxinLogOutActivity implements
 
 		startActivity(new Intent(WXEntryActivity.this, MainActivity.class)
 				.putExtra("loginFlag", 1));
-
+		finish();
+		LoginActivity.instanceLogin.finish();
 	}
 
 	@Override
