@@ -92,7 +92,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 							.httpClient(
 									saveMyBitmap(RiderAuthenticationFirstActivity.bitList
 											.get(uploadingNum)), preferences,
-									handler, "HD");
+									handler, "PQS");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -118,7 +118,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 							.httpClient(
 									saveMyBitmap(RiderAuthenticationFirstActivity.bitList
 											.get(uploadingNum)), preferences,
-									handler, "HD");
+									handler, "PQS");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -175,7 +175,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				memoLengh.setText(s.length() + "/50");
+				memoLengh.setText(s.length() + "/100");
 			}
 		});
 
@@ -213,7 +213,7 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 							.httpClient(
 									saveMyBitmap(RiderAuthenticationFirstActivity.bitList
 											.get(uploadingNum)), preferences,
-									handler, "HD");
+									handler, "PQS");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -378,8 +378,14 @@ public class RiderAuthenticationThirdActivity extends HuanxinLogOutActivity
 		params.addQueryStringParameter("riderImage", imagePath);
 		params.addQueryStringParameter("riderPhone",
 				RiderAuthenticationFirstActivity.riderPhone);
-		params.addQueryStringParameter("attendArea",
-				RiderAuthenticationFirstActivity.attendArea);
+		if(RiderAuthenticationFirstActivity.attendArea.equals("0")){
+			params.addQueryStringParameter("attendArea",
+					"免费");
+		}else{
+			params.addQueryStringParameter("attendArea",
+					RiderAuthenticationFirstActivity.attendArea +"元/h");
+		}
+		
 		params.addQueryStringParameter("attendPrice",
 				RiderAuthenticationFirstActivity.attendPrice);
 		params.addQueryStringParameter("attendPeriod",

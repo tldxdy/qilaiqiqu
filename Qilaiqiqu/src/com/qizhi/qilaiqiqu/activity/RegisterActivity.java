@@ -43,8 +43,8 @@ import com.umeng.analytics.MobclickAgent;
  * @author leiqian
  * 
  */
-public class RegisterActivity extends HuanxinLogOutActivity implements OnClickListener,
-		CallBackPost {
+public class RegisterActivity extends HuanxinLogOutActivity implements
+		OnClickListener, CallBackPost {
 
 	private LinearLayout backLayout;// 返回按钮
 
@@ -64,7 +64,7 @@ public class RegisterActivity extends HuanxinLogOutActivity implements OnClickLi
 	private int finishFlag = 1; // 退出标识 1为不允许推出，2为允许推出
 
 	private ProgressDialog progDialog = null;// 搜索时进度条
-	
+
 	private Handler handler = new Handler() {
 
 		@Override
@@ -267,7 +267,8 @@ public class RegisterActivity extends HuanxinLogOutActivity implements OnClickLi
 				if (finishFlag == 1) {
 					new SystemUtil().makeToast(RegisterActivity.this, "验证码已发送");
 				} else {
-					new SystemUtil().makeToast(RegisterActivity.this, "注册成功,自动帮您登录");
+					new SystemUtil().makeToast(RegisterActivity.this,
+							"注册成功,自动帮您登录");
 					showProgressDialog();
 					login();
 				}
@@ -357,9 +358,10 @@ public class RegisterActivity extends HuanxinLogOutActivity implements OnClickLi
 								editor.commit();
 
 								startActivity(new Intent(RegisterActivity.this,
-										MainActivity.class));
+										MainActivity.class).putExtra(
+										"loginFlag", 1));
 								RegisterActivity.this.finish();
-								
+
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
@@ -398,12 +400,13 @@ public class RegisterActivity extends HuanxinLogOutActivity implements OnClickLi
 			progDialog.dismiss();
 		}
 	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		MobclickAgent.onResume(this);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();

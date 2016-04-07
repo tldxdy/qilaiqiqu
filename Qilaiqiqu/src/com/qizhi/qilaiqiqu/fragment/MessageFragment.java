@@ -113,6 +113,7 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 			e.printStackTrace();
 		}
 		if (jsonObject.optBoolean("result")) {
+			list.clear();
 			Gson gson = new Gson();
 			Type type = new TypeToken<List<SystemMessageModel>>(){}.getType();
 			List<SystemMessageModel> lists = gson.fromJson(jsonObject.optJSONArray("dataList").toString(), type);
@@ -130,9 +131,6 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-		if(position > list.size()){
-			return;
-		}
 		
 		int systemMessageId = list.get(position - 1).getSystemMessageId();
 		
@@ -235,9 +233,12 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 							Intent intent = new Intent(getActivity(), RiderDetailsActivity.class);
 							intent.putExtra("pushType", "PQSYQDS");
 							intent.putExtra("riderId", riderId);
-							intent.putExtra("integral", integral);
-							intent.putExtra("sumIntegral", sumIntegral);
-							intent.putExtra("userName", userName);
+							if(integral != 0){
+								intent.putExtra("integral", integral);
+								intent.putExtra("sumIntegral", sumIntegral);
+								intent.putExtra("userName", userName);
+							}
+							
 							getActivity().startActivity(intent);
 							
 							
@@ -335,9 +336,7 @@ public class MessageFragment extends Fragment implements OnItemClickListener,Cal
 	@Override
 	public boolean onItemLongClick(AdapterView<?> arg0, View view, int position,
 			long arg3) {
-		if(position < list.size()){
 			showPopupWindow(view,list.get(position - 1).getSystemMessageId(), position - 1);
-		}
 		return true;
 	}
 	

@@ -101,7 +101,7 @@ public class UpdateManager {
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		if(nowVersionName.length()>0){
+		if (nowVersionName.length() > 0) {
 			getNewVersion();
 		}
 	}
@@ -133,7 +133,7 @@ public class UpdateManager {
 
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				Toasts.show(context, "获取更新失败", 0);
+				// Toasts.show(context, "获取更新失败", 0);
 			}
 		});
 

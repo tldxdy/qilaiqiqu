@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qizhi.qilaiqiqu"
-    android:versionCode="11"
-    android:versionName="1.0.0" >
+    android:versionCode="14"
+    android:versionName="1.1.1" >
 
     <uses-sdk
         android:minSdkVersion="18"
@@ -63,7 +63,26 @@
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="yingyongbao" />
+        <!-- 微博 -->
+        <!-- 必须注册在微博授权，分享微博时候用到 -->
+        <activity
+            android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" >
+        </activity>
 
+        <meta-data
+            android:name="WEIBO_APPKEY"
+            android:value="3436192230" />
+        <meta-data
+            android:name="WEIBO_CHANNEL"
+            android:value="weibo" />
+
+        <service
+            android:name="com.sina.weibo.sdk.net.DownloadService"
+            android:exported="false" >
+        </service>
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
@@ -235,8 +254,7 @@
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
+            android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="com.qizhi.qilaiqiqu.activity.StartActivity"
@@ -379,8 +397,9 @@
         </activity>
         <activity android:name="com.qizhi.qilaiqiqu.activity.RiderDetailsActivity" >
         </activity>
-		<activity android:name="com.qizhi.qilaiqiqu.activity.RiderListActivity"></activity>
-        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderDiscussActivity" >
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderListActivity" >
+        </activity>
+        <activity android:name="com.qizhi.qilaiqiqu.activity.RiderCommentActivity" >
         </activity>
 
         <receiver android:name="com.qizhi.qilaiqiqu.receiver.LogoutReceiver" >

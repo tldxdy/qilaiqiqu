@@ -12,12 +12,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -43,7 +41,6 @@ import com.qizhi.qilaiqiqu.utils.Toasts;
 import com.qizhi.qilaiqiqu.utils.UsersAPI;
 import com.qizhi.qilaiqiqu.utils.WBConstants;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackGet;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
@@ -232,7 +229,8 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 
 		case R.id.btn_loginActivity_visitor:
 			finish();
-			startActivity(new Intent(LoginActivity.this, MainActivity.class));
+			startActivity(new Intent(LoginActivity.this, MainActivity.class)
+					.putExtra("loginFlag", 1));
 			break;
 
 		case R.id.btn_loginActivity_register:
@@ -435,7 +433,8 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 										Toast.LENGTH_LONG).show();
 								LoginActivity.this.finish();
 								startActivity(new Intent(LoginActivity.this,
-										MainActivity.class));
+										MainActivity.class).putExtra(
+										"loginFlag", 1));
 							} else {
 								Toasts.show(LoginActivity.this, "登录失败:"
 										+ jsonObject.getString("message"), 0);
@@ -512,7 +511,7 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 								Toast.LENGTH_LONG).show();
 						LoginActivity.this.finish();
 						startActivity(new Intent(LoginActivity.this,
-								MainActivity.class));
+								MainActivity.class).putExtra("loginFlag", 1));
 					} else {
 						Toasts.show(LoginActivity.this,
 								"登录失败:" + jsonObject.getString("message"), 0);
@@ -602,7 +601,8 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 
 								LoginActivity.this.finish();
 								startActivity(new Intent(LoginActivity.this,
-										MainActivity.class).putExtra("loginFlag", 1));
+										MainActivity.class).putExtra(
+										"loginFlag", 1));
 								/*
 								 * startActivity(new Intent(LoginActivity.this,
 								 * MainActivity.class));
@@ -668,29 +668,18 @@ public class LoginActivity extends HuanxinLogOutActivity implements
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	/*
-	*//**
+	/**
 	 * 菜单、返回键响应
 	 */
-	/*
-	 * @Override public boolean onKeyDown(int keyCode, KeyEvent event) { if
-	 * (keyCode == KeyEvent.KEYCODE_BACK) { exitBy2Click(); // 调用双击退出函数 } return
-	 * false; }
-	 */
-
-	/**
-	 * 双击退出函数
-	 */
-
-	/*
-	 * private void exitBy2Click() { Timer tExit = null; if (isExit == false) {
-	 * isExit = true; // 准备退出 Toast.makeText(this, "再按一次退出程序",
-	 * Toast.LENGTH_SHORT).show(); tExit = new Timer(); tExit.schedule(new
-	 * TimerTask() {
-	 * 
-	 * @Override public void run() { isExit = false; // 取消退出 } }, 2000); //
-	 * 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务 } else { finish(); System.exit(0); } }
-	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			this.finish();
+			startActivity(new Intent(LoginActivity.this, MainActivity.class)
+					.putExtra("loginFlag", 1));
+		}
+		return false;
+	}
 
 	/**
 	 * 显示进度框

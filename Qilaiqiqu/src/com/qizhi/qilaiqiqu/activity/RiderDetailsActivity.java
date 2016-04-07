@@ -405,8 +405,8 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 		String userName = getIntent().getStringExtra("userName");
 		int praiseNum = getIntent().getIntExtra("sumIntegral", -1);
 		markPointTxt.setText(Html.fromHtml("骑友 " + "<font color='#6dbfed'>"
-				+ userName + "</font>" + " 觉得您的活动写得不错哟!给您打赏了"
-				+ "<font color='#ff0000'>" + integral + "</font>" + ",你现在的总积分是"
+				+ userName + "</font>" + " 给您的这次陪骑打赏了"
+				+ "<font color='#ff0000'>" + integral + "</font>" + "分,你现在的总积分是"
 				+ "<font color='#ff0000'>" + praiseNum + "</font>" + "分"));
 
 		popupWindow.setTouchInterceptor(new OnTouchListener() {
@@ -871,11 +871,7 @@ public class RiderDetailsActivity extends Activity implements OnClickListener {
 	private void setView() {
 		riderNameTxt.setText(attendRider.getUserName());
 		memoTxt.setText(attendRider.getRiderMemo());
-		if (attendRider.getAttendPrice().equals("免费")) {
-			priceTxt.setText(attendRider.getAttendPrice());
-		} else {
-			priceTxt.setText(attendRider.getAttendPrice() + "元");
-		}
+		priceTxt.setText(attendRider.getAttendPrice());
 		phoneTxt.setText("仅约骑成功后可见");
 		numberTxt.setText(attendRider.getAttendTimes() + "次");
 		mileageTxt.setText(attendRider.getRideCourse());

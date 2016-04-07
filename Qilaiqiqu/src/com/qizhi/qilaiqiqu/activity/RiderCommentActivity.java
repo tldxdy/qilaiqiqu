@@ -139,6 +139,7 @@ public class RiderCommentActivity extends HuanxinLogOutActivity implements
 
 							imm.hideSoftInputFromWindow(
 									commentEdt.getWindowToken(), 0);
+							finish();
 						} else {
 							Toasts.show(RiderCommentActivity.this,
 									"评论失败:"+jsonObject.optString("message"), 0);
