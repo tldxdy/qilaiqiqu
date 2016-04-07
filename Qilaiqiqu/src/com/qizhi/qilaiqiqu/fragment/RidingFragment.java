@@ -84,11 +84,6 @@ public class RidingFragment extends Fragment implements OnItemClickListener,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
-		manageList.setAdapter(adapter);
-		manageList.setOnItemClickListener(RidingFragment.this);
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setOnLoadListener(this);
-		
 		imageUrl();
 		return view;
 
@@ -98,6 +93,10 @@ public class RidingFragment extends Fragment implements OnItemClickListener,
 		header = View.inflate(getActivity(),
 				R.layout.item_list_mainactivity_header, null);
 		manageList.addHeaderView(header);
+		manageList.setAdapter(adapter);
+		manageList.setOnItemClickListener(RidingFragment.this);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);
 		ImageCycleViewUtil mImageCycleView = (ImageCycleViewUtil) view
 				.findViewById(R.id.icv_topView);
 		mImageCycleView.setCycleDelayed(3000);

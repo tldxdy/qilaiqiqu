@@ -75,19 +75,14 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 		xUtilsUtil = new XUtilsUtil();
 		context = getActivity();
 		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
-		initViewHeader();
 		dataList = new ArrayList<StartAndParticipantActivityModel>();
 		swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light,
 				android.R.color.holo_red_light);
+		initViewHeader();
 		adapter = new ManageAdapter(context, dataList , preferences.getInt("userId", -1) );
-		manageList.setAdapter(adapter);
-		manageList.setDividerHeight(0);
-		manageList.setOnItemClickListener(this);
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setOnLoadListener(this);
 		data();
 		return view;
 	}
@@ -107,6 +102,11 @@ public class ActivityFragment extends Fragment implements OnItemClickListener,Ca
 		//initNumRider();
 		activityTxt = (TextView) view.findViewById(R.id.txt_rideractivity_activity);
 		manageList.addHeaderView(view);
+		manageList.setAdapter(adapter);
+		manageList.setDividerHeight(0);
+		manageList.setOnItemClickListener(this);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setOnLoadListener(this);
 		becomeLayout.setOnClickListener(this);
 		riderLayout.setOnClickListener(this);
 		peiqiLayout.setOnClickListener(this);
