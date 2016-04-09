@@ -253,11 +253,6 @@ public class RidingFragment extends Fragment implements OnItemClickListener,
 			Articlelist.clear();
 			Articlelist.addAll(lists);
 			adapter.notifyDataSetChanged();
-			adapter = new SlideShowListAdapter(
-					context, Articlelist);
-			/*
-			 * manageList .setOnRefreshListener(RidingFragment.this);
-			 */
 			if (MainActivity.loginFlag == 1) {
 				MainActivity.allLayout.setVisibility(View.VISIBLE);
 				MainActivity.splashView.splashAndDisappear();
