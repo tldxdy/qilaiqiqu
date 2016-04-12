@@ -23,12 +23,12 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.activity.ActionCenterActivity;
-import com.qizhi.qilaiqiqu.activity.CollectActivity;
+import com.qizhi.qilaiqiqu.activity.CollectCenterActivity;
 import com.qizhi.qilaiqiqu.activity.LoginActivity;
 import com.qizhi.qilaiqiqu.activity.MessageCenterActivity;
 import com.qizhi.qilaiqiqu.activity.PersonalDataActivity;
 import com.qizhi.qilaiqiqu.activity.RiderManageCenterActivity;
-import com.qizhi.qilaiqiqu.activity.RidingActivity;
+import com.qizhi.qilaiqiqu.activity.MyRidingActivity;
 import com.qizhi.qilaiqiqu.activity.SetActivity;
 import com.qizhi.qilaiqiqu.model.PersonageUserInformationModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
@@ -178,7 +178,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 			break;
 		case R.id.layout_personalfragment_my_travel_notes:
 			if (preferences.getInt("userId", -1) != -1) {
-				Intent intent3 = new Intent(context, RidingActivity.class);
+				Intent intent3 = new Intent(context, MyRidingActivity.class);
 				startActivity(intent3);
 			} else {
 				Toasts.show(getActivity(), "请登录", 0);
@@ -202,7 +202,7 @@ public class MenuLeftFragment extends Fragment implements OnClickListener {
 
 		case R.id.layout_personalfragment_my_collect_press:
 			if (preferences.getInt("userId", -1) != -1) {
-				Intent intent4 = new Intent(context, CollectActivity.class);
+				Intent intent4 = new Intent(context, CollectCenterActivity.class);
 				startActivity(intent4);
 			} else {
 				Toasts.show(getActivity(), "请登录", 0);

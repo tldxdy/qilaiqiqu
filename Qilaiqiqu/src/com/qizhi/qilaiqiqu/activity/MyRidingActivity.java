@@ -51,11 +51,11 @@ import com.umeng.analytics.MobclickAgent;
  * 
  */
 
-public class RidingActivity extends HuanxinLogOutActivity implements
+public class MyRidingActivity extends HuanxinLogOutActivity implements
 		OnClickListener, OnItemClickListener, CallBackPost, OnRefreshListener,
 		OnLoadListener {
 
-	public static RidingActivity ridingActivity;
+	public static MyRidingActivity ridingActivity;
 
 	private RidingListAdapter adapter;
 
@@ -157,7 +157,7 @@ public class RidingActivity extends HuanxinLogOutActivity implements
 			startActivity(intent);
 			return;
 		} else if (position <= rDraftModels.size() + list.size()) {
-			Intent intent = new Intent(RidingActivity.this,
+			Intent intent = new Intent(MyRidingActivity.this,
 					RidingDetailsActivity.class);
 			intent.putExtra("isMe", true);
 			intent.putExtra("articleId",

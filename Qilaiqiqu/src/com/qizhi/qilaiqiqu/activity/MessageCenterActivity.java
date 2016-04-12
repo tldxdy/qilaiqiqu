@@ -16,6 +16,11 @@ import com.qizhi.qilaiqiqu.fragment.MessageCenterFragmentPagerAdapter;
 import com.qizhi.qilaiqiqu.utils.NoScrollViewPager;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 
+ * @author Administrator
+ *			消息中心
+ */
 public class MessageCenterActivity extends HuanxinLogOutActivity implements OnClickListener{
 	private LinearLayout backLayout;
 	private TextView manageTxt;

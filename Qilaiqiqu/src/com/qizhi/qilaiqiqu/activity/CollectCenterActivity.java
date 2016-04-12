@@ -17,10 +17,10 @@ import com.umeng.analytics.MobclickAgent;
 
 /**
  * 
- * @author leiqian
+ * @author 收藏中心
  * 
  */
-public class CollectActivity extends HuanxinLogOutActivity implements OnClickListener{
+public class CollectCenterActivity extends HuanxinLogOutActivity implements OnClickListener{
 	private LinearLayout backLayout;
 	private TextView manageTxt;
 	private TextView historyTxt;

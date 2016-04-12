@@ -286,11 +286,11 @@
             android:label="@string/title_activity_message" >
         </activity>
         <activity
-            android:name="com.qizhi.qilaiqiqu.activity.RidingActivity"
+            android:name="com.qizhi.qilaiqiqu.activity.MyRidingActivity"
             android:label="@string/title_activity_riding" >
         </activity>
         <activity
-            android:name="com.qizhi.qilaiqiqu.activity.CollectActivity"
+            android:name="com.qizhi.qilaiqiqu.activity.CollectCenterActivity"
             android:label="@string/title_activity_collect" >
         </activity>
         <activity

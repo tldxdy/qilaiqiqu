@@ -8,30 +8,36 @@
     android:background="@color/write" >
 
     <RelativeLayout
+        android:id="@+id/layout_ridingDatilsList_one"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:background="@color/write" >
+        <ImageView
+            android:id="@+id/img_ridingDatilsList_one"
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
 
         <com.qizhi.qilaiqiqu.utils.CircleImageViewUtil
             android:id="@+id/img_ridingDetailsList_photo"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="49dp"
+            android:layout_height="49dp"
+            android:layout_alignBottom="@+id/img_ridingDatilsList_one"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="10dp"
             android:src="@drawable/persional_picture"
             app1:border_width="0dp" />
 
-        <TextView
-            android:id="@+id/txt_ridingDetailsList_ridingName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_below="@+id/img_ridingDetailsList_photo"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
-            android:textSize="16sp" />
-    </RelativeLayout>
+	</RelativeLayout>
+
+    <TextView
+        android:id="@+id/txt_ridingDetailsList_ridingName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
+        android:textSize="16sp" />
 
 </LinearLayout>

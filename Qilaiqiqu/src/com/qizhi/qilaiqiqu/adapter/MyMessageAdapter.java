@@ -2,26 +2,15 @@ package com.qizhi.qilaiqiqu.adapter;
 
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.SystemMessageModel;
-import com.qizhi.qilaiqiqu.utils.SideslipDeleteListView;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,15 +21,11 @@ public class MyMessageAdapter extends BaseAdapter {
 	
 	private List<SystemMessageModel> list;
 	private Context context;
-	private XUtilsUtil xUtilsUtil;
-	private SharedPreferences preferences;
 	
 	public MyMessageAdapter(Context context, List<SystemMessageModel> list){
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		this.list = list;
-		xUtilsUtil = new XUtilsUtil();
-		preferences = context.getSharedPreferences("userLogin", Context.MODE_PRIVATE);
 	}
 	@Override
 	public int getCount() {

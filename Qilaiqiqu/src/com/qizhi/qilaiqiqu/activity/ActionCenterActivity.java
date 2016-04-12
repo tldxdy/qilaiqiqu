@@ -9,12 +9,17 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import cn.jpush.android.api.JPushInterface;
 
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.fragment.ActivityCenterFragmentPagerAdapter;
 import com.umeng.analytics.MobclickAgent;
 
+
+/**
+ * 
+ * @author Administrator
+ *			活动中心
+ */
 public class ActionCenterActivity extends HuanxinLogOutActivity implements
 		OnClickListener {
 

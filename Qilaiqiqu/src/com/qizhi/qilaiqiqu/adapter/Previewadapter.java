@@ -1,19 +1,10 @@
 package com.qizhi.qilaiqiqu.adapter;
 
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
 import com.qizhi.qilaiqiqu.model.TravelsinformationModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil;
-import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackPost;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -22,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Previewadapter extends BaseAdapter {
@@ -33,7 +25,6 @@ public class Previewadapter extends BaseAdapter {
 	private List<TravelsinformationModel> list;
 	private BitmapUtils bitmapUtils;
 	private SharedPreferences preferences;
-	private XUtilsUtil xUtilsUtil;
 	
 
 	public Previewadapter(Context context, List<TravelsinformationModel> list, SharedPreferences preferences) {
@@ -42,7 +33,6 @@ public class Previewadapter extends BaseAdapter {
 		inflater = LayoutInflater.from(context);
 		bitmapUtils = new BitmapUtils(context);
 		this.preferences = preferences;
-		xUtilsUtil = new XUtilsUtil();
 	}
 
 	@Override
@@ -66,43 +56,21 @@ public class Previewadapter extends BaseAdapter {
 		if(position == 0){
 			view = inflater.inflate(R.layout.item_list_riding_details_header,
 					null);
-			final ImageView photoImg = (ImageView) view.findViewById(R.id.img_ridingDetailsList_photo);
+			ImageView photoImg = (ImageView) view.findViewById(R.id.img_ridingDetailsList_photo);
 			TextView title = (TextView) view.findViewById(R.id.txt_ridingDetailsList_ridingName);
+			ImageView oneImg = (ImageView) view.findViewById(R.id.img_ridingDatilsList_one);
+			RelativeLayout oneLayout = (RelativeLayout) view.findViewById(R.id.layout_ridingDatilsList_one);
 			
-			//SystemUtil.Imagexutils(list.get(position)., photoImg, context);
+			
+			SystemUtil.Imagexutils(preferences.getString("userImage", null), photoImg, context);
 			title.setText(list.get(position).getTitle());
-			if (preferences.getInt("userId", -1) != -1) {
-				RequestParams params = new RequestParams("UTF-8");
-				params.addBodyParameter("userId", preferences.getInt("userId", -1)
-						+ "");
-				xUtilsUtil.httpPost("common/queryCertainUser.html", params,
-						new CallBackPost() {
-
-							@Override
-							public void onMySuccess(
-									ResponseInfo<String> responseInfo) {
-								String s = responseInfo.result;
-								JSONObject jsonObject = null;
-								try {
-									jsonObject = new JSONObject(s);
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
-								if (jsonObject.optBoolean("result")) {
-									JSONObject json = jsonObject
-											.optJSONObject("data");
-									SystemUtil.Imagexutils(
-											json.optString("userImage"), photoImg,
-											context);
-								}
-							}
-
-							@Override
-							public void onMyFailure(HttpException error, String msg) {
-
-							}
-						});
+			bitmapUtils.display(oneImg, list.get(position).getArticleImage());			
+			
+			if(RidingDetailsListAdapter.height == 0){
+				oneImg.measure(0, 0);
+				RidingDetailsListAdapter.height = oneLayout.getMeasuredHeight();
 			}
+			
 			return view;
 		}
 		
@@ -160,12 +128,7 @@ public class Previewadapter extends BaseAdapter {
 			holder.cornerImg.setVisibility(View.VISIBLE);
 			holder.locationTxt.setText(" \u3000" + list.get(position-1).getAddress());
 		}
-	/*Picasso.with(context).load(list.get(position-1).getArticleImage()).resize(800, 480)
-	.centerInside().into(holder.pictureImg);*/
 	bitmapUtils.display(holder.pictureImg, list.get(position-1).getArticleImage());	
-		/*SystemUtil.loadImagexutils(
-				list.get(position).getArticleImage().split("\\|")[position]
-						.split("@")[0], holder.pictureImg, context);*/
 
 
 		return view;

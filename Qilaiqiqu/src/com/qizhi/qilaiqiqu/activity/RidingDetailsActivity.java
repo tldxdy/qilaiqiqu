@@ -32,6 +32,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -39,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -78,9 +81,10 @@ import com.umeng.analytics.MobclickAgent;
  */
 
 public class RidingDetailsActivity extends HuanxinLogOutActivity implements
-		OnClickListener, CallBackPost, OnItemClickListener {
+		OnClickListener, CallBackPost, OnItemClickListener,OnScrollListener {
 
 	private LinearLayout backLayout;
+	private RelativeLayout titleLayout;
 
 	private ImageView likeImg;
 	private ImageView rewardImg;
@@ -146,6 +150,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 	private int _id = 0;
 
 	private List<String> imgListUrl;
+	private int height;
 
 	private List<ActivityListRecommendModel> recommendList;
 
@@ -235,7 +240,6 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 		backLayout = (LinearLayout) findViewById(R.id.layout_ridingDetailsActivity_back);
 
 		ridingList = (ListView) findViewById(R.id.list_ridingDetailsActivity_riding);
-
 		likeImg = (ImageView) findViewById(R.id.img_ridingDetailsActivity_like);
 		rewardImg = (ImageView) findViewById(R.id.img_ridingDetailsActivity_reward);
 		commentImg = (ImageView) findViewById(R.id.img_ridingDetailsActivity_comment);
@@ -247,7 +251,9 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 		numTxt = (TextView) findViewById(R.id.animation);
 		revamTxt = (TextView) findViewById(R.id.img_ridingDetailsActivity_revamp);
 		deleteTxt = (TextView) findViewById(R.id.txt_ridingDetailsActivity_delete);
-
+		titleLayout = (RelativeLayout) findViewById(R.id.layout_ridingDetailsActivity_title);
+		titleLayout.measure(0, 0);
+		height = titleLayout.getMeasuredHeight();
 		animation = AnimationUtils
 				.loadAnimation(this, R.anim.applaud_animation);
 
@@ -306,6 +312,7 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 		cllectionImg.setOnClickListener(this);
 		revamTxt.setOnClickListener(this);
 		deleteTxt.setOnClickListener(this);
+		ridingList.setOnScrollListener(this);
 	}
 
 	@Override
@@ -528,9 +535,8 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 	}
 
 	// sina微博
-	/*
-	 * private void onClickWBShare(){ }
-	 */
+	  //private void onClickWBShare(){}
+	 
 
 	private void deleteRiding() {
 		RequestParams params = new RequestParams();
@@ -1375,12 +1381,36 @@ public class RidingDetailsActivity extends HuanxinLogOutActivity implements
 		super.onPause();
 		MobclickAgent.onPause(this);
 	}
+	private float moveY;
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
+		moveY = getScrollY();
+			if(moveY == 0){
+				titleLayout.setBackgroundResource(R.drawable.background_shade);
+			}else if(moveY/(RidingDetailsListAdapter.height - height) < 1){
+				titleLayout.setBackgroundColor(0xff6dbfed);
+				titleLayout.getBackground().setAlpha((int) (moveY/(RidingDetailsListAdapter.height - height) * 255));
+			}else{
+				titleLayout.setBackgroundColor(0xff6dbfed);
+			}
+		
+	}
 
-	/*
-	 * @Override protected void onActivityResult(int requestCode, int
-	 * resultCode, Intent data) { if (resultCode != RESULT_CANCELED) { switch
-	 * (requestCode) { case 3: break; } } super.onActivityResult(requestCode,
-	 * resultCode, data); }
-	 */
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+	                
+	                
+		
+	}
+	public int getScrollY() {
+	    View c = ridingList.getChildAt(0);
+	    if (c == null) {
+	        return 0;
+	    }
+	    int firstVisiblePosition = ridingList.getFirstVisiblePosition();
+	    int top = c.getTop();
+	    return -top + firstVisiblePosition * c.getHeight() ;
+	}
 
 }

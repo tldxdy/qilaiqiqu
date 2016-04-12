@@ -3,10 +3,6 @@ package com.qizhi.qilaiqiqu.adapter;
 import java.util.List;
 
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.adapter.RidingDetailsListAdapter.OneViewHolder;
-import com.qizhi.qilaiqiqu.adapter.RidingDetailsListAdapter.ThreeViewHolder;
-import com.qizhi.qilaiqiqu.adapter.RidingDetailsListAdapter.TwoViewHolder;
-import com.qizhi.qilaiqiqu.adapter.RidingDetailsListAdapter.ZeroViewHolder;
 import com.qizhi.qilaiqiqu.model.CollectModel;
 import com.qizhi.qilaiqiqu.utils.SystemUtil;
 
@@ -17,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**

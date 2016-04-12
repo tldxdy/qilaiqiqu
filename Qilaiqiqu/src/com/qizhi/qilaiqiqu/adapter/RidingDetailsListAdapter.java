@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class RidingDetailsListAdapter extends BaseAdapter {
@@ -21,6 +22,7 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 	private static final int TYPE_ONE = 1;
 	private static final int TYPE_TWO = 2;
 	private static final int TYPE_THREE = 3;
+	public static int height;
 	private int currentType;//当前item类型
 
 	private LayoutInflater inflater;
@@ -104,6 +106,9 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 						null);
 				zeroholder.photoImg = (ImageView) view.findViewById(R.id.img_ridingDetailsList_photo);
 				zeroholder.title = (TextView) view.findViewById(R.id.txt_ridingDetailsList_ridingName);
+				zeroholder.oneImg = (ImageView) view.findViewById(R.id.img_ridingDatilsList_one);
+				zeroholder.oneLayout = (RelativeLayout) view.findViewById(R.id.layout_ridingDatilsList_one);
+				
 				
 				view.setTag(zeroholder);
 				
@@ -185,6 +190,13 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 		case TYPE_ZERO:
 			SystemUtil.Imagexutils(list.get(position).getUserImage(), zeroholder.photoImg, context);
 			zeroholder.title.setText(list.get(position).getTitle());
+			SystemUtil.Imagexutils(
+					list.get(position).getArticleDetailList().get(position).getArticleImage(), zeroholder.oneImg, context);			
+			
+			if(height == 0){
+				zeroholder.oneImg.measure(0, 0);
+				height = zeroholder.oneLayout.getMeasuredHeight();
+			}
 			
 			break;
 		case TYPE_ONE:
@@ -247,6 +259,8 @@ public class RidingDetailsListAdapter extends BaseAdapter {
 	public class ZeroViewHolder{
 		private ImageView photoImg;
 		private TextView title;
+		private ImageView oneImg;
+		private RelativeLayout oneLayout;
 	}
 	
 	

@@ -1,14 +1,22 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/layout_riding_top"
-    android:orientation="vertical" >
+<?xml version="1.0" encoding="utf-8"?>
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout_ridingDetailsActivity"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
 
-    <RelativeLayout
+        <ListView
+            android:id="@+id/list_ridingDetailsActivity_riding"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:divider="#ffffff"
+			android:dividerHeight="15dp" >
+        </ListView>
+	   <RelativeLayout
+	      android:id="@+id/layout_ridingDetailsActivity_title"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
-        android:background="#6dbfed" >
+        android:background="@drawable/background_shade" >
 
         <LinearLayout
             android:id="@+id/layout_ridingDetailsActivity_back"
@@ -85,20 +93,6 @@
             android:textSize="16sp" />
 
     </RelativeLayout>
-
-    <FrameLayout
-        android:id="@+id/layout_ridingDetailsActivity"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
-        <ListView
-            android:id="@+id/list_ridingDetailsActivity_riding"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:divider="#ffffff"
-			android:dividerHeight="15dp" >
-        </ListView>
-
         <LinearLayout
             android:id="@+id/layout_ridingDetailsActivity_isShow"
             android:layout_width="fill_parent"
@@ -171,5 +165,3 @@
         android:indeterminateDuration="1500" />
         </LinearLayout>
     </FrameLayout>
-
-</LinearLayout>
