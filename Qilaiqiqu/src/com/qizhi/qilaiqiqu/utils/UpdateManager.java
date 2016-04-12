@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +31,6 @@ import android.widget.ProgressBar;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.qizhi.qilaiqiqu.R;
-import com.qizhi.qilaiqiqu.activity.RiderDetailsActivity;
 import com.qizhi.qilaiqiqu.utils.XUtilsUtil.CallBackGet;
 
 public class UpdateManager {
@@ -101,26 +101,27 @@ public class UpdateManager {
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		if (nowVersionName.length() > 0) {
+		if (nowVersionCode != 0) {
 			getNewVersion();
 		}
 	}
 
+	private List<?> list;
+	
 	private void getNewVersion() {
-		String url = "";
+		String url = "http://weride.com.cn/qlqqServer/version/getVersion";
 		httpUtils.httpGet(url, new CallBackGet() {
 
 			@Override
 			public void onMySuccess(ResponseInfo<String> responseInfo) {
 				String result = responseInfo.result;
-				System.out.println("陪骑打分信息:" + result);
+				System.out.println("版本更新信息:" + result);
 
 				try {
 					JSONObject jsonObject = new JSONObject(result);
-					if (jsonObject.getInt("versionCode") > nowVersionCode) {
-						spec = jsonObject.getString("");
+					if (jsonObject.getInt("versionnum") > nowVersionCode) {
+						spec = jsonObject.getString("versionurl");
 						if (spec.equals("") || spec.equals(null)) {
-
 						} else {
 							showNoticeDialog();
 						}
@@ -133,7 +134,7 @@ public class UpdateManager {
 
 			@Override
 			public void onMyFailure(HttpException error, String msg) {
-				// Toasts.show(context, "获取更新失败", 0);
+				 Toasts.show(context, "获取更新失败", 0);
 			}
 		});
 
@@ -143,7 +144,7 @@ public class UpdateManager {
 	 * 显示提示更新对话框
 	 */
 	private void showNoticeDialog() {
-		new AlertDialog.Builder(context).setTitle("软件版本更新").setMessage(message)
+		new AlertDialog.Builder(context).setTitle("骑来骑去有新版本哦!").setMessage(message)
 				.setPositiveButton("下载", new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -166,7 +167,7 @@ public class UpdateManager {
 				null);
 		progressBar = (ProgressBar) view.findViewById(R.id.progress);
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setTitle("软件版本更新");
+		builder.setTitle("正在努力下载");
 		builder.setView(view);
 		builder.setNegativeButton("取消", new OnClickListener() {
 			@Override
@@ -259,6 +260,7 @@ public class UpdateManager {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setDataAndType(Uri.parse("file://" + appFile.toString()),
 				"application/vnd.android.package-archive");
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(intent);
 	}
 }

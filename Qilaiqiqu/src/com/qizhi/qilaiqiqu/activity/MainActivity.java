@@ -193,8 +193,8 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			frameLayout.addView(view);
 			setContentView(frameLayout);
 		}
-		// updateManager = new UpdateManager(this);
-		// updateManager.checkUpdateInfo();
+		updateManager = new UpdateManager(this);
+		updateManager.checkUpdateInfo();
 
 		initView();
 		initLeft();
@@ -431,7 +431,6 @@ public class MainActivity extends HuanxinLogOutActivity implements
 			exitSearch();
 			searchTxt.setVisibility(View.GONE);
 			break;
-			
 
 		default:
 			break;
@@ -662,7 +661,7 @@ public class MainActivity extends HuanxinLogOutActivity implements
 	class donghua implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
-			
+
 			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 			if (fragmentNum == 0) {
 				inputEdt.setHint("搜索骑游记");
@@ -1194,19 +1193,18 @@ public class MainActivity extends HuanxinLogOutActivity implements
 
 				return false;
 			}
-			
-			
-			System.out.println("searchTxt.getHint():"+searchTxt.getHint());
-			
-			if(menu.isMenuShowing()){
+
+			System.out.println("searchTxt.getHint():" + searchTxt.getHint());
+
+			if (menu.isMenuShowing()) {
 				menu.toggle();
 			}
-//			else if(searchTxt.getHint().toString().equals("1")){
-//				exitSearch();
-//			}
-			else{
-			
-			exitBy2Click(); // 调用双击退出函数
+			// else if(searchTxt.getHint().toString().equals("1")){
+			// exitSearch();
+			// }
+			else {
+
+				exitBy2Click(); // 调用双击退出函数
 			}
 		}
 		return false;
