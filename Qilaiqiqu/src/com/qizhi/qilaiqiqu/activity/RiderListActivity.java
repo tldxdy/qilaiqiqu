@@ -122,6 +122,7 @@ public class RiderListActivity extends HuanxinLogOutActivity implements
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("pageIndex", pageIndex + "");
 		//params.addBodyParameter("pageIndex", "1");
+		
 		params.addBodyParameter("pageSize", 10 + "");
 		xUtilsUtil.httpPost("common/queryAttendRiderPaginationList.html",
 				params, new CallBackPost() {
